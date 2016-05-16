@@ -1,0 +1,18 @@
+\chapter{Domain Decomposition}
+\label{chap:dd}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Background}
+
+The memory challenges discussed in Chapter~\ref{chap:intro} can be addressed
+with \emph{domain decomposition}. We specifically focus on the spatial domain
+because that is where the largest memory burdens are incurred: spatially
+heterogeneous tallies and materials needed for full-core depletion. While many
+nuances to the concept can be conceived, the core idea of domain
+decomposition is easily conceptualized: distributed compute resources load
+materials into memory for different subsections of the problem domain, and score
+tally results for regions only within that domain.
+
+
+

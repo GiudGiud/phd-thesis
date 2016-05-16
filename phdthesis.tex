@@ -1,0 +1,175 @@
+\documentclass[12pt,twoside]{mitthesis}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% PREAMBLE
+
+\usepackage[bitstream-charter]{mathdesign} % Use BT Charter font
+\usepackage[T1]{fontenc}                   % Use T1 encoding instead of OT1
+\usepackage[utf8]{inputenc}                % Use UTF8 input encoding
+\usepackage{microtype}                     % Improve typography
+\usepackage{amsmath}                       % AMS Math extensions
+\usepackage{booktabs}                      % Improve table spacing
+\usepackage{graphicx}                      % Extended graphics capabilities
+\usepackage{tocbibind}                     % Include listings in TOC
+\usepackage[printonlyused]{acronym} % withpage: for showing page of use
+\usepackage{listings}                      % Source code listings
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage[rgb]{xcolor}
+\usepackage{url}
+\usepackage{array}
+\usepackage{pdfpages}
+\usepackage{mathtools}
+\usepackage{setspace}
+\usepackage{pbox}
+\usepackage{tikz}
+\usetikzlibrary{calc,shapes,decorations.pathreplacing,positioning}
+\usepackage{pgfplots}
+
+\usepackage[breaklinks=true]{hyperref}
+\hypersetup{colorlinks=true, linkcolor=black, citecolor=black, urlcolor=black,
+  pdftitle={Domain Decomposition for Monte Carlo Particle Transport Simulations
+  of Nuclear Reactors},
+  pdfauthor={Nicholas Edward Horelik}
+}
+\pagestyle{plain}
+
+%\usepackage{floatrow}
+%\floatsetup[table]{style=plaintop}
+%\floatsetup[widefigure]{margins=hangleft}
+
+% Appendix
+\usepackage[toc,page]{appendix}
+
+% Don't reset footnote counter between chapters
+\usepackage{chngcntr}
+\counterwithout{footnote}{chapter}
+
+% Algorithm constructs
+\usepackage[chapter]{algorithm} % Provides algorithm environment
+\usepackage{algorithmicx}       % Provides algorithmic block
+\usepackage{algpseudocode}      % Option of algorithmicx package
+\renewcommand{\thealgorithm}{\thechapter-\arabic{algorithm}}
+\newcommand\Algphase[1]{%
+\vspace*{-.7\baselineskip}\Statex\hspace*{\dimexpr-\algorithmicindent-2pt\relax}\rule{\columnwidth}{0.4pt}%
+\Statex\hspace*{-\algorithmicindent}{#1}%
+\vspace*{-.7\baselineskip}\Statex\hspace*{\dimexpr-\algorithmicindent-2pt\relax}\rule{\columnwidth}{0.4pt}%
+}
+\newcommand{\algrule}[1][.4pt]{\par\vskip.5\baselineskip\hrule height #1\par\vskip.5\baselineskip}
+
+% Configure captions
+\captionsetup{labelfont=bf, labelsep=colon}
+\captionsetup[algorithm]{labelfont=bf, labelsep=colon}
+
+% Use Latin Modern for typewriter fonts
+\renewcommand{\ttdefault}{lmtt}
+
+% Add \unit macro
+\newcommand{\unit}[1]{\ensuremath{\, \mathrm{#1}}}
+
+\definecolor{gray}{rgb}{0.4,0.4,0.4}
+\definecolor{darkblue}{rgb}{0.0,0.0,0.6}
+\definecolor{cyan}{rgb}{0.0,0.6,0.6}
+\lstset{
+  basicstyle=\footnotesize\ttfamily,
+  columns=fullflexible,
+  showstringspaces=false,
+  commentstyle=\color{gray}\upshape,
+  frame=single,
+  xleftmargin=0.55in
+}
+
+\lstdefinelanguage{XML}
+{
+  morestring=[b]",
+  morestring=[s]{>}{<},
+  morecomment=[s]{<?}{?>},
+  morecomment=[s]{<!--}{-->},
+  stringstyle=\color{black},
+  identifierstyle=\color{darkblue},
+  keywordstyle=\color{cyan},
+  morekeywords={}
+}
+
+\setcounter{secnumdepth}{4}
+\setcounter{tocdepth}{3}
+
+\renewcommand{\contentsname}{Table of Contents}
+\renewcommand{\bibname}{References}
+
+\begin{document}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% TITLE PAGE
+
+\title{Reactor Agnostic Cross-Section Generation for Fine-Mesh Deterministic Neutron Transport Simulations}
+
+\author{William Robert Dawson Boyd III}
+\prevdegrees{B.S., Georgia Institute of Technology (2010) \\
+             M.S., Massachusetts Institute of Technology (2014)}
+\department{Department of Nuclear Science and Engineering}
+\degree{Doctor of Philosophy in Nuclear Science and Engineering}
+
+\degreemonth{September}
+\degreeyear{2016}
+\thesisdate{September 1, 2016}
+
+\supervisor{Benoit Forget}{Associate Professor of Nuclear Science and Engineering}
+\reader{Kord S. Smith}{KEPCO Professor of the Practice of Nuclear Science and Engineering}
+\chairman{Emilio Bagglietto}{Associate Professor of Nuclear Science and Engineering}
+
+%\includepdf{signed-cover-page.pdf}
+%\maketitle
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% ABSTRACT
+
+\cleardoublepage
+\setcounter{savepage}{\thepage}
+
+\include{frontmatter/abstract}
+
+\cleardoublepage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% ACKNOWLEDGMENTS
+
+\include{frontmatter/acknowledgments}
+\pagestyle{plain}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% TABLE OF CONTENTS, FIGURES, TABLES
+
+\begin{singlespace}
+\tableofcontents
+\newpage
+\listoffigures
+\newpage
+\listoftables
+\listofalgorithms
+\addcontentsline{toc}{chapter}{List of Algorithms}
+\newpage
+\include{frontmatter/acronyms}
+\addcontentsline{toc}{chapter}{Definitions and Acronyms}
+\end{singlespace}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% CHAPTERS
+
+\include{chapters/introduction}
+\include{chapters/chap1}
+\include{chapters/chap2}
+\include{chapters/chap3}
+\include{chapters/conclusions}
+\include{chapters/appendices}
+\appendix
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% BIBLIOGRAPHY
+
+\begin{singlespace}
+\bibliographystyle{ans}
+\bibliography{references}
+\end{singlespace}
+
+\end{document}
