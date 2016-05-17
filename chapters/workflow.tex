@@ -1,0 +1,89 @@
+\chapter{Simulation Workflow}
+\label{chap:simulation-workflow}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{A Simulation Triad}
+\label{chap3:triad}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{OpenMC}
+\label{sec:chap3-openmc}
+
+%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Python API}
+\label{sec:chap3-py-api}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Tally Arithmetic}
+\label{sec:chap3-tally-arithmetic}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Pandas DataFrames}
+\label{sec:chap3-pandas-df}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Distributed Cell Tallies}
+\label{sec:chap3-distribcells}
+
+\begin{itemize}
+  \item Capture \ac{MGXS} spatial variation
+\end{itemize}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{MGXS Generation}
+\label{sec:chap3-mgxs}
+
+\begin{itemize}
+  \item Python \ac{API} software stacks together in \texttt{openmc.mgxs}
+\end{itemize}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Isotropic-in-Lab Scattering}
+\label{sec:chap3-iso-in-lab}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{OpenMOC}
+\label{sec:chap3-openmoc}
+
+\begin{itemize}
+  \item reference Annals paper
+  \item reference parallel perf. papers
+  \item reference 3D \ac{MOC} papers
+  \item brief description of \ac{MOC} equations
+  \begin{itemize}
+    \item flat/linear source approx.
+    \item isotropic approx.
+    \item constant-in-angle \ac{MGXS}
+    \item uses four group constants: total/transport, nu-fission, (nu-)scattering matrix, chi
+  \end{itemize}
+\end{itemize}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{OpenCG}
+\label{sec:chap3-opencg}
+
+\begin{itemize}
+  \item single physics-agnostic geometries
+  \item compatibility modules with OpenMC, OpenMOC
+  \item ``glue'' code to map OpenMC distribcells to OpenMOC spatial mesh
+\end{itemize}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Local Neighbor Symmetry}
+\label{sec:chap3-lns}
+
+\begin{itemize}
+  \item analogy to lattice physics geometric templates based on eng. approx.
+\end{itemize}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Region Differentiation}
+\label{sec:chap3-region-diff}
+
+\begin{itemize}
+  \item retain CSG's simplicity of repeated primitives for user input
+  \item build combinatorial geometries based on arbitrary clustering of cell instances
+\end{itemize}

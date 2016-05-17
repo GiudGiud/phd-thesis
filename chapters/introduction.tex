@@ -1,20 +1,9 @@
 \chapter{Introduction}
 \label{chap:intro}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Background}
-
-The ability to understand and predict the manner in which neutrons interact with
-matter is at the core of nuclear engineering. These interactions produce heat,
-transmute and distort materials, and fission the nuclei of heavy atoms to
-create more neutrons. Reactor physicists must understand the distribution and
-frequency of these interactions in order to arrange materials in such a
-way as to sustain a chain reaction of neutron generations. Properly managed, a
-population of neutrons can be used for a wide variety of important functions.
-Advanced scientific exploration, radioisotope production for medicine and
-industry, high-fidelity imaging, advanced cancer therapies, large-scale heat
-generation for electricity production... all are examples of what is possible
-with a stable and safe source of neutron production.
+\label{sec:chap1-background}
 
 \begin{figure}
   \centering
@@ -24,9 +13,38 @@ with a stable and safe source of neutron production.
   methods.\label{fig:multigroup}}
 \end{figure}
 
-\begin{equation}
-  \Sigma_{t,g}(\vec{r}) \equiv \frac{\int_{4\pi}d\hat{\Omega}
-  \int\limits_{E_g}^{E_{g-1}}dE {\Sigma_{t}(\vec{r},E)
-  \psi(\vec{r},\hat{\Omega},E)}}{\int_{4\pi}d\hat{\Omega}
-  \int\limits_{E_g}^{E_{g-1}}dE {\psi(\vec{r},\hat{\Omega},E)}}.
-\end{equation}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{High-Performance Computing Trends}
+\label{sec:chap1-hpc-trends}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Whole-Core Neutron Transport Simulations}
+\label{sec:chap1-whole-core-transport}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Monte Carlo Methods}
+\label{subsec:chap1-monte-carlo}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Deterministic Methods}
+\label{subsec:chap1-deterministic}
+
+\begin{itemize}
+  \item 2D/1D methods in MPACT, nTracer
+  \item Denovo, PDT, 3D OpenMOC, etc.
+\end{itemize}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Multi-Group Cross Sections}
+\label{sec:chap1-mgxs}
+
+\begin{itemize}
+  \item black magic ``crux'' of deterministic methods
+  \item need accurate \ac{MGXS} for whole core transport methods
+  \item motivate \ac{MC} for \ac{MGXS}
+\end{itemize}

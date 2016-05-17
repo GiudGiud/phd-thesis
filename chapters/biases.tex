@@ -1,0 +1,170 @@
+\chapter{MGXS Approximation Error}
+\label{chap:mgxs-approx-error}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Introduction}
+\label{sec:chap4-intro}
+
+\begin{itemize}
+  \item quantify \ac{MGXS} different approximation errors
+  \item leave intra-pin spatial self-shielding error for later section
+\end{itemize}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Case Studies}
+\label{sec:chap4-case-studies}
+
+\begin{itemize}
+  \item \ac{MOC} convergence studies with \ac{MC}-generated \ac{MGXS}
+  \begin{itemize}
+    \item track discretization
+    \begin{itemize}
+      \item \# azimuthal angles
+      \item track spacing
+    \end{itemize}
+    \item spatial discretization
+    \item \# energy groups  
+  \end{itemize}
+  \item compare to reference \ac{MC} solution:
+  \begin{itemize}
+    \item eigenvalue
+    \item fluxes
+  \end{itemize}
+\end{itemize}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Infinite Medium}
+\label{subsec:chap4-inf-medium}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Track Discretization}
+\label{subsubsec:chap4-inf-medium-tracks}
+
+\begin{itemize}
+  \item plot of eigenvalue bias vs. azimuthal angle - curves for different track spacings
+\end{itemize}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Energy Groups}
+\label{subsubsec:chap4-inf-medium-energy}
+
+\begin{itemize}
+  \item table of eigenvalue bias by \# groups
+\end{itemize}
+
+
+%%%%%%%%%%%%%%%%%%%%
+\subsection{1D Slab}
+\label{subsec:chap4-slab}
+
+\begin{itemize}
+  \item 1D slab equivalent to a representative \ac{PWR} fuel pin
+  \item fuel, clad and moderator
+\end{itemize}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Track Discretization}
+\label{subsubsec:chap4-slab-tracks}
+
+\begin{itemize}
+  \item plot of eigenvalue bias vs. azimuthal angle - curves for different track spacings
+\end{itemize}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Spatial Discretization}
+\label{subsubsec:chap4-slab-space}
+
+\begin{itemize}
+  \item table of eigenvalue bias for different spatial discretizations
+  \begin{itemize}
+    \item \ac{MGXS} tallied by material
+    \item \ac{MGXS} tallied by \ac{MOC} spatial mesh
+  \end{itemize}
+\end{itemize}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Energy Groups}
+\label{subsubsec:chap4-slab-energy}
+
+\begin{itemize}
+  \item table of eigenvalue bias by \# groups
+\end{itemize}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{2D Fuel Pin Cell}
+\label{subsec:chap4-pin}
+
+\begin{itemize}
+  \item 2D fuel pin from \ac{BEAVRS}
+  \item fuel, clad, gap and moderator
+\end{itemize}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Track Discretization}
+\label{subsubsec:chap4-pin-tracks}
+
+\begin{itemize}
+  \item plot of eigenvalue bias vs. azimuthal angle - curves for different track spacings
+\end{itemize}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Spatial Discretization}
+\label{subsubsec:chap4-pin-space}
+
+\begin{itemize}
+  \item table of eigenvalue bias for different spatial discretizations
+  \begin{itemize}
+    \item \ac{MGXS} tallied by material
+    \item \ac{MGXS} tallied by \ac{MOC} spatial mesh
+  \end{itemize}
+\end{itemize}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Energy Groups}
+\label{subsubsec:chap4-pin-energy}
+
+\begin{itemize}
+  \item table of eigenvalue bias by \# groups
+  \item plot of 2-, 8-, 70-group fluxes
+  \item plot of 2-, 8-, 70-group flux errors overlaid with U-238 capture XS
+\end{itemize}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{2D Infinite Fuel Pin Lattice}
+\label{subsec:chap4-inf-lattice}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Track Discretization}
+\label{subsubsec:chap4-inf-lattice-tracks}
+
+\begin{itemize}
+  \item plot of eigenvalue bias vs. azimuthal angle - curves for different track spacings
+\end{itemize}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Energy Groups}
+\label{subsubsec:chap4-pin-energy}
+
+\begin{itemize}
+  \item table of eigenvalue bias by \# groups
+\end{itemize}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{2D Heterogeneous Fuel Assembly}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Track Discretization}
+\label{subsubsec:chap4-hetero-lattice-tracks}
+
+\begin{itemize}
+  \item plot of eigenvalue bias vs. azimuthal angle - curves for different track spacings
+\end{itemize}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Energy Groups}
+\label{subsubsec:chap4-hetero-lattice-energy}
+
+\begin{itemize}
+  \item table of eigenvalue bias by \# groups
+\end{itemize}

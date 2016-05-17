@@ -1,0 +1,95 @@
+\chapter{Multi-Group Cross Sections}
+\label{chap:mgxs}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Background}
+\label{sec:chap2-background}
+
+-discuss each approximation in sequence, building approximations upon one another similar to \ac{MOC} derivation in M.S. thesis?? \\
+
+\begin{itemize}
+  \item continuous energy neutron transport equation
+  \item \ac{MGXS} equations
+  \begin{itemize}
+    \item generic reaction
+    \item scattering matrix
+    \item chi fission spectrum
+  \end{itemize}
+  \item equation and figures mapped to variables
+  \item figure of continuous energy and \ac{MGXS}
+  \begin{itemize}
+    \item U-235 nu-fission
+    \item U-238 capture
+    \item 2-, 8-, 70-groups
+  \end{itemize}
+\end{itemize}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Approximations}
+\label{subsec:chap2-approx}
+
+\begin{itemize}
+  \item motivate bias studies in chapter 4
+\end{itemize}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Energy Discretization}
+\label{subsubsec:chap2-energy-discrete}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Spatial Discretization}
+\label{subsubsec:chap2-space-discrete}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Isotropic Scattering}
+\label{subsubsec:chap2-iso-scatter}
+
+\begin{itemize}
+  \item mention ``iso-in-lab'' feature in OpenMC
+\end{itemize}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Constant-in-Angle}
+\label{subsubsec:chap2-const-in-angle}
+
+\begin{itemize}
+  \item connect to Nate's ``batman'' plot
+\end{itemize}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{MGXS Generation with Monte Carlo}
+\label{sec:chap2-mgxs-mc}
+
+\begin{itemize}
+  \item \ac{MC} is \emph{reactor agnostic}
+  \item stochastic approx. to integrals in Section~\ref{sec:chap2-background}
+\end{itemize}
+
+%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Past Work}
+\label{subsec:chap2-past-work}
+
+\begin{itemize}
+  \item \ac{MGXS} for coarse mesh diffusion
+  \begin{itemize}
+    \item Redmond
+    \item Pounders
+    \item Serpent
+  \end{itemize}
+  \item \ac{MGXS} for fine mesh transport
+  \begin{itemize}
+    \item Nelson with NDPP
+  \end{itemize}
+\end{itemize}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Spatial Self-Shielding Treatment}
+\label{subsec:chap2-spatial-shield}
+
+\begin{itemize}
+  \item spatial self-shielding treatment is natural in \ac{MC}
+  \item challenge is slow convergence rate
+  \item motivate clustering
+\end{itemize}
