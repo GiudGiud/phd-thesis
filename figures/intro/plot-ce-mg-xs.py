@@ -1,5 +1,6 @@
 import os
 import re
+import copy
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -9,6 +10,8 @@ from infermc.energy_groups import group_structures
 import openmc
 import openmc.mgxs as mgxs
 import pyne.ace
+
+sns.set_style('ticks')
 
 # Instantiate some Nuclides
 h1 = openmc.Nuclide('H-1')
@@ -93,7 +96,7 @@ openmc_geometry.export_to_xml()
 settings_file = openmc.Settings()
 settings_file.batches = 100
 settings_file.inactive = 10
-settings_file.particles = 1000
+settings_file.particles = 100000
 
 # Create an initial uniform spatial source distribution over fissionable zones
 bounds = [-0.63, -0.63, -0.63, 0.63, 0.63, 0.63]
@@ -114,14 +117,20 @@ capture.domain = fuel_cell
 fission.by_nuclide = True
 capture.by_nuclide = True
 
+# Fine energy flux Tally
+flux = openmc.Tally(name='flux')
+energies = np.logspace(np.log10(1E-9), np.log10(10.), 2000)
+flux.filters = [openmc.Filter(type='energy', bins=energies)]
+flux.scores = ['flux']
+
 # Add OpenMC tallies to the tallies file for XML generation
-tallies_file = openmc.Tallies()
+tallies_file = openmc.Tallies([flux])
 tallies_file += list(fission.tallies.values())
 tallies_file += list(capture.tallies.values())
 tallies_file.export_to_xml()
 
 # Run OpenMC
-openmc.run(output=True)
+#openmc.run(output=True, mpi_procs=16, threads=1)
 
 # Load the last statepoint file
 sp = openmc.StatePoint('statepoint.100.h5')
@@ -129,6 +138,11 @@ sp = openmc.StatePoint('statepoint.100.h5')
 # Load statepoint data into MGXS
 fission.load_from_statepoint(sp)
 capture.load_from_statepoint(sp)
+
+# Get flux mean array and lengthen it to match energy bins for the plot
+flux = sp.get_tally(name='flux')
+flux_mean = flux.mean.flatten()
+flux_mean = np.insert(flux_mean, 0, flux_mean[0])
 
 # Instantiate a PyNE ACE continuous-energy cross sections library
 xs_dir = os.environ['OPENMC_CROSS_SECTIONS']
@@ -146,97 +160,95 @@ u235 = u235_lib.tables['92235.71c']
 ce_capture = u238.reactions[102]
 ce_fission = u235.reactions[18]
 
-# Create a loglog plot of the U-235 continuous-energy fission cross section
-fig = plt.figure()
-plt.loglog(u235.energy, ce_fission.sigma, color='b', linewidth=1)
 
-# Extract energy group bounds and MGXS values to plot
-x = fission.energy_groups.group_edges
-y = fission.get_xs(nuclides=['U-235'], order_groups='decreasing', xs_type='micro')
+for num_groups in [70, 16, 2]:
 
-# Fix low energy bound to the value defined by the ACE library
-x[0] = u235.energy[0]
-y = np.insert(y, 0, y[0])
+    # Condense to the coarse group structure
+    energy_groups = group_structures['CASMO']['{}-group'.format(num_groups)]
+    fission = fission.get_condensed_xs(energy_groups)
+    capture = capture.get_condensed_xs(energy_groups)
 
-# Create a step plot for the MGXS
-plt.plot(x, y, drawstyle='steps', color='r', linewidth=3)
-plt.title('U-235 Fission Cross Section')
-plt.xlabel('Energy [MeV]')
-plt.ylabel('Microscopic Fission XS [barns]')
-plt.legend(['Continuous', '70-Group'])
-plt.xlim((x.min(), x.max()))
-plt.savefig('u235-fission-70.png', bbox_inches='tight')
+    ###########################  U-235 FISSION  ###############################
+    fig = plt.figure()
+    ax1 = fig.add_subplot(111)
+    plot1 = ax1.loglog(u235.energy, ce_fission.sigma, color='b',
+                       linewidth=1, label='Continuous')
 
+    # Extract energy group bounds and MGXS values to plot
+    x = copy.deepcopy(fission.energy_groups.group_edges)
+    y = fission.get_xs(
+        nuclides=['U-235'], order_groups='decreasing',xs_type='micro')
 
+    # Fix low energy bound to the value defined by the ACE library
+    x[0] = u235.energy[0]
+    y = np.insert(y, 0, y[0])
 
-# Create a loglog plot of the U-235 continuous-energy fission cross section
-fig = plt.figure()
-plt.loglog(u238.energy, ce_capture.sigma, color='b', linewidth=1)
+    # Create a step plot for the MGXS
+    plot2 = ax1.plot(x, y, drawstyle='steps', color='r', linewidth=2,
+                     label='{}-Group'.format(num_groups))
 
-# Extract energy group bounds and MGXS values to plot
-x = capture.energy_groups.group_edges
-y = capture.get_xs(nuclides=['U-238'], order_groups='decreasing', xs_type='micro')
+    # Begin plot customization
+    ax1.set_xlabel('Energy [MeV]', fontsize=12)
+    ax1.set_ylabel('Microscopic Capture XS [barns]', fontsize=12)
 
-# Fix low energy bound to the value defined by the ACE library
-x[0] = u238.energy[0]
-y = np.insert(y, 0, y[0])
+    # Plot the flux
+    ax2 = ax1.twinx()
+    plot3 = ax2.loglog(flux.filters[0].bins, flux_mean,
+                       color='g', linewidth=1, zorder=1, label='Flux')
+    ax2.set_ylabel('Flux', color='g', fontsize=12)
+    ax1.set_zorder(ax2.get_zorder()+1) # put ax in front of ax2
+    ax1.patch.set_visible(False) # hide the 'canvas'
 
-# Create a step plot for the MGXS
-plt.plot(x, y, drawstyle='steps', color='r', linewidth=3)
-plt.title('U-238 Capture Cross Section')
-plt.xlabel('Energy [MeV]')
-plt.ylabel('Microscopic Capture XS [barns]')
-plt.legend(['Continuous', '70-Group'])
-plt.xlim((x.min(), x.max()))
-plt.savefig('u238-capture-70.png', bbox_inches='tight')
+    # Create legend
+    plots = plot1+plot2+plot3
+    labels = [plot.get_label() for plot in plots]
+    ax1.legend(plots, labels, loc='center right', fontsize=12)
 
-
-
-# Condense to the 2-group structure
-fission = fission.get_condensed_xs(group_structures['CASMO']['2-group'])
-capture = capture.get_condensed_xs(group_structures['CASMO']['2-group'])
-
-
-# Create a loglog plot of the U-235 continuous-energy fission cross section
-fig = plt.figure()
-plt.loglog(u235.energy, ce_fission.sigma, color='b', linewidth=1)
-
-# Extract energy group bounds and MGXS values to plot
-x = fission.energy_groups.group_edges
-y = fission.get_xs(nuclides=['U-235'], order_groups='decreasing', xs_type='micro')
-
-# Fix low energy bound to the value defined by the ACE library
-x[0] = u235.energy[0]
-y = np.insert(y, 0, y[0])
-
-# Create a step plot for the MGXS
-plt.plot(x, y, drawstyle='steps', color='r', linewidth=3)
-plt.title('U-235 Fission Cross Section')
-plt.xlabel('Energy [MeV]')
-plt.ylabel('Microscopic Fission XS [barns]')
-plt.legend(['Continuous', '2-Group'])
-plt.xlim((x.min(), x.max()))
-plt.savefig('u235-fission-2.png', bbox_inches='tight')
+    # Customize the plot
+    sns.set_style('ticks')
+    plt.title('U-235 Fission Cross Section', y=1.03, fontsize=16)
+    plt.xlim((1e-9, 1e1))
+    plt.savefig('u235-fission-{}.png'.format(num_groups), bbox_inches='tight')
 
 
+    ###########################  U-238 CAPTURE  ###############################
+    fig = plt.figure()
+    ax1 = fig.add_subplot(111)
+    plot1 = ax1.loglog(u238.energy, ce_capture.sigma, color='b',
+                       linewidth=1, label='Continuous')
 
-# Create a loglog plot of the U-235 continuous-energy capture cross section
-fig = plt.figure()
-plt.loglog(u238.energy, ce_capture.sigma, color='b', linewidth=1)
+    # Extract energy group bounds and MGXS values to plot
+    x = copy.deepcopy(capture.energy_groups.group_edges)
+    y = capture.get_xs(nuclides=['U-238'], order_groups='decreasing', xs_type='micro')
 
-# Extract energy group bounds and MGXS values to plot
-x = capture.energy_groups.group_edges
-y = capture.get_xs(nuclides=['U-238'], order_groups='decreasing', xs_type='micro')
+    # Fix low energy bound to the value defined by the ACE library
+    x[0] = u238.energy[0]
+    y = np.insert(y, 0, y[0])
 
-# Fix low energy bound to the value defined by the ACE library
-x[0] = u238.energy[0]
-y = np.insert(y, 0, y[0])
+    # Create a step plot for the MGXS
+    plot2 = ax1.plot(x, y, drawstyle='steps', color='r',
+                     linewidth=2, label='{}-Group'.format(num_groups))
 
-# Create a step plot for the MGXS
-plt.plot(x, y, drawstyle='steps', color='r', linewidth=3)
-plt.title('U-238 Capture Cross Section')
-plt.xlabel('Energy [MeV]')
-plt.ylabel('Microscopic Capture XS [barns]')
-plt.legend(['Continuous', '16-Group'])
-plt.xlim((x.min(), x.max()))
-plt.savefig('u238-capture-16.png', bbox_inches='tight')
+    # Begin plot customization
+    ax1.set_xlabel('Energy [MeV]', fontsize=12)
+    ax1.set_ylabel('Microscopic Capture XS [barns]', fontsize=12)
+
+    # Plot the flux
+    ax2 = ax1.twinx()
+    plot3 = ax2.loglog(flux.filters[0].bins, flux_mean,
+               color='g', linewidth=1, zorder=1, label='Flux')
+    ax2.set_ylabel('Flux', color='g', fontsize=12)
+    ax1.set_zorder(ax2.get_zorder()+1) # put ax in front of ax2
+    ax1.patch.set_visible(False) # hide the 'canvas'
+
+    # Create legend
+    plots = plot1+plot2+plot3
+    labels = [plot.get_label() for plot in plots]
+    ax1.legend(plots, labels, loc='center right', fontsize=12)
+
+    # Customize the plot
+    sns.set_style('ticks')
+    plt.title('U-238 Capture Cross Section', y=1.03, fontsize=16)
+    plt.xlim((1e-9, 1e1))
+    ax1.set_ylim((1E-4, 1e8))
+    plt.savefig('u238-capture-{}.png'.format(num_groups), bbox_inches='tight')
