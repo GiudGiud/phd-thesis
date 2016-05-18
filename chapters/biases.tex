@@ -29,6 +29,7 @@
   \item compare to reference \ac{MC} solution:
   \begin{itemize}
     \item eigenvalue
+	\item Define $\Delta\rho$
     \item fluxes
   \end{itemize}
 \end{itemize}
@@ -37,9 +38,53 @@
 \subsection{Infinite Medium}
 \label{subsec:chap4-inf-medium}
 
+
+\begin{itemize}
+\item table of isotopics
+\item 128 azim angles
+\item 0.01 cm track spacing
+\item 1E-7 convergence threshold
+\item double precision
+\item reference $k_{eff}$ is 1.15912 $\pm$ 0.00009
+\end{itemize}
+
+NOTE: Update this with latest results from longer run on Falcon
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Track Discretization}
 \label{subsubsec:chap4-inf-medium-tracks}
+
+\begin{table}
+  \centering
+  \caption{Infinite medium eigenvalues.}
+  \label{table:chap2-inf-med-keff} 
+  \vspace{14pt}
+  \begin{tabular}{cc S[table-format=2.1]} \toprule
+  \multicolumn{1}{c}{\bf Spacing [cm]} & 
+  \multicolumn{1}{c}{\bf \# Angles} &
+  \multicolumn{1}{c}{\boldmath $\Delta\rho$ {\bf [pcm]}} \\
+  \midrule
+  \multirow{6}{*}{0.1} & 4 & 9.8 \\
+                       & 8 & 9.8 \\
+                       & 16 & 9.8 \\
+                       & 32 & 9.8 \\
+                       & 64 & 9.8 \\
+                       & 128 & 9.8 \\ \midrule
+  \multirow{6}{*}{0.01} & 4 & 9.8 \\
+                       & 8 & 9.8 \\
+                       & 16 & 9.8 \\
+                       & 32 & 9.8 \\
+                       & 64 & 9.8 \\
+                       & 128 & 9.8 \\ \midrule
+  \multirow{6}{*}{0.001} & 4 & 9.8 \\
+                       & 8 & 9.8 \\
+                       & 16 & 9.8 \\
+                       & 32 & 9.8 \\
+                       & 64 & 9.8 \\
+                       & 128 & 9.8 \\ \bottomrule
+\end{tabular}
+\end{table}
 
 \begin{itemize}
   \item plot of eigenvalue bias vs. azimuthal angle - curves for different track spacings
@@ -52,6 +97,25 @@
 \begin{itemize}
   \item table of eigenvalue bias by \# groups
 \end{itemize}
+
+\begin{table}
+  \centering
+  \caption{Infinite medium eigenvalues}
+  \label{table:chap2-inf-med-keff} 
+  \vspace{14pt}
+  \begin{tabular}{c S[table-format=2.1]} \toprule
+  \multicolumn{1}{c}{\textbf{\# Groups}} & \multicolumn{1}{c}{\boldmath $\Delta\rho$ {\bf [pcm]}} \\
+  \midrule
+  1 & +49.9 \\
+  2 & +24.4 \\
+  4 & +17.2\\
+  8 & +19.5\\
+  16 & +23.4\\
+  25 & +10.9\\
+  40 & +6.6\\ 
+  70 & +9.8\\ \bottomrule
+\end{tabular}
+\end{table}
 
 
 %%%%%%%%%%%%%%%%%%%%
