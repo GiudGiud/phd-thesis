@@ -1,0 +1,82 @@
+\chapter{Unsupervised MGXS Clustering}
+\label{chap:methodology}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Motivation}
+\label{sec:chap6-motivate}
+
+\begin{itemize}[noitemsep]
+  \item identify metrics of interest - eigenvalue, fission, capture rates
+  \item motivate with results for degenerate, null, LNS cases
+  \begin{itemize}[noitemsep]
+    \item table of eigenvalues
+    \item histogram of fission/capture max/mean errors
+    \item 
+  \end{itemize}
+\end{itemize}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{A Latent Variable Model for MGXS Clustering}
+\label{sec:chap6-latent-model}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Overview of Approach}
+\label{sec:chap6-overview}
+
+\begin{itemize}[noitemsep]
+  \item Flow chart of objective (based on Logan's version)
+\end{itemize}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Feature Engineering}
+\label{sec:chap6-feature-engineer}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Possible Features}
+\label{subsec:chap6-feature-select}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Target Selection}
+\label{subsec:chap6-feature-select}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Feature Transformation}
+\label{subsec:chap6-feature-transform}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Feature Selection}
+\label{subsec:chap6-litmus}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Approaches to Clustering}
+\label{sec:chap6-cluster}
+
+\begin{itemize}[noitemsep]
+  \item dataset restrictions
+  \begin{itemize}[noitemsep]
+    \item ``pinch'' clustering a \textit{single} nuclide/group/reaction triplet
+    \item ``combined'' clustering one or more nuclide/group pairs \textit{together}
+    \item ``local'' clustering one or more nuclide/group pairs \textit{separately}
+  \end{itemize}
+  \item clustering algorithms
+  \begin{itemize}[noitemsep]
+    \item discriminative clustering ($k$-means++, agglomerative, etc.)
+    \item generative clustering (gaussian mixtures, dirichlet processes)
+  \end{itemize}
+  \item ``regression-informed'' clustering
+  \begin{itemize}[noitemsep]
+    \item use a regressor to predict ``smoothed'' of target variable(s)
+    \begin{itemize}[noitemsep]
+      \item decision tree regression
+      \item ensemble (boosting, random forest) regression
+      \item Gaussian Process regression
+    \end{itemize}
+    \item cluster predictions produced by regressor
+    \item advantage is that objective function \textit{may} be more appropriate
+  \end{itemize}
+\end{itemize}
