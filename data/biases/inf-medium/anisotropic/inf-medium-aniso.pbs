@@ -1,0 +1,27 @@
+#!/bin/sh
+#######################################
+# Specify nodes, processors per node
+# and maximum running time
+#######################################
+
+#PBS -l select=5:ncpus=24:mpiprocs=24
+#PBS -l walltime=12:00:00
+
+######################################
+# Enter directory and set PATH
+######################################
+
+cd $PBS_O_WORKDIR
+PATH=$PBS_O_PATH
+
+######################################
+# Run OpenMOC - MAKE YOUR CHANGES HERE
+######################################
+ 
+MV2_ENABLE_AFFINITY=0
+export MV2_ENABLE_AFFINITY
+
+#PBS -k eo                                                                      
+OMP_NUM_THREADS=1
+export OMP_NUM_THREADS
+mpirun -ppn 24 $HOME/openmc/build/bin/openmc

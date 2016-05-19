@@ -100,9 +100,9 @@ root_universe = opencg.Universe(universe_id=0, name='root universe')
 root_universe.add_cell(root_cell)
 
 # Instantiate OpenCG's linear mesh operators for spatial discretization
-fuel_mesh = opencg.LinearMesh('x', fuel_cell.min_x, fuel_cell.max_x, 40)
-clad_mesh = opencg.LinearMesh('x', clad_cell.min_x, clad_cell.max_x, 20)
-water_mesh = opencg.LinearMesh('x', water_cell.min_x, water_cell.max_x, 40)
+fuel_mesh = opencg.LinearMesh('x', fuel_cell.min_x, fuel_cell.max_x, 64)
+clad_mesh = opencg.LinearMesh('x', clad_cell.min_x, clad_cell.max_x, 64)
+water_mesh = opencg.LinearMesh('x', water_cell.min_x, water_cell.max_x, 64)
 
 # Discretize the fuel, clad and water cells
 fuel_cells = fuel_mesh.subdivide_cell(fuel_cell, slab_universe)
@@ -130,7 +130,7 @@ source.space.only_fissionable = True
 settings_file = openmc.Settings()
 settings_file.batches = 100
 settings_file.inactive = 10
-settings_file.particles = 1000000
+settings_file.particles = 10000000
 settings_file.statepoint_interval = 5
 settings_file.output = {'tallies': False}
 settings_file.source = source
@@ -161,7 +161,7 @@ plot_file.export_to_xml()
 
 # Initialize a fine (70-) group MGXS Library for OpenMOC
 mgxs_lib = openmc.mgxs.Library(openmc_geometry, by_nuclide=False)
-mgxs_lib.energy_groups = group_structures['CASMO']['8-group']
+mgxs_lib.energy_groups = group_structures['CASMO']['70-group']
 mgxs_lib.mgxs_types = ['total', 'nu-fission', 'nu-scatter matrix', 'chi']
 mgxs_lib.domain_type = 'cell'
 mgxs_lib.correction = None

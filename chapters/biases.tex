@@ -50,63 +50,59 @@
 \item reference $k_{eff}$ is 1.15912 $\pm$ 0.00009
 \end{itemize}
 
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsubsection{Track Discretization}
-\label{subsubsec:chap4-inf-medium-tracks}
-
-Compress table down with super columns for track spacing
-
 \begin{table}[h!]
   \centering
-  \caption{Infinite medium eigenvalue bias by track discretization.}
-  \label{table:chap2-inf-med-keff-tracks}
+  \caption{Angular-dependent $k_{eff}$ bias for an infinite medium.}
+  \label{table:chap2-inf-med-angle}
   \vspace{14pt}
-  \begin{tabular}{c S[table-format=2.1] S[table-format=2.1] S[table-format=2.1]} 
+  \begin{tabular}{c S[table-format=2.1] S[table-format=2.1] S[table-format=2.1] c S[table-format=2.1] S[table-format=2.1] S[table-format=2.1]} 
   \toprule
-  & \multicolumn{3}{c}{\boldmath $\Delta\rho$ {\bf [pcm]}} \\
+  & \multicolumn{7}{c}{\boldmath $\Delta\rho$ {\bf [pcm]}} \\
   \midrule
   \multicolumn{1}{c}{\bf \# Angles} &
   \multicolumn{1}{c}{\bf 0.1 cm} & 
   \multicolumn{1}{c}{\bf 0.01 cm} & 
+  \multicolumn{1}{c}{\bf 0.001 cm} &
+  \multicolumn{1}{c}{} &
+  \multicolumn{1}{c}{\bf 0.1 cm} & 
+  \multicolumn{1}{c}{\bf 0.01 cm} & 
   \multicolumn{1}{c}{\bf 0.001 cm} \\
   \midrule
-4 & -0.1 & -0.1 & -0.1 \\
-8 & -0.1 & -0.1 & -0.1 \\
-16 & -0.1 & -0.1 & -0.1 \\
-32 & -0.1 & -0.1 & -0.1 \\
-64 & -0.1 & -0.1 & -0.1 \\
-128 & -0.1 & -0.1 & -0.1 \\
+  & \multicolumn{3}{c}{\bf Anisotropic} &
+  \multicolumn{1}{c}{} &
+  \multicolumn{3}{c}{\bf Isotropic in Lab} \\
+  \cline{2-4} \cline{6-8}
+4 & -0.1 & -0.1 & -0.1 & & & & \\
+8 & -0.1 & -0.1 & -0.1 & & & &  \\
+16 & -0.1 & -0.1 & -0.1 & & & &  \\
+32 & -0.1 & -0.1 & -0.1 & & & &  \\
+64 & -0.1 & -0.1 & -0.1 & & & &  \\
+128 & -0.1 & -0.1 & -0.1 & & & &  \\
   \bottomrule
 \end{tabular}
 \end{table}
 
-\begin{itemize}[noitemsep]
-  \item plot of eigenvalue bias vs. azimuthal angle - curves for different track spacings
-\end{itemize}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsubsection{Energy Groups}
-\label{subsubsec:chap4-inf-medium-energy}
-
 \begin{table}[h!]
   \centering
-  \caption{Eigenvalue bias by energy group structure for an infinite medium.}
-  \label{table:chap2-inf-med-keff-energy} 
+  \caption{Energy-dependent $k_{eff}$ bias for an infinite medium.}
+  \label{table:chap2-inf-med-energy} 
   \vspace{14pt}
-  \begin{tabular}{c S[table-format=2.1]}
+  \begin{tabular}{c S[table-format=2.1] S[table-format=2.1]}
   \toprule
   \multicolumn{1}{c}{\textbf{\# Groups}} &
-  \multicolumn{1}{c}{\boldmath $\Delta\rho$ {\bf [pcm]}} \\
+  \multicolumn{2}{c}{\boldmath $\Delta\rho$ {\bf [pcm]}} \\
   \midrule
-1 & -10.5 \\
-2 & -7.1 \\
-4 & -0.5 \\
-8 & -0.0 \\
-16 & 0.5 \\
-25 & 0.1 \\
-40 & 0.1 \\
-70 & -0.1 \\
+  & \multicolumn{1}{c}{\bf Anisotropic} &
+  \multicolumn{1}{c}{\bf Isotropic in Lab} \\
+  \midrule
+1 & -10.5 & \\
+2 & -7.1 & \\
+4 & -0.5 & \\
+8 & -0.0 & \\
+16 & 0.5 & \\
+25 & 0.1 & \\
+40 & 0.1 & \\
+70 & -0.1 & \\
   \bottomrule
 \end{tabular}
 \end{table}
@@ -128,43 +124,117 @@ Compress table down with super columns for track spacing
   \item reference $k_{eff}$ is 0.96304 $\pm$ 0.00009
 \end{itemize}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsubsection{Track Discretization}
-\label{subsubsec:chap4-slab-tracks}
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsubsection{Spatial Discretization}
-\label{subsubsec:chap4-slab-space}
-
-\begin{itemize}[noitemsep]
-  \item table of eigenvalue bias for different spatial discretizations
-  \begin{itemize}[noitemsep]
-    \item \ac{MGXS} tallied by material
-    \item \ac{MGXS} tallied by \ac{MOC} spatial mesh
-  \end{itemize}
-\end{itemize}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsubsection{Energy Groups}
-\label{subsubsec:chap4-slab-energy}
+\begin{table}[h!]
+  \centering
+  \caption{Angular-dependent $k_{eff}$ bias for a 1D slab.}
+  \label{table:chap2-slab-angle}
+  \vspace{14pt}
+  \begin{tabular}{c S[table-format=2.1] S[table-format=2.1] S[table-format=2.1] c S[table-format=2.1] S[table-format=2.1] S[table-format=2.1]} 
+  \toprule
+  & \multicolumn{7}{c}{\boldmath $\Delta\rho$ {\bf [pcm]}} \\
+  \midrule
+  \multicolumn{1}{c}{\bf \# Angles} &
+  \multicolumn{1}{c}{\bf 0.1 cm} & 
+  \multicolumn{1}{c}{\bf 0.01 cm} & 
+  \multicolumn{1}{c}{\bf 0.001 cm} &
+  \multicolumn{1}{c}{} &
+  \multicolumn{1}{c}{\bf 0.1 cm} & 
+  \multicolumn{1}{c}{\bf 0.01 cm} & 
+  \multicolumn{1}{c}{\bf 0.001 cm} \\
+  \midrule
+  & \multicolumn{3}{c}{\bf Anisotropic} &
+  \multicolumn{1}{c}{} &
+  \multicolumn{3}{c}{\bf Isotropic in Lab} \\
+  \cline{2-4} \cline{6-8}
+4 & -0.1 & -0.1 & -0.1 & & & & \\
+8 & -0.1 & -0.1 & -0.1 & & & &  \\
+16 & -0.1 & -0.1 & -0.1 & & & &  \\
+32 & -0.1 & -0.1 & -0.1 & & & &  \\
+64 & -0.1 & -0.1 & -0.1 & & & &  \\
+128 & -0.1 & -0.1 & -0.1 & & & &  \\
+  \bottomrule
+\end{tabular}
+\end{table}
 
 \begin{table}[h!]
   \centering
-  \caption{Eigenvalue bias by energy group structure for a 1D slab.}
-  \label{table:chap2-slab-keff-energy} 
+  \caption{Energy-dependent $k_{eff}$ bias for a 1D slab.}
+  \label{table:chap2-slab-energy} 
   \vspace{14pt}
-  \begin{tabular}{c S[table-format=2.1]} \toprule
-  \multicolumn{1}{c}{\textbf{\# Groups}} & \multicolumn{1}{c}{\boldmath $\Delta\rho$ {\bf [pcm]}} \\
+  \begin{tabular}{c S[table-format=2.1] S[table-format=2.1] S[table-format=2.1] S[table-format=2.1] S[table-format=2.1] S[table-format=2.1]}
+  \toprule
+  & \multicolumn{6}{c}{\boldmath $\Delta\rho$ {\bf [pcm]}} \\
+  \midrule  
+  \multicolumn{1}{c}{\textbf{\# Groups}} &
+  \multicolumn{1}{c}{\bf 1$\times$} &
+  \multicolumn{1}{c}{\bf 2$\times$} &
+  \multicolumn{1}{c}{\bf 4$\times$} &
+  \multicolumn{1}{c}{\bf 8$\times$} &
+  \multicolumn{1}{c}{\bf 16$\times$} &
+  \multicolumn{1}{c}{\bf 32$\times$} \\
   \midrule
-  1 & \\
-  2 & \\
-  4 & \\
-  8 & \\
-  16 & \\
-  25 & \\
-  40 & \\ 
-  70 & \\ \bottomrule
+  & \multicolumn{6}{c}{\bf Anisotropic} \\
+  \cline{2-7}
+  1 & & & & & & \\
+  2 & & & & & & \\
+  4 & & & & & & \\
+  8 & & & & & & \\
+  16 & & & & & & \\
+  25 & & & & & & \\
+  40 & & & & & & \\
+  70 & & & & & & \\
+  & \multicolumn{6}{c}{\bf Isotropic in Lab} \\
+  \cline{2-7}
+  1 & & & & & & \\
+  2 & & & & & & \\
+  4 & & & & & & \\
+  8 & & & & & & \\
+  16 & & & & & & \\
+  25 & & & & & & \\
+  40 & & & & & & \\
+  70 & & & & & & \\  
+  \bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[h!]
+  \centering
+  \caption{Spatial-dependent $k_{eff}$ bias for a 1D slab.}
+  \label{table:chap2-slab-space} 
+  \vspace{14pt}
+  \begin{tabular}{c S[table-format=2.1] S[table-format=2.1] S[table-format=2.1] S[table-format=2.1] S[table-format=2.1] S[table-format=2.1]}
+  \toprule
+  & \multicolumn{6}{c}{\boldmath $\Delta\rho$ {\bf [pcm]}} \\
+  \midrule  
+  \multicolumn{1}{c}{\textbf{\# Groups}} &
+  \multicolumn{1}{c}{\bf 1$\times$} &
+  \multicolumn{1}{c}{\bf 2$\times$} &
+  \multicolumn{1}{c}{\bf 4$\times$} &
+  \multicolumn{1}{c}{\bf 8$\times$} &
+  \multicolumn{1}{c}{\bf 16$\times$} &
+  \multicolumn{1}{c}{\bf 32$\times$} \\
+  \midrule
+  & \multicolumn{6}{c}{\bf Anisotropic} \\
+  \cline{2-7}
+  1 & & & & & & \\
+  2 & & & & & & \\
+  4 & & & & & & \\
+  8 & & & & & & \\
+  16 & & & & & & \\
+  25 & & & & & & \\
+  40 & & & & & & \\
+  70 & & & & & & \\
+  & \multicolumn{6}{c}{\bf Isotropic in Lab} \\
+  \cline{2-7}
+  1 & & & & & & \\
+  2 & & & & & & \\
+  4 & & & & & & \\
+  8 & & & & & & \\
+  16 & & & & & & \\
+  25 & & & & & & \\
+  40 & & & & & & \\
+  70 & & & & & & \\  
+  \bottomrule
 \end{tabular}
 \end{table}
 
@@ -178,67 +248,130 @@ Compress table down with super columns for track spacing
   \item fuel, clad, gap and moderator
 \end{itemize}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsubsection{Track Discretization}
-\label{subsubsec:chap4-pin-tracks}
-
-\begin{itemize}[noitemsep]
-  \item plot of eigenvalue bias vs. azimuthal angle - curves for different track spacings
-\end{itemize}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsubsection{Spatial Discretization}
-\label{subsubsec:chap4-pin-space}
-
-\begin{itemize}[noitemsep]
-  \item table of eigenvalue bias for different spatial discretizations
-  \begin{itemize}[noitemsep]
-    \item \ac{MGXS} tallied by material
-    \item \ac{MGXS} tallied by \ac{MOC} spatial mesh
-  \end{itemize}
-\end{itemize}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsubsection{Energy Groups}
-\label{subsubsec:chap4-pin-energy}
-
--combine table with super columns for spatial discretization
-
 \begin{table}[h!]
   \centering
-  \caption{Eigenvalue bias by energy group structure for a 2D fuel pin cell.}
-  \label{table:chap2-slab-keff-energy}
+  \caption{Angular-dependent $k_{eff}$ bias for a 2D fuel pin.}
+  \label{table:chap2-pin-angle}
   \vspace{14pt}
-  \begin{tabular}{c S[table-format=2.1]} \toprule
-  \multicolumn{1}{c}{\textbf{\# Groups}} & \multicolumn{1}{c}{\boldmath $\Delta\rho$ {\bf [pcm]}} \\
+  \begin{tabular}{c S[table-format=2.1] S[table-format=2.1] S[table-format=2.1] c S[table-format=2.1] S[table-format=2.1] S[table-format=2.1]} 
+  \toprule
+  & \multicolumn{7}{c}{\boldmath $\Delta\rho$ {\bf [pcm]}} \\
   \midrule
-  1 & +93 \\
-  2 & +72 \\
-  4 & -48 \\
-  8 & -90 \\
-  16 & -97 \\
-  25 & -162 \\
-  40 & -179 \\ 
-  70 & -186 \\ \bottomrule
+  \multicolumn{1}{c}{\bf \# Angles} &
+  \multicolumn{1}{c}{\bf 0.1 cm} & 
+  \multicolumn{1}{c}{\bf 0.01 cm} & 
+  \multicolumn{1}{c}{\bf 0.001 cm} &
+  \multicolumn{1}{c}{} &
+  \multicolumn{1}{c}{\bf 0.1 cm} & 
+  \multicolumn{1}{c}{\bf 0.01 cm} & 
+  \multicolumn{1}{c}{\bf 0.001 cm} \\
+  \midrule
+  & \multicolumn{3}{c}{\bf Anisotropic} &
+  \multicolumn{1}{c}{} &
+  \multicolumn{3}{c}{\bf Isotropic in Lab} \\
+  \cline{2-4} \cline{6-8}
+4 & -0.1 & -0.1 & -0.1 & & & & \\
+8 & -0.1 & -0.1 & -0.1 & & & &  \\
+16 & -0.1 & -0.1 & -0.1 & & & &  \\
+32 & -0.1 & -0.1 & -0.1 & & & &  \\
+64 & -0.1 & -0.1 & -0.1 & & & &  \\
+128 & -0.1 & -0.1 & -0.1 & & & &  \\
+  \bottomrule
 \end{tabular}
 \end{table}
 
-\begin{itemize}[noitemsep]
-  \item table of eigenvalue bias by \# groups
-  \item plot of 2-, 8-, 70-group fluxes
-  \item plot of 2-, 8-, 70-group flux errors overlaid with U-238 capture XS
-\end{itemize}
+\begin{table}[h!]
+  \centering
+  \caption{Energy-dependent $k_{eff}$ bias for a 2D fuel pin.}
+  \label{table:chap2-pin-energy} 
+  \vspace{14pt}
+  \begin{tabular}{c S[table-format=2.1] S[table-format=2.1] S[table-format=2.1] S[table-format=2.1] S[table-format=2.1] S[table-format=2.1]}
+  \toprule
+  & \multicolumn{6}{c}{\boldmath $\Delta\rho$ {\bf [pcm]}} \\
+  \midrule  
+  \multicolumn{1}{c}{\textbf{\# Groups}} &
+  \multicolumn{1}{c}{\bf 1$\times$} &
+  \multicolumn{1}{c}{\bf 2$\times$} &
+  \multicolumn{1}{c}{\bf 4$\times$} &
+  \multicolumn{1}{c}{\bf 8$\times$} &
+  \multicolumn{1}{c}{\bf 16$\times$} &
+  \multicolumn{1}{c}{\bf 32$\times$} \\
+  \midrule
+  & \multicolumn{6}{c}{\bf Anisotropic} \\
+  \cline{2-7}
+  1 & & & & & & \\
+  2 & & & & & & \\
+  4 & & & & & & \\
+  8 & & & & & & \\
+  16 & & & & & & \\
+  25 & & & & & & \\
+  40 & & & & & & \\
+  70 & & & & & & \\
+  & \multicolumn{6}{c}{\bf Isotropic in Lab} \\
+  \cline{2-7}
+  1 & & & & & & \\
+  2 & & & & & & \\
+  4 & & & & & & \\
+  8 & & & & & & \\
+  16 & & & & & & \\
+  25 & & & & & & \\
+  40 & & & & & & \\
+  70 & & & & & & \\  
+  \bottomrule
+\end{tabular}
+\end{table}
 
--make plots without SPH - need to make separate copy of scripts for this chapter!!!
+\begin{table}[h!]
+  \centering
+  \caption{Spatial-dependent $k_{eff}$ bias for a 2D fuel pin.}
+  \label{table:chap2-pin-space} 
+  \vspace{14pt}
+  \begin{tabular}{c S[table-format=2.1] S[table-format=2.1] S[table-format=2.1] S[table-format=2.1] S[table-format=2.1] S[table-format=2.1]}
+  \toprule
+  & \multicolumn{6}{c}{\boldmath $\Delta\rho$ {\bf [pcm]}} \\
+  \midrule  
+  \multicolumn{1}{c}{\textbf{\# Groups}} &
+  \multicolumn{1}{c}{\bf 1$\times$} &
+  \multicolumn{1}{c}{\bf 2$\times$} &
+  \multicolumn{1}{c}{\bf 4$\times$} &
+  \multicolumn{1}{c}{\bf 8$\times$} &
+  \multicolumn{1}{c}{\bf 16$\times$} &
+  \multicolumn{1}{c}{\bf 32$\times$} \\
+  \midrule
+  & \multicolumn{6}{c}{\bf Anisotropic} \\
+  \cline{2-7}
+  1 & & & & & & \\
+  2 & & & & & & \\
+  4 & & & & & & \\
+  8 & & & & & & \\
+  16 & & & & & & \\
+  25 & & & & & & \\
+  40 & & & & & & \\
+  70 & & & & & & \\
+  & \multicolumn{6}{c}{\bf Isotropic in Lab} \\
+  \cline{2-7}
+  1 & & & & & & \\
+  2 & & & & & & \\
+  4 & & & & & & \\
+  8 & & & & & & \\
+  16 & & & & & & \\
+  25 & & & & & & \\
+  40 & & & & & & \\
+  70 & & & & & & \\  
+  \bottomrule
+\end{tabular}
+\end{table}
 
-\begin{figure}
+-make plots without SPH\\
+
+\begin{figure}[h!]
   \centering
   \includegraphics[width=0.9\linewidth]{figures/biases/pin-cell/flux-uo2-fuel}
   \caption{}
 \label{fig:chap2-pin-flux}
 \end{figure}
 
-\begin{figure}
+\begin{figure}[h!]
   \centering
   \includegraphics[width=0.9\linewidth]{figures/biases/pin-cell/rel-err-uo2-fuel}
   \caption{}
@@ -247,20 +380,77 @@ Compress table down with super columns for track spacing
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{2D Heterogeneous Fuel Assembly}
+\subsection{2D Fuel Assembly}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsubsection{Track Discretization}
-\label{subsubsec:chap4-hetero-lattice-tracks}
+\begin{table}[h!]
+  \centering
+  \caption{Angular-dependent $k_{eff}$ bias for a 2D fuel assembly.}
+  \label{table:chap2-lattice-angle}
+  \vspace{14pt}
+  \begin{tabular}{c S[table-format=2.1] S[table-format=2.1] S[table-format=2.1] c S[table-format=2.1] S[table-format=2.1] S[table-format=2.1]} 
+  \toprule
+  & \multicolumn{7}{c}{\boldmath $\Delta\rho$ {\bf [pcm]}} \\
+  \midrule
+  \multicolumn{1}{c}{\bf \# Angles} &
+  \multicolumn{1}{c}{\bf 0.1 cm} & 
+  \multicolumn{1}{c}{\bf 0.01 cm} & 
+  \multicolumn{1}{c}{\bf 0.001 cm} &
+  \multicolumn{1}{c}{} &
+  \multicolumn{1}{c}{\bf 0.1 cm} & 
+  \multicolumn{1}{c}{\bf 0.01 cm} & 
+  \multicolumn{1}{c}{\bf 0.001 cm} \\
+  \midrule
+  & \multicolumn{3}{c}{\bf Anisotropic} &
+  \multicolumn{1}{c}{} &
+  \multicolumn{3}{c}{\bf Isotropic in Lab} \\
+  \cline{2-4} \cline{6-8}
+4 & -0.1 & -0.1 & -0.1 & & & & \\
+8 & -0.1 & -0.1 & -0.1 & & & &  \\
+16 & -0.1 & -0.1 & -0.1 & & & &  \\
+32 & -0.1 & -0.1 & -0.1 & & & &  \\
+64 & -0.1 & -0.1 & -0.1 & & & &  \\
+128 & -0.1 & -0.1 & -0.1 & & & &  \\
+  \bottomrule
+\end{tabular}
+\end{table}
 
-\begin{itemize}[noitemsep]
-  \item plot of eigenvalue bias vs. azimuthal angle - curves for different track spacings
-\end{itemize}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsubsection{Energy Groups}
-\label{subsubsec:chap4-hetero-lattice-energy}
-
-\begin{itemize}[noitemsep]
-  \item table of eigenvalue bias by \# groups
-\end{itemize}
+\begin{table}[h!]
+  \centering
+  \caption{Energy-dependent $k_{eff}$ bias for a 2D fuel assembly.}
+  \label{table:chap2-lattice-energy} 
+  \vspace{14pt}
+  \begin{tabular}{c S[table-format=2.1] S[table-format=2.1] S[table-format=2.1] S[table-format=2.1] S[table-format=2.1] S[table-format=2.1]}
+  \toprule
+  & \multicolumn{6}{c}{\boldmath $\Delta\rho$ {\bf [pcm]}} \\
+  \midrule  
+  \multicolumn{1}{c}{\textbf{\# Groups}} &
+  \multicolumn{1}{c}{\bf 1$\times$} &
+  \multicolumn{1}{c}{\bf 2$\times$} &
+  \multicolumn{1}{c}{\bf 4$\times$} &
+  \multicolumn{1}{c}{\bf 8$\times$} &
+  \multicolumn{1}{c}{\bf 16$\times$} &
+  \multicolumn{1}{c}{\bf 32$\times$} \\
+  \midrule
+  & \multicolumn{6}{c}{\bf Anisotropic} \\
+  \cline{2-7}
+  1 & & & & & & \\
+  2 & & & & & & \\
+  4 & & & & & & \\
+  8 & & & & & & \\
+  16 & & & & & & \\
+  25 & & & & & & \\
+  40 & & & & & & \\
+  70 & & & & & & \\
+  & \multicolumn{6}{c}{\bf Isotropic in Lab} \\
+  \cline{2-7}
+  1 & & & & & & \\
+  2 & & & & & & \\
+  4 & & & & & & \\
+  8 & & & & & & \\
+  16 & & & & & & \\
+  25 & & & & & & \\
+  40 & & & & & & \\
+  70 & & & & & & \\  
+  \bottomrule
+\end{tabular}
+\end{table}

@@ -6,22 +6,22 @@ from openmoc.opencg_compatible import get_openmoc_geometry
 from infermc.energy_groups import group_structures
 
 
-openmoc.log.set_log_level('RESULT')
+openmoc.log.set_log_level('NORMAL')
 opts = openmoc.options.Options()
 
-# Query the user for the number of energy groups
-num_groups = 70
+scattering = str(input('scattering: '))
+num_slabs = str(input('# slabs: '))
+directory = '{}/{}x'.format(scattering, num_slabs)
 
 # Load the last statepoint and summary files
-sp = openmc.StatePoint('statepoint.100.h5')
+sp = openmc.StatePoint(directory + '/' + 'statepoint.100.h5')
 
 # Initialize a fine (70-)group MGXS Library from OpenMC statepoint data
-mgxs_lib = openmc.mgxs.Library.load_from_file()
+mgxs_lib = openmc.mgxs.Library.load_from_file(directory=directory)
 
 # Build a coarse group Library from the fine (70-)group Library
-coarse_groups = group_structures['CASMO']['{}-group'.format(num_groups)]
+coarse_groups = group_structures['CASMO']['70-group']
 condense_lib = mgxs_lib.get_condensed_library(coarse_groups)
-condense_lib = condense_lib.get_subdomain_avg_library()
 
 # Create an OpenMOC Geometry from the OpenCG Geometry
 openmoc_geometry = get_openmoc_geometry(condense_lib.opencg_geometry)

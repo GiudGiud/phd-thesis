@@ -11,11 +11,13 @@ opts = openmoc.options.Options()
 
 groups = [1, 2, 4, 8, 16, 25, 40, 70]
 
+directory = str(input('directory: '))
+
 # Load the last statepoint and summary files
-sp = openmc.StatePoint('statepoint.100.h5')
+sp = openmc.StatePoint(directory + '/' + 'statepoint.100.h5')
 
 # Initialize a fine (70-)group MGXS Library from OpenMC statepoint data
-mgxs_lib = openmc.mgxs.Library.load_from_file()
+mgxs_lib = openmc.mgxs.Library.load_from_file(directory=directory)
 
 # Create an OpenMOC Geometry from the OpenCG Geometry
 openmoc_geometry = get_openmoc_geometry(mgxs_lib.opencg_geometry)
@@ -39,7 +41,6 @@ for i, num_groups in enumerate(groups):
     # Build a coarse group Library from the fine (70-)group Library
     coarse_groups = group_structures['CASMO']['{}-group'.format(num_groups)]
     condense_lib = mgxs_lib.get_condensed_library(coarse_groups)
-    condense_lib = condense_lib.get_subdomain_avg_library()
     openmoc.materialize.load_openmc_mgxs_lib(condense_lib, openmoc_geometry)
 
     # Run OpenMOC
