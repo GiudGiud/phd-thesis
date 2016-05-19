@@ -1,9 +1,9 @@
-\chapter{Unsupervised MGXS Results}
-\label{chap:results}
+\chapter{Clustered MGXS Model Verification}
+\label{chap:verify}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Model Verification}
+\section{Verification Metrics}
 \label{sec:chap7-verify}
 
 \begin{itemize}[noitemsep]
@@ -28,7 +28,6 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Model Evaluation}
 \label{sec:chap7-evaluate}
-
 
 \begin{itemize}[noitemsep]
   \item how much ``noise'' can we live with in our tally data???
@@ -59,5 +58,62 @@
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Results}
+\section{Visualizing MGXS Clusters}
+\label{sec:chap7-visuals}
 
+\begin{itemize}[noitemsep]
+  \item Q-Q plots
+  \item 2D feature scatter plots
+  \item Histogram-KDE-rug plots
+  \item Violin plots
+  \item Octo plots
+\end{itemize}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Performance with Converged MGXS}
+\label{sec:chap7-improvements}
+
+\subsection{Eigenvalue}
+
+\begin{itemize}[noitemsep]
+  \item table of eigenvalues for varying \# clusters
+\end{itemize}
+
+\subsection{Fission Rates}
+
+\begin{itemize}[noitemsep]
+  \item bar charts of max/mean errors for varying \# clusters
+  \item heat maps of fission rates, errors, improvements
+  \item histogram of capture rate errors
+\end{itemize}
+
+\subsection{U-238 Capture Rates}
+
+\begin{itemize}[noitemsep]
+  \item bar charts of max/mean errors for varying \# clusters
+  \item heat maps of capture rates, errors, improvements
+  \item histogram of capture rate errors
+\end{itemize}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Time to Convergence}
+
+\subsection{Eigenvalue}
+
+\begin{itemize}[noitemsep]
+  \item plot of eigenvalue bias by batch for different clustering schemes
+\end{itemize}
+
+\subsection{Fission Rates}
+
+\begin{itemize}[noitemsep]
+  \item plot fission rate mean/max error by batch for different clustering schemes
+\end{itemize}
+
+\subsection{U-238 Capture Rates}
+
+\begin{itemize}
+  \item plot capture rate mean/max error by batch for different clustering schemes
+\end{itemize}
