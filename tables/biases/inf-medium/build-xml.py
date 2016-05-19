@@ -67,8 +67,8 @@ source.space.only_fissionable = True
 # Create settings.xml files
 settings_file = openmc.Settings()
 settings_file.batches = 100
-settings_file.inactive = 10
-settings_file.particles = 1000000
+settings_file.inactive = 1
+settings_file.particles = 100000000
 settings_file.statepoint_interval = 5
 settings_file.output = {'tallies': False}
 settings_file.source = source
