@@ -6,90 +6,67 @@ from openmoc.opencg_compatible import get_openmoc_geometry
 from infermc.energy_groups import group_structures
 
 
-def subdivide(cell, num_mesh):
-    """Subdivide a cell with a uniform mesh along the x-axis."""
-
-    # Get the Cell's min/max boundaries
-    min_x = cell.getMinX()
-    max_x = cell.getMaxX()
-
-    # Compute the spacing for the new mesh in the Cell
-    delta_x = (max_x - min_x) / num_mesh
-    clones = []
-
-    # Subdivide the original cell
-    for mesh in range(num_mesh):
-        clone = cell.clone()
-        clones.append(clone)
-
-        # Adjust X-Planes in the Cell
-        surfaces = clone.getSurfaces()
-        for surface_id in surfaces:
-            surface = surfaces[surface_id]._surface
-            if surface.getSurfaceType() == openmoc.XPLANE:
-                surface = openmoc.castSurfaceToXPlane(surface)
-                if surfaces[surface_id]._halfspace == +1:
-                    surface.setX(min_x + i * delta_x)
-                else:
-                    surface.setX(min_x + (i + 1) * delta_x)
-
-    return clones
-
-
-openmoc.log.set_log_level('NORMAL')
+openmoc.log.set_log_level('RESULT')
 opts = openmoc.options.Options()
 
-num_mesh = [1, 2, 4, 8, 16, 32, 64]
+groups = [1, 2, 4, 8, 16, 25, 40, 70]
+scattering = ['anisotropic', 'iso-in-lab']
+mesh = [1, 2, 4, 16, 32]
+#mesh = [1, 2, 4, 8, 16, 32, 64]
+keffs = np.zeros((len(scattering), len(groups), len(mesh)), dtype=np.float)
+biases = np.zeros((len(scattering), len(groups), len(mesh)), dtype=np.float)
 
-scattering = str(input('scattering: '))
-directory = '{}/1x'.format(scattering)
+for i, scatter in enumerate(scattering):
+    print(scatter)
 
-# Load the last statepoint and summary files
-sp = openmc.StatePoint(directory + '/' + 'statepoint.100.h5')
+    for j, num_groups in enumerate(groups):
+        for k, num_mesh in enumerate(mesh):
+            print('# groups = {}, # mesh = {}'.format(num_groups, num_mesh))
 
-# Initialize a fine (70-)group MGXS Library from OpenMC statepoint data
-mgxs_lib = openmc.mgxs.Library.load_from_file(directory=directory)
+            # Initialize a fine (70-)group MGXS Library from OpenMC statepoint data
+            directory = '{}/{}x/'.format(scatter, num_mesh)
+            sp = openmc.StatePoint(directory + 'statepoint.100.h5')
+            mgxs_lib = openmc.mgxs.Library.load_from_file(directory=directory)
 
-keffs = np.zeros((len(num_mesh),), dtype=np.float)
+            # Build a coarse group Library from the fine (70-)group Library
+            coarse_groups = group_structures['CASMO']['{}-group'.format(num_groups)]
+            condense_lib = mgxs_lib.get_condensed_library(coarse_groups)
 
-for i, mesh in enumerate(num_mesh):
+            # Create an OpenMOC Geometry from the OpenCG Geometry
+            openmoc_geometry = get_openmoc_geometry(condense_lib.opencg_geometry)
+            openmoc.materialize.load_openmc_mgxs_lib(condense_lib, openmoc_geometry)
 
-    # Create an OpenMOC Geometry from the OpenCG Geometry
-    openmoc_geometry = get_openmoc_geometry(mgxs_lib.opencg_geometry)
-    openmoc.materialize.load_openmc_mgxs_lib(mgxs_lib, openmoc_geometry)
+            # Generate tracks
+            track_generator = openmoc.TrackGenerator(openmoc_geometry, 128, 0.05)
+            track_generator.setNumThreads(opts.num_omp_threads)
+            track_generator.generateTracks()
 
-    # Discretize the geometry
-    '''
-    root = openmoc_geometry.getRootUniverse()
-    cells = openmoc_geometry.getAllMaterialCells()
-    for cell_id in cells:
-        print('subdividing cell: {}'.format(cell_id))
-        clones = subdivide(cells[cell_id], mesh)
-        root.removeCell(cells[cell_id])
-        for clone in clones:
-            root.addCell(clone)
-    '''
+            # Instantiate a Solver
+            solver = openmoc.CPUSolver(track_generator)
+            solver.setNumThreads(opts.num_omp_threads)
+            solver.setConvergenceThreshold(1E-7)
 
-    # Generate tracks
-    track_generator = openmoc.TrackGenerator(openmoc_geometry, 128, 0.05)
-    track_generator.setNumThreads(opts.num_omp_threads)
-    track_generator.generateTracks()
+            # Run OpenMOC
+            solver.computeEigenvalue(opts.max_iters)
+            keffs[i,j,k] = solver.getKeff()
 
-    # Instantiate a Solver
-    solver = openmoc.CPUSolver(track_generator)
-    solver.setNumThreads(opts.num_omp_threads)
-    solver.setConvergenceThreshold(1E-7)
-    solver.printTimerReport()
-
-    # Run OpenMOC
-    solver.computeEigenvalue(opts.max_iters)
-    keffs[i] = solver.getKeff()
-
-# Compute the bias with OpenMC in units of pcm
-biases = (keffs - sp.k_combined[0]) * 1e5
+    # Compute the bias with OpenMC in units of pcm for this scattering type
+    biases[i, ...] = (keffs[i, ...] - sp.k_combined[0]) * 1e5
 
 print(biases)
 
-# Print table for LaTeX
-for i, mesh in enumerate(num_mesh):
-    print('{} & {:1.1f} \\\\'.format(mesh, biases[i]))
+# Print anisotropic table for LaTeX
+print('anisotropic')
+for i, num_groups in enumerate(groups):
+    row = '{} &'.format(num_groups)
+    for j, num_mesh in enumerate(mesh):
+        row += ' {:1.0f} &'.format(biases[0,i,j])
+    print(row[:-1] + '\\\\')
+
+# Print iso-in-lab-table for LaTeX
+print('iso-in-lab')
+for i, num_groups in enumerate(groups):
+    row = '{} &'.format(num_groups)
+    for j, num_mesh in enumerate(mesh):
+        row += ' {:1.0f} &'.format(biases[1,i,j])
+    print(row[:-1] + '\\\\')

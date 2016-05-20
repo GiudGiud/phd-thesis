@@ -3,15 +3,14 @@ import openmc.mgxs
 from infermc.energy_groups import group_structures
 
 scattering = ['anisotropic', 'iso-in-lab']
-mesh = [1, 2, 4, 16, 32]
-#mesh = [1, 2, 4, 8, 16, 32]
+num_rings = [1, 2, 4, 8, 16,]
 
 for scatter in scattering:
     print(scatter)
-    for num_mesh in mesh:
-        print('# mesh: {}'.format(num_mesh))
+    for rings in num_rings:
+        print('# rings: {}'.format(rings))
 
-        directory = '{}/{}x/'.format(scatter, num_mesh)
+        directory = '{}/{}x/'.format(scatter, rings)
 
         # Load the last statepoint and summary files
         sp = openmc.StatePoint(directory + 'statepoint.100.h5')

@@ -1,3 +1,6 @@
+import os
+import glob
+
 import opencg
 import openmc
 import openmc.mgxs
@@ -18,8 +21,6 @@ medium.add_nuclide('Zr-90', 0.002116053)
 # Instantiate a MaterialsFile, register Material, and export to XML
 materials_file = openmc.Materials([medium])
 materials_file.default_xs = '71c'
-materials_file.make_isotropic_in_lab()
-materials_file.export_to_xml()
 
 # Get OpenCG versions of the OpenMC Material to fill OpenCG Cells below
 opencg_medium = openmc.opencg_compatible.get_opencg_material(medium)
@@ -53,7 +54,6 @@ root_universe.add_cell(root_cell)
 opencg_geometry = opencg.Geometry()
 opencg_geometry.root_universe = root_universe
 openmc_geometry = openmc.opencg_compatible.get_openmc_geometry(opencg_geometry)
-openmc_geometry.export_to_xml()
 
 
 ###################   Exporting to OpenMC settings.xml File  ###################
@@ -69,11 +69,9 @@ settings_file = openmc.Settings()
 settings_file.batches = 100
 settings_file.inactive = 1
 settings_file.particles = 100000000
-settings_file.statepoint_interval = 5
 settings_file.output = {'tallies': False}
 settings_file.source = source
 settings_file.sourcepoint_write = False
-settings_file.export_to_xml()
 
 
 ########################   Build OpenMC MGXS Library  #########################
@@ -89,4 +87,27 @@ mgxs_lib.build_library()
 # Create a "tallies.xml" file for the MGXS Library
 tallies_file = openmc.Tallies()
 mgxs_lib.add_to_tallies_file(tallies_file, merge=True)
+
+
+######################   Move Files into Directories  #########################
+
+# Create files for anisotropic scattering
+materials_file.export_to_xml()
+openmc_geometry.export_to_xml()
+settings_file.export_to_xml()
 tallies_file.export_to_xml()
+
+# Move files
+for xml_file in glob.glob('*.xml'):
+    os.rename(xml_file, 'anisotropic/{}'.format(xml_file))
+
+# Create files for isotropic-in-lab
+materials_file.make_isotropic_in_lab()
+materials_file.export_to_xml()
+openmc_geometry.export_to_xml()
+settings_file.export_to_xml()
+tallies_file.export_to_xml()
+
+# Move files
+for xml_file in glob.glob('*.xml'):
+    os.rename(xml_file, 'iso-in-lab/{}'.format(xml_file))

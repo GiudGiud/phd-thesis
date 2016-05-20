@@ -1,3 +1,7 @@
+import os
+import glob
+import copy
+
 import opencg
 import openmc
 import openmc.mgxs
@@ -34,7 +38,6 @@ water.add_s_alpha_beta(name='HH2O', xs='71t')
 # Instantiate a MaterialsFile, add Materials
 materials_file = openmc.Materials((fuel, clad, water))
 materials_file.default_xs = '71c'
-materials_file.export_to_xml()
 
 # Get OpenCG versions of each OpenMC material to fill OpenCG Cells below
 opencg_fuel = openmc.opencg_compatible.get_opencg_material(fuel)
@@ -96,23 +99,12 @@ root_cell.add_surface(halfspace=-1, surface=max_z)
 root_universe = opencg.Universe(universe_id=0, name='root universe')
 root_universe.add_cell(root_cell)
 
-# Instantiate OpenCG's linear mesh operators for spatial discretization
-fuel_mesh = opencg.LinearMesh('x', fuel_cell.min_x, fuel_cell.max_x, 32)
-clad_mesh = opencg.LinearMesh('x', clad_cell.min_x, clad_cell.max_x, 32)
-water_mesh = opencg.LinearMesh('x', water_cell.min_x, water_cell.max_x, 32)
-
-# Discretize the fuel, clad and water cells
-fuel_cells = fuel_mesh.subdivide_cell(fuel_cell, slab_universe)
-clad_cells = clad_mesh.subdivide_cell(clad_cell, slab_universe)
-water_cells = water_mesh.subdivide_cell(water_cell, slab_universe)
-
 # Create Geometry and set root Universe
 opencg_geometry = opencg.Geometry()
 opencg_geometry.root_universe = root_universe
 
 # Get an OpenMC version of this OpenCG geometry
 openmc_geometry = openmc.opencg_compatible.get_openmc_geometry(opencg_geometry)
-openmc_geometry.export_to_xml()
 
 
 ###################   Exporting to OpenMC settings.xml File  ###################
@@ -128,11 +120,9 @@ settings_file = openmc.Settings()
 settings_file.batches = 100
 settings_file.inactive = 10
 settings_file.particles = 10000000
-settings_file.statepoint_interval = 5
 settings_file.output = {'tallies': False}
 settings_file.source = source
 settings_file.sourcepoint_write = False
-settings_file.export_to_xml()
 
 
 ####################   Exporting to OpenMC plots.xml File  #####################
@@ -150,21 +140,52 @@ plot.pixels = [250, 250]
 plot.color = 'cell'
 
 # Instantiate a PlotsFile, add Plot, and export to "plots.xml"
-plot_file = openmc.Plots([plot])
-plot_file.export_to_xml()
+plots_file = openmc.Plots([plot])
 
 
-########################   Build OpenMC MGXS Library  #########################
+######################   Move Files into Directories  #########################
 
-# Initialize a fine (70-) group MGXS Library for OpenMOC
-mgxs_lib = openmc.mgxs.Library(openmc_geometry, by_nuclide=False)
-mgxs_lib.energy_groups = group_structures['CASMO']['70-group']
-mgxs_lib.mgxs_types = ['total', 'nu-fission', 'nu-scatter matrix', 'chi']
-mgxs_lib.domain_type = 'cell'
-mgxs_lib.correction = None
-mgxs_lib.build_library()
+scattering = ['anisotropic', 'iso-in-lab']
+mesh = [1, 2, 4, 8, 16, 32, 64]
 
-# Create a "tallies.xml" file for the MGXS Library
-tallies_file = openmc.Tallies()
-mgxs_lib.add_to_tallies_file(tallies_file, merge=True)
-tallies_file.export_to_xml()
+for scatter in scattering:
+    print(scatter)
+    for num_mesh in mesh:
+        print('# mesh: {}'.format(num_mesh))
+
+        if scatter == 'iso-in-lab':
+            materials_file.make_isotropic_in_lab()
+        materials_file.export_to_xml()
+
+        # Copy the slab universe for meshing
+        copy_slab_univ = copy.deepcopy(slab_universe)
+        root_cell.fill = copy_slab_univ
+
+        all_cells = copy_slab_univ.get_all_cells()
+        for cell_id, cell in all_cells.items():
+            linear_mesh = opencg.LinearMesh('x', cell.min_x, cell.max_x, num_mesh)
+            new_cells = linear_mesh.subdivide_cell(cell, copy_slab_univ)
+
+        # Get an OpenMC version of this OpenCG geometry
+        openmc_geometry = openmc.opencg_compatible.get_openmc_geometry(opencg_geometry)
+        openmc_geometry.export_to_xml()
+
+        settings_file.export_to_xml()
+        plots_file.export_to_xml()
+
+        # Initialize a fine (70-) group MGXS Library for OpenMOC
+        mgxs_lib = openmc.mgxs.Library(openmc_geometry, by_nuclide=False)
+        mgxs_lib.energy_groups = group_structures['CASMO']['70-group']
+        mgxs_lib.mgxs_types = ['total', 'nu-fission', 'nu-scatter matrix', 'chi']
+        mgxs_lib.domain_type = 'cell'
+        mgxs_lib.correction = None
+        mgxs_lib.build_library()
+
+        # Create a "tallies.xml" file for the MGXS Library
+        tallies_file = openmc.Tallies()
+        mgxs_lib.add_to_tallies_file(tallies_file, merge=True)
+        tallies_file.export_to_xml()
+
+        # Move files
+        for xml_file in glob.glob('*.xml'):
+            os.rename(xml_file, '{}/{}x/{}'.format(scatter, num_mesh, xml_file))
