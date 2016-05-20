@@ -52,6 +52,22 @@
 
 \begin{table}[h!]
   \centering
+  \caption{Reference $k_{eff}$ for an infinite medium.}
+  \label{table:chap2-inf-med-reference} 
+  \vspace{14pt}
+  \begin{tabular}{c c}
+  \toprule
+  \multicolumn{1}{c}{\bf Anisotropic} &
+  \multicolumn{1}{c}{\bf Isotropic in Lab} \\
+  \midrule
+  1.15908 $\pm$ 0.00001 & 1.15907 $\pm$ 0.00001 \\
+  \bottomrule
+\end{tabular}
+\end{table}
+
+
+\begin{table}[h!]
+  \centering
   \caption{Angular-dependent $k_{eff}$ bias for an infinite medium.}
   \label{table:chap2-inf-med-angle}
   \vspace{14pt}
@@ -68,7 +84,7 @@
   \multicolumn{1}{c}{\bf 0.01 cm} & 
   \multicolumn{1}{c}{\bf 0.001 cm} \\
   \midrule
-  & \multicolumn{3}{c}{\bf Anisotropic} &
+  & \multicolumn{3}{c}{\bf No Transport Corr.} &
   \multicolumn{1}{c}{} &
   \multicolumn{3}{c}{\bf Isotropic in Lab} \\
   \cline{2-4} \cline{6-8}
@@ -92,7 +108,7 @@
   \multicolumn{1}{c}{\textbf{\# Groups}} &
   \multicolumn{2}{c}{\boldmath $\Delta\rho$ {\bf [pcm]}} \\
   \midrule
-  & \multicolumn{1}{c}{\bf Anisotropic} &
+  & \multicolumn{1}{c}{\bf No Transport Corr.} &
   \multicolumn{1}{c}{\bf Isotropic in Lab} \\
   \midrule
 1 & -11.1 & -10.5 \\
@@ -121,17 +137,32 @@
   \item 1E-7 convergence threshold
   \item double precision
   \item use updated Falcon results
+  \item Use transport xs as well
   \item reference $k_{eff}$ is 0.96304 $\pm$ 0.00009
 \end{itemize}
 
--may need to use transport xs\\
+\begin{table}[h!]
+  \centering
+  \caption{Reference $k_{eff}$ for an 1D slab.}
+  \label{table:chap2-slab-reference} 
+  \vspace{14pt}
+  \begin{tabular}{c c}
+  \toprule
+  \multicolumn{1}{c}{\bf Anisotropic} &
+  \multicolumn{1}{c}{\bf Isotropic in Lab} \\
+  \midrule
+  1.01073 $\pm$ 0.00003 & 0.96284 $\pm$ 0.00003 \\
+  \bottomrule
+\end{tabular}
+\end{table}
 
 \begin{table}[h!]
   \centering
   \caption{Angular-dependent $k_{eff}$ bias for a 1D slab.}
   \label{table:chap2-slab-angle}
   \vspace{14pt}
-  \begin{tabular}{c S[table-format=4.1] S[table-format=4.1] S[table-format=2.1] c S[table-format=4.1] S[table-format=4.1] S[table-format=2.1]} 
+%  \begin{tabular}{c S[table-format=4] S[table-forma=4] S[table-format=4] c S[table-format=4] S[table-format=4] S[table-format=4]} 
+  \begin{tabular}{c S[table-format=6.1] S[table-format=6.1] S[table-format=6.1] c S[table-format=6.1] S[table-format=6.1] S[table-format=6.1]} 
   \toprule
   & \multicolumn{7}{c}{\boldmath $\Delta\rho$ {\bf [pcm]}} \\
   \midrule
@@ -144,16 +175,16 @@
   \multicolumn{1}{c}{\bf 0.01 cm} & 
   \multicolumn{1}{c}{\bf 0.001 cm} \\
   \midrule
-  & \multicolumn{3}{c}{\bf Anisotropic} &
+  & \multicolumn{3}{c}{\bf No Transport Corr.} &
   \multicolumn{1}{c}{} &
   \multicolumn{3}{c}{\bf Isotropic in Lab} \\
   \cline{2-4} \cline{6-8}
-4 & -0.1 & -0.1 & -0.1 & & & & \\
-8 & -0.1 & -0.1 & -0.1 & & & &  \\
-16 & -0.1 & -0.1 & -0.1 & & & &  \\
-32 & -0.1 & -0.1 & -0.1 & & & &  \\
-64 & -0.1 & -0.1 & -0.1 & & & &  \\
-128 & -0.1 & -0.1 & -0.1 & & & &  \\
+4 & 12039 & 12176 & 12176 & & 16843 & 16980 & 16980 \\
+8 & 10659 & 10665 & 10664 & & 15461 & 15467 & 15466 \\
+16 & 10433 & 10432 & 10431 & & 15235 & 15234 & 15232 \\
+32 & 10385 & 10384 & 10383 & & 15187 & 15186 & 15185 \\
+64 & 10376 & 10377 & 10376 & & 15178 & 15178 & 15178 \\
+128 & 10375 & 10375 & 10375 & & 15177 & 15176 & 15176 \\
   \bottomrule
 \end{tabular}
 \end{table}
@@ -163,7 +194,7 @@
   \caption{Energy-dependent $k_{eff}$ bias for a 1D slab.}
   \label{table:chap2-slab-energy} 
   \vspace{14pt}
-  \begin{tabular}{c S[table-format=4.1] S[table-format=4.1] S[table-format=4.1] S[table-format=4.1] S[table-format=4.1]}
+  \begin{tabular}{c S[table-format=6.1] S[table-format=6.1] S[table-format=6.1] S[table-format=6.1] S[table-format=6.1]}
   \toprule
   & \multicolumn{5}{c}{\boldmath $\Delta\rho$ {\bf [pcm]}} \\
   \midrule  
@@ -175,7 +206,10 @@
   \multicolumn{1}{c}{\bf 16$\times$} &
   \multicolumn{1}{c}{\bf 32$\times$} \\
   \midrule
-  & \multicolumn{5}{c}{\bf Anisotropic} \\
+  & \multicolumn{5}{c}{\bf No Transport Corr.} \\
+  \cline{2-6}
+1 &  &  &  &  & \\
+  & \multicolumn{5}{c}{\bf With Transport Corr.} \\
   \cline{2-6}
 1 &  &  &  &  & \\
   & \multicolumn{5}{c}{\bf Isotropic in Lab} \\
@@ -190,7 +224,7 @@
   \caption{Spatial-dependent $k_{eff}$ bias for a 1D slab.}
   \label{table:chap2-slab-space} 
   \vspace{14pt}
-  \begin{tabular}{c S[table-format=4.1] S[table-format=4.1] S[table-format=4.1] S[table-format=4.1] S[table-format=4.1]}
+  \begin{tabular}{c S[table-format=6.1] S[table-format=6.1] S[table-format=6.1] S[table-format=6.1] S[table-format=6.1]}
   \toprule
   & \multicolumn{5}{c}{\boldmath $\Delta\rho$ {\bf [pcm]}} \\
   \midrule  
@@ -202,7 +236,7 @@
   \multicolumn{1}{c}{\bf 16$\times$} &
   \multicolumn{1}{c}{\bf 32$\times$} \\
   \midrule
-  & \multicolumn{5}{c}{\bf Anisotropic} \\
+  & \multicolumn{5}{c}{\bf No Transport Corr.} \\
   \cline{2-6}
 1 & 4253 & 4750 & 5094 & 5263 & 5271 \\
 2 & 8797 & 4796 & 404 & -2817 & -3062 \\
@@ -212,6 +246,9 @@
 25 & 10262 & 5519 & -63 & -4436 & -4780 \\
 40 & 10366 & 5611 & 4 & -4411 & -4758 \\
 70 & 10387 & 5633 & 19 & -4406 & -4756 \\
+  & \multicolumn{5}{c}{\bf With Transport Corr.} \\
+  \cline{2-6}
+1 &  &  &  &  & \\
   & \multicolumn{5}{c}{\bf Isotropic in Lab} \\
   \cline{2-6}
 1 & 4654 & 5303 & 5731 & 5972 & 6011 \\
@@ -238,6 +275,20 @@
 
 \begin{table}[h!]
   \centering
+  \caption{Reference $k_{eff}$ for an 2D fuel pin.}
+  \label{table:chap2-pin-reference} 
+  \vspace{14pt}
+  \begin{tabular}{c c}
+  \toprule
+  \multicolumn{1}{c}{\bf Anisotropic} &
+  \multicolumn{1}{c}{\bf Isotropic in Lab} \\
+  \midrule
+  \bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[h!]
+  \centering
   \caption{Angular-dependent $k_{eff}$ bias for a 2D fuel pin.}
   \label{table:chap2-pin-angle}
   \vspace{14pt}
@@ -254,7 +305,7 @@
   \multicolumn{1}{c}{\bf 0.01 cm} & 
   \multicolumn{1}{c}{\bf 0.001 cm} \\
   \midrule
-  & \multicolumn{3}{c}{\bf Anisotropic} &
+  & \multicolumn{3}{c}{\bf No Transport Corr.} &
   \multicolumn{1}{c}{} &
   \multicolumn{3}{c}{\bf Isotropic in Lab} \\
   \cline{2-4} \cline{6-8}
@@ -285,7 +336,17 @@
   \multicolumn{1}{c}{\bf 16$\times$} &
   \multicolumn{1}{c}{\bf 32$\times$} \\
   \midrule
-  & \multicolumn{6}{c}{\bf Anisotropic} \\
+  & \multicolumn{6}{c}{\bf No Transport Corr.} \\
+  \cline{2-7}
+  1 & & & & & & \\
+  2 & & & & & & \\
+  4 & & & & & & \\
+  8 & & & & & & \\
+  16 & & & & & & \\
+  25 & & & & & & \\
+  40 & & & & & & \\
+  70 & & & & & & \\
+  & \multicolumn{6}{c}{\bf Transport Corr.} \\
   \cline{2-7}
   1 & & & & & & \\
   2 & & & & & & \\
@@ -326,7 +387,17 @@
   \multicolumn{1}{c}{\bf 16$\times$} &
   \multicolumn{1}{c}{\bf 32$\times$} \\
   \midrule
-  & \multicolumn{6}{c}{\bf Anisotropic} \\
+  & \multicolumn{6}{c}{\bf No Transport Corr.} \\
+  \cline{2-7}
+  1 & & & & & & \\
+  2 & & & & & & \\
+  4 & & & & & & \\
+  8 & & & & & & \\
+  16 & & & & & & \\
+  25 & & & & & & \\
+  40 & & & & & & \\
+  70 & & & & & & \\
+  & \multicolumn{6}{c}{\bf With Transport Corr.} \\
   \cline{2-7}
   1 & & & & & & \\
   2 & & & & & & \\
@@ -372,6 +443,20 @@
 
 \begin{table}[h!]
   \centering
+  \caption{Reference $k_{eff}$ for an 2D fuel assembly.}
+  \label{table:chap2-lattice-reference} 
+  \vspace{14pt}
+  \begin{tabular}{c c}
+  \toprule
+  \multicolumn{1}{c}{\bf Anisotropic} &
+  \multicolumn{1}{c}{\bf Isotropic in Lab} \\
+  \midrule
+  \bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[h!]
+  \centering
   \caption{Angular-dependent $k_{eff}$ bias for a 2D fuel assembly.}
   \label{table:chap2-lattice-angle}
   \vspace{14pt}
@@ -388,7 +473,7 @@
   \multicolumn{1}{c}{\bf 0.01 cm} & 
   \multicolumn{1}{c}{\bf 0.001 cm} \\
   \midrule
-  & \multicolumn{3}{c}{\bf Anisotropic} &
+  & \multicolumn{3}{c}{\bf No Transport Corr.} &
   \multicolumn{1}{c}{} &
   \multicolumn{3}{c}{\bf Isotropic in Lab} \\
   \cline{2-4} \cline{6-8}
@@ -419,7 +504,17 @@
   \multicolumn{1}{c}{\bf 16$\times$} &
   \multicolumn{1}{c}{\bf 32$\times$} \\
   \midrule
-  & \multicolumn{6}{c}{\bf Anisotropic} \\
+  & \multicolumn{6}{c}{\bf No Transport Corr.} \\
+  \cline{2-7}
+  1 & & & & & & \\
+  2 & & & & & & \\
+  4 & & & & & & \\
+  8 & & & & & & \\
+  16 & & & & & & \\
+  25 & & & & & & \\
+  40 & & & & & & \\
+  70 & & & & & & \\
+  & \multicolumn{6}{c}{\bf With Transport Corr.} \\
   \cline{2-7}
   1 & & & & & & \\
   2 & & & & & & \\
