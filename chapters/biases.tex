@@ -42,13 +42,30 @@
 -need super column with/without iso-in-lab scattering
 
 \begin{itemize}[noitemsep]
-\item table of isotopics
 \item 128 azim angles
 \item 0.01 cm track spacing
 \item 1E-7 convergence threshold
 \item double precision
-\item reference $k_{eff}$ is 1.15912 $\pm$ 0.00009
 \end{itemize}
+
+\begin{table}[h!]
+  \centering
+  \caption{Infinite medium isotopic composition.}
+  \label{table:chap2-inf-med-isotopes} 
+  \vspace{14pt}
+  \begin{tabular}{c c}
+  \toprule
+  \multicolumn{1}{c}{\bf Nuclide} &
+  \multicolumn{1}{c}{\bf Density [g/cc]} \\
+  \midrule
+  H-1 & 2.8999E-2 \\
+  O-16 & 1.4501E-2 \\
+  Zr-90 & 2.1160E-3 \\  
+  U-235 & 1.1414E-4 \\
+  U-238 & 6.8860E-3 \\
+  \bottomrule
+\end{tabular}
+\end{table}
 
 \begin{table}[h!]
   \centering
@@ -128,6 +145,40 @@
 \subsection{1D Slab}
 \label{subsec:chap4-slab}
 
+\begin{table}[h!]
+  \centering
+  \caption{1D slab isotopic composition.}
+  \label{table:chap2-slab-isotopes} 
+  \vspace{14pt}
+  \begin{tabular}{c c}
+  \toprule
+  \multicolumn{1}{c}{\bf Nuclide} &
+  \multicolumn{1}{c}{\bf Density [g/cc]} \\
+  \midrule
+  \multicolumn{2}{c}{\bf UO$_2$ Fuel} \\
+  \midrule
+  O-16 & 4.5764E-2 \\
+  U-235 & 7.1813E-4 \\
+  U-238 & 2.2154E-2 \\
+  \midrule
+  \multicolumn{2}{c}{\bf Zircaloy Cladding} \\
+  \midrule
+  Zr-90 & 2.1886E-2 \\
+  Zr-91 & 4.7729E-3 \\
+  Zr-92 & 7.2955E-3 \\
+  Zr-94 & 7.3933E-3 \\
+  Zr-96 & 1.1911E-3 \\
+  \midrule
+  \multicolumn{2}{c}{\bf Borated Water}  \\
+  \midrule
+  H-1 & 4.4145E-2 \\
+  B-10 & 9.5253E-6 \\
+  B-11 & 3.8340E-5 \\
+  O-16 & 2.2072E-2 \\
+  \bottomrule
+\end{tabular}
+\end{table}
+
 \begin{figure}[h!]
 \begin{subfigure}{\textwidth}
   \centering
@@ -145,15 +196,12 @@
 
 \begin{itemize}[noitemsep]
   \item 1D slab equivalent to a representative \ac{PWR} fuel pin
-  \item fuel, clad and moderator
-  \item table of isotopics
   \item 128 azim angles
   \item 0.01 cm track spacing
   \item 1E-7 convergence threshold
   \item double precision
   \item use updated Falcon results
   \item Use transport xs as well
-  \item reference $k_{eff}$ is 0.96304 $\pm$ 0.00009
 \end{itemize}
 
 \begin{table}[h!]
@@ -283,10 +331,60 @@
 \subsection{2D Fuel Pin Cell}
 \label{subsec:chap4-pin}
 
-\begin{itemize}[noitemsep]
-  \item 2D fuel pin from \ac{BEAVRS}
-  \item fuel, clad, gap and moderator
-\end{itemize}
+\begin{table}[h!]
+  \centering
+  \caption{2D fuel pin isotopic composition.}
+  \label{table:chap2-pin-isotopes} 
+  \vspace{14pt}
+  \begin{tabular}{c c}
+  \toprule
+  \multicolumn{1}{c}{\bf Nuclide} &
+  \multicolumn{1}{c}{\bf Atom Density [ao]} \\
+  \midrule
+  \multicolumn{2}{c}{\bf UO$_2$ Fuel} \\
+  \midrule
+  O-16 & 4.5829e-2 \\
+  U-235 & 5.5815e-4 \\
+  U-238 & 2.2408e-2 \\
+  \midrule
+  \multicolumn{2}{c}{\bf Helium Gap} \\
+  \midrule
+  He-4 & 2.4044e-4 \\
+  \midrule
+  \multicolumn{2}{c}{\bf Zircaloy Cladding} \\
+  \midrule
+  O-16 & 3.0743e-4 \\
+  Fe-56 & 1.3610e-4 \\
+  Zr-90 & 2.1827e-2 \\
+  \midrule
+  \multicolumn{2}{c}{\bf Borated Water}  \\
+  \midrule
+  H-1 & 4.9457e-2 \\
+  B-10 & 8.0042e-6 \\
+  B-11 & 3.2218e-5 \\
+  O-16 & 2.4672e-2 \\
+  \bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[h!]
+  \centering
+  \caption{2D fuel pin material densities.}
+  \label{table:chap2-pin-densities} 
+  \vspace{14pt}
+  \begin{tabular}{c c}
+  \toprule
+  \multicolumn{1}{c}{\bf Material} &
+  \multicolumn{1}{c}{\bf Density [g/cc]} \\
+  \midrule
+  UO$_2$ Fuel & 1.03E+1 \\
+  Hellium & 1.59E-3 \\
+  Zircaloy & 6.55E+0 \\
+  Borated Water & 7.41E-1 \\   
+  \bottomrule
+\end{tabular}
+\end{table}
+
 
 \begin{figure}[h!]
 \begin{subfigure}{.33\textwidth}
