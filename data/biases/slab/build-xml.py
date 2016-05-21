@@ -135,8 +135,12 @@ delta_z = opencg_geometry.max_z - opencg_geometry.min_z
 # Instantiate a Plot
 plot = openmc.Plot()
 plot.origin = [delta_x/2., delta_y/2., delta_z/2.]
-plot.width = [delta_x, delta_z]
-plot.pixels = [250, 250]
+plot.width = [delta_x, delta_y]
+plot.pixels = [1000, 250]
+#plot.col_spec = {fuel.id: (255, 0, 0),
+#                 clad.id: (120, 120, 120),
+#                 water.id: (0, 0, 255)}
+#plot.color = 'mat'
 plot.color = 'cell'
 
 # Instantiate a PlotsFile, add Plot, and export to "plots.xml"

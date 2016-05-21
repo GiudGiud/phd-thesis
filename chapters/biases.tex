@@ -128,6 +128,21 @@
 \subsection{1D Slab}
 \label{subsec:chap4-slab}
 
+\begin{figure}[h!]
+\begin{subfigure}{\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{figures/biases/slab/slab-simple}
+  \caption{}
+\end{subfigure} \\
+\begin{subfigure}{\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{figures/biases/slab/slab-8x}
+  \caption{}
+\end{subfigure}
+\caption[1D slab materials and geometry]{A 1D slab with fuel, clad and moderator (a). Linearly-spaced tally zones were defined in each material in OpenMC and as flat source regions in OpenMOC (b).}
+\label{fig:chap4-slab}
+\end{figure}
+
 \begin{itemize}[noitemsep]
   \item 1D slab equivalent to a representative \ac{PWR} fuel pin
   \item fuel, clad and moderator
@@ -272,6 +287,26 @@
   \item 2D fuel pin from \ac{BEAVRS}
   \item fuel, clad, gap and moderator
 \end{itemize}
+
+\begin{figure}[h!]
+\begin{subfigure}{.33\textwidth}
+  \centering
+  \includegraphics[width=0.9\linewidth]{figures/biases/pin-cell/pin-cell-simple}
+  \caption{}
+\end{subfigure}%
+\begin{subfigure}{.33\textwidth}
+  \centering
+  \includegraphics[width=0.9\linewidth]{figures/biases/pin-cell/pin-cell-8x}
+  \caption{}
+\end{subfigure}
+\begin{subfigure}{.33\textwidth}
+  \centering
+  \includegraphics[width=0.9\linewidth]{figures/biases/pin-cell/pin-cell-8x8}
+  \caption{}
+\end{subfigure}
+\caption[Pin cell materials and geometry]{A PWR fuel pin cell with fuel, gap, clad and moderator (a). Radial tally zones were defined in each material in OpenMC (b). The tally zones were further subdivided into angular sectors for the flat source region mesh in OpenMOC (c).}
+\label{fig:chap4-pin-cell}
+\end{figure}
 
 \begin{table}[h!]
   \centering

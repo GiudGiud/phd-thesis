@@ -17,24 +17,34 @@
 %-perhaps this is more detail than is necessary for background?\\
 %-need to account for angular dependence of neutron flux (e.g. "transport" methods)\\
 
-Physics simulation has long played an important role in nuclear reactor physics and engineering. The nuclear industry relies on computational modeling of the neutron physics in reactors to predict core reactivity, power distributions, fuel depletion, transient behavior, etc. to ensure the safety and reliability of the current fleet of \ac{LWRs}. Predictive simulations are necessary to evaluate innovations which seek to improve the reactor safety and fuel cycle economics, such as reduced safety margin uncertainties, high-burnup fuels, and extended cycle lengths. In addition, simulation is used to assess the technical competencies of advanced reactor technologies such as Small Modular Reactors (SMRs), Sodium Fast Reactors (SFRS), Molten Salt Reactors (MSRs), High Temperature Gas Reactors (HTGRs), among other possible designs. 
+Physics simulation has long played an important role in nuclear reactor physics and engineering. The nuclear industry relies on computational modeling of the neutron physics in reactors to predict core reactivity, power distributions, fuel depletion, transient behavior, etc. to ensure the safety and reliability of the current fleet of \ac{LWRs}. Predictive simulations are necessary to evaluate innovations which seek to improve reactor safety and fuel cycle economics, such as reduced safety margin uncertainties, accident-tolerant fuels, and extended cycle lengths. In addition, simulation is used to assess the technical competencies of advanced reactor technologies such as Small Modular Reactors (SMRs), Sodium Fast Reactors (SFRS), Molten Salt Reactors (MSRs), High Temperature Gas Reactors (HTGRs), among other proposed designs. 
 
-Many Generation III+ reactor designs, such as the Westinghouse AP1000 \ac{PWR}, optimize performance with complicated core designs. A variety of reactivity control mechanisms -- including partially-inserted control rods, ``grey'' control poisons, \ac{IFBA}, soluble boron, etc. -- along with axial enrichment zoning are used to improve performance metrics such as power peaking factors. The reactor analysis methods in widespread use today assume a ``smoothly'' varying flux distribution, and are not well-suited to model highly localized flux gradients which result from these complex core configurations. New high-fidelity simulation tools are needed to accurately capture neutron physics in enable advanced reactor designs.
+Many Generation III+ reactor designs, such as the Westinghouse AP1000 \ac{PWR}, optimize performance with complicated core designs. A variety of reactivity control mechanisms -- including partially-inserted control rods, ``grey'' control poisons, \ac{IFBA}, soluble boron, etc. -- along with axial enrichment zoning are used to improve performance metrics such as power peaking factors. The reactor analysis methods in widespread use today assume a ``smoothly'' varying flux distribution, and are not well-suited to model highly localized flux gradients which result from these complex core configurations. New high-fidelity simulation tools are needed to accurately capture neutron physics in advanced reactor designs.
 
-The nuclear reactor physics community has long strived for whole-core transport based tools for nuclear reactor analysis. Transport-based methods would enable more accurate core power distributions to be calculated without the approximations needed for today’s tools based upon diffusion theory. Although the computational requirements for full-core transport-based simulations have precluded their widespread development, the continuing growth of cheap parallel processing power has made the prospects for such tools increasingly feasible.
+%First paragraph\\
+%-wish to replace diffusion with full-core transport\\
+%-benefits of improved reactor analysis tools\\
+%-HPC may make this possible\\
 
+The nuclear reactor physics community has long strived for whole-core transport-based tools for nuclear reactor analysis. Transport-based methods would enable more accurate core power distributions to be calculated without the approximations needed for today’s tools based upon diffusion theory. Although the computational requirements for full-core transport-based simulations have precluded their widespread development, the continuing growth of cheap parallel processing power has made the prospects for such tools increasingly feasible.
 
-First paragraph\\
--wish to replace diffusion with full-core transport\\
--benefits of improved reactor analysis tools\\
--HPC may make this possible\\
+%Second paragraph\\
+%-compare contrast competing algorithms - Monte Carlo and deterministic transport\\
+%-tradeoff between computational speed/efficiency and accuracy\\
+%-crux of deterministic methods are MGXS\\
 
-Second paragraph\\
--compare contrast competing algorithms - Monte Carlo and deterministic transport\\
--tradeoff between computational speed/efficiency and accuracy\\
--crux of deterministic methods are MGXS\\
+Core simulation tools utilizing \ac{MC} transport methods represent the ``Holy Grail'' for reactor analysis. However, the computational costs required to accommodate the slow convergence rate for \ac{MC} makes it impractical for widespread use for the foreseeable future. Deterministic transport methods pose a number of advantages to \ac{MC} from a computational perspective, which seems likely to make these methods more viable in the near to intermediate term. However, deterministic methods almost universally discretize the energy domain in a few to hundreds of energy groups. This approximation requires energy condensed multi-group cross-sections in each geometric region to preserve reaction rates. One of the key challenges is accurate, \emph{reactor agnostic} multi-group cross-section generation methods to enable deterministic transport-based methods to be as accurate and flexible as Monte Carlo.
+
+This thesis investigates the potential use of \ac{Monte Carlo} methods to generate \ac{MGXS} for next-generation whole-core deterministic reactor analyis. Monte Carlo presents a natural approach to replace engineering prescriptions to approximate the flux with stochastic approximations of the exact flux obtained from \ac{MC}. \ac{MC} methods have been increasingly been used to generate few group constants for coarse mesh diffusion, most notably by the Serpent \ac{MC} code [CITE]. However, there exist few rigorous and comprehensive analyses of \ac{MC} as an approach to generate \ac{MGXS} for heterogeneous fine-mesh transport. The advantage of such approach are numerous in that all of the relevant physics modeled in \ac{MC} may be directly embedded into \ac{MGXS}. However, this potential improvement in accuracy comes at the computational expense of tallying group constants with acceptably low uncertainties.
+
+Such an approach - benefit, exact; disadvantage, slow to converge
 
 Third paragraph\\
+-mention MG would be the reference soln anyway
+-embed accuracy of Monte Carlo into MGXS for deterministic transport
+-mention need to accelerate it in way not possible for conventional transport
+-replace deterministic approximation 
+-natural, no approximation to the flux-weighting spectrum
 -MGXS generation tools developed for coarse mesh diffusion\\
 -Existing codes/techniques may not be adequate for full-core transport\\
 -to take full advantage of full-core transport methods, need MGXS of appropriate accuracy\\
@@ -45,65 +55,25 @@ Third paragraph\\
 Fourth paragraph\\
 -outline following sections\\
 
--need to mention goal of making fast deterministic transport as accurate as Monte Carlo\\
+%-need to mention goal of making fast deterministic transport as accurate as Monte Carlo\\
 -should this just be a summary before leading into the following sections???\\
 
 
-\begin{itemize}
-  \item mention advantages of full core transport
-  \begin{itemize}
-    \item optimize core design
-    \item analyze accident-tolerant fuels
-    \item reduce uncertainty magins on CHF
-    \item analysis of advanced non-LWR designs
-  \end{itemize}
-\end{itemize}
+%\begin{itemize}
+%  \item mention advantages of full core transport
+%  \begin{itemize}
+%    \item optimize core design
+%    \item analyze accident-tolerant fuels
+%    \item reduce uncertainty magins on CHF
+%    \item analysis of advanced non-LWR designs
+%  \end{itemize}
+%\end{itemize}
 
 \begin{itemize}[noitemsep]
   \item mention two pronged approach - quantify MGXS approximations and apply clustering
   \item provide motivation for need for new approaches for full-core transport
 \end{itemize}
 
-\begin{figure}
-\begin{subfigure}{.5\textwidth}
-  \centering
-  \includegraphics[width=\linewidth]{figures/intro/u235-fission-70}
-  \caption{}
-  \label{fig:assm-cells}
-\end{subfigure}%
-\begin{subfigure}{.5\textwidth}
-  \centering
-  \includegraphics[width=\linewidth]{figures/intro/u238-capture-70}
-  \caption{}
-  \label{fig:colorset-cells}
-\end{subfigure}
-\begin{subfigure}{.5\textwidth}
-  \centering
-  \includegraphics[width=\linewidth]{figures/intro/u235-fission-16}
-  \caption{}
-  \label{fig:assm-unique-neighbors}
-\end{subfigure}
-\begin{subfigure}{.5\textwidth}
-  \centering
-  \includegraphics[width=\linewidth]{figures/intro/u238-capture-16}
-  \caption{}
-  \label{fig:colorset-unique-neighbors}
-\end{subfigure}
-\begin{subfigure}{.5\textwidth}
-  \centering
-  \includegraphics[width=\linewidth]{figures/intro/u235-fission-2}
-  \caption{}
-  \label{fig:assm-neighbors}
-\end{subfigure}
-\begin{subfigure}{.5\textwidth}
-  \centering
-  \includegraphics[width=\linewidth]{figures/intro/u238-capture-2}
-  \caption{}
-  \label{fig:colorset-neighbors}
-\end{subfigure}
-\caption[Uranium-235 and Uranium-238 cross sections]{Continuous energy and multi-group cross sections for U-235 fission (left) and U-238 capture (right) reactions in a PWR spectrum for 70-, 16- and 2-groups.}
-\label{fig:pwr-ce-mg-xs}
-\end{figure}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -172,3 +142,38 @@ Each of the variables in use is defined in \autoref{tab:moc-variables}. This is 
   \item need accurate \ac{MGXS} for whole core transport methods
   \item motivate \ac{MC} for \ac{MGXS}
 \end{itemize}
+
+\begin{figure}
+\begin{subfigure}{.5\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{figures/intro/u235-fission-70}
+  \caption{}
+\end{subfigure}%
+\begin{subfigure}{.5\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{figures/intro/u238-capture-70}
+  \caption{}
+\end{subfigure}
+\begin{subfigure}{.5\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{figures/intro/u235-fission-16}
+  \caption{}
+\end{subfigure}
+\begin{subfigure}{.5\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{figures/intro/u238-capture-16}
+  \caption{}
+\end{subfigure}
+\begin{subfigure}{.5\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{figures/intro/u235-fission-2}
+  \caption{}
+\end{subfigure}
+\begin{subfigure}{.5\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{figures/intro/u238-capture-2}
+  \caption{}
+\end{subfigure}
+\caption[Uranium-235 and Uranium-238 cross sections]{Continuous energy and multi-group cross sections for U-235 fission (left) and U-238 capture (right) reactions in a PWR spectrum for 70-, 16- and 2-groups.}
+\label{fig:pwr-ce-mg-xs}
+\end{figure}
