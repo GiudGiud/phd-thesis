@@ -16,12 +16,6 @@
     \item chi fission spectrum
   \end{itemize}
   \item equation and figures mapped to variables
-  \item figure of continuous energy and \ac{MGXS}
-  \begin{itemize}
-    \item U-235 nu-fission
-    \item U-238 capture
-    \item 2-, 8-, 70-groups
-  \end{itemize}
 \end{itemize}
 
 
@@ -33,31 +27,45 @@
   \item motivate bias studies in chapter 4
 \end{itemize}
 
+Equation~\ref{eqn:chap1-transport-eqn-src} is defined with $\Psi$, $Q$ and $\Sigma^T$ as continuous functions of energy. The first approximation to numerically solve this equation is to discretize the energy domain into distinct \textit{energy groups} $g \in G = \{1, 2, ..., G\}$ where group $g$ spans the continuous range of energies from $E_{g}$ to $E_{g-1}$. This is otherwise known as the \textit{multi-group approximation}. The multi-group form of the Boltzmann equation is presented below:
+
+\begin{equation}
+\label{eqn:chap2-transport-eqn-mg}
+\mathbf{\Omega} \cdot \nabla \Psi_g(\mathbf{r},\mathbf{\mathbf{\Omega}}) + \Sigma^T_{g}(\mathbf{r})\Psi_g(s,\mathbf{\Omega}) = Q_g(\mathbf{r},\mathbf{\Omega})
+\end{equation}
+
+Likewise, the multi-group form of the neutron source (Equation~\ref{eqn:chap1-source}) is given by:
+
+\begin{dmath}
+\label{eqn:chap2-source-mg}
+Q_g(\mathbf{r},\mathbf{\Omega}) = \displaystyle\sum\limits_{g'=1}^G \int_{4\pi} \mathrm{d}\mathbf{\Omega'}\Sigma_{g'\rightarrow g}^S(\mathbf{r},{\mathbf{\Omega'}\rightarrow\mathbf{\Omega}}) \Psi_{g'}(\mathbf{r},\mathbf{\Omega'}) + \\ \frac{\chi_{g}(\mathbf{r})}{4\pi k_{eff}} \displaystyle\sum\limits_{g'=1}^G \nu\Sigma_{g'}^F(\mathbf{r}) \int_{4\pi} \mathrm{d}\mathbf{\Omega'} \Psi_{g'}(\mathbf{r},\mathbf{\Omega'})
+\end{dmath}
+
 \begin{equation}
 \label{eqn:moc-theory-condensed-total-xs}
-\Sigma_{g}^T(s) = \frac{\int_{E_{g}}^{E_{g-1}}\mathrm{d}E'\Sigma^T(s,E')\Psi(s,\mathbf{\Omega},E')}{\int_{E_{g}}^{E_{g-1}}\mathrm{d}E'\Psi(s,\mathbf{\Omega},E')}
+\Sigma_{g}^T(\mathbf{r}) = \frac{\int_{E_{g}}^{E_{g-1}}\mathrm{d}E'\Sigma^T(\mathbf{r},E')\Psi(\mathbf{r},\mathbf{\Omega},E')}{\int_{E_{g}}^{E_{g-1}}\mathrm{d}E'\Psi(\mathbf{r},\mathbf{\Omega},E')}
 \end{equation}
 
 \begin{equation}
 \label{eqn:moc-theory-condensed-fission-xs}
-\Sigma_{g}^F(s) = \frac{\int_{E_{g}}^{E_{g-1}}\mathrm{d}E'\Sigma^F(s,E')\Psi(s,\mathbf{\Omega},E')}{\int_{E_{g}}^{E_{g-}1}\mathrm{d}E'\Psi(s,\mathbf{\Omega},E')}
+\Sigma_{g}^F(\mathbf{r}) = \frac{\int_{E_{g}}^{E_{g-1}}\mathrm{d}E'\Sigma^F(\mathbf{r},E')\Psi(\mathbf{r},\mathbf{\Omega},E')}{\int_{E_{g}}^{E_{g-}1}\mathrm{d}E'\Psi(\mathbf{r},\mathbf{\Omega},E')}
 \end{equation}
 
 \begin{equation}
 \label{eqn:moc-theory-condensed-scatter-xs}
-\Sigma_{g'\rightarrow g}^S(s,\mathbf{\Omega'}\rightarrow \mathbf{\Omega}) = \frac{\int_{E_{g'}}^{E_{g'-1}}\mathrm{d}E'\int_{E_{g}}^{E_{g-1}}\mathrm{d}E''\Sigma^S(s,\mathbf{\Omega'}\rightarrow \mathbf{\Omega},E'\rightarrow E'')\Psi(s,\mathbf{\Omega'},E')}{\int_{E_{g'}}^{E_{g'-1}}\mathrm{d}E'\Psi(s,\mathbf{\Omega'},E')}
+\Sigma_{g'\rightarrow g}^S(\mathbf{r},\mathbf{\Omega'}\rightarrow \mathbf{\Omega}) = \frac{\int_{E_{g'}}^{E_{g'-1}}\mathrm{d}E'\int_{E_{g}}^{E_{g-1}}\mathrm{d}E''\Sigma^S(\mathbf{r},\mathbf{\Omega'}\rightarrow \mathbf{\Omega},E'\rightarrow E'')\Psi(\mathbf{r},\mathbf{\Omega'},E')}{\int_{E_{g'}}^{E_{g'-1}}\mathrm{d}E'\Psi(\mathbf{r},\mathbf{\Omega'},E')}
 \end{equation}
 
 \begin{equation}
 \label{eqn:moc-theory-condensed-chi}
-\chi_{g'\rightarrow g}(s) = \frac{\int_{E_{g'}}^{E_{g'-1}}\mathrm{d}E'\int_{E_{g}}^{E_{g-1}}\mathrm{d}E''\chi(s,E'\rightarrow E'')\nu\Sigma^F(s,\mathbf{\Omega},E')\Psi(s,\mathbf{\Omega'},E')}{\int_{E_{g'}}^{E_{g'-1}}\mathrm{d}E'\nu\Sigma^F(s,\mathbf{\Omega},E')\Psi(s,\mathbf{\Omega'},E')}
+\chi_{g'\rightarrow g}(\mathbf{r}) = \frac{\int_{E_{g'}}^{E_{g'-1}}\mathrm{d}E'\int_{E_{g}}^{E_{g-1}}\mathrm{d}E''\chi(\mathbf{r},E'\rightarrow E'')\nu\Sigma^F(\mathbf{r},\mathbf{\Omega},E')\Psi(\mathbf{r},\mathbf{\Omega'},E')}{\int_{E_{g'}}^{E_{g'-1}}\mathrm{d}E'\nu\Sigma^F(\mathbf{r},\mathbf{\Omega},E')\Psi(\mathbf{r},\mathbf{\Omega'},E')}
 \end{equation}
 
 Although \autoref{eqn:moc-theory-condensed-chi} assumes a dependence of $\chi$ on both the energy of the neutron causing fission $g'$ and the fission emission energy group $g$, the former is typically summed over to simplify the multi-group $\chi$ to the following approximation:
 
 \begin{equation}
 \label{eqn:moc-theory-condensed-chi-group}
-\chi_{g}(s) = \displaystyle\sum\limits_{g=1}^{G}\chi_{g'\rightarrow g}(s)
+\chi_{g}(\mathbf{r}) = \displaystyle\sum\limits_{g=1}^{G}\chi_{g'\rightarrow g}(\mathbf{r})
 \end{equation}
 
 
@@ -68,6 +76,29 @@ Although \autoref{eqn:moc-theory-condensed-chi} assumes a dependence of $\chi$ o
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Spatial Discretization}
 \label{subsubsec:chap2-space-discrete}
+
+In addition to the flat source approximation, it is assumed that the material properties are constant across each FSR. The area-averaged cross sections for FSR $i \in \{1, 2, ..., I\}$ with area $A_{i}$ are defined as:
+
+\begin{equation}
+\label{eqn:chap2-area-avg-total-xs}
+\Sigma_{i,g}^{T} = \frac{\int_{\mathbf{r}\in A_{i}}\mathrm{d}\mathbf{r}\Sigma_{g}^T(\mathbf{r})\Phi_{g}(\mathbf{r})}{\int_{\mathbf{r}\in A_{i}}\mathrm{d}\mathbf{r}\Phi_{g}(\mathbf{r})}
+\end{equation}
+
+\begin{equation}
+\label{eqn:chap2-area-avg-fission-xs}
+\Sigma_{i,g}^{F} = \frac{\int_{\mathbf{r}\in A_{i}}\mathrm{d}\mathbf{r}\Sigma_{g}^F(\mathbf{r})\Phi_{g}(\mathbf{r})}{\int_{\mathbf{r}\in A_{i}}\mathrm{d}\mathbf{r}\Phi_{g}(\mathbf{r})}
+\end{equation}
+
+\begin{equation}
+\label{eqn:chap2-area-avg-scatter-xs}
+\Sigma_{i,g'\rightarrow g}^{S} = \frac{\int_{\mathbf{r}\in A_{i}}\mathrm{d}\mathbf{r}\Sigma_{g'\rightarrow g}^S(\mathbf{r})\Phi_{g'}(\mathbf{r})}{\int_{\mathbf{r}\in A_{i}}\mathrm{d}\mathbf{r}\Phi_{g'}(\mathbf{r})}
+\end{equation}
+
+\begin{equation}
+\label{eqn:chap2-area-avg-chi}
+\chi_{i,g} = \frac{\int_{\mathbf{r}\in A_{i}}\mathrm{d}\mathbf{r}\chi_{g}(\mathbf{r})}{\int_{\mathbf{r}\in A_{i}}\mathrm{d}\mathbf{r}}
+\end{equation}
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Isotropic Scattering}
