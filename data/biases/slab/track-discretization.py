@@ -53,5 +53,5 @@ for j, angle in enumerate(angles):
     for i, scatter in enumerate(scattering):
         row += ' &'
         for k, spacing in enumerate(spacings):
-            row += ' {:1.1f} &'.format(biases[i,j,k])
+            row += ' {:1.0f} &'.format(biases[i,j,k])
     print(row[:-1] + '\\\\')
