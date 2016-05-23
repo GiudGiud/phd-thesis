@@ -29,7 +29,7 @@
 
 Physics simulation has long played an important role in nuclear reactor physics and engineering. The nuclear industry relies on computational modeling of the neutron physics in reactors to predict core reactivity, power distributions, fuel depletion, and transient behavior to ensure the safety and reliability of the current fleet of \ac{LWRs}. Predictive simulations are necessary to evaluate innovations which seek to improve reactor safety and fuel cycle economics, such as reduced safety margin uncertainties, accident-tolerant fuels, and extended cycle lengths. In addition, simulation is used to assess the technical competencies of advanced reactor technologies such as Small Modular Reactors (SMRs), Sodium Fast Reactors (SFRS), Molten Salt Reactors (MSRs), High Temperature Gas Reactors (HTGRs), among other proposed designs. 
 
-Many Generation III+ reactor designs, such as the Westinghouse AP1000 \ac{PWR}, optimize performance with complicated core designs. A variety of reactivity control mechanisms -- including partially-inserted control rods, ``grey'' control poisons, \ac{IFBA}, soluble boron, etc. -- along with axial enrichment zoning are used to improve performance metrics such as power peaking factors. The reactor analysis methods in widespread use today assume a ``smoothly'' varying flux distribution, and are not well-suited to model highly localized flux gradients which result from these complex core configurations. New high-fidelity simulation tools are needed to accurately capture neutron physics in advanced reactor designs.
+Many Generation III+ reactor designs, such as the Westinghouse AP1000\texttrademark \ac{PWR}, optimize performance with complicated core designs. A variety of reactivity control mechanisms -- including partially-inserted control rods, ``grey'' control poisons, \ac{IFBA}, soluble boron, etc. -- along with axial enrichment zoning are used to improve performance metrics such as power peaking factors. The reactor analysis methods in widespread use today assume a ``smoothly'' varying flux distribution, and are not well-suited to model highly localized flux gradients which result from these complex core configurations. New high-fidelity simulation tools are needed to accurately capture neutron physics in advanced reactor designs.
 
 %First paragraph\\
 %-wish to replace diffusion with full-core transport\\
@@ -58,13 +58,6 @@ The subject matter of this thesis can be organized along two main themes. First,
 %-specifically pinpoint angular-dependence and spatial self-shielding\\
 
 Chapter~\ref{chap:intro} motivates the need for new \ac{MGXS} generation techniques with an overview of trends in \ac{HPC} and whole-core transport methods. Chapter~\ref{chap:mgxs} reviews the multi-group cross section approximation, and highlights past efforts to use \ac{MC} to generate \ac{MGXS}. The simulation codes utilized in this thesis are discussed in Chapter~\ref{chap:workflow}, including OpenMC, OpenMOC and OpenCG. The impact of \ac{MGXS} approxmation error is quantified in heterogeneous geometries in Chapter~\ref{chap:biases}. Chapter~\ref{chap:sph} presents an algorithmic approach to address systematic biases resulting from constant-in-angle \ac{MGXS}. A latent variable model for spatial-self shielding effects on \ac{MGXS} is outlined Chapter~\ref{chap:methods}, along with a data pipeline for unsupervised clustering to accelerate the \ac{MGXS} convergence rate. Chapter~\ref{chap:results} evaluates the impact of clustered \ac{MGXS} on the accuracy and convergence rate. Finally, Chapter~\ref{chap:conclusions} summarizes the progress made in this thesis to chart a path forward for \ac{MC}-based \ac{MGXS} generation for whole-core deterministic transport methods.
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{High-Performance Computing Trends}
-\label{sec:chap1-hpc-trends}
-
-\cite{Hunter_Sutton_2013}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -138,6 +131,24 @@ The transport equation can now be more concisely written as follows:
   \item Denovo, PDT, 3D OpenMOC, etc.
   \item computational efficiency - cache-friendliness, parallelization, vectorization, etc.
 \end{itemize}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{High-Performance Computing Trends}
+\label{sec:chap1-hpc-trends}
+
+first paragraph\\
+-parallel computing is making calculations possible for the first time
+-
+-mention trends of increasing shared memory parallelism
+
+second paragraph\\
+-
+
+third paragraph\\
+-
+
+\cite{Hunter_Sutton_2013}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
