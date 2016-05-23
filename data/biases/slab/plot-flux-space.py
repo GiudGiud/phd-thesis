@@ -37,7 +37,6 @@ mgxs_lib = openmc.mgxs.Library.load_from_file(directory=directory)
 # Build a coarse group Library from the fine (70-)group Library
 coarse_groups = group_structures['CASMO']['{}-group'.format(num_groups)]
 condense_lib = mgxs_lib.get_condensed_library(coarse_groups)
-condense_lib = condense_lib.get_subdomain_avg_library()
 
 # Create an OpenMOC Geometry from the OpenCG Geometry
 openmoc_geometry = get_openmoc_geometry(condense_lib.opencg_geometry)
