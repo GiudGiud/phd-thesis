@@ -10,7 +10,7 @@ openmoc.log.set_log_level('RESULT')
 opts = openmoc.options.Options()
 
 groups = [1, 2, 4, 8, 16, 25, 40, 70]
-scattering = ['anisotropic', 'iso-in-lab']
+scattering = ['anisotropic', 'transport', 'iso-in-lab']
 num_rings = [1, 2, 4, 8, 16]
 keffs = np.zeros((len(scattering), len(groups), len(num_rings)), dtype=np.float)
 biases = np.zeros((len(scattering), len(groups), len(num_rings)), dtype=np.float)
@@ -67,14 +67,22 @@ print(biases)
 print('anisotropic')
 for i, num_groups in enumerate(groups):
     row = '{} &'.format(num_groups)
-    for j, num_mesh in enumerate(mesh):
+    for j, num_mesh in enumerate(num_rings):
         row += ' {:1.0f} &'.format(biases[0,i,j])
+    print(row[:-1] + '\\\\')
+
+# Print transport table for LaTeX                                            
+print('transport')
+for i, num_groups in enumerate(groups):
+    row = '{} &'.format(num_groups)
+    for j, num_mesh in enumerate(num_rings):
+        row += ' {:1.0f} &'.format(biases[1,i,j])
     print(row[:-1] + '\\\\')
 
 # Print iso-in-lab-table for LaTeX
 print('iso-in-lab')
 for i, num_groups in enumerate(groups):
     row = '{} &'.format(num_groups)
-    for j, num_mesh in enumerate(mesh):
-        row += ' {:1.0f} &'.format(biases[1,i,j])
+    for j, num_mesh in enumerate(num_rings):
+        row += ' {:1.0f} &'.format(biases[2,i,j])
     print(row[:-1] + '\\\\')
