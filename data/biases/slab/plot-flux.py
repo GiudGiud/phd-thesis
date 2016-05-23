@@ -1,12 +1,19 @@
 import numpy as np
+import matplotlib 
+
+# Force headless backend for plotting on clusters
+matplotlib.use('Agg')
+
 import matplotlib.pylab as pylab
-import seaborn
+import seaborn as sns
 
 import openmc.mgxs
 import openmoc
 from openmoc.opencg_compatible import get_openmoc_geometry
 from infermc.energy_groups import group_structures
 
+# Force non-interactive mode for plotting on clusters
+pylab.ioff()
 
 sns.set_style('ticks')
 
@@ -17,7 +24,7 @@ opts = openmoc.options.Options()
 # Query the user for the number of energy groups
 scatter = 'iso-in-lab'
 mesh = 32
-num_groups = 1
+num_groups = 16
 
 directory = '{}/{}x'.format(scatter, mesh)
 
@@ -78,6 +85,10 @@ cell_ids = cell_ids[indices]
 volumes = volumes[indices]
 openmoc_fluxes = openmoc_fluxes[indices, ::-1]
 
+# Set centroids to the min/max x values 
+centroids[0] = 0.
+centroids[-1] = 5.
+
 # Get OpenMC fluxes
 tot_fiss_src = 0.
 openmc_fluxes = np.zeros((num_fsrs, coarse_groups.num_groups))
@@ -102,8 +113,9 @@ for group in range(coarse_groups.num_groups):
     fig = pylab.figure()
     pylab.plot(centroids, openmoc_fluxes[:,group])
     pylab.plot(centroids, openmc_fluxes[:,group])
-    pylab.legend(['openmoc', 'openmc'],loc='best')
-    pylab.title('Scalar Flux (Group {}/{})'.format(group+1, num_groups))
-    pylab.xlabel('x [cm]')
-    pylab.ylabel('flux')
+    pylab.legend(['OpenMOC', 'OpenMC'], loc='best', fontsize=12)
+    pylab.title('Scalar Flux (Group {}/{})'.format(group+1, num_groups), y=1.03, fontsize=16)
+    pylab.xlabel('x [cm]', fontsize=12)
+    pylab.ylabel('Flux', fontsize=12)
+    pylab.grid()
     pylab.savefig('flux-group-{}.png'.format(group+1), bbox_inches='tight')
