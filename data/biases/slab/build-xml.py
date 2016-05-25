@@ -10,54 +10,56 @@ from infermc.energy_groups import group_structures
 
 ##################   Exporting to OpenMC materials.xml File  ###################
 
-# 3.1% w/o enriched UO2
-fuel = openmc.Material(name='3.1 w/o enriched UO2')
-fuel.set_density('sum')
-fuel.add_nuclide('U-235', 7.18132E-4)
-fuel.add_nuclide('U-238', 2.21546E-2)
-fuel.add_nuclide('O-16', 4.57642E-2)
+# Instantiate some Materials and register the appropriate Nuclides
+uo2 = openmc.Material(name='UO2 Fuel')
+uo2.set_density('g/cm3', 10.29769)
+uo2.add_nuclide('U-235', 5.5815e-4)
+uo2.add_nuclide('U-238', 2.2408e-2)
+uo2.add_nuclide('O-16', 4.5829e-2)
 
-# Cladding
-clad = openmc.Material(name='Cladding')
-clad.set_density('sum')
-clad.add_nuclide('Zr-90', 2.18865E-2)
-clad.add_nuclide('Zr-91', 4.77292E-3)
-clad.add_nuclide('Zr-92', 7.29551E-3)
-clad.add_nuclide('Zr-94', 7.39335E-3)
-clad.add_nuclide('Zr-96', 1.19110E-3)
+helium = openmc.Material(name='Helium')
+helium.set_density('g/cm3', 0.001598)
+helium.add_nuclide('He-4', 2.4044e-4)
 
-# Water
-water = openmc.Material(name='Borated Water')
-water.set_density('sum')
-water.add_nuclide('H-1', 4.41459E-2)
-water.add_nuclide('O-16', 2.20729E-2)
-water.add_nuclide('B-10', 9.52537E-6)
-water.add_nuclide('B-11', 3.83408E-5)
-water.add_s_alpha_beta(name='HH2O', xs='71t')
+zircaloy = openmc.Material(name='Zircaloy 4')
+zircaloy.set_density('g/cm3', 6.55)
+zircaloy.add_nuclide('O-16', 3.0743e-4)
+zircaloy.add_nuclide('Fe-56', 1.3610e-4)
+zircaloy.add_nuclide('Zr-90', 2.1827e-2)
 
-# Instantiate a MaterialsFile, add Materials
-materials_file = openmc.Materials((fuel, clad, water))
+borated_water = openmc.Material(name='Borated Water')
+borated_water.set_density('g/cm3', 0.740582)
+borated_water.add_nuclide('B-10', 8.0042e-6)
+borated_water.add_nuclide('B-11', 3.2218e-5)
+borated_water.add_nuclide('H-1', 4.9457e-2)
+borated_water.add_nuclide('O-16', 2.4672e-2)
+borated_water.add_s_alpha_beta('HH2O', '71t')
+
+# Instantiate a MaterialsFile, register all Materials, and export to XML
+materials_file = openmc.Materials([uo2, helium, zircaloy, borated_water])
 materials_file.default_xs = '71c'
 
 # Get OpenCG versions of each OpenMC material to fill OpenCG Cells below
-opencg_fuel = openmc.opencg_compatible.get_opencg_material(fuel)
-opencg_clad = openmc.opencg_compatible.get_opencg_material(clad)
-opencg_water = openmc.opencg_compatible.get_opencg_material(water)
+opencg_fuel = openmc.opencg_compatible.get_opencg_material(uo2)
+opencg_clad = openmc.opencg_compatible.get_opencg_material(helium)
+opencg_gap = openmc.opencg_compatible.get_opencg_material(zircaloy)
+opencg_water = openmc.opencg_compatible.get_opencg_material(borated_water)
 
 
 ###################   Exporting to OpenMC geometry.xml File  ###################
 
 # Create bounding surfaces
 min_x = opencg.XPlane(boundary='reflective', x0=0.0)
-max_x = opencg.XPlane(boundary='reflective', x0=5.0)
+max_x = opencg.XPlane(boundary='reflective', x0=0.62992)
 min_y = opencg.YPlane(boundary='reflective', y0=0.0)
-max_y = opencg.YPlane(boundary='reflective', y0=10.0)
+max_y = opencg.YPlane(boundary='reflective', y0=0.62992)
 min_z = opencg.ZPlane(boundary='reflective', z0=0.0)
-max_z = opencg.ZPlane(boundary='reflective', z0=10.0)
+max_z = opencg.ZPlane(boundary='reflective', z0=0.62992)
 
 # Create material interfacial surfaces
-left = opencg.XPlane(surface_id=1, boundary='interface', x0=2.0)
-right = opencg.XPlane(surface_id=2, boundary='interface', x0=2.4)
+mid1 = opencg.XPlane(surface_id=1, boundary='interface', x0=0.39218)
+mid2 = opencg.XPlane(surface_id=2, boundary='interface', x0=0.40005)
+mid3 = opencg.XPlane(surface_id=3, boundary='interface', x0=0.45720)
 
 # Create a Universe to encapsulate the 1D slab
 slab_universe = opencg.Universe(name='1D slab')
@@ -66,20 +68,27 @@ slab_universe = opencg.Universe(name='1D slab')
 fuel_cell = opencg.Cell(name='fuel')
 fuel_cell.fill = opencg_fuel
 fuel_cell.add_surface(halfspace=+1, surface=min_x)
-fuel_cell.add_surface(halfspace=-1, surface=left)
+fuel_cell.add_surface(halfspace=-1, surface=mid1)
 slab_universe.add_cell(fuel_cell)
+
+# Create gap Cell
+gap_cell = opencg.Cell(name='gap')
+gap_cell.fill = opencg_gap
+gap_cell.add_surface(halfspace=+1, surface=mid1)
+gap_cell.add_surface(halfspace=-1, surface=mid2)
+slab_universe.add_cell(gap_cell)
 
 # Create clad Cell
 clad_cell = opencg.Cell(name='clad')
 clad_cell.fill = opencg_clad
-clad_cell.add_surface(halfspace=+1, surface=left)
-clad_cell.add_surface(halfspace=-1, surface=right)
+clad_cell.add_surface(halfspace=+1, surface=mid2)
+clad_cell.add_surface(halfspace=-1, surface=mid3)
 slab_universe.add_cell(clad_cell)
 
 # Create water Cell
 water_cell = opencg.Cell(name='water')
 water_cell.fill = opencg_water
-water_cell.add_surface(halfspace=+1, surface=right)
+water_cell.add_surface(halfspace=+1, surface=mid3)
 water_cell.add_surface(halfspace=-1, surface=max_x)
 slab_universe.add_cell(water_cell)
 
@@ -167,8 +176,9 @@ for scatter in scattering:
 
         all_cells = copy_slab_univ.get_all_cells()
         for cell_id, cell in all_cells.items():
-            linear_mesh = opencg.LinearMesh('x', cell.min_x, cell.max_x, num_mesh)
-            new_cells = linear_mesh.subdivide_cell(cell, copy_slab_univ)
+            if cell.name not in ['gap', 'clad']:
+                linear_mesh = opencg.LinearMesh('x', cell.min_x, cell.max_x, num_mesh)
+                new_cells = linear_mesh.subdivide_cell(cell, copy_slab_univ)
 
         # Get an OpenMC version of this OpenCG geometry
         openmc_geometry = openmc.opencg_compatible.get_openmc_geometry(opencg_geometry)
