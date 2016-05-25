@@ -28,7 +28,7 @@ opts = openmoc.options.Options()
 
 # Query the user for the number of energy groups
 scatter = 'iso-in-lab'
-mesh = 32
+mesh = 16
 num_groups = 70
 
 directory = '{}/{}x'.format(scatter, mesh)
@@ -42,6 +42,15 @@ coarse_groups = group_structures['CASMO']['{}-group'.format(num_groups)]
 mgxs_lib = mgxs_lib.get_condensed_library(coarse_groups)
 openmoc_materials = \
     openmoc.materialize.load_openmc_mgxs_lib(mgxs_lib, openmoc_geometry)
+
+# Discretize the geometry
+'''
+all_cells = openmoc_geometry.getAllMaterialCells()
+for cell_id, cell in all_cells.items():
+    cell.setNumSectors(8)
+'''
+
+# FIXME: Extract volume-averaged flux
 
 # Initialize an OpenMOC TrackGenerator and Solver
 track_generator = openmoc.TrackGenerator(openmoc_geometry, 128, 0.05)
@@ -57,15 +66,15 @@ solver.setNumThreads(opts.num_omp_threads)
 solver.computeEigenvalue(opts.max_iters)
 solver.printTimerReport()
 
+# Extract the OpenMOC scalar fluxes
+openmoc_fluxes = openmoc.process.get_scalar_fluxes(solver)
+
 
 ###############################################################################
 #                         Extracting Scalar Fluxes
 ###############################################################################
 
 openmoc.log.py_printf('NORMAL', 'Plotting data...')
-
-# Extract the OpenMOC scalar fluxes
-openmoc_fluxes = openmoc.process.get_scalar_fluxes(solver)
 
 # Extract the OpenMC scalar fluxes
 num_fsrs = openmoc_geometry.getNumFSRs()
@@ -104,9 +113,41 @@ group_deltas = np.flipud(group_deltas)
 openmc_fluxes /= np.sum(openmc_fluxes * group_deltas, axis=1)[:,np.newaxis]
 openmoc_fluxes /= np.sum(openmoc_fluxes * group_deltas, axis=1)[:,np.newaxis]
 
+
+###############################################################################
+#                 Plot the OpenMC, OpenMOC Scalar Fluxes
+###############################################################################
+
 # Extend the mgxs values array for matplotlib's step plot of fluxes
 openmc_fluxes = np.insert(openmc_fluxes, 0, openmc_fluxes[:,0], axis=1)
 openmoc_fluxes = np.insert(openmoc_fluxes, 0, openmoc_fluxes[:,0], axis=1)
+
+# Plot OpenMOC and OpenMC fluxes in each FSR
+for fsr in range(num_fsrs):
+
+    # Get the OpenMOC cell and material for this FSR
+    cell = openmoc_geometry.findCellContainingFSR(fsr)
+    material_name = cell.getFillMaterial().getName()
+
+    # Create a step plot for the MGXS
+    fig = plt.figure()
+    plt.plot(group_edges, openmc_fluxes[fsr,:],
+             drawstyle='steps', color='r', linewidth=2)
+    plt.plot(group_edges, openmoc_fluxes[fsr,:],
+             drawstyle='steps', color='b', linewidth=2)
+
+    plt.yscale('log')
+    plt.xscale('log')
+    plt.xlabel('Energy [eV]', fontsize=12)
+    plt.ylabel('Flux', fontsize=12)
+    title = '{} Scalar Flux'.format(material_name.capitalize())
+    plt.title(title, y=1.03, fontsize=16)
+    plt.xlim((min(group_edges), max(group_edges)))
+    plt.legend(['OpenMC', 'OpenMOC'], loc='best', fontsize=12)
+    plt.grid()
+    filename = 'flux-{0}.png'.format(fsr)
+    plt.savefig(filename, bbox_inches='tight')
+    plt.close()
 
 
 ###############################################################################
@@ -136,6 +177,7 @@ for fsr in range(num_fsrs):
 
     # Get the OpenMOC cell and material for this FSR
     cell = openmoc_geometry.findCellContainingFSR(fsr)
+    material_name = cell.getFillMaterial().getName()
 
     # Create a step plot for the MGXS
     fig, ax1 = plt.subplots()
@@ -151,7 +193,7 @@ for fsr in range(num_fsrs):
     plt.xscale('log')
 
     # Create loglog plot of U-238 continuous-energy capture cross section 
-    if 'fuel' in cell.getName():
+    if 'fuel' in material_name.lower():
         ax2 = ax1.twinx()
         ax2.loglog(u238.energy*1e6, capture.sigma, color='g', \
                    linewidth=1, zorder=1)

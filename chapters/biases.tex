@@ -1,50 +1,31 @@
 \chapter{Quantifying MGXS Approximations}
 \label{chap:biases}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Introduction}
-\label{sec:chap4-intro}
+This chapter verifies the accuracy of the data pipeline used to compute multi-group cross sections with OpenMC for use in OpenMOC. A series of case studies were devised to systematically quantify biases inherent to the energy condensation and spatial homogenization process in multi-group theory. The results from this chapter underline the complex interactions between discretizations in energy, space and angle. Various case studies of each of these variables are presented in order to quantify the resulting magnitude of the bias induced in deterministic calculations.
 
-\begin{itemize}[noitemsep]
-  \item quantify \ac{MGXS} different approximation errors
-  \item leave intra-pin spatial self-shielding error for later section
-  \item need to discuss difference between iso-in-lab and regular scattering
-\end{itemize}
+Section~\ref{sec:chap4-intro} outlines the types of approximations quantified in this chapter. Section~\ref{sec:chap4-case-studies} presents case studies for an infinite homogenous medium, heterogeneous 1D slab, 2D fuel pin and 2D fuel assembly. The results in this chapter illustrate the loss in accuracy resulting from scalar flux-weighted \ac{MGXS} and highlight the need for models of the angular dependency in \ac{MGXS} for fine-mesh neutron transport codes.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Case Studies}
 \label{sec:chap4-case-studies}
 
-\begin{itemize}[noitemsep]
-  \item \ac{MOC} convergence studies with \ac{MC}-generated \ac{MGXS}
-  \begin{itemize}[noitemsep]
-    \item track discretization - \# azimuthal angles,  track spacing
-    \item \# energy groups
-    \item spatial discretization
-  \end{itemize}
-  \item compare to reference \ac{MC} solution:
-  \begin{itemize}
-    \item eigenvalue
-    \item fluxes
-  \end{itemize}
-\end{itemize}
+This chapter investigates the loss in accuracy resulting from approximations made in both the \ac{MOC} equations as well as the \ac{MGXS} generation scheme with OpenMC. The approximation errors are quantified for a variety of geometric and material configurations. In each case, the bias $\Delta\rho$ compares the eigenvalue computed with \ac{MGXS} in OpenMOC $k_{eff}^{OpenMOC}$ to that of the reference eigenvalue computed with continuous energy cross sections in OpenMC $k_{eff}^{OpenMC}$:
 
 \begin{equation}
 \label{eqn:chap4-delta-rho}
 \Delta\rho = \left(k_{eff}^{OpenMOC} - k_{eff}^{OpenMC}\right) \times 1E5
 \end{equation}
 
+In each case study, the role of angular discretization in \ac{MOC} is quantified through convergence studies of the number of azimuthal angles and the track spacing used in the deterministic calculations. The effects of energy discretization are analyzed for \ac{MGXS} tallied in the CASMO [CITE? 4 OR 5?] energy group structures ranging from 1-70 groups. For each of the case studies with heterogeneous geometries, the spatial domain is discretized in OpenMOC's flat source region mesh with constant-by-material \ac{MGXS} to quantify the interaction between the energy and spatial approximations. Spatial discretization studies show the impact of tallying \ac{MGXS} in each of the flat source regions used in the discretized OpenMOC geometry. Finally, \ac{MGXS} libraries were tallied using OpenMC's ``iso-in-lab'' feature for isotropic in lab scattering to quantify the impact of the isotropic in lab scattering approximation used in OpenMOC. 
+
+%Intra-pin spatial self-shielding effects are not treated here as they are studied in detail in Chapters~\ref{chap:methods} and~\ref{chap:results}.
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Infinite Medium}
+\subsection{Homogeneous Infinite Medium}
 \label{subsec:chap4-inf-medium}
 
-\begin{itemize}[noitemsep]
-\item 128 azim angles
-\item 0.01 cm track spacing
-\item 1E-7 convergence threshold
-\item double precision
-\end{itemize}
+An initial case study was performed for a homogeneous infinite medium problem. The isotopic composition of the infinite medium was constructed to mimic that of a homogenized \ac{PWR} pin cell and is described in Table~\ref{table:chap2-inf-med-isotopes}. No approximation is made in the multi-group formulation of the transport equation in the case of homogeneous infinite media. As a result, neutron balance should be identically preserved in deterministic calculations for \ac{MGXS} computed in any energy group structure within numerical precision, assuming the tallies used to compute \ac{MGXS} are adequately converged.
 
 \begin{table}[h!]
   \centering
@@ -65,9 +46,11 @@
 \end{tabular}
 \end{table}
 
+The reference eigenvalues computed with continuous energy cross sections in OpenMC are shown in Table~\ref{table:chap2-inf-med-reference} for both normal as well as ``iso-in-lab'' scattering. The reference calculations were computed for 100 batches of 1E7 particles per batch. The \texttt{openc.mgxs} module was used to compute 70-group libraries of $\Sigma^T_g$, $\nu\Sigma^F_g$, $\nu_s\Sigma^S_g$ and $\chi_g$ from OpenMC tallies. An installation of OpenMOC compiled with double precision floating point arithmetic was used for each deterministic simulation. In each calculation, OpenMOC was converged to a convergence criterion of 1E-7 on the energy-integrated fission source.
+
 \begin{table}[h!]
   \centering
-  \caption{Reference $k_{eff}$ for an infinite medium.}
+  \caption{Reference $k^{OpenMC}_{\infty}$ for an infinite medium.}
   \label{table:chap2-inf-med-reference} 
   \vspace{14pt}
   \begin{tabular}{c c}
@@ -80,9 +63,11 @@
 \end{tabular}
 \end{table}
 
+Table~\ref{table:chap2-inf-med-angle} presents the bias $\Delta\rho$ between OpenMC and OpenMOC for a matrix of azimuthal angles and track spacings. The results for both normal and ``iso-in-lab'' scattering indicate a strong and consistent agreement of the eigenvalues computed by OpenMOC with OpenMC for all track discretizations as expected.
+
 \begin{table}[h!]
   \centering
-  \caption{Angular-dependent $k_{eff}$ bias for an infinite medium.}
+  \caption{Angular-dependent $k_{\infty}$ bias for an infinite medium.}
   \label{table:chap2-inf-med-angle}
   \vspace{14pt}
   \begin{tabular}{c S[table-format=2.1] S[table-format=2.1] S[table-format=2.1] c S[table-format=2.1] S[table-format=2.1] S[table-format=2.1]} 
@@ -98,7 +83,7 @@
   \multicolumn{1}{c}{\bf 0.01 cm} & 
   \multicolumn{1}{c}{\bf 0.001 cm} \\
   \midrule
-  & \multicolumn{3}{c}{\bf No Transport Corr.} &
+  & \multicolumn{3}{c}{\bf Anisotropic} &
   \multicolumn{1}{c}{} &
   \multicolumn{3}{c}{\bf Isotropic in Lab} \\
   \cline{2-4} \cline{6-8}
@@ -112,9 +97,11 @@
 \end{tabular}
 \end{table}
 
+Table~\ref{table:chap2-inf-med-energy} presents the bias $\Delta\rho$ between OpenMC and OpenMOC for a matrix of energy group structures and flat source region spatial discretizations. The OpenMOC calculations each used 128 azimuthal angles and 0.05 cm track spacing. The eigenvalues vary slightly between energy group structures, but the small deviations are likely due to numerical roundoff error in the MOC calculation. [PERHAPS?]
+
 \begin{table}[h!]
   \centering
-  \caption{Energy-dependent $k_{eff}$ bias for an infinite medium.}
+  \caption{Energy-dependent $k_{\infty}$ bias for an infinite medium.}
   \label{table:chap2-inf-med-energy} 
   \vspace{14pt}
   \begin{tabular}{c S[table-format=2.1] S[table-format=2.1]}
@@ -122,7 +109,7 @@
   \multicolumn{1}{c}{\textbf{\# Groups}} &
   \multicolumn{2}{c}{\boldmath $\Delta\rho$ {\bf [pcm]}} \\
   \midrule
-  & \multicolumn{1}{c}{\bf No Transport Corr.} &
+  & \multicolumn{1}{c}{\bf Anisotropic} &
   \multicolumn{1}{c}{\bf Isotropic in Lab} \\
   \midrule
 1 & -11.1 & -10.5 \\
@@ -141,6 +128,23 @@
 %%%%%%%%%%%%%%%%%%%%
 \subsection{1D Slab}
 \label{subsec:chap4-slab}
+
+A simple 1D slab model was constructed to quantify approximation errors in a heterogeneous geometry. The geometric configuration of UO$_2$ fuel, zirconium clad and water moderator is illustrated in Figure~\ref{fig:chap4-slab}. Reflective boundary conditions were modeled for all edges in the geometry. The isotopic composition of each material in the slab was constructed to mimic that of a \ac{PWR} pin cell and is described in Table~\ref{table:chap2-slab-isotopes}. 
+
+\begin{figure}[h!]
+\begin{subfigure}{\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{figures/biases/slab/slab-simple}
+  \caption{}
+\end{subfigure} \\
+\begin{subfigure}{\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{figures/biases/slab/slab-8x}
+  \caption{}
+\end{subfigure}
+\caption[1D slab materials and geometry]{A 1D slab with fuel, clad and moderator (a). Linearly-spaced tally zones were defined in each material in OpenMC and as flat source regions in OpenMOC (b).}
+\label{fig:chap4-slab}
+\end{figure}
 
 \begin{table}[h!]
   \centering
@@ -176,32 +180,11 @@
 \end{tabular}
 \end{table}
 
-\begin{figure}[h!]
-\begin{subfigure}{\textwidth}
-  \centering
-  \includegraphics[width=\linewidth]{figures/biases/slab/slab-simple}
-  \caption{}
-\end{subfigure} \\
-\begin{subfigure}{\textwidth}
-  \centering
-  \includegraphics[width=\linewidth]{figures/biases/slab/slab-8x}
-  \caption{}
-\end{subfigure}
-\caption[1D slab materials and geometry]{A 1D slab with fuel, clad and moderator (a). Linearly-spaced tally zones were defined in each material in OpenMC and as flat source regions in OpenMOC (b).}
-\label{fig:chap4-slab}
-\end{figure}
-
-\begin{itemize}[noitemsep]
-  \item 1D slab equivalent to a representative \ac{PWR} fuel pin
-  \item 128 azim angles
-  \item 0.01 cm track spacing
-  \item 1E-7 convergence threshold
-  \item double precision
-\end{itemize}
+The reference eigenvalues computed with continuous energy cross sections in OpenMC are shown in Table~\ref{table:chap2-slab-reference} for both normal as well as ``iso-in-lab'' scattering. The reference calculations were computed for 100 batches of 1E6 particles per batch. The reference eigenvalues for the two cases vary by nearly 4800 pcm largely due to strong anisotropies resulting from thermal scattering in water. The \texttt{openc.mgxs} module was used to compute 70-group libraries of $\Sigma^T_g$, $\Sigma^{Tr}_g$, $\nu\Sigma^F_g$, $\nu_s\Sigma^S_g$ and $\chi_g$ from OpenMC tallies. An installation of OpenMOC compiled with double precision floating point arithmetic was used for each deterministic simulation. In each calculation, OpenMOC was converged to a convergence criterion of 1E-7 on the energy-integrated fission source.
 
 \begin{table}[h!]
   \centering
-  \caption{Reference $k_{eff}$ for an 1D slab.}
+  \caption{Reference $k^{OpenMC}_{eff}$ for a 1D slab.}
   \label{table:chap2-slab-reference} 
   \vspace{14pt}
   \begin{tabular}{c c}
@@ -213,6 +196,8 @@
   \bottomrule
 \end{tabular}
 \end{table}
+
+Table~\ref{table:chap2-slab-angle} presents the bias $\Delta\rho$ between OpenMC and OpenMOC for a matrix of azimuthal angles and track spacings. No transport correction was applied to the total cross section $\Sigma^T_g$ or the scattering matrix $\nu_s\Sigma^S_g$ in either case. The results for both normal anisotropic scattering and ``iso-in-lab'' scattering exhibit a very large bias resulting from the multi-group approximation. The magnitude of the bias appears to converge with 64 azimuthal angles and is largely invariant with the track spacing. The \ac{MGXS} tallied with ``iso-in-lab'' scattering in OpenMC result in an eigenvalue which is nearly 4800 pcm greater than that computed for the anisotropic case, closely mirroring the shift in the OpenMC reference eigenvalues in Table~\ref{table:chap2-slab-reference}.
 
 \begin{table}[h!]
   \centering
@@ -232,7 +217,7 @@
   \multicolumn{1}{c}{\bf 0.01 cm} & 
   \multicolumn{1}{c}{\bf 0.001 cm} \\
   \midrule
-  & \multicolumn{3}{c}{\bf No Transport Corr.} &
+  & \multicolumn{3}{c}{\bf Anisotropic} &
   \multicolumn{1}{c}{} &
   \multicolumn{3}{c}{\bf Isotropic in Lab} \\
   \cline{2-4} \cline{6-8}
@@ -245,6 +230,10 @@
   \bottomrule
 \end{tabular}
 \end{table}
+
+Table~\ref{table:chap2-slab-energy} presents the bias $\Delta\rho$ between OpenMC and OpenMOC for a matrix of energy group structures and flat source region spatial discretizations. In each case, the \ac{MGXS} used in OpenMOC were tallied by material in OpenMC. The OpenMOC calculations each used 128 azimuthal angles and 0.05 cm track spacing. Each of the materials in the slab was discretized between 1$\times$ and 32$\times$. 
+
+The results illustrate a strong interaction between the energy and spatial discretization, as the eigenvalue bias exhibits a swing of nearly 10000-15000 pcm between energy/spatial meshes. The application of the P0 transport correction has a marked impact in reducing the bias if and only if fine energy and spatial meshes are applied together. The results with OpenMC's ``iso-in-lab'' scattering feature similarly point to the need for both a fine energy and spatial mesh to minimize and converge the bias from the multi-group approximation.
 
 \begin{table}[h!]
   \centering
@@ -263,7 +252,7 @@
   \multicolumn{1}{c}{\bf 16$\times$} &
   \multicolumn{1}{c}{\bf 32$\times$} \\
   \midrule
-  & \multicolumn{5}{c}{\bf No Transport Corr.} \\
+  & \multicolumn{5}{c}{\bf Anisotropic $\left(\Sigma^T_g\right)$} \\
   \cline{2-6}
 1 & 4241 & 4640 & 4932 & 5084 & 5094 \\
 2 & 8786 & 4998 & 734 & -2486 & -2732 \\
@@ -273,17 +262,19 @@
 25 & 10250 & 5525 & -36 & -4410 & -4755 \\
 40 & 10355 & 5609 & 17 & -4395 & -4745 \\
 70 & 10375 & 5636 & 31 & -4398 & -4750 \\
-  & \multicolumn{5}{c}{\bf With Transport Corr.} \\
+  \cline{2-6}
+  & \multicolumn{5}{c}{\bf Anisotropic $\left(\Sigma^{Tr}_g\right)$} \\
   \cline{2-6}
 1 & 4041 & 4263 & 4383 & 4435 & 4438 \\
 2 & 9201 & 5755 & 2525 & 497 & 358 \\
 4 & 9134 & 5365 & 1868 & -312 & -462 \\
 8 & 10296 & 6284 & 2347 & -305 & -497 \\
 16 & 10417 & 6441 & 2566 & -75 & -269 \\
-25 & 10376 & 6385 & 2480 & -181 & -381 \\
+2simple5 & 10376 & 6385 & 2480 & -181 & -381 \\
 40 & 10474 & 6471 & 2550 & -140 & -344 \\
 70 & 10482 & 6486 & 2569 & -124 & -329 \\
-  & \multicolumn{5}{c}{\bf Isotropic in Lab} \\
+  \cline{2-6}
+  & \multicolumn{5}{c}{\bf Isotropic in Lab $\left(\Sigma^T_g\right)$} \\
   \cline{2-6}
 1 & 4654 & 5126 & 5480 & 5668 & 5680 \\
 2 & 13926 & 10000 & 5563 & 2201 & 1943 \\
@@ -295,7 +286,11 @@
 70 & 15177 & 10435 & 4827 & 396 & 44 \\
   \bottomrule
 \end{tabular}
-\end{table}
+\end{table}simple
+
+Table~\ref{table:chap2-slab-space} presents the bias $\Delta\rho$ between OpenMC and OpenMOC for a matrix of energy group structures and \ac{MGXS} spatial tally zone meshes. In each case, the \ac{MGXS} used in OpenMOC were tallied in the flat source region mesh used in OpenMOC with 1$\times$ and 32$\times$ subdivisions per material. The OpenMOC calculations each used 128 azimuthal angles and 0.05 cm track spacing.
+
+The trends analyzed in Table~\ref{table:chap2-slab-energy} emerge in a nearly identical manner with spatially-dependent \ac{MGXS}. Based on this, one can conclude that spatial self-shielding effects (\textit{e.g.}, ) captured with scalar flux-weighted \ac{MGXS} do not result in large systematic errors in the eigenvalue for this 1D slab problem.
 
 \begin{table}[h!]
   \centering
@@ -314,7 +309,7 @@
   \multicolumn{1}{c}{\bf 16$\times$} &
   \multicolumn{1}{c}{\bf 32$\times$} \\
   \midrule
-  & \multicolumn{5}{c}{\bf No Transport Corr.} \\
+  & \multicolumn{5}{c}{\bf Anisotropic $\left(\Sigma^T_g\right)$} \\
   \cline{2-6}
 1 & 4253 & 4750 & 5094 & 5263 & 5271 \\
 2 & 8797 & 4796 & 404 & -2817 & -3062 \\
@@ -324,7 +319,8 @@
 25 & 10262 & 5519 & -63 & -4436 & -4780 \\
 40 & 10366 & 5611 & 4 & -4411 & -4758 \\
 70 & 10387 & 5633 & 19 & -4406 & -4756 \\
-  & \multicolumn{5}{c}{\bf With Transport Corr.} \\
+  \cline{2-6}
+  & \multicolumn{5}{c}{\bf Anisotropic $\left(\Sigma^{Tr}_g\right)$} \\
   \cline{2-6}
 1 & 4052 & 4338 & 4475 & 4541 & 4544 \\
 2 & 9212 & 5615 & 2393 & 470 & 346 \\
@@ -334,7 +330,8 @@
 25 & 10387 & 6380 & 2464 & -193 & -388 \\
 40 & 10486 & 6472 & 2543 & -147 & -348 \\
 70 & 10494 & 6483 & 2561 & -130 & -332 \\
-  & \multicolumn{5}{c}{\bf Isotropic in Lab} \\
+  \cline{2-6}
+  & \multicolumn{5}{c}{\bf Isotropic in Lab $\left(\Sigma^T_g\right)$} \\
   \cline{2-6}
 1 & 4654 & 5303 & 5731 & 5972 & 6011 \\
 2 & 13926 & 9470 & 4647 & 1130 & 883 \\
@@ -348,11 +345,29 @@
 \end{tabular}
 \end{table}
 
-\begin{itemize}
-  \item 1-group flux comparision in 32x case
-  \item compare 70-group fluxes with U-238 capture XS - volume-avg
-  \item compare 70-group fluxes with U-238 capture XS - fuel mesh zone nearest clad
-\end{itemize}
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=0.9\linewidth]{figures/biases/slab/flux-group-1-1}
+  \caption{}
+\label{fig:chap2-slab-flux}
+\caption[Spatially-varying scalar flux a 1D slab.]{The volume-averaged reference OpenMC flux and OpenMOC flux computed with 70-group spatially-varying \ac{MGXS} in the fuel.}
+\end{figure}
+
+\begin{figure}[h!]
+\begin{subfigure}{\linewidth}
+  \centering
+  \includegraphics[width=0.9\linewidth]{figures/biases/slab/rel-err-fuel-inner}
+  \caption{}
+\end{subfigure}
+\begin{subfigure}{\linewidth}
+  \centering
+  \includegraphics[width=0.9\linewidth]{figures/biases/slab/rel-err-fuel-outer}
+  \caption{}
+\end{subfigure}
+\label{fig:chap2-slab-rel-err}
+\caption[Flux relative error by group for a 1D slab.]{The percent relative error of the OpenMOC scalar flux with respect to the tallied reference OpenMOC flux spectrum. The flux errors are illustrated by energy group for the innermost (a) and outermost (b) rings of the 32$\times$ discretization case.}
+\end{figure}
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{2D Fuel Pin Cell}
@@ -434,7 +449,7 @@
 
 \begin{table}[h!]
   \centering
-  \caption{Reference $k_{eff}$ for an 2D fuel pin.}
+  \caption{Reference $k^{OpenMC}_{eff}$ for an 2D fuel pin.}
   \label{table:chap2-pin-reference} 
   \vspace{14pt}
   \begin{tabular}{c c}
@@ -465,7 +480,7 @@
   \multicolumn{1}{c}{\bf 0.01 cm} & 
   \multicolumn{1}{c}{\bf 0.001 cm} \\
   \midrule
-  & \multicolumn{3}{c}{\bf No Transport Corr.} &
+  & \multicolumn{3}{c}{\bf Anisotropic} &
   \multicolumn{1}{c}{} &
   \multicolumn{3}{c}{\bf Isotropic in Lab} \\
   \cline{2-4} \cline{6-8}
@@ -497,7 +512,7 @@
   \multicolumn{1}{c}{\bf 8$\times$} &
   \multicolumn{1}{c}{\bf 16$\times$} \\
   \midrule
-  & \multicolumn{5}{c}{\bf No Transport Corr.} \\
+  & \multicolumn{5}{c}{\bf Anisotropic $\left(\Sigma^T_g\right)$} \\
   \cline{2-6}
 1 & 77 & 78 & 78 & 78 & 78 \\
 2 & 34 & -10 & -40 & -52 & -50 \\
@@ -507,7 +522,8 @@
 25 & -126 & -189 & -241 & -267 & -275 \\
 40 & -129 & -197 & -253 & -282 & -290 \\
 70 & -129 & -200 & -259 & -289 & -298 \\
-  & \multicolumn{5}{c}{\bf Transport Corr.} \\
+  \cline{2-6}
+  & \multicolumn{5}{c}{\bf Anisotropic $\left(\Sigma^{Tr}_g\right)$} \\
   \cline{2-6}
 1 & 63 & 64 & 64 & 64 & 63 \\
 2 & 52 & 22 & 4 & -2 & 6 \\
@@ -517,7 +533,8 @@
 25 & -128 & -182 & -225 & -250 & -253 \\
 40 & -133 & -192 & -241 & -268 & -272 \\
 70 & -135 & -196 & -248 & -277 & -281 \\
-  & \multicolumn{5}{c}{\bf Isotropic in Lab} \\
+  \cline{2-6}
+  & \multicolumn{5}{c}{\bf Isotropic in Lab $\left(\Sigma^T_g\right)$} \\
   \cline{2-6}
 1 & 91 & 92 & 92 & 93 & 92 \\
 2 & 153 & 109 & 78 & 67 & 69 \\
@@ -547,7 +564,7 @@
   \multicolumn{1}{c}{\bf 8$\times$} &
   \multicolumn{1}{c}{\bf 16$\times$} \\
   \midrule
-  & \multicolumn{5}{c}{\bf No Transport Corr.} \\
+  & \multicolumn{5}{c}{\bf Anisotropic $\left(\Sigma^T_g\right)$} \\
   \cline{2-6}
  & 79 & 78 & 62 & 62 & 53 \\
 2 & 36 & -7 & -57 & -93 & -92 \\
@@ -557,7 +574,8 @@
 25 & -124 & -189 & -257 & -321 & -324 \\
 40 & -127 & -200 & -272 & -339 & -344 \\
 70 & -128 & -204 & -278 & -347 & -353 \\
-  & \multicolumn{5}{c}{\bf With Transport Corr.} \\
+  \cline{2-6}
+  & \multicolumn{5}{c}{\bf Anisotropic $\left(\Sigma^{Tr}_g\right)$} \\
   \cline{2-6}
 1 & 65 & 79 & 74 & 30 & 33 \\
 2 & 54 & 34 & 4 & -45 & -33 \\
@@ -567,7 +585,8 @@
 25 & -126 & -178 & -238 & -310 & -310 \\
 40 & -131 & -188 & -256 & -330 & -331 \\
 70 & -133 & -193 & -263 & -339 & -340 \\
-  & \multicolumn{5}{c}{\bf Isotropic in Lab} \\
+  \cline{2-6}
+  & \multicolumn{5}{c}{\bf Isotropic in Lab $\left(\Sigma^T_g\right)$} \\
   \cline{2-6}
 1 & 92 & 109 & 54 & 48 & 28 \\
 2 & 154 & 107 & 28 & 12 & -6 \\
@@ -590,15 +609,23 @@
 \begin{figure}[h!]
   \centering
   \includegraphics[width=0.9\linewidth]{figures/biases/pin-cell/flux-uo2-fuel}
-  \caption{}
+\caption[Spatially-varying scalar flux a 2D fuel pin.]{The volume-averaged reference OpenMC flux and OpenMOC flux computed with 70-group spatially-varying \ac{MGXS} in the fuel.}
 \label{fig:chap2-pin-flux}
 \end{figure}
 
 \begin{figure}[h!]
+\begin{subfigure}{\linewidth}
   \centering
-  \includegraphics[width=0.9\linewidth]{figures/biases/pin-cell/rel-err-uo2-fuel}
+  \includegraphics[width=0.9\linewidth]{figures/biases/pin-cell/rel-err-fuel-inner}
   \caption{}
-\label{fig:chap2-pin-flux}
+\end{subfigure}
+\begin{subfigure}{\linewidth}
+  \centering
+  \includegraphics[width=0.9\linewidth]{figures/biases/pin-cell/rel-err-fuel-outer}
+  \caption{}
+\end{subfigure}
+\label{fig:chap2-pin-rel-err}
+\caption[Flux relative error by group for a 2D fuel pin.]{The percent relative error of the OpenMOC scalar flux with respect to the reference OpenMOC flux spectrum. The flux errors are illustrated by energy group for the innermost (a) and outermost (b) rings of the 16$\times$ discretization case.}
 \end{figure}
 
 
