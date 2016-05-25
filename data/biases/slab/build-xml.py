@@ -41,8 +41,8 @@ materials_file.default_xs = '71c'
 
 # Get OpenCG versions of each OpenMC material to fill OpenCG Cells below
 opencg_fuel = openmc.opencg_compatible.get_opencg_material(uo2)
-opencg_clad = openmc.opencg_compatible.get_opencg_material(helium)
-opencg_gap = openmc.opencg_compatible.get_opencg_material(zircaloy)
+opencg_gap = openmc.opencg_compatible.get_opencg_material(helium)
+opencg_clad = openmc.opencg_compatible.get_opencg_material(zircaloy)
 opencg_water = openmc.opencg_compatible.get_opencg_material(borated_water)
 
 
@@ -146,11 +146,12 @@ plot = openmc.Plot()
 plot.origin = [delta_x/2., delta_y/2., delta_z/2.]
 plot.width = [delta_x, delta_y]
 plot.pixels = [1000, 250]
-#plot.col_spec = {fuel.id: (255, 0, 0),
-#                 clad.id: (120, 120, 120),
-#                 water.id: (0, 0, 255)}
-#plot.color = 'mat'
-plot.color = 'cell'
+plot.col_spec = {uo2.id: (255, 0, 0),
+                 zircaloy.id: (120, 120, 120),
+                 helium.id : (0, 0, 0),
+                 borated_water.id: (0, 0, 255)}
+plot.color = 'mat'
+#plot.color = 'cell'
 
 # Instantiate a PlotsFile, add Plot, and export to "plots.xml"
 plots_file = openmc.Plots([plot])
