@@ -35,13 +35,13 @@ An initial case study was performed for a homogeneous infinite medium problem. T
   \begin{tabular}{c c}
   \toprule
   \multicolumn{1}{c}{\bf Nuclide} &
-  \multicolumn{1}{c}{\bf Density [g/cc]} \\
+  \multicolumn{1}{c}{\bf Density [at/b-cm]} \\
   \midrule
-  H-1 & 2.8999E-2 \\
-  O-16 & 1.4501E-2 \\
-  Zr-90 & 2.1160E-3 \\  
-  U-235 & 1.1414E-4 \\
-  U-238 & 6.8860E-3 \\
+  H-1 &   4.123778597552705E-2 \\
+  O-16 &  2.062180312907649E-2 \\
+  Zr-90 & 3.009046301354838E-3 \\
+  U-235 & 1.623109453918422E-4 \\
+  U-238 & 9.791980637067758E-3 \\
   \bottomrule
 \end{tabular}
 \end{table}
@@ -154,13 +154,13 @@ A simple 1D slab model was constructed to quantify approximation errors in a het
   \begin{tabular}{c c}
   \toprule
   \multicolumn{1}{c}{\bf Nuclide} &
-  \multicolumn{1}{c}{\bf Density [g/cc]} \\
+  \multicolumn{1}{c}{\bf Density [at/b-cm]} \\
   \midrule
   \multicolumn{2}{c}{\bf UO$_2$ Fuel} \\
   \midrule
-  O-16 & 4.5764E-2 \\
-  U-235 & 7.1813E-4 \\
-  U-238 & 2.2154E-2 \\
+  O-16 &  4.57642E-2 \\
+  U-235 & 7.18132E-4 \\
+  U-238 & 2.21546E-2 \\
   \midrule
   \multicolumn{2}{c}{\bf Zircaloy Cladding} \\
   \midrule
@@ -172,7 +172,7 @@ A simple 1D slab model was constructed to quantify approximation errors in a het
   \midrule
   \multicolumn{2}{c}{\bf Borated Water}  \\
   \midrule
-  H-1 & 4.4145E-2 \\
+  H-1 &  4.4145E-2 \\
   B-10 & 9.5253E-6 \\
   B-11 & 3.8340E-5 \\
   O-16 & 2.2072E-2 \\
@@ -270,7 +270,7 @@ The results illustrate a strong interaction between the energy and spatial discr
 4 & 9134 & 5365 & 1868 & -312 & -462 \\
 8 & 10296 & 6284 & 2347 & -305 & -497 \\
 16 & 10417 & 6441 & 2566 & -75 & -269 \\
-2simple5 & 10376 & 6385 & 2480 & -181 & -381 \\
+25 & 10376 & 6385 & 2480 & -181 & -381 \\
 40 & 10474 & 6471 & 2550 & -140 & -344 \\
 70 & 10482 & 6486 & 2569 & -124 & -329 \\
   \cline{2-6}
@@ -381,48 +381,30 @@ The trends analyzed in Table~\ref{table:chap2-slab-energy} emerge in a nearly id
   \begin{tabular}{c c}
   \toprule
   \multicolumn{1}{c}{\bf Nuclide} &
-  \multicolumn{1}{c}{\bf Atom Density [ao]} \\
+  \multicolumn{1}{c}{\bf Atom Density [at/b-cm]} \\
   \midrule
   \multicolumn{2}{c}{\bf UO$_2$ Fuel} \\
   \midrule
-  O-16 & 4.5829E-2 \\
-  U-235 & 5.5815E-4 \\
-  U-238 & 2.2408E-2 \\
+  O-16 &  4.5850826385693E-2 \\
+  U-235 & 5.5841582288888E-4 \\
+  U-238 & 2.2418671968636E-2 \\
   \midrule
   \multicolumn{2}{c}{\bf Helium Gap} \\
   \midrule
-  He-4 & 2.4044E-4 \\
+  He-4 & 2.40428068880973E-4 \\
   \midrule
   \multicolumn{2}{c}{\bf Zircaloy Cladding} \\
   \midrule
-  O-16 & 3.0743E-4 \\
-  Fe-56 & 1.3610E-4 \\
-  Zr-90 & 2.1827E-2 \\
+  O-16 &  6.1404143720635E-4 \\
+  Fe-56 & 2.7183762028359E-4 \\
+  Zr-90 & 4.3595883452828E-2 \\
   \midrule
   \multicolumn{2}{c}{\bf Borated Water}  \\
   \midrule
-  H-1 & 4.9457E-2 \\
-  B-10 & 8.0042E-6 \\
-  B-11 & 3.2218E-5 \\
-  O-16 & 2.4672E-2 \\
-  \bottomrule
-\end{tabular}
-\end{table}
-
-\begin{table}[h!]
-  \centering
-  \caption{2D fuel pin material densities.}
-  \label{table:chap2-pin-densities} 
-  \vspace{14pt}
-  \begin{tabular}{c c}
-  \toprule
-  \multicolumn{1}{c}{\bf Material} &
-  \multicolumn{1}{c}{\bf Density [g/cc]} \\
-  \midrule
-  UO$_2$ Fuel & 1.03E+1 \\
-  Hellium & 1.59E-3 \\
-  Zircaloy & 6.55E+0 \\
-  Borated Water & 7.41E-1 \\   
+  H-1 &  4.95774559287053E-2 \\
+  B-10 & 8.02369478020388E-6 \\
+  B-11 & 3.22964691572685E-5 \\
+  O-16 & 2.47320903547125E-2 \\
   \bottomrule
 \end{tabular}
 \end{table}
@@ -630,101 +612,4 @@ The trends analyzed in Table~\ref{table:chap2-slab-energy} emerge in a nearly id
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{2D Fuel Assembly}
-
-\begin{table}[h!]
-  \centering
-  \caption{Reference $k_{eff}$ for an 2D fuel assembly.}
-  \label{table:chap2-lattice-reference} 
-  \vspace{14pt}
-  \begin{tabular}{c c}
-  \toprule
-  \multicolumn{1}{c}{\bf Anisotropic} &
-  \multicolumn{1}{c}{\bf Isotropic in Lab} \\
-  \midrule
-  \bottomrule
-\end{tabular}
-\end{table}
-
-\begin{table}[h!]
-  \centering
-  \caption{Angular-dependent $k_{eff}$ bias for a 2D fuel assembly.}
-  \label{table:chap2-lattice-angle}
-  \vspace{14pt}
-  \begin{tabular}{c S[table-format=2.1] S[table-format=2.1] S[table-format=2.1] c S[table-format=2.1] S[table-format=2.1] S[table-format=2.1]} 
-  \toprule
-  & \multicolumn{7}{c}{\boldmath $\Delta\rho$ {\bf [pcm]}} \\
-  \midrule
-  \multicolumn{1}{c}{\bf \# Angles} &
-  \multicolumn{1}{c}{\bf 0.1 cm} & 
-  \multicolumn{1}{c}{\bf 0.01 cm} & 
-  \multicolumn{1}{c}{\bf 0.001 cm} &
-  \multicolumn{1}{c}{} &
-  \multicolumn{1}{c}{\bf 0.1 cm} & 
-  \multicolumn{1}{c}{\bf 0.01 cm} & 
-  \multicolumn{1}{c}{\bf 0.001 cm} \\
-  \midrule
-  & \multicolumn{3}{c}{\bf No Transport Corr.} &
-  \multicolumn{1}{c}{} &
-  \multicolumn{3}{c}{\bf Isotropic in Lab} \\
-  \cline{2-4} \cline{6-8}
-4 & & & & & & & \\
-8 & & & & & & &  \\
-16 & & & & & & &  \\
-32 & & & & & & &  \\
-64 & & & & & & &  \\
-128 & & & & & & &  \\
-  \bottomrule
-\end{tabular}
-\end{table}
-
-\begin{table}[h!]
-  \centering
-  \caption{Energy-dependent $k_{eff}$ bias for a 2D fuel assembly.}
-  \label{table:chap2-lattice-energy} 
-  \vspace{14pt}
-  \begin{tabular}{c S[table-format=2.1] S[table-format=2.1] S[table-format=2.1] S[table-format=2.1] S[table-format=2.1] S[table-format=2.1]}
-  \toprule
-  & \multicolumn{6}{c}{\boldmath $\Delta\rho$ {\bf [pcm]}} \\
-  \midrule  
-  \multicolumn{1}{c}{\textbf{\# Groups}} &
-  \multicolumn{1}{c}{\bf 1$\times$} &
-  \multicolumn{1}{c}{\bf 2$\times$} &
-  \multicolumn{1}{c}{\bf 4$\times$} &
-  \multicolumn{1}{c}{\bf 8$\times$} &
-  \multicolumn{1}{c}{\bf 16$\times$} &
-  \multicolumn{1}{c}{\bf 32$\times$} \\
-  \midrule
-  & \multicolumn{6}{c}{\bf No Transport Corr.} \\
-  \cline{2-7}
-  1 & & & & & & \\
-  2 & & & & & & \\
-  4 & & & & & & \\
-  8 & & & & & & \\
-  16 & & & & & & \\
-  25 & & & & & & \\
-  40 & & & & & & \\
-  70 & & & & & & \\
-  & \multicolumn{6}{c}{\bf With Transport Corr.} \\
-  \cline{2-7}
-  1 & & & & & & \\
-  2 & & & & & & \\
-  4 & & & & & & \\
-  8 & & & & & & \\
-  16 & & & & & & \\
-  25 & & & & & & \\
-  40 & & & & & & \\
-  70 & & & & & & \\
-  & \multicolumn{6}{c}{\bf Isotropic in Lab} \\
-  \cline{2-7}
-  1 & & & & & & \\
-  2 & & & & & & \\
-  4 & & & & & & \\
-  8 & & & & & & \\
-  16 & & & & & & \\
-  25 & & & & & & \\
-  40 & & & & & & \\
-  70 & & & & & & \\  
-  \bottomrule
-\end{tabular}
-\end{table}
+%\subsection{2D Fuel Assembly}
