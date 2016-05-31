@@ -18,6 +18,7 @@
 \label{sec:chap5-sph}
 
 \begin{itemize}
+  \item diagnose issue w/ Figures 7.2 and 7.3 from Nate's thesis
   \item introduce basic eqns, reference Hebert
   \item overview algorithm
 \end{itemize}
@@ -41,6 +42,48 @@
   \item plot of fluxes w/ and w/o SPH
   \item plot of Nelson's flux/angular-dependent MGXS???
 \end{itemize}
+
+\begin{table}[h!]
+  \centering
+  \caption{Energy-dependent $k_{eff}$ bias for a 2D fuel pin.}
+  \label{table:chap2-pin-energy} 
+  \vspace{14pt}
+  \begin{tabular}{c S[table-format=6.1] S[table-format=6.1] S[table-format=6.1] S[table-format=6.1] S[table-format=6.1]}
+  \toprule
+  & \multicolumn{5}{c}{\boldmath $\Delta\rho$ {\bf [pcm]}} \\
+  \midrule  
+  \multicolumn{1}{c}{\textbf{\# Groups}} &
+  \multicolumn{1}{c}{\bf 1$\times$} &
+  \multicolumn{1}{c}{\bf 2$\times$} &
+  \multicolumn{1}{c}{\bf 4$\times$} &
+  \multicolumn{1}{c}{\bf 8$\times$} &
+  \multicolumn{1}{c}{\bf 16$\times$} \\
+  \midrule
+  & \multicolumn{5}{c}{\bf Without SPH} \\
+  \cline{2-6}
+1 & 77 & 78 & 78 & 78 & 78 \\
+2 & 34 & -10 & -40 & -52 & -50 \\
+4 & -55 & -95 & -123 & -137 & -145 \\
+8 & -71 & -131 & -177 & -198 & -208 \\
+16 & -68 & -135 & -188 & -212 & -223 \\
+25 & -126 & -189 & -241 & -267 & -275 \\
+40 & -129 & -197 & -253 & -282 & -290 \\
+70 & -129 & -200 & -259 & -289 & -298 \\
+  \cline{2-6}
+  & \multicolumn{5}{c}{\bf With SPH} \\
+  \cline{2-6}
+1 & 91 & 92 & 92 & 93 & 92 \\
+2 & 153 & 109 & 78 & 67 & 69 \\
+4 & 31 & -9 & -38 & -51 & -59 \\
+8 & 31 & -29 & -75 & -95 & -106 \\
+16 & 41 & -26 & -79 & -103 & -114 \\
+25 & -27 & -91 & -142 & -169 & -177 \\
+40 & -34 & -103 & -159 & -187 & -196 \\
+70 & -35 & -106 & -165 & -195 & -204 \\
+  \bottomrule
+\end{tabular}
+\end{table}
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{2D Fuel Pin Cell}
