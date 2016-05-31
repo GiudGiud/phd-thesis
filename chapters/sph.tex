@@ -38,15 +38,14 @@
 \label{subsubsec:chap5-sph-slab}
 
 \begin{itemize}[noitemsep]
-  \item table of eigenvalues by energy group, w/ and w/o SPH
   \item plot of fluxes w/ and w/o SPH
   \item plot of Nelson's flux/angular-dependent MGXS???
 \end{itemize}
 
 \begin{table}[h!]
   \centering
-  \caption{Energy-dependent $k_{eff}$ bias for a 2D fuel pin.}
-  \label{table:chap2-pin-energy} 
+  \caption{Spatial homogenization error with SPH for a 1D slab.}
+  \label{table:chap5-sph-slab-energy} 
   \vspace{14pt}
   \begin{tabular}{c S[table-format=6.1] S[table-format=6.1] S[table-format=6.1] S[table-format=6.1] S[table-format=6.1]}
   \toprule
@@ -61,25 +60,25 @@
   \midrule
   & \multicolumn{5}{c}{\bf Without SPH} \\
   \cline{2-6}
-1 & 77 & 78 & 78 & 78 & 78 \\
-2 & 34 & -10 & -40 & -52 & -50 \\
-4 & -55 & -95 & -123 & -137 & -145 \\
-8 & -71 & -131 & -177 & -198 & -208 \\
-16 & -68 & -135 & -188 & -212 & -223 \\
-25 & -126 & -189 & -241 & -267 & -275 \\
-40 & -129 & -197 & -253 & -282 & -290 \\
-70 & -129 & -200 & -259 & -289 & -298 \\
+1 & 27 & 16 & 12 & 5 & -3 \\
+2 & 58 & 33 & 31 & 21 & 18 \\
+4 & -144 & -156 & -161 & -158 & -156 \\
+8 & -181 & -194 & -200 & -202 & -198 \\
+16 & -180 & -195 & -203 & -204 & -200 \\
+25 & -326 & -331 & -338 & -336 & -336 \\
+40 & -348 & -351 & -359 & -357 & -358 \\
+70 & -355 & -359 & -366 & -364 & -366 \\
   \cline{2-6}
   & \multicolumn{5}{c}{\bf With SPH} \\
   \cline{2-6}
-1 & 91 & 92 & 92 & 93 & 92 \\
-2 & 153 & 109 & 78 & 67 & 69 \\
-4 & 31 & -9 & -38 & -51 & -59 \\
-8 & 31 & -29 & -75 & -95 & -106 \\
-16 & 41 & -26 & -79 & -103 & -114 \\
-25 & -27 & -91 & -142 & -169 & -177 \\
-40 & -34 & -103 & -159 & -187 & -196 \\
-70 & -35 & -106 & -165 & -195 & -204 \\
+1 & 25 & 12 & 5 & -3 & -12 \\
+2 & 30 & 12 & 13 & 2 & -2 \\
+4 & 17 & 4 & -2 & 2 & 2 \\
+8 & 17 & 6 & -0 & 0 & 1 \\
+16 & 17 & 7 & -1 & -0 & 1 \\
+25 & 9 & 8 & 4 & 4 & 1 \\
+40 & 10 & 9 & 3 & 3 & -1 \\
+70 & 10 & 8 & 4 & 4 & -1 \\
   \bottomrule
 \end{tabular}
 \end{table}
@@ -93,6 +92,48 @@
   \item table of eigenvalues by energy group w/ and w/o SPH
   \item plot of flux errors with U-238 capture XS w/ and w/o SPH
 \end{itemize}
+
+\begin{table}[h!]
+  \centering
+  \caption{Spatial homogenization error with SPH for a 2D fuel pin.}
+  \label{table:chap5-sph-pin-energy} 
+  \vspace{14pt}
+  \begin{tabular}{c S[table-format=6.1] S[table-format=6.1] S[table-format=6.1] S[table-format=6.1] S[table-format=6.1]}
+  \toprule
+  & \multicolumn{5}{c}{\boldmath $\Delta\rho$ {\bf [pcm]}} \\
+  \midrule  
+  \multicolumn{1}{c}{\textbf{\# Groups}} &
+  \multicolumn{1}{c}{\bf 1$\times$} &
+  \multicolumn{1}{c}{\bf 2$\times$} &
+  \multicolumn{1}{c}{\bf 4$\times$} &
+  \multicolumn{1}{c}{\bf 8$\times$} &
+  \multicolumn{1}{c}{\bf 16$\times$} \\
+  \midrule
+  & \multicolumn{5}{c}{\bf Without SPH} \\
+  \cline{2-6}
+1 & 91 & 92 & 92 & 92 & 92 \\
+2 & 153 & 109 & 78 & 67 & 68 \\
+4 & 31 & -9 & -38 & -51 & -59 \\
+8 & 31 & -29 & -75 & -95 & -106 \\
+16 & 41 & -26 & -79 & -103 & -114 \\
+25 & -27 & -91 & -142 & -169 & -177 \\
+40 & -34 & -103 & -159 & -187 & -196 \\
+70 & -35 & -106 & -165 & -195 & -204 \\
+  \cline{2-6}
+  & \multicolumn{5}{c}{\bf With SPH} \\
+  \cline{2-6}
+1 & 6 & 6 & 6 & 6 & 6 \\
+2 & 32 & 32 & 32 & 32 & 32 \\
+4 & 7 & 7 & 7 & 7 & 7 \\
+8 & 5 & 5 & 5 & 5 & 5 \\
+16 & 6 & 6 & 6 & 6 & 6 \\
+25 & 8 & 8 & 8 & 8 & 8 \\
+40 & 7 & 7 & 7 & 7 & 7 \\
+70 & 8 & 8 & 8 & 8 & 8 \\
+  \bottomrule
+\end{tabular}
+\end{table}
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{2D Heterogeneous Fuel Assembly}
