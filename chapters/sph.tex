@@ -44,7 +44,7 @@
 
 \begin{table}[h!]
   \centering
-  \caption{Energy-dependent $k_{eff}$ bias for a 2D fuel pin.}
+  \caption{Spatial homogenization error with SPH for a 1D slab.}
   \label{table:chap5-sph-slab-energy} 
   \vspace{14pt}
   \begin{tabular}{c S[table-format=6.1] S[table-format=6.1] S[table-format=6.1] S[table-format=6.1] S[table-format=6.1]}
@@ -95,8 +95,8 @@
 
 \begin{table}[h!]
   \centering
-  \caption{Energy-dependent $k_{eff}$ bias for a 2D fuel pin.}
-  \label{table:chap5-sph-slab-energy} 
+  \caption{Spatial homogenization error with SPH for a 2D fuel pin.}
+  \label{table:chap5-sph-pin-energy} 
   \vspace{14pt}
   \begin{tabular}{c S[table-format=6.1] S[table-format=6.1] S[table-format=6.1] S[table-format=6.1] S[table-format=6.1]}
   \toprule
@@ -111,9 +111,25 @@
   \midrule
   & \multicolumn{5}{c}{\bf Without SPH} \\
   \cline{2-6}
+1 & 91 & 92 & 92 & 92 & 92 \\
+2 & 153 & 109 & 78 & 67 & 68 \\
+4 & 31 & -9 & -38 & -51 & -59 \\
+8 & 31 & -29 & -75 & -95 & -106 \\
+16 & 41 & -26 & -79 & -103 & -114 \\
+25 & -27 & -91 & -142 & -169 & -177 \\
+40 & -34 & -103 & -159 & -187 & -196 \\
+70 & -35 & -106 & -165 & -195 & -204 \\
   \cline{2-6}
   & \multicolumn{5}{c}{\bf With SPH} \\
   \cline{2-6}
+1 & 6 & 6 & 6 & 6 & 6 \\
+2 & 32 & 32 & 32 & 32 & 32 \\
+4 & 7 & 7 & 7 & 7 & 7 \\
+8 & 5 & 5 & 5 & 5 & 5 \\
+16 & 6 & 6 & 6 & 6 & 6 \\
+25 & 8 & 8 & 8 & 8 & 8 \\
+40 & 7 & 7 & 7 & 7 & 7 \\
+70 & 8 & 8 & 8 & 8 & 8 \\
   \bottomrule
 \end{tabular}
 \end{table}
