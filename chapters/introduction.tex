@@ -45,7 +45,7 @@ The nuclear reactor physics community has long strived for whole-core transport-
 
 Core simulation tools utilizing \ac{MC} transport methods represent the ``Holy Grail'' for reactor analysis. However, the computational costs required to accommodate the slow convergence rate for \ac{MC} makes it impractical for widespread use for the foreseeable future. Deterministic transport methods pose a number of advantages to \ac{MC} from a computational perspective, which seems likely to make these methods more viable in the near to intermediate term. However, deterministic methods almost universally discretize the energy domain in a few to hundreds of energy groups. This approximation requires energy condensed \ac{MGXS} in each geometric region to preserve reaction rates. Accurate \emph{reactor agnostic} multi-group cross section generation is needed to enable deterministic transport-based methods to be as accurate and flexible as Monte Carlo in whole-core calculations.
 
-This thesis investigates the potential use of Monte Carlo methods to generate \ac{MGXS} for next-generation whole-core deterministic reactor analyis. Monte Carlo presents a natural approach to replace engineering prescriptions to approximate the flux with a stochastic approximation of the exact flux. The advantage of a \ac{MC}-based approach is that all of the relevant physics modeled in \ac{MC} may be directly embedded into \ac{MGXS}. This improvement in accuracy comes at the computational expense of converging group constant tallies to acceptably low uncertainties. \ac{MC} methods have increasingly been used to generate few group constants for coarse mesh diffusion, most notably by the Serpent \ac{MC} code [CITE]. However, there exist few rigorous and comprehensive analyses of \ac{MGXS} generation from \ac{MGXS} for heterogeneous fine-mesh transport.
+This thesis investigates the potential use of Monte Carlo methods to generate \ac{MGXS} for next-generation whole-core deterministic reactor analyis. Monte Carlo presents a natural approach to replace engineering prescriptions to approximate the flux with a stochastic approximation of the exact flux. The advantage of a \ac{MC}-based approach is that all of the relevant physics modeled in \ac{MC} may be directly embedded into \ac{MGXS}. This improvement in accuracy comes at the computational expense of converging group constant tallies to acceptably low uncertainties. \ac{MC} methods have increasingly been used to generate few group constants for coarse mesh diffusion, most notably by the Serpent \ac{MC} code~\cite{fridman2011serpent}. However, there exist few rigorous and comprehensive analyses of \ac{MGXS} generation from \ac{MGXS} for heterogeneous fine-mesh transport.
 
 The subject matter of this thesis can be organized along two main themes. First, the efficacy of \ac{MGXS} generation with \ac{MC} for fine-mesh transport calculations is rigorously assessed. Some of the approximations made by \ac{MC}-based \ac{MGXS} generation are quantified, including the energy- and spatial-dependence of condensed \ac{MGXS}. An in-depth analysis of systematic bias resulting from constant-in-angle \ac{MGXS} is presented, along with a scheme based on \ac{SPH} factors to compensate for this loss in accuracy. The second theme of this thesis is focused on a new methodology to simultaneously capture local and global spatial self-shielding effects in \ac{MGXS} for whole-core calcuations. This scheme applies statistical clustering to accelerate convergence rate of \ac{MGXS} tallied on high-fidelity spatial meshes in Monte Carlo. The latent variable model which inspires this new scheme is discussed. A series of increasingly complex case studies empirically compare the accuracy and convergence rate of the scheme with traditional \ac{MC}-based MGXS generation.
 
@@ -148,8 +148,6 @@ second paragraph\\
 third paragraph\\
 -
 
-\cite{Hunter_Sutton_2013}
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Multi-Group Cross Sections}
@@ -160,39 +158,41 @@ third paragraph\\
   \item need accurate \ac{MGXS} for whole core transport methods
   \item motivate \ac{MC} for \ac{MGXS}
   \item must accelerate it in way not possible for conventional \ac{MC}
+  \item figure illustrating multi-level approach (see Gibson's thesis)
 \end{itemize}
 
 \begin{figure}
-\begin{subfigure}{.5\textwidth}
+%\begin{subfigure}{.5\textwidth}
+%  \centering
+%  \includegraphics[width=\linewidth]{figures/intro/u235-fission-70}
+%  \caption{}
+%\end{subfigure}%
+\begin{subfigure}{\textwidth}
   \centering
-  \includegraphics[width=\linewidth]{figures/intro/u235-fission-70}
-  \caption{}
-\end{subfigure}%
-\begin{subfigure}{.5\textwidth}
-  \centering
-  \includegraphics[width=\linewidth]{figures/intro/u238-capture-70}
-  \caption{}
-\end{subfigure}
-\begin{subfigure}{.5\textwidth}
-  \centering
-  \includegraphics[width=\linewidth]{figures/intro/u235-fission-16}
+  \includegraphics[width=0.9\linewidth]{figures/intro/u238-capture-70}
   \caption{}
 \end{subfigure}
-\begin{subfigure}{.5\textwidth}
+%\begin{subfigure}{.5\textwidth}
+%  \centering
+%  \includegraphics[width=\linewidth]{figures/intro/u235-fission-16}
+%  \caption{}
+%\end{subfigure}
+\begin{subfigure}{\textwidth}
   \centering
-  \includegraphics[width=\linewidth]{figures/intro/u238-capture-16}
+  \includegraphics[width=0.9\linewidth]{figures/intro/u238-capture-16}
   \caption{}
 \end{subfigure}
-\begin{subfigure}{.5\textwidth}
-  \centering
-  \includegraphics[width=\linewidth]{figures/intro/u235-fission-2}
-  \caption{}
-\end{subfigure}
-\begin{subfigure}{.5\textwidth}
-  \centering
-  \includegraphics[width=\linewidth]{figures/intro/u238-capture-2}
-  \caption{}
-\end{subfigure}
-\caption[Uranium-235 and Uranium-238 cross sections]{Continuous energy and multi-group cross sections for U-235 fission (left) and U-238 capture (right) reactions in a PWR spectrum for 70-, 16- and 2-groups.}
+%\begin{subfigure}{.5\textwidth}
+%  \centering
+%  \includegraphics[width=\linewidth]{figures/intro/u235-fission-2}
+%  \caption{}
+%\end{subfigure}
+%\begin{subfigure}{.5\textwidth}
+%  \centering
+%  \includegraphics[width=\linewidth]{figures/intro/u238-capture-2}
+%  \caption{}
+%\end{subfigure}
+\caption[Uranium-238 capture cross section]{Continuous energy and multi-group cross sections for U-238 capture in a PWR spectrum for 70-groups (a) and 16-groups (b).}
 \label{fig:pwr-ce-mg-xs}
 \end{figure}
+
