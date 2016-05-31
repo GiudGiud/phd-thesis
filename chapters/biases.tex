@@ -420,15 +420,34 @@ Table~\ref{table:chap2-slab-space} presents the bias $\Delta\rho$ for a matrix o
 
 The trends analyzed in Table~\ref{table:chap2-slab-energy} emerge in a nearly identical manner with spatially-dependent \ac{MGXS}. The results indicate that spatial self-shielding effects (\textit{e.g.}, variations in the flux energy spectrum across the fuel) captured with spatially-varying scalar flux-weighted \ac{MGXS} do not have a substantial impact on the systematic errors in the eigenvalue for this 1D slab problem.
 
-The emergence of a negative systematic bias in the eigenvalue with fine energy and spatial discretization led to an analysis of the flux spectra computed by OpenMC and OpenMOC. The 70-group volume-averaged flux in energy is illustrated in [INSERT FIGURE]. Upon further inspection, it was noted that OpenMOC's flux exhibited large errors with respect to the reference OpenMC flux in those energy groups which isolate large U-238 capture resonances. The error in the 70-group flux is illustrated in Figure~\ref{fig:chap4-slab-rel-err} for the \ac{FSR}s nearest and furthest from the moderator for the 16$\times$ discretized case. Figure [REFERENCE] hightlights the spatial dependence of the error in group X across the fuel which isolates the large U-238 capture resonance at 6.67 eV. The error increases from a minimum of -1.5\% to a maximum of 3.5\% in those \ac{FSR}s furthest and nearest the moderator. This result indicates that spatial self-shielding effects is not adequately captured by the \ac{MGXS} as will be discussed in more detail in Chapter~\ref{chap:sph}.
+The emergence of a negative systematic bias in the eigenvalue with fine energy and spatial discretization led to an analysis of the flux spectra computed by OpenMC and OpenMOC. The 70-group volume-averaged flux in energy is illustrated in Figure~\ref{fig:chap4-slab-flux}. Upon further inspection, it was noted that OpenMOC's flux exhibited large errors with respect to the reference OpenMC flux in those energy groups which isolate large U-238 capture resonances. The error in the 70-group flux is illustrated in Figure~\ref{fig:chap4-slab-rel-err} for the \ac{FSR}s nearest and furthest from the moderator for the 16$\times$ discretized case. Figure~\ref{fig:chap4-slab-fuel-fsrs} highlights the spatial dependence of the error in group 27 across the fuel which isolates the largest U-238 capture resonance at 6.67 eV. The error increases from a minimum of -1.5\% to a maximum of 3.5\% in those \ac{FSR}s furthest and nearest the moderator, respectively. This result indicates that spatial self-shielding effects in resonance groups is not adequately captured by the \ac{MGXS} as will be discussed in more detail in Chapter~\ref{chap:sph}.
 
 \begin{itemize}[noitemsep]
   \item explain the figures
-  \item plot the errors from furthersts/nearest FSRS on same plot
-  \item make figure showing the error in the resonance groups across the discretized slab
   \item identify the fractional pcm resulting from mis-predicted U-238 capture
-  \item figure with the energy spectrum to show the flux depression
 \end{itemize}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.8\linewidth]{figures/biases/slab/vol-avg-flux}
+\caption[Flux spectrum in a 1D slab.]{The normalized volume-weighted flux spectrum in energy in a 1D slab.}
+\label{fig:chap4-slab-flux}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.85\linewidth]{figures/biases/slab/rel-err-inner-outer}
+\caption[Flux relative error by group for a 1D slab.]{The relative error of the OpenMOC scalar flux with respect to the reference OpenMC flux. The errors are illustrated for the innermost and outermost fuel \ac{FSR}s of the 16$\times$ discretization case along with the U-238 capture cross section.}
+\label{fig:chap4-slab-rel-err}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.85\linewidth]{figures/biases/slab/rel-err-fuel-fsrs}
+\caption[Flux relative error by fuel FSR for a 1D slab.]{The relative error of the OpenMOC scalar flux with respect to the reference OpenMC flux. The errors are plotted for each fuel \ac{FSR} in the 16$\times$ discretization case.}
+\label{fig:chap4-slab-fuel-fsrs}
+\end{figure}
+
 
 %\begin{figure}[h!]
 %  \centering
@@ -438,20 +457,20 @@ The emergence of a negative systematic bias in the eigenvalue with fine energy a
 %\caption[Spatially-varying scalar flux a 1D slab.]{The volume-averaged reference OpenMC flux and OpenMOC flux computed with 70-group spatially-varying \ac{MGXS} in the fuel.}
 %\end{figure}
 
-\begin{figure}[H]
-\begin{subfigure}{\linewidth}
-  \centering
-  \includegraphics[width=0.9\linewidth]{figures/biases/slab/rel-err-fuel-inner}
-  \caption{}
-\end{subfigure}
-\begin{subfigure}{\linewidth}
-  \centering
-  \includegraphics[width=0.9\linewidth]{figures/biases/slab/rel-err-fuel-outer}
-  \caption{}
-\end{subfigure}
-\label{fig:chap4-slab-rel-err}
-\caption[Flux relative error by group for a 1D slab.]{The percent relative error of the OpenMOC scalar flux with respect to the tallied reference OpenMC flux spectrum. The flux errors are illustrated by energy group for the innermost (a) and outermost (b) \ac{FSRs} of the 16$\times$ discretization case.}
-\end{figure}
+%\begin{figure}[H]
+%\begin{subfigure}{\linewidth}
+%  \centering
+%  \includegraphics[width=0.9\linewidth]{figures/biases/slab/rel-err-fuel-inner}
+%  \caption{}
+%\end{subfigure}
+%\begin{subfigure}{\linewidth}
+%  \centering
+%  \includegraphics[width=0.9\linewidth]{figures/biases/slab/rel-err-fuel-outer}
+%  \caption{}
+%\end{subfigure}
+%\label{fig:chap4-slab-rel-err}
+%\caption[Flux relative error by group for a 1D slab.]{The percent relative error of the OpenMOC scalar flux with respect to the tallied reference OpenMC flux spectrum. The flux errors are illustrated by energy group for the innermost (a) and outermost (b) \ac{FSR}s of the 16$\times$ discretization case.}
+%\end{figure}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
