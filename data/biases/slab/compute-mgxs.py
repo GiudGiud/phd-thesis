@@ -3,7 +3,7 @@ import openmc.mgxs
 from infermc.energy_groups import group_structures
 
 scattering = ['anisotropic', 'transport', 'iso-in-lab']
-mesh = [1, 2, 4, 16, 32]
+mesh = [1, 2, 4, 8, 16]
 #mesh = [1, 2, 4, 8, 16, 32]
 
 for scatter in scattering:

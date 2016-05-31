@@ -9,7 +9,7 @@ openmoc.log.set_log_level('RESULT')
 opts = openmoc.options.Options()
 
 spacings = np.array([0.1, 0.01, 0.001], dtype=np.float)
-angles = np.array([4, 8, 16, 32, 64, 128], dtype=np.int)
+angles = np.array([4, 8, 16, 32, 64, 128, 256, 512], dtype=np.int)
 scattering = ['anisotropic', 'iso-in-lab']
 keffs = np.zeros((len(scattering), len(angles), len(spacings)), dtype=np.float)
 biases = np.zeros((len(scattering), len(angles), len(spacings)), dtype=np.float)

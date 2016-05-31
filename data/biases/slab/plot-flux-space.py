@@ -23,8 +23,8 @@ opts = openmoc.options.Options()
 
 # Query the user for the number of energy groups
 scatter = 'iso-in-lab'
-mesh = 32
-num_groups = 16
+mesh = 16
+num_groups = 1
 
 directory = '{}/{}x'.format(scatter, mesh)
 
@@ -86,7 +86,7 @@ openmoc_fluxes = openmoc_fluxes[indices, ::-1]
 
 # Set centroids to the min/max x values 
 centroids[0] = 0.
-centroids[-1] = 5.
+centroids[-1] = 0.62992
 
 # Get OpenMC fluxes
 tot_fiss_src = 0.
@@ -117,4 +117,4 @@ for group in range(coarse_groups.num_groups):
     pylab.xlabel('x [cm]', fontsize=12)
     pylab.ylabel('Flux', fontsize=12)
     pylab.grid()
-    pylab.savefig('flux-group-{}.png'.format(group+1), bbox_inches='tight')
+    pylab.savefig('flux-group-{}-{}.png'.format(group+1, num_groups), bbox_inches='tight')

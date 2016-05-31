@@ -28,7 +28,7 @@ opts = openmoc.options.Options()
 
 # Query the user for the number of energy groups
 scatter = 'iso-in-lab'
-mesh = 32
+mesh = 16
 num_groups = 70
 
 directory = '{}/{}x'.format(scatter, mesh)

@@ -11,7 +11,7 @@ opts = openmoc.options.Options()
 
 groups = [1, 2, 4, 8, 16, 25, 40, 70]
 scattering = ['anisotropic', 'transport', 'iso-in-lab']
-mesh = [1, 2, 4, 16, 32]
+mesh = [1, 2, 4, 8, 16]
 #mesh = [1, 2, 4, 8, 16, 32, 64]
 keffs = np.zeros((len(scattering), len(groups), len(mesh)), dtype=np.float)
 biases = np.zeros((len(scattering), len(groups), len(mesh)), dtype=np.float)
