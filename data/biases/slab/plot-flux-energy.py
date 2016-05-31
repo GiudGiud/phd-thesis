@@ -81,11 +81,7 @@ for fsr in range(num_fsrs):
 
     # Find the OpenMOC cell and volume for this FSR
     openmoc_cell = openmoc_geometry.findCellContainingFSR(fsr)
-    if mgxs_lib.domain_type == 'cell':
-        domain_id = openmoc_cell.getId()
-    else:
-        domain_id = openmoc_cell.getFillMaterial().getId()
-
+    cell_id = openmoc_cell.getId()
     fsr_volumes[fsr] = track_generator.getFSRVolume(fsr)
 
     # Update min/max fuel FSR
@@ -96,7 +92,7 @@ for fsr in range(num_fsrs):
         fuel_fsrs.append(fsr)
 
     # Store the volume-averaged flux
-    mgxs = mgxs_lib.get_mgxs(domain_id, 'nu-fission')
+    mgxs = mgxs_lib.get_mgxs(cell_id, 'nu-fission')
     flux = mgxs.tallies['flux'].mean.flatten()
     flux = np.flipud(flux) / fsr_volumes[fsr]
     openmc_fluxes[fsr, :] = flux
