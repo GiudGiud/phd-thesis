@@ -2,7 +2,7 @@ import openmc
 import openmc.mgxs
 from infermc.energy_groups import group_structures
 
-scattering = ['anisotropic', 'transport', 'iso-in-lab']
+scattering = ['iso-in-lab', 'anisotropic', 'transport', 'iso-in-lab']
 num_rings = [1, 2, 4, 8, 16,]
 
 for scatter in scattering:
