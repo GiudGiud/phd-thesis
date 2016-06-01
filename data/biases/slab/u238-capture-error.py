@@ -69,7 +69,9 @@ mgxs_lib = openmc.mgxs.Library.load_from_file(directory=directory)
 
 abs_rel_err = np.zeros((len(groups), 3), dtype=np.float)
 capt_rel_err = np.zeros((len(groups), 3), dtype=np.float)
+fiss_rel_err = np.zeros((len(groups), 3), dtype=np.float)
 u238_frac = np.zeros((len(groups), 3), dtype=np.float)
+abs_frac = np.zeros((len(groups), 2), dtype=np.float)
 
 for i, num_groups in enumerate(groups):
     print('# groups = {}'.format(num_groups))
@@ -107,6 +109,8 @@ for i, num_groups in enumerate(groups):
     openmoc_abs = np.zeros(num_groups, dtype=np.float)
     openmc_capt = np.zeros(num_groups, dtype=np.float)
     openmoc_capt = np.zeros(num_groups, dtype=np.float)
+    openmc_fiss = np.zeros(num_groups, dtype=np.float)
+    openmoc_fiss = np.zeros(num_groups, dtype=np.float)
 
     for fsr in range(num_fsrs):
 
@@ -117,11 +121,17 @@ for i, num_groups in enumerate(groups):
         # Get the capture cross section for this cell
         abs_mgxs = condense_lib.get_mgxs(cell_id, 'absorption')
         capt_mgxs = condense_lib.get_mgxs(cell_id, 'capture')
+        fiss_mgxs = condense_lib.get_mgxs(cell_id, 'fission')
 
         # Compute OpenMC/OpenMOC total capture rates
         abs_mean = abs_mgxs.get_xs(nuclides='sum', xs_type='macro')
         openmc_abs += openmc_fluxes[fsr,:] * abs_mean.flatten() * fsr_volumes[fsr]
         openmoc_abs += openmoc_fluxes[fsr,:] * abs_mean.flatten() * fsr_volumes[fsr]
+
+        # Compute OpenMC/OpenMOC total fission rates
+        fiss_mean = fiss_mgxs.get_xs(nuclides='sum', xs_type='macro')
+        openmc_fiss += openmc_fluxes[fsr,:] * fiss_mean.flatten() * fsr_volumes[fsr]
+        openmoc_fiss += openmoc_fluxes[fsr,:] * fiss_mean.flatten() * fsr_volumes[fsr]
 
         # Compute OpenMC/OpenMOC U-238 capture rates
         if openmoc_cell.getName() == 'fuel':
@@ -129,12 +139,32 @@ for i, num_groups in enumerate(groups):
             openmc_capt += openmc_fluxes[fsr,:] * capt_mean.flatten() * fsr_volumes[fsr]
             openmoc_capt += openmoc_fluxes[fsr,:] * capt_mean.flatten() * fsr_volumes[fsr]
 
+    # Find energy group which encompasses 6.67 eV resonance
     min_ind = condense_lib.energy_groups.get_group(6.67e-6) - 1
-    max_ind = condense_lib.energy_groups.get_group(2.e-2) - 1
 
     # Compute the percent rel. err. in group 27
     abs_rel_err[i,0] = (openmoc_abs[min_ind] - openmc_abs[min_ind]) / openmc_abs[min_ind] * 100.
     capt_rel_err[i,0] = (openmoc_capt[min_ind] - openmc_capt[min_ind]) / openmc_capt[min_ind] * 100
+    fiss_rel_err[i,0] = (openmoc_fiss[min_ind] - openmc_fiss[min_ind]) / openmc_fiss[min_ind] * 100
+
+    # Compute the percent rel. err. in all groups
+    abs_rel_err[i,2] = (np.sum(openmoc_abs) - np.sum(openmc_abs)) / np.sum(openmc_abs) * 100.
+    capt_rel_err[i,2] = (np.sum(openmoc_capt) - np.sum(openmc_capt)) / np.sum(openmc_capt) * 100
+    fiss_rel_err[i,2] = (np.sum(openmoc_fiss) - np.sum(openmc_fiss)) / np.sum(openmc_fiss) * 100
+
+    # Compute the percentage of U-238 capture to total absorption in group 27 and all groups
+    u238_frac[i,0] = openmc_capt[min_ind] / openmc_abs[min_ind] * 100.
+    u238_frac[i,2] = np.sum(openmc_capt) / np.sum(openmc_abs) * 100.
+
+    # Compute the fraction of total absorption in group 27 to all groups
+    abs_frac[i,0] = openmc_abs[min_ind] / np.sum(openmc_abs) * 100.
+
+    # Find energy group which encompasses 200 kEV
+    max_ind = condense_lib.energy_groups.get_group(2.e-2) - 1
+
+    # Adjust lower energy group if both indices match so that NumPy indexing works
+    if min_ind == min_ind:
+        min_ind += 1
 
     # Compute the percent rel. err. in groups 14-27
     abs_rel_err[i,1] = (np.sum(openmoc_abs[max_ind:min_ind]) -
@@ -143,16 +173,17 @@ for i, num_groups in enumerate(groups):
     capt_rel_err[i,1] = (np.sum(openmoc_capt[max_ind:min_ind]) -
                          np.sum(openmc_capt[max_ind:min_ind])) / \
                         np.sum(openmc_capt[max_ind:min_ind]) * 100
+    fiss_rel_err[i,1] = (np.sum(openmoc_fiss[max_ind:min_ind]) -
+                         np.sum(openmc_fiss[max_ind:min_ind])) / \
+                        np.sum(openmc_fiss[max_ind:min_ind]) * 100
 
-    # Compute the percent rel. err. in all groups
-    abs_rel_err[i,2] = (np.sum(openmoc_abs) - np.sum(openmc_abs)) / np.sum(openmc_abs) * 100.
-    capt_rel_err[i,2] = (np.sum(openmoc_capt) - np.sum(openmc_capt)) / np.sum(openmc_capt) * 100
+    # Compute the percentage of U-239 capture to total absorption in groups 14-27
+    u238_frac[i,1] = np.sum(openmc_capt[max_ind:min_ind]) / \
+                     np.sum(openmc_abs[max_ind:min_ind]) * 100.
 
-    # Compute the percentage of U-238 capture to total absorption
-    u238_frac[i,0] = openmoc_capt[min_ind] / openmoc_abs[min_ind] * 100.
-    u238_frac[i,1] = np.sum(openmoc_capt[max_ind:min_ind]) / \
-                     np.sum(openmoc_abs[max_ind:min_ind]) * 100.
-    u238_frac[i,2] = np.sum(openmoc_capt) / np.sum(openmoc_abs) * 100.
+    # Compute the fraction of total absorption in the resonance range to all groups
+    abs_frac[i,1] = np.sum(openmc_abs[max_ind:min_ind]) / \
+                    np.sum(openmc_abs) * 100
 
 group_ranges = ['Group 27', 'Groups 14-27', 'All Groups']
 
@@ -167,10 +198,26 @@ for i, num_groups in enumerate(groups):
         row += ' {:1.2f} &'.format(abs_rel_err[i,j])
     print(row[:-1] + '\\\\')
 
+# Print total fission table for LaTeX
+print('Fission Rel. Err.')
+for i, num_groups in enumerate(groups):
+    row = '{} &'.format(num_groups)
+    for j, group_range in enumerate(group_ranges):
+        row += ' {:1.2f} &'.format(fiss_rel_err[i,j])
+    print(row[:-1] + '\\\\')
+
 # Print U-238 capture-to-total absorption table for LaTeX
 print('U-238 Capture to Total Absorption [%]')
 for i, num_groups in enumerate(groups):
     row = '{} &'.format(num_groups)
     for j, group_range in enumerate(group_ranges):
         row += ' {:2.2f} &'.format(u238_frac[i,j])
+    print(row[:-1] + '\\\\')
+
+# Print fraction absorption table for LaTeX
+print('Absorption Fraction [%]')
+for i, num_groups in enumerate(groups):
+    row = '{} &'.format(num_groups)
+    for j in range(2):
+        row += ' {:2.2f} &'.format(abs_frac[i,j])
     print(row[:-1] + '\\\\')
