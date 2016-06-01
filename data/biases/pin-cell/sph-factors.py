@@ -9,9 +9,9 @@ from infermc.energy_groups import group_structures
 openmoc.log.set_log_level('RESULT')
 opts = openmoc.options.Options()
 
-groups = [1, 2, 4] # , 8, 16, 25, 40, 70]
+groups = [1, 2, 4, 8, 16, 25, 40, 70]
 scatter = 'iso-in-lab'
-num_rings = [1, 2, 4] #, 8, 16]
+num_rings = [1, 2, 4, 8, 16]
 keffs = np.zeros((2, len(groups), len(num_rings)), dtype=np.float)
 biases = np.zeros((2, len(groups), len(num_rings)), dtype=np.float)
 
@@ -118,7 +118,7 @@ print(biases)
 print('Without SPH')
 for i, num_groups in enumerate(groups):
     row = '{} &'.format(num_groups)
-    for j, num_mesh in enumerate(mesh):
+    for j, num_mesh in enumerate(num_rings):
         row += ' {:1.0f} &'.format(biases[0,i,j])
     print(row[:-1] + '\\\\')
 
@@ -126,6 +126,6 @@ for i, num_groups in enumerate(groups):
 print('With SPH')
 for i, num_groups in enumerate(groups):
     row = '{} &'.format(num_groups)
-    for j, num_mesh in enumerate(mesh):
+    for j,  rings in enumerate(num_rings):
         row += ' {:1.0f} &'.format(biases[1,i,j])
     print(row[:-1] + '\\\\')
