@@ -1,4 +1,5 @@
 import numpy as np
+import copy
 
 import openmc.mgxs
 import openmoc
@@ -40,7 +41,7 @@ def get_fluxes(solver, mgxs_lib):
         openmc_fluxes[fsr, :] = flux
 
     # Extract energy group edges
-    group_edges = mgxs_lib.energy_groups.group_edges
+    group_edges = copy.deepcopy(mgxs_lib.energy_groups.group_edges)
     group_edges *= 1e6      # Convert to units of eV
     group_edges[0] = 1e-5     # Adjust lower bound (for loglog scaling)
 
@@ -57,7 +58,7 @@ def get_fluxes(solver, mgxs_lib):
 openmoc.log.set_log_level('RESULT')
 opts = openmoc.options.Options()
 
-groups = [1, 2, 4] #, 8, 16, 25, 40, 70]
+groups = [1, 2, 4, 8, 16, 25, 40, 70]
 scatter = 'iso-in-lab'
 num_mesh = 16
 
@@ -128,8 +129,8 @@ for i, num_groups in enumerate(groups):
             openmc_capt += openmc_fluxes[fsr,:] * capt_mean.flatten() * fsr_volumes[fsr]
             openmoc_capt += openmoc_fluxes[fsr,:] * capt_mean.flatten() * fsr_volumes[fsr]
 
-    min_ind = condense_lib.energy_groups.get_group(6.67e-6)
-    max_ind = condense_lib.energy_groups.get_group(2.e-2)
+    min_ind = condense_lib.energy_groups.get_group(6.67e-6) - 1
+    max_ind = condense_lib.energy_groups.get_group(2.e-2) - 1
 
     # Compute the percent rel. err. in group 27
     abs_rel_err[i,0] = (openmoc_abs[min_ind] - openmc_abs[min_ind]) / openmc_abs[min_ind] * 100.
@@ -167,7 +168,7 @@ for i, num_groups in enumerate(groups):
     print(row[:-1] + '\\\\')
 
 # Print U-238 capture-to-total absorption table for LaTeX
-print('Capture and Absorption Rel. Err.')
+print('U-238 Capture to Total Absorption [%]')
 for i, num_groups in enumerate(groups):
     row = '{} &'.format(num_groups)
     for j, group_range in enumerate(group_ranges):
