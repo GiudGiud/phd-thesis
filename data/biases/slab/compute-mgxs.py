@@ -17,13 +17,13 @@ for scatter in scattering:
         sp = openmc.StatePoint(directory + 'statepoint.100.h5')
 
         # Initialize a fine (70-) group MGXS Library for OpenMOC
-        mgxs_lib = openmc.mgxs.Library(sp.summary.openmc_geometry, by_nuclide=False)
+        mgxs_lib = openmc.mgxs.Library(sp.summary.openmc_geometry, by_nuclide=True)
         mgxs_lib.energy_groups = group_structures['CASMO']['70-group']
         if scatter == 'transport':
-            mgxs_lib.mgxs_types = ['nu-transport', 'nu-fission', 'nu-scatter matrix', 'chi']
+            mgxs_lib.mgxs_types = ['nu-transport', 'nu-fission', 'nu-scatter matrix', 'chi', 'fission', 'capture', 'absorption']
             mgxs_lib.correction = 'P0'
         else:
-            mgxs_lib.mgxs_types = ['total', 'nu-fission', 'nu-scatter matrix', 'chi']
+            mgxs_lib.mgxs_types = ['total', 'nu-fission', 'nu-scatter matrix', 'chi', 'fission', 'capture', 'absorption']
             mgxs_lib.correction = None
         mgxs_lib.domain_type = 'cell'
         mgxs_lib.build_library()

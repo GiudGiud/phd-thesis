@@ -62,7 +62,7 @@ scatter = 'iso-in-lab'
 num_mesh = 16
 
 # Initialize a fine (70-)group MGXS Library from OpenMC statepoint data
-directory = '{}/{}x/'.format(num_mesh, scatter)
+directory = '{}/{}x/'.format(scatter, num_mesh)
 sp = openmc.StatePoint(directory + 'statepoint.100.h5')
 mgxs_lib = openmc.mgxs.Library.load_from_file(directory=directory)
 
@@ -114,8 +114,8 @@ for i, num_groups in enumerate(groups):
         cell_id = openmoc_cell.getId()
 
         # Get the capture cross section for this cell
-        abs_mgxs = mgxs_lib.get_mgxs(cell_id, 'absorption')
-        capt_mgxs = mgxs_lib.get_mgxs(cell_id, 'capture')
+        abs_mgxs = condense_lib.get_mgxs(cell_id, 'absorption')
+        capt_mgxs = condense_lib.get_mgxs(cell_id, 'capture')
 
         # Compute OpenMC/OpenMOC total capture rates
         abs_mean = abs_mgxs.get_xs(nuclides='sum', xs_type='macro')
