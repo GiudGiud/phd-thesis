@@ -30,10 +30,12 @@ for i, scatter in enumerate(scattering):
             openmoc_geometry = get_openmoc_geometry(mgxs_lib.opencg_geometry)
             openmoc.materialize.load_openmc_mgxs_lib(mgxs_lib, openmoc_geometry)
 
-            # Apply sector mesh
+            # Apply radial/angular discretization mesh
             cells = openmoc_geometry.getAllMaterialCells()
             for cell_id, cell in cells.items():
                 cell.setNumSectors(8)
+                if cell.getName() in ['fuel', 'water']:
+                    cell.setNumRings(5)
 
             # Generate tracks
             track_generator = openmoc.TrackGenerator(openmoc_geometry, int(angle), spacing)

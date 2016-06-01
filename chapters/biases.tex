@@ -552,7 +552,7 @@ As illustrated in the table, both U-238 capture and total absorption rate error 
 \subsection{2D Fuel Pin Cell}
 \label{subsec:chap4-pin}
 
-A \ac{PWR} fuel pin cell model was constructed to quantify approximation errors in a 2D heterogeneous geometry with spatial self-shielding. The pin cell is identical to the 1.6\% enriched UO$_2$ \ac{PWR} fuel pin in the \ac{BEAVRS} \ac{PWR} model~\cite{horelik2013beavrs}. The geometric configuration of UO$_2$ fuel, helium gap, zirconium clad and water moderator is illustrated in Figure~\ref{fig:chap4-pin-cell} and the dimensions for each material zone are shown in Table~\ref{table:chap4-pin-dimensions}. Reflective boundary conditions were applied to all edges in the geometry. The isotopic compositions of each material in the fuel pin were identical to those used in the 1D slab and are itemized in Table~\ref{table:chap4-slab-isotopes}. 
+A \ac{PWR} fuel pin cell model was constructed to quantify approximation errors in a 2D heterogeneous geometry with spatial self-shielding. The pin cell is identical to the 1.6\% enriched UO$_2$ \ac{PWR} fuel pin in the \ac{BEAVRS} \ac{PWR} model~\cite{horelik2013beavrs}. The geometric configuration of UO$_2$ fuel, helium gap, zirconium clad and water moderator is illustrated in Figure~\ref{fig:chap4-pin-cell} and the dimensions for each material zone are shown in Table~\ref{table:chap4-pin-dimensions}. Reflective boundary conditions were applied to all edges in the geometry. The isotopic compositions of each material in the fuel pin were identical to those used in the 1D slab (see Table~\ref{table:chap4-slab-isotopes}). 
 
 \begin{figure}[H]
 \centering
@@ -621,11 +621,11 @@ A \ac{PWR} fuel pin cell model was constructed to quantify approximation errors 
 %\end{tabular}
 %\end{table}
 
-The reference eigenvalues computed with continuous energy cross sections in OpenMC are shown in Table~\ref{table:chap4-pin-reference} for both normal anisotropic as well as ``iso-in-lab'' scattering. The reference calculations were computed for 100 batches of 1E7 particles per batch. The reference eigenvalues for the two cases vary by roughly 65 pcm, slightly more than in the 1D slab geometry. The \texttt{openc.mgxs} module was used to compute 70-group libraries of $\Sigma^T_g$, $\Sigma^{Tr}_g$, $\nu\Sigma^F_g$, $\nu_s\Sigma^S_{gg'}$ and $\chi_g$ from OpenMC tallies. An installation of OpenMOC compiled with double precision floating point arithmetic was used for each deterministic simulation. In each calculation, OpenMOC was converged to a criterion of 1E-7 on the energy-integrated fission source.
+The reference eigenvalues computed with continuous energy cross sections in OpenMC are shown in Table~\ref{table:chap4-pin-reference} for both normal anisotropic as well as ``iso-in-lab'' scattering. The reference calculations were computed for 100 batches of 1E7 particles per batch. The reference eigenvalues for the two cases vary by roughly 65 pcm due anisotropic thermal scattering in the moderator, slightly more than in the 1D slab geometry. The \texttt{openc.mgxs} module was used to compute 70-group libraries of $\Sigma^T_g$, $\Sigma^{Tr}_g$, $\nu\Sigma^F_g$, $\nu_s\Sigma^S_{gg'}$ and $\chi_g$ from OpenMC tallies. An installation of OpenMOC compiled with double precision floating point arithmetic was used for each deterministic simulation. In each calculation, OpenMOC was converged to a criterion of 1E-7 on the energy-integrated fission source.
 
 \begin{table}[h!]
   \centering
-  \caption{Reference $k^{OpenMC}_{eff}$ for an 2D fuel pin.}
+  \caption{Reference $k^{OpenMC}_{eff}$ for a 2D fuel pin.}
   \label{table:chap4-pin-reference} 
   \vspace{6pt}
   \begin{tabular}{c c}
@@ -638,7 +638,11 @@ The reference eigenvalues computed with continuous energy cross sections in Open
 \end{tabular}
 \end{table}
 
-Table~\ref{table:chap4-pin-angle} presents the bias $\Delta\rho$ for a matrix of azimuthal angles and track spacings. No transport correction was applied to the total cross section $\Sigma^T_g$ or the scattering matrix $\nu_s\Sigma^S_{gg'}$. Each of the material zones was discretized into 8 angular sectors for the \ac{FSR} mesh in OpenMOC. The results for both normal anisotropic scattering and ``iso-in-lab'' scattering exhibit a bias of a few hundred pcm or less depending on the energy and spatial mesh. The magnitude of the bias appears to converge with 128 azimuthal angles and is largely invariant with the track spacing. The \ac{MGXS} tallied with ``iso-in-lab'' scattering in OpenMC converge to an eigenvalue that is roughly 40 pcm less than that computed for the anisotropic case, with a bias of approximately -30 pcm.
+Table~\ref{table:chap4-pin-angle} presents the bias $\Delta\rho$ for a matrix of azimuthal angles and track spacings. No transport correction was applied to the total cross section $\Sigma^T_g$ or the scattering matrix $\nu_s\Sigma^S_{gg'}$. The fuel and moderator were each discretized into 5 equal volume radial rings, and each material zone was discretized into 8 angular sectors for the \ac{FSR} mesh in OpenMOC. The results for both normal anisotropic scattering and ``iso-in-lab'' scattering exhibit a bias of a few hundred pcm or less depending on the energy and spatial mesh. The magnitude of the bias appears to converge with 128 azimuthal angles and is largely invariant with the track spacing. The \ac{MGXS} tallied with ``iso-in-lab'' scattering in OpenMC converge to an eigenvalue that is roughly 40 pcm less than that computed for the anisotropic case, with a bias of approximately -30 pcm.
+
+\begin{itemize}[noitemsep]
+  \item run track discretization again with 5 rings in fuel, moderator
+\end{itemize}
 
 \begin{table}[h!]
   \centering
@@ -674,7 +678,7 @@ Table~\ref{table:chap4-pin-angle} presents the bias $\Delta\rho$ for a matrix of
 \end{tabular}
 \end{table}
 
-Table~\ref{table:chap4-pin-energy} presents the bias $\Delta\rho$ between OpenMC and OpenMOC for a matrix of energy group structures and \ac{FSR} spatial discretizations. In each case, the \ac{MGXS} used in OpenMOC were tallied by material in OpenMC. The OpenMOC calculations each used 128 azimuthal angles and 0.05 cm track spacing. Each of the materials in the fuel pin was radially discretized into 1 -- 16 equal volume rings. 
+Table~\ref{table:chap4-pin-energy} presents the bias $\Delta\rho$ between OpenMC and OpenMOC for a matrix of energy group structures and \ac{FSR} spatial discretizations. In each case, the \ac{MGXS} used in OpenMOC were tallied by material in OpenMC. The OpenMOC calculations each used 128 azimuthal angles and 0.05 cm track spacing. Each of the materials in the fuel pin was discretized into 8 angular sectors. The fuel and moderator were each discretized into 1 -- 16 equal volume radial rings. 
 
 \begin{table}[h!]
   \centering
