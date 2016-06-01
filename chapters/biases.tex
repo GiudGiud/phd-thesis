@@ -535,35 +535,6 @@ A \ac{PWR} fuel pin cell model was constructed to quantify approximation errors 
 \end{tabular}
 \end{table}
 
-%\begin{table}[h!]
-%  \centering
-%  \caption{2D fuel pin isotopic composition.}
-%  \label{table:chap4-pin-isotopes} 
-%  \vspace{6pt}
-%  \begin{tabular}{l c c}
-%  \toprule
-%  \multicolumn{1}{c}{\bf Material} &
-%  \multicolumn{1}{c}{\bf Nuclide} &
-%  \multicolumn{1}{c}{\bf Atom Density [at/b-cm]} \\
-%  \midrule
-%  \multirow{3}{*}{\bf UO$_2$} & O-16 &  4.5850826385693E-2 \\
-%  & U-235 & 5.5841582288888E-4 \\
-%  & U-238 & 2.2418671968636E-2 \\
-%  \midrule
-%  \multirow{1}{*}{\bf Helium} & He-4 & 2.40428068880973E-4 \\
-%  \midrule
-%  \multirow{3}{*}{\bf Zircaloy} & O-16 &  6.1404143720635E-4 \\
-%  & Fe-56 & 2.7183762028359E-4 \\
-%  & Zr-90 & 4.3595883452828E-2 \\
-%  \midrule
-%  \multirow{4}{*}{\bf Water} & H-1 &  4.95774559287053E-2 \\
-%  & B-10 & 8.02369478020388E-6 \\
-%  & B-11 & 3.22964691572685E-5 \\
-%  & O-16 & 2.47320903547125E-2 \\
-%  \bottomrule
-%\end{tabular}
-%\end{table}
-
 The reference eigenvalues computed with continuous energy cross sections in OpenMC are shown in Table~\ref{table:chap4-pin-reference} for both normal anisotropic as well as ``iso-in-lab'' scattering. The reference calculations were computed for 100 batches of 1E7 particles per batch. The reference eigenvalues for the two cases vary by roughly 65 pcm due anisotropic thermal scattering in the moderator, slightly more than in the 1D slab geometry. The \texttt{openc.mgxs} module was used to compute 70-group libraries of $\Sigma^T_g$, $\Sigma^{Tr}_g$, $\nu\Sigma^F_g$, $\nu_s\Sigma^S_{gg'}$ and $\chi_g$ from OpenMC tallies. An installation of OpenMOC compiled with double precision floating point arithmetic was used for each deterministic simulation. In each calculation, OpenMOC was converged to a criterion of 1E-7 on the energy-integrated fission source.
 
 \begin{table}[h!]
@@ -582,10 +553,6 @@ The reference eigenvalues computed with continuous energy cross sections in Open
 \end{table}
 
 Table~\ref{table:chap4-pin-angle} presents the bias $\Delta\rho$ for a matrix of azimuthal angles and track spacings. No transport correction was applied to the total cross section $\Sigma^T_g$ or the scattering matrix $\nu_s\Sigma^S_{gg'}$. The fuel and moderator were each discretized into 5 equal volume radial rings, and each material zone was discretized into 8 angular sectors for the \ac{FSR} mesh in OpenMOC. The results for both normal anisotropic scattering and ``iso-in-lab'' scattering exhibit a bias of a few hundred pcm or less depending on the energy and spatial mesh. The magnitude of the bias appears to converge with 128 azimuthal angles and is largely invariant with the track spacing. The \ac{MGXS} tallied with ``iso-in-lab'' scattering in OpenMC converge to an eigenvalue that is roughly 40 pcm less than that computed for the anisotropic case, with a bias of approximately -30 pcm.
-
-\begin{itemize}[noitemsep]
-  \item run track discretization again with 5 rings in fuel, moderator
-\end{itemize}
 
 \begin{table}[h!]
   \centering
@@ -609,14 +576,14 @@ Table~\ref{table:chap4-pin-angle} presents the bias $\Delta\rho$ for a matrix of
   \multicolumn{1}{c}{} &
   \multicolumn{3}{c}{\bf Isotropic in Lab} \\
   \cline{2-4} \cline{6-8}
-4 & 365 & 390 & 391 & & 460 & 484 & 486 \\
-8 & -251 & -289 & -285 & & -157 & -194 & -191 \\
-16 & -297 & -263 & -266 & & -202 & -168 & -171 \\
-32 & -180 & -196 & -188 & & -86 & -101 & -94 \\
-64 & -112 & -154 & -143 & & -18 & -60 & -49 \\
-128 & -139 & -134 & -125 & & -45 & -39 & -31 \\
-256 & -131 & -125 & -123 & & -36 & -30 & -28 \\
-512 & -124 & -121 & -122 & & -30 & -27 & -28 \\
+4 & 372 & 425 & 427 & & 467 & 519 & 521 \\
+8 & -377 & -419 & -418 & & -282 & -325 & -323 \\
+16 & -436 & -408 & -412 & & -341 & -314 & -318 \\
+32 & -324 & -338 & -331 & & -230 & -244 & -236 \\
+64 & -256 & -296 & -285 & & -162 & -202 & -191 \\
+128 & -285 & -276 & -267 & & -190 & -182 & -173 \\
+256 & -277 & -267 & -265 & & -182 & -173 & -171 \\
+512 & -273 & -263 & -264 & & -179 & -169 & -170 \\
   \bottomrule
 \end{tabular}
 \end{table}
@@ -733,34 +700,78 @@ Table~\ref{table:chap4-pin-space} presents the bias $\Delta\rho$ for a matrix of
 \end{tabular}
 \end{table}
 
-\begin{itemize}
+\begin{itemize}[noitemsep]
   \item rework writeup
-  \item 70-group flux
-  \item compare 70-group flux errors with U-238 capture XS - volume-avg
-  \item compare 70-group flux errors with U-238 capture XS - fuel mesh zone nearest clad
 \end{itemize}
 
 \begin{figure}[h!]
   \centering
-  \includegraphics[width=0.9\linewidth]{figures/biases/pin-cell/flux-uo2-fuel}
-\caption[Spatially-varying scalar flux a 2D fuel pin.]{The volume-averaged reference OpenMC flux and OpenMOC flux computed with 70-group spatially-varying \ac{MGXS} in the fuel.}
+  \includegraphics[width=0.9\linewidth]{figures/biases/pin-cell/vol-avg-flux}
+\caption[Flux spectrum in a 2D fuel pin.]{The normalized volume-weighted flux spectrum in energy in a 2D fuel pin.}
 \label{fig:chap4-pin-flux}
 \end{figure}
 
-\begin{figure}[h!]
-\begin{subfigure}{\linewidth}
+\begin{figure}[H]
   \centering
-  \includegraphics[width=0.9\linewidth]{figures/biases/pin-cell/rel-err-fuel-inner}
-  \caption{}
-\end{subfigure}
-\begin{subfigure}{\linewidth}
-  \centering
-  \includegraphics[width=0.9\linewidth]{figures/biases/pin-cell/rel-err-fuel-outer}
-  \caption{}
-\end{subfigure}
+  \includegraphics[width=0.85\linewidth]{figures/biases/pin-cell/rel-err-inner-outer}
+\caption[Flux relative error by group for a 2D fuel pin.]{The relative error of the OpenMOC scalar flux with respect to the reference OpenMC flux. The results correspond to Table~\ref{table:chap4-pin-space} for \ac{MGXS} tallied on the 16$\times$ \ac{FSR} mesh with ``iso-in-lab'' scattering. The errors are illustrated for the innermost and outermost fuel \ac{FSR}s along with the U-238 capture cross section.}
 \label{fig:chap4-pin-rel-err}
-\caption[Flux relative error by group for a 2D fuel pin.]{The percent relative error of the OpenMOC scalar flux with respect to the reference OpenMOC flux spectrum. The flux errors are illustrated by energy group for the innermost (a) and outermost (b) rings of the 16$\times$ discretization case.}
 \end{figure}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.8\linewidth]{figures/biases/pin-cell/rel-err-fuel-fsrs}
+\caption[Flux relative error by fuel FSR for a 2D fuel pin.]{The relative error of the OpenMOC scalar flux with respect to the reference OpenMC flux. The results correspond Table~\ref{table:chap4-pin-space} for \ac{MGXS} tallied on the 16$\times$ \ac{FSR} mesh with ``iso-in-lab'' scattering. The errors are illustrated for the 16 \ac{FSR}s in the fuel.}
+\label{fig:chap4-pin-fuel-fsrs}
+\end{figure}
+
+The errors in the multi-group flux directly correspond to equal errors in the reaction rates since the \ac{MGXS} are computed from the reference reaction rate and flux tallies. The results presented in Figure~\ref{fig:chap4-pin-rel-err} indicate significant errors in resonance groups, and in particular, group 27 in the 70-group calculation. The percent relative error for both U-238 capture and total absorption for all nuclides is quantifed in Table~\ref{table:chap4-pin-capture-errors} for different energy regimes. Each of the columns corresponds to the reaction rate errors in the following energy ranges:
+
+\vspace{-0.1in}
+\begin{itemize}[noitemsep]
+  \item {\bf Range A} -- group encompassing the U-238 capture resonance at 6.67 eV
+  \item {\bf Range B} -- groups encompassing the resonace range from 4 eV -- 200 keV
+  \item {\bf Range C} -- groups spanning the entire energy regime from 0 -- 20 MeV
+\end{itemize}
+\vspace{-0.1in}
+
+As illustrated in the table, both U-238 capture and total absorption rate error grows with the number of energy groups used in the \ac{MGXS} calculation. This trend is particularly pronounced for U-238 capture in the 6.67 eV resonance group which exceeds 1\% when 25 or more groups are used the multi-group calculation. The 0.35 -- 0.37\% error in the total absorption would directly correspond to an under-prediction in the eigenvalue of 350 -- 370 pcm. Approximately 6.5\% and 35\% of the total absorption is due to U-238 capture in the 6.67 eV resonance and the entire resonance range, respectively, which would result in biases of 70 pcm and 360 pcm. The total energy-integrated fission rate error is 0.04 -- 0.06\% which would correspond to an over-prediction in the eigenvalue of 40 -- 60 pcm. Taken together, the errors in the absorption and fission rates would result in an eigenvalue bias that compares closely with the observed $\Delta\rho \approx$ 300 -- 350 pcm \footnote{This analysis neglects the contribution of scattering multiplicity (\textit{e.g.,} (n,2n)) to the eigenvalue.}.
+
+\begin{table}[h!]
+  \centering
+  \caption[Reaction rate relative error for a 1D slab.]{The volume-integrated U-238 capture and total absorption rate percent relative error for a 1D slab. The error correspond to the results in Table~\ref{table:chap4-slab-space} for \ac{MGXS} tallied on the 16$\times$ discretization mesh with ``iso-in-lab'' scattering.}
+  \small
+  \label{table:chap4-slab-capture-errors} 
+  \vspace{6pt}
+  \begin{tabular}{c c c c c c c c}
+  \toprule
+  \multicolumn{1}{c}{\bf \# Groups} &
+  \multicolumn{3}{c}{\bf U-238 Capture} &
+  \multicolumn{1}{c}{} &
+  \multicolumn{3}{c}{\bf Total Absorption} \\
+  \midrule
+  & \multicolumn{1}{c}{\bf Range A} &
+  \multicolumn{1}{c}{\bf Range B} &
+  \multicolumn{1}{c}{\bf Range C} &
+  \multicolumn{1}{c}{} &
+  \multicolumn{1}{c}{\bf Range A} &
+  \multicolumn{1}{c}{\bf Range B} &
+  \multicolumn{1}{c}{\bf Range C} \\
+  \cline{2-4} \cline{6-8}
+1 & 0.00 & 0.00 & 0.00 & & 0.00 & 0.00 & 0.00 \\
+2 & 0.00 & 0.00 & 0.00 & & 0.00 & 0.00 & 0.00 \\
+4 & 0.73 & 0.21 & 0.55 & & 0.73 & 0.20 & 0.37 \\
+8 & 0.82 & 0.21 & 0.59 & & 0.83 & 0.20 & 0.37 \\
+16 & 0.81 & 0.21 & 0.58 & & 0.82 & 0.20 & 0.37 \\
+25 & 1.12 & 0.91 & 0.71 & & 1.14 & 0.91 & 0.35 \\
+40 & 1.08 & 0.95 & 0.73 & & 1.09 & 0.95 & 0.35 \\
+70 & 1.09 & 1.05 & 0.76 & & 1.10 & 1.03 & 0.37 \\
+  \bottomrule
+\end{tabular}
+\end{table}
+
+These results indicate that spatial self-shielding effects in resonance groups is not adequately captured by the \ac{MGXS} and/or the multi-group calculation. Furthermore, this analysis illustrates the counter intuitive result that the bias between continuous energy Monte Carlo and multi-group deterministic transport may in fact increase in magnitude with more energy groups. Although it is challenging to isolate and quantify the factors which convolve and result in a bias in the eigenvalue, the data presented here indicates that an over-prediction of U-238 capture in the resonance groups largely drives the error. These results will be discussed in greater depth in the context of angular-dependent \ac{MGXS} in Chapter~\ref{chap:sph}.
+
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

@@ -69,7 +69,6 @@ openmoc_fluxes = openmoc.process.get_scalar_fluxes(solver)
 num_fsrs = openmoc_geometry.getNumFSRs()
 num_groups = openmoc_geometry.getNumEnergyGroups()
 openmc_fluxes = np.zeros((num_fsrs, num_groups), dtype=np.float64)
-
 fsr_volumes = np.zeros(num_fsrs, dtype=np.float64)
 
 # Get innermost/outermost fuel FSRs
@@ -105,7 +104,7 @@ max_x = np.argmin(fuel_centroids)
 # Extract energy group edges
 group_edges = mgxs_lib.energy_groups.group_edges
 group_edges *= 1e6      # Convert to units of eV
-group_edges[0] = 1e-5     # Adjust lower bound (for loglog scaling)
+group_edges[0] = 1e-5   # Adjust lower bound (for loglog scaling)
 
 # Compute difference in energy bounds for each group
 group_deltas = np.ediff1d(group_edges)
