@@ -128,21 +128,29 @@ for i, num_groups in enumerate(groups):
             openmc_capt += openmc_fluxes[fsr,:] * capt_mean.flatten() * fsr_volumes[fsr]
             openmoc_capt += openmoc_fluxes[fsr,:] * capt_mean.flatten() * fsr_volumes[fsr]
 
+    min_ind = condense_lib.energy_groups.get_group(6.67e-6)
+    max_ind = condense_lib.energy_groups.get_group(2.e-2)
+
     # Compute the percent rel. err. in group 27
-    abs_rel_err[i,0] = (openmoc_abs[26] - openmc_abs[26]) / openmc_abs[26] * 100.
-    capt_rel_err[i,0] = (openmoc_capt[26] - openmc_capt[26]) / openmc_capt[26] * 100
+    abs_rel_err[i,0] = (openmoc_abs[min_ind] - openmc_abs[min_ind]) / openmc_abs[min_ind] * 100.
+    capt_rel_err[i,0] = (openmoc_capt[min_ind] - openmc_capt[min_ind]) / openmc_capt[min_ind] * 100
 
     # Compute the percent rel. err. in groups 14-27
-    abs_rel_err[i,1] = (np.sum(openmoc_abs[13:26]) - np.sum(openmc_abs[13:26])) / np.sum(openmc_abs[13:26]) * 100.
-    capt_rel_err[i,1] = (np.sum(openmoc_capt[13:26]) - np.sum(openmc_capt[13:26])) / np.sum(openmc_capt[13:26]) * 100
+    abs_rel_err[i,1] = (np.sum(openmoc_abs[max_ind:min_ind]) -
+                        np.sum(openmc_abs[max_ind:min_ind])) / \
+                       np.sum(openmc_abs[max_ind:min_ind]) * 100.
+    capt_rel_err[i,1] = (np.sum(openmoc_capt[max_ind:min_ind]) -
+                         np.sum(openmc_capt[max_ind:min_ind])) / \
+                        np.sum(openmc_capt[max_ind:min_ind]) * 100
 
     # Compute the percent rel. err. in all groups
     abs_rel_err[i,2] = (np.sum(openmoc_abs) - np.sum(openmc_abs)) / np.sum(openmc_abs) * 100.
     capt_rel_err[i,2] = (np.sum(openmoc_capt) - np.sum(openmc_capt)) / np.sum(openmc_capt) * 100
 
     # Compute the percentage of U-238 capture to total absorption
-    u238_frac[i,0] = openmoc_capt[26] / openmoc_abs[26] * 100.
-    u238_frac[i,1] = np.sum(openmoc_capt[13:26]) / np.sum(openmoc_abs[13:26]) * 100.
+    u238_frac[i,0] = openmoc_capt[min_ind] / openmoc_abs[min_ind] * 100.
+    u238_frac[i,1] = np.sum(openmoc_capt[max_ind:min_ind]) / \
+                     np.sum(openmoc_abs[max_ind:min_ind]) * 100.
     u238_frac[i,2] = np.sum(openmoc_capt) / np.sum(openmoc_abs) * 100.
 
 group_ranges = ['Group 27', 'Groups 14-27', 'All Groups']
