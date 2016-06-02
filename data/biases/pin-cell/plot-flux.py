@@ -1,5 +1,6 @@
 import os
 import re
+import copy
 
 import numpy as np
 import matplotlib
@@ -21,6 +22,80 @@ import pyne.ace
 plt.ioff()
 sns.set_style('ticks')
 
+
+def get_fluxes(solver, mgxs_lib):
+    """
+
+    :param solver:
+    :param mgxs_lib:
+    :return:
+    """
+
+    # Extract the OpenMOC scalar fluxes indexed by FSR, group
+    openmoc_fluxes = openmoc.process.get_scalar_fluxes(solver)
+
+    # Extract parameters from OpenMOC geometry to allocate arrays
+    openmoc_geometry = solver.getGeometry()
+    num_cells = len(mgxs_lib.domains)
+    num_fsrs = openmoc_geometry.getNumFSRs()
+    num_groups = openmoc_geometry.getNumEnergyGroups()
+
+    # Allocate arrays for ancestor (non-discretized) cell fluxes and volumes
+    openmoc_cell_fluxes = np.zeros((num_cells, num_groups), dtype=np.float64)
+    openmc_fluxes = np.zeros((num_cells, num_groups), dtype=np.float64)
+    volumes = np.zeros(num_cells, dtype=np.float64)
+    distances = np.zeros(num_cells, dtype=np.float64)
+    fuel_indices = []
+
+    for i, domain in enumerate(mgxs_lib.domains):
+
+        # Lookup a proxy MGXS to get the flux for this domain (cell)
+        mgxs = mgxs_lib.get_mgxs(domain, 'nu-fission')
+        flux = mgxs.tallies['flux'].mean.flatten()
+        openmc_fluxes[i, :] = np.flipud(flux)
+
+        # Get the OpenMC flux in each FSR
+        for fsr in range(num_fsrs):
+
+            # Find the OpenMOC cell and its parent for this FSR
+            cell = openmoc_geometry.findCellContainingFSR(fsr)
+            ancestor = cell.getOldestAncestor()
+
+            # Increment the flux, volume for the ancestor cell for this FSR
+            if ancestor.getId() == domain.id:
+                fsr_volume = track_generator.getFSRVolume(fsr)
+                openmoc_cell_fluxes[i,:] += openmoc_fluxes[fsr,:] * fsr_volume
+                volumes[i] += fsr_volume
+
+                # FIXME
+                centroid = openmoc_geometry.getFSRCentroid(fsr)
+                x, y, z = centroid.getX(), centroid.getY(), centroid.getZ()
+                distances[i] = np.sqrt(x**2 + y**2 + z**2)
+
+                if ancestor.getName() == 'fuel':
+                    fuel_indices.append(i)
+
+    # Divide the fluxes by the ancestor (non-discretized) cell volumes
+    openmc_fluxes /= volumes[:,np.newaxis]
+    openmoc_fluxes = openmoc_cell_fluxes / volumes[:,np.newaxis]
+
+    fuel_indices = np.unique(fuel_indices)
+
+    # Extract energy group edges
+    group_edges = copy.deepcopy(mgxs_lib.energy_groups.group_edges)
+    group_edges *= 1e6      # Convert to units of eV
+    group_edges[0] = 1e-5     # Adjust lower bound (for loglog scaling)
+
+    # Compute difference in energy bounds for each group
+    group_deltas = np.ediff1d(group_edges)
+    group_deltas = np.flipud(group_deltas)
+
+    # Normalize fluxes to the total integrated flux
+    openmc_fluxes /= np.sum(openmc_fluxes * group_deltas, axis=1)[:,np.newaxis]
+    openmoc_fluxes /= np.sum(openmoc_fluxes * group_deltas, axis=1)[:,np.newaxis]
+    return openmc_fluxes, openmoc_fluxes, volumes, distances, fuel_indices
+
+
 openmoc.log.set_log_level('NORMAL')
 opts = openmoc.options.Options()
 
@@ -41,18 +116,15 @@ mgxs_lib = mgxs_lib.get_condensed_library(coarse_groups)
 openmoc_materials = \
     openmoc.materialize.load_openmc_mgxs_lib(mgxs_lib, openmoc_geometry)
 
-# FIXME: Discretize the geometry: This won't work since the discretized
-# sector cells won't correspond to the MGXS domains for flux comparison
-'''
-all_cells = openmoc_geometry.getAllMaterialCells()
-for cell_id in all_cells:
-    all_cells[cell_id].setNumSectors(8)
-'''
+# Discretize the geometry in angular sectors
+cells = openmoc_geometry.getAllMaterialCells()
+for cell_id, cell in cells.items():
+    cell.setNumSectors(8)
 
 # Initialize an OpenMOC TrackGenerator and Solver
 track_generator = openmoc.TrackGenerator(openmoc_geometry, 128, 0.05)
 track_generator.setNumThreads(opts.num_omp_threads)
-track_generator.generateTracks()
+track_generator.generateTracks(store=False)
 
 # Initialize an OpenMOC Solver
 solver = openmoc.CPUSolver(track_generator)
@@ -70,45 +142,9 @@ solver.printTimerReport()
 
 openmoc.log.py_printf('NORMAL', 'Plotting data...')
 
-# Extract the OpenMOC scalar fluxes
-openmoc_fluxes = openmoc.process.get_scalar_fluxes(solver)
-
-# Extract the OpenMC scalar fluxes
-num_fsrs = openmoc_geometry.getNumFSRs()
-num_groups = openmoc_geometry.getNumEnergyGroups()
-openmc_fluxes = np.zeros((num_fsrs, num_groups), dtype=np.float64)
-fsr_volumes = np.zeros(num_fsrs, dtype=np.float64)
-
-# Get innermost/outermost fuel FSRs
-fuel_distances = []
-fuel_fsrs = []
-
-# Get the OpenMC flux in each FSR
-for fsr in range(num_fsrs):
-
-    # Find the OpenMOC cell and volume for this FSR
-    openmoc_cell = openmoc_geometry.findCellContainingFSR(fsr)
-    cell_id = openmoc_cell.getId()
-    fsr_volumes[fsr] = track_generator.getFSRVolume(fsr)
-
-    # Update min/max fuel FSR
-    if openmoc_cell.getName() == 'fuel':
-        point = openmoc_geometry.getFSRPoint(fsr)
-        x, y, z = point.getX(), point.getY(), point.getZ()
-        print(fsr, x,y,z)
-        fuel_distances.append(np.sqrt(x**2 + y**2 + z**2))
-        fuel_fsrs.append(fsr)
-
-    # Store the volume-averaged flux
-    mgxs = mgxs_lib.get_mgxs(cell_id, 'nu-fission')
-    flux = mgxs.tallies['flux'].mean.flatten()
-    flux = np.flipud(flux) / fsr_volumes[fsr]
-    openmc_fluxes[fsr, :] = flux
-
-fuel_distances = np.asarray(fuel_distances)
-fuel_fsrs = np.asarray(fuel_fsrs)
-min_dist = np.argmin(fuel_distances)
-max_dist = np.argmin(fuel_distances)
+# Extract the normalized fluxes and cell volumes
+openmc_fluxes, openmoc_fluxes, volumes, distances, fuel_indices = \
+    get_fluxes(solver, mgxs_lib)
 
 # Extract energy group edges
 group_edges = mgxs_lib.energy_groups.group_edges
@@ -134,8 +170,8 @@ openmoc_fluxes = np.insert(openmoc_fluxes, 0, openmoc_fluxes[:,0], axis=1)
 ###############################################################################
 
 # Compute volume-weighted FSR fluxes across the geometry
-vol_avg_openmc_fluxes = np.sum(openmc_fluxes * fsr_volumes[:, np.newaxis], axis=0)
-vol_avg_openmoc_fluxes = np.sum(openmoc_fluxes * fsr_volumes[:, np.newaxis], axis=0)
+vol_avg_openmc_fluxes = np.nansum(openmc_fluxes * volumes[:, np.newaxis], axis=0)
+vol_avg_openmoc_fluxes = np.nansum(openmoc_fluxes * volumes[:, np.newaxis], axis=0)
 
 # Normalize the fluxes to the mean
 vol_avg_openmc_fluxes /= np.mean(vol_avg_openmc_fluxes)
@@ -173,10 +209,8 @@ u238 = pyne_lib.tables['92238.71c']
 capture = u238.reactions[102]
 
 # Compute the percent relative error in the flux
-rel_err = np.zeros(openmc_fluxes.shape)
-for fsr in range(num_fsrs):
-    delta_flux = openmoc_fluxes[fsr,:] - openmc_fluxes[fsr,:]
-    rel_err[fsr,:] = delta_flux / openmc_fluxes[fsr,:] * 100.
+delta_flux = openmoc_fluxes - openmc_fluxes
+rel_err = delta_flux / openmc_fluxes * 100.
 
 '''
 # Plot OpenMOC relative flux errors in each FSR
@@ -219,8 +253,8 @@ for fsr in range(num_fsrs):
 #        Plot OpenMC-to-OpenMOC Innermost/Outermost Scalar Flux Error
 ###############################################################################
 
-min_fsr = fuel_fsrs[np.argmin(fuel_distances)]
-max_fsr = fuel_fsrs[np.argmax(fuel_distances)]
+min_fsr = fuel_indices[-1]
+max_fsr = fuel_indices[0]
 
 # Plot the error for the innermost and outermost FSRS atop each other
 fig, ax1 = plt.subplots()
@@ -257,14 +291,16 @@ plt.close()
 # Plot the relative error for group 27
 fig = plt.figure()
 
-centroid_indices = np.argsort(fuel_distances)
-fsr_indices = fuel_fsrs[centroid_indices]
 group_index = 27
 
-plt.plot(range(mesh), rel_err[fsr_indices, group_index],
-         drawstyle='steps', color='b', linewidth=3)
+# Extend the rel er array for matplotlib's step plot of fluxes
+fuel_indices = fuel_indices[::-1]
+rel_err = rel_err[fuel_indices, group_index]
+rel_err = np.insert(rel_err, 0, rel_err[0], axis=0)
+
+plt.plot(np.arange(rel_err.shape[0]), rel_err, drawstyle='steps', color='b', linewidth=3)
 plt.xlabel('Fuel FSR', fontsize=12)
 plt.ylabel('Relative Error [%]', fontsize=12)
-plt.xlim((0, mesh-1))
+plt.xlim((0, rel_err.shape[0]-1))
 plt.savefig('rel-err-fuel-fsrs.png', bbox_inches='tight')
 plt.close()

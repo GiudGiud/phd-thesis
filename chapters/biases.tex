@@ -650,6 +650,12 @@ The trends analyzed in Table~\ref{table:chap4-pin-energy} emerge in a similar ma
 
 The emergence of a negative systematic bias in the eigenvalue with fine energy and spatial discretization led to an analysis of the flux spectra computed by OpenMC and OpenMOC. The 70-group volume-averaged flux in energy is illustrated in Figure~\ref{fig:chap4-slab-flux}. Upon further inspection, it was noted that OpenMOC's flux exhibited large errors with respect to the reference OpenMC flux in those energy groups which isolate large U-238 capture resonances. The error in the 70-group flux is illustrated in Figure~\ref{fig:chap4-slab-rel-err} for the \ac{FSR}s nearest and furthest from the moderator for the 16$\times$ discretized case. Figure~\ref{fig:chap4-slab-fuel-fsrs} highlights the spatial dependence of the error in group 27 across the fuel which isolates the largest U-238 capture resonance at 6.67 eV. The error decreases from a maximum of 3.5\% to a minimum of -1\% in those \ac{FSR}s furthest and nearest the moderator, respectively.
 
+\begin{itemize}
+  \item run cases for pin cell again with angular sectors
+  \item use the ``parent'' cell to find MGXS
+  \item use the centroid for each FSR with sectors
+\end{itemize}
+
 \begin{figure}[H]
 \begin{subfigure}{.5\textwidth}
   \centering
@@ -759,13 +765,13 @@ As illustrated in the table, both U-238 capture and total absorption rate error 
   \multicolumn{1}{c}{\bf Range C} \\
   \cline{2-4} \cline{6-8}
 1 & 0.00 & 0.00 & 0.00 & & 0.00 & 0.00 & 0.00 \\
-2 & 0.00 & 0.00 & -0.06 & & 0.00 & 0.00 & -0.15 \\
-4 & 0.97 & 0.91 & 0.72 & & 0.91 & 0.86 & 0.29 \\
-8 & 1.09 & 1.01 & 0.76 & & 1.08 & 1.00 & 0.29 \\
-16 & 1.09 & 1.01 & 0.76 & & 1.08 & 1.00 & 0.29 \\
-25 & 1.67 & 1.33 & 0.92 & & 1.64 & 1.28 & 0.26 \\
-40 & 1.66 & 1.37 & 0.94 & & 1.63 & 1.32 & 0.26 \\
-70 & 1.70 & 1.45 & 0.99 & & 1.67 & 1.40 & 0.29 \\
+2 & 0.00 & 0.00 & -0.05 & & 0.00 & 0.00 & -0.15 \\
+4 & 0.97 & 0.48 & 0.72 & & 0.91 & 0.47 & 0.29 \\
+8 & 1.10 & 0.48 & 0.77 & & 1.08 & 0.47 & 0.29 \\
+16 & 1.10 & 0.48 & 0.76 & & 1.08 & 0.47 & 0.29 \\
+25 & 1.68 & 1.21 & 0.92 & & 1.65 & 1.17 & 0.27 \\
+40 & 1.66 & 1.27 & 0.95 & & 1.64 & 1.23 & 0.27 \\
+70 & 1.71 & 1.37 & 0.99 & & 1.68 & 1.32 & 0.30 \\
   \bottomrule
 \end{tabular}
 \end{table}

@@ -244,14 +244,16 @@ plt.close()
 # Plot the relative error for group 27
 fig = plt.figure()
 
-centroid_indices = np.argsort(fuel_centroids)
-fsr_indices = fuel_fsrs[centroid_indices]
 group_index = 27
 
-plt.plot(range(mesh), rel_err[fsr_indices, group_index],
-         drawstyle='steps', color='b', linewidth=3)
+centroid_indices = np.argsort(fuel_centroids)
+fuel_indices = fuel_fsrs[centroid_indices]
+rel_err = rel_err[fuel_indices, group_index]
+rel_err = np.insert(rel_err, 0, rel_err[0], axis=0)
+
+plt.plot(np.arange(rel_err.shape[0]), rel_err, drawstyle='steps', color='b', linewidth=3)
 plt.xlabel('Fuel FSR', fontsize=12)
 plt.ylabel('Relative Error [%]', fontsize=12)
-plt.xlim((0, mesh-1))
+plt.xlim((0, rel_err.shape[0]-1))
 plt.savefig('rel-err-fuel-fsrs.png', bbox_inches='tight')
 plt.close()

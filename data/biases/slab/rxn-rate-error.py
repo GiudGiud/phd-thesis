@@ -163,7 +163,7 @@ for i, num_groups in enumerate(groups):
     max_ind = condense_lib.energy_groups.get_group(2.e-2) - 1
 
     # Adjust lower energy group if both indices match so that NumPy indexing works
-    if min_ind == min_ind:
+    if min_ind == max_ind:
         min_ind += 1
 
     # Compute the percent rel. err. in groups 14-27

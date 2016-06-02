@@ -1,5 +1,7 @@
-import numpy as np
 import copy
+import shutil
+
+import numpy as np
 
 import openmc.mgxs
 import openmoc
@@ -15,30 +17,55 @@ def get_fluxes(solver, mgxs_lib):
     :return:
     """
 
-    # Extract the OpenMOC scalar fluxes
+    # Extract the OpenMOC scalar fluxes indexed by FSR, group
     openmoc_fluxes = openmoc.process.get_scalar_fluxes(solver)
 
-    # Extract the OpenMC scalar fluxes
+    # Extract parameters from OpenMOC geometry to allocate arrays
     openmoc_geometry = solver.getGeometry()
+    num_cells = len(mgxs_lib.domains)
     num_fsrs = openmoc_geometry.getNumFSRs()
     num_groups = openmoc_geometry.getNumEnergyGroups()
 
-    openmc_fluxes = np.zeros((num_fsrs, num_groups), dtype=np.float64)
-    fsr_volumes = np.zeros(num_fsrs, dtype=np.float64)
+    # Allocate arrays for ancestor (non-discretized) cell fluxes and volumes
+    openmoc_cell_fluxes = np.zeros((num_cells, num_groups), dtype=np.float64)
+    openmc_fluxes = np.zeros((num_cells, num_groups), dtype=np.float64)
+    volumes = np.zeros(num_cells, dtype=np.float64)
+    distances = np.zeros(num_cells, dtype=np.float64)
+    fuel_indices = []
 
-    # Get the OpenMC flux in each FSR
-    for fsr in range(num_fsrs):
+    for i, domain in enumerate(mgxs_lib.domains):
 
-        # Find the OpenMOC cell and volume for this FSR
-        openmoc_cell = openmoc_geometry.findCellContainingFSR(fsr)
-        cell_id = openmoc_cell.getId()
-        fsr_volumes[fsr] = track_generator.getFSRVolume(fsr)
-
-        # Store the volume-averaged flux
-        mgxs = mgxs_lib.get_mgxs(cell_id, 'nu-fission')
+        # Lookup a proxy MGXS to get the flux for this domain (cell)
+        mgxs = mgxs_lib.get_mgxs(domain, 'nu-fission')
         flux = mgxs.tallies['flux'].mean.flatten()
-        flux = np.flipud(flux) / fsr_volumes[fsr]
-        openmc_fluxes[fsr, :] = flux
+        openmc_fluxes[i, :] = np.flipud(flux)
+
+        # Get the OpenMC flux in each FSR
+        for fsr in range(num_fsrs):
+
+            # Find the OpenMOC cell and its parent for this FSR
+            cell = openmoc_geometry.findCellContainingFSR(fsr)
+            ancestor = cell.getOldestAncestor()
+
+            # Increment the flux, volume for the ancestor cell for this FSR
+            if ancestor.getId() == domain.id:
+                fsr_volume = track_generator.getFSRVolume(fsr)
+                openmoc_cell_fluxes[i,:] += openmoc_fluxes[fsr,:] * fsr_volume
+                volumes[i] += fsr_volume
+
+                # FIXME
+                centroid = openmoc_geometry.getFSRCentroid(fsr)
+                x, y, z = centroid.getX(), centroid.getY(), centroid.getZ()
+                distances[i] = np.sqrt(x**2 + y**2 + z**2)
+
+                if ancestor.getName() == 'fuel':
+                    fuel_indices.append(i)
+
+    # Divide the fluxes by the ancestor (non-discretized) cell volumes
+    openmc_fluxes /= volumes[:,np.newaxis]
+    openmoc_fluxes = openmoc_cell_fluxes / volumes[:,np.newaxis]
+
+    fuel_indices = np.unique(fuel_indices)
 
     # Extract energy group edges
     group_edges = copy.deepcopy(mgxs_lib.energy_groups.group_edges)
@@ -52,10 +79,10 @@ def get_fluxes(solver, mgxs_lib):
     # Normalize fluxes to the total integrated flux
     openmc_fluxes /= np.sum(openmc_fluxes * group_deltas, axis=1)[:,np.newaxis]
     openmoc_fluxes /= np.sum(openmoc_fluxes * group_deltas, axis=1)[:,np.newaxis]
-    return openmc_fluxes, openmoc_fluxes, fsr_volumes
+    return openmc_fluxes, openmoc_fluxes, volumes, distances, fuel_indices
 
 
-openmoc.log.set_log_level('RESULT')
+openmoc.log.set_log_level('NORMAL')
 opts = openmoc.options.Options()
 
 groups = [1, 2, 4, 8, 16, 25, 40, 70]
@@ -84,10 +111,17 @@ for i, num_groups in enumerate(groups):
     openmoc_geometry = get_openmoc_geometry(condense_lib.opencg_geometry)
     openmoc.materialize.load_openmc_mgxs_lib(condense_lib, openmoc_geometry)
 
+    # Discretize the geometry into angular sectors
+    cells = openmoc_geometry.getAllMaterialCells()
+    for cell_id, cell in cells.items():
+        cell.setNumSectors(8)
+
     # Generate tracks
     track_generator = openmoc.TrackGenerator(openmoc_geometry, 128, 0.05)
     track_generator.setNumThreads(opts.num_omp_threads)
-    track_generator.generateTracks()
+    track_generator.generateTracks(store=False)
+
+    shutil.rmtree('tracks')
 
     # Instantiate a Solver
     solver = openmoc.CPUSolver(track_generator)
@@ -97,11 +131,13 @@ for i, num_groups in enumerate(groups):
     # Run OpenMOC
     solver.computeEigenvalue(opts.max_iters)
 
-    # Extract the normalized fluxes and FSR volumes
-    openmc_fluxes, openmoc_fluxes, fsr_volumes = get_fluxes(solver, condense_lib)
+    # Extract the normalized fluxes and cell volumes
+    openmc_fluxes, openmoc_fluxes, volumes, distances, fuel_indices = \
+        get_fluxes(solver, condense_lib)
 
     # Extract the OpenMC scalar fluxes
-    num_fsrs = openmoc_geometry.getNumFSRs()
+    cells = openmoc_geometry.getAllMaterialCells()
+    num_cells = len(cells)
     num_groups = openmoc_geometry.getNumEnergyGroups()
 
     # Allocate arrays for absorption/capture rates by material and energy group
@@ -112,32 +148,28 @@ for i, num_groups in enumerate(groups):
     openmc_fiss = np.zeros(num_groups, dtype=np.float)
     openmoc_fiss = np.zeros(num_groups, dtype=np.float)
 
-    for fsr in range(num_fsrs):
-
-        # Find the OpenMOC cell and volume for this FSR
-        openmoc_cell = openmoc_geometry.findCellContainingFSR(fsr)
-        cell_id = openmoc_cell.getId()
+    for j, domain in enumerate(condense_lib.domains):
 
         # Get the capture cross section for this cell
-        abs_mgxs = condense_lib.get_mgxs(cell_id, 'absorption')
-        capt_mgxs = condense_lib.get_mgxs(cell_id, 'capture')
-        fiss_mgxs = condense_lib.get_mgxs(cell_id, 'fission')
+        abs_mgxs = condense_lib.get_mgxs(domain, 'absorption')
+        capt_mgxs = condense_lib.get_mgxs(domain, 'capture')
+        fiss_mgxs = condense_lib.get_mgxs(domain, 'fission')
 
         # Compute OpenMC/OpenMOC total capture rates
         abs_mean = abs_mgxs.get_xs(nuclides='sum', xs_type='macro')
-        openmc_abs += openmc_fluxes[fsr,:] * abs_mean.flatten() * fsr_volumes[fsr]
-        openmoc_abs += openmoc_fluxes[fsr,:] * abs_mean.flatten() * fsr_volumes[fsr]
+        openmc_abs += openmc_fluxes[j,:] * abs_mean.flatten() * volumes[j]
+        openmoc_abs += openmoc_fluxes[j,:] * abs_mean.flatten() * volumes[j]
 
         # Compute OpenMC/OpenMOC total fission rates
         fiss_mean = fiss_mgxs.get_xs(nuclides='sum', xs_type='macro')
-        openmc_fiss += openmc_fluxes[fsr,:] * fiss_mean.flatten() * fsr_volumes[fsr]
-        openmoc_fiss += openmoc_fluxes[fsr,:] * fiss_mean.flatten() * fsr_volumes[fsr]
+        openmc_fiss += openmc_fluxes[j,:] * fiss_mean.flatten() * volumes[j]
+        openmoc_fiss += openmoc_fluxes[j,:] * fiss_mean.flatten() * volumes[j]
 
         # Compute OpenMC/OpenMOC U-238 capture rates
-        if openmoc_cell.getName() == 'fuel':
+        if domain.name == 'fuel':
             capt_mean = capt_mgxs.get_xs(nuclides=['U-238'], xs_type='macro')
-            openmc_capt += openmc_fluxes[fsr,:] * capt_mean.flatten() * fsr_volumes[fsr]
-            openmoc_capt += openmoc_fluxes[fsr,:] * capt_mean.flatten() * fsr_volumes[fsr]
+            openmc_capt += openmc_fluxes[j,:] * capt_mean.flatten() * volumes[j]
+            openmoc_capt += openmoc_fluxes[j,:] * capt_mean.flatten() * volumes[j]
 
     # Find energy group which encompasses 6.67 eV resonance
     min_ind = condense_lib.energy_groups.get_group(6.67e-6) - 1
@@ -163,7 +195,7 @@ for i, num_groups in enumerate(groups):
     max_ind = condense_lib.energy_groups.get_group(2.e-2) - 1
 
     # Adjust lower energy group if both indices match so that NumPy indexing works
-    if min_ind == min_ind:
+    if min_ind == max_ind:
         min_ind += 1
 
     # Compute the percent rel. err. in groups 14-27
