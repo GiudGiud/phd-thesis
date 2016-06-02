@@ -49,12 +49,13 @@ opencg_water = openmc.opencg_compatible.get_opencg_material(borated_water)
 ###################   Exporting to OpenMC geometry.xml File  ###################
 
 # Create bounding surfaces
+# Preserve the moderator-to-fuel ratio with the fuel pin
 min_x = opencg.XPlane(boundary='reflective', x0=0.0)
 max_x = opencg.XPlane(boundary='reflective', x0=0.62992)
 min_y = opencg.YPlane(boundary='reflective', y0=0.0)
 max_y = opencg.YPlane(boundary='reflective', y0=0.62992)
 min_z = opencg.ZPlane(boundary='reflective', z0=0.0)
-max_z = opencg.ZPlane(boundary='reflective', z0=0.62992)
+max_z = opencg.ZPlane(boundary='reflective', z0=1.21243)
 
 # Create material interfacial surfaces
 mid1 = opencg.XPlane(surface_id=1, boundary='interface', x0=0.39218)
