@@ -185,7 +185,7 @@ for i, num_groups in enumerate(groups):
     fiss_rel_err[i,2] = (np.sum(openmoc_fiss) - np.sum(openmc_fiss)) / np.sum(openmc_fiss) * 100
 
     # Compute the percentage of U-238 capture to total absorption in group 27 and all groups
-    u238_frac[i,0] = openmc_capt[min_ind] / np.sum(openmc_abs) * 100.
+    u238_frac[i,0] = openmc_capt[min_ind] / openmc_abs[min_ind] * 100.
     u238_frac[i,2] = np.sum(openmc_capt) / np.sum(openmc_abs) * 100.
 
     # Compute the fraction of total absorption in group 27 to all groups
@@ -211,7 +211,7 @@ for i, num_groups in enumerate(groups):
 
     # Compute the percentage of U-239 capture to total absorption in groups 14-27
     u238_frac[i,1] = np.sum(openmc_capt[max_ind:min_ind]) / \
-                     np.sum(openmc_abs) * 100.
+                     np.sum(openmc_abs[max_ind:min_ind]) * 100.
 
     # Compute the fraction of total absorption in the resonance range to all groups
     abs_frac[i,1] = np.sum(openmc_abs[max_ind:min_ind]) / \
