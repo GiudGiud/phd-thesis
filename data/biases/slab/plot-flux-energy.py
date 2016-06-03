@@ -70,6 +70,7 @@ num_fsrs = openmoc_geometry.getNumFSRs()
 num_groups = openmoc_geometry.getNumEnergyGroups()
 openmc_fluxes = np.zeros((num_fsrs, num_groups), dtype=np.float64)
 fsr_volumes = np.zeros(num_fsrs, dtype=np.float64)
+openmc_fiss = 0.
 
 # Get innermost/outermost fuel FSRs
 fuel_centroids = []
@@ -92,9 +93,12 @@ for fsr in range(num_fsrs):
 
     # Store the volume-averaged flux
     mgxs = mgxs_lib.get_mgxs(cell_id, 'nu-fission')
+    mgxs_mean = mgxs.get_xs(nuclides='sum', xs_type='macro')
     flux = mgxs.tallies['flux'].mean.flatten()
-    flux = np.flipud(flux) / fsr_volumes[fsr]
-    openmc_fluxes[fsr, :] = flux
+    openmc_fluxes[fsr, :] = flux[::-1] / fsr_volumes[fsr]
+    openmc_fiss += np.sum(flux[::-1] * mgxs_mean)
+
+openmc_fluxes /= openmc_fiss
 
 fuel_centroids = np.asarray(fuel_centroids)
 fuel_fsrs = np.asarray(fuel_fsrs)
@@ -106,14 +110,9 @@ group_edges = mgxs_lib.energy_groups.group_edges
 group_edges *= 1e6      # Convert to units of eV
 group_edges[0] = 1e-5   # Adjust lower bound (for loglog scaling)
 
-# Compute difference in energy bounds for each group
-group_deltas = np.ediff1d(group_edges)
-group_edges = np.flipud(group_edges)
-group_deltas = np.flipud(group_deltas)
-
-# Normalize fluxes to the total integrated flux
-openmc_fluxes /= np.sum(openmc_fluxes * group_deltas, axis=1)[:,np.newaxis]
-openmoc_fluxes /= np.sum(openmoc_fluxes * group_deltas, axis=1)[:,np.newaxis]
+# FIXME
+openmc_fluxes = openmc_fluxes[:, ::-1]
+openmoc_fluxes = openmoc_fluxes[:, ::-1]
 
 # Extend the mgxs values array for matplotlib's step plot of fluxes
 openmc_fluxes = np.insert(openmc_fluxes, 0, openmc_fluxes[:,0], axis=1)
@@ -163,10 +162,16 @@ u238 = pyne_lib.tables['92238.71c']
 capture = u238.reactions[102]
 
 # Compute the percent relative error in the flux
+delta_flux = openmoc_fluxes - openmc_fluxes
+rel_err = delta_flux / openmc_fluxes * 100.
+
+'''
+# Compute the percent relative error in the flux
 rel_err = np.zeros(openmc_fluxes.shape)
 for fsr in range(num_fsrs):
     delta_flux = openmoc_fluxes[fsr,:] - openmc_fluxes[fsr,:]
     rel_err[fsr,:] = delta_flux / openmc_fluxes[fsr,:] * 100.
+'''
 
 '''
 # Plot OpenMOC relative flux errors in each FSR
@@ -244,7 +249,8 @@ plt.close()
 # Plot the relative error for group 27
 fig = plt.figure()
 
-group_index = 27
+# FIXME
+group_index = 70 - 27 + 1
 
 centroid_indices = np.argsort(fuel_centroids)
 fuel_indices = fuel_fsrs[centroid_indices]

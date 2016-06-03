@@ -25,6 +25,7 @@ def get_fluxes(solver, mgxs_lib):
 
     openmc_fluxes = np.zeros((num_fsrs, num_groups), dtype=np.float64)
     fsr_volumes = np.zeros(num_fsrs, dtype=np.float64)
+    openmc_fiss = 0.
 
     # Get the OpenMC flux in each FSR
     for fsr in range(num_fsrs):
@@ -36,22 +37,14 @@ def get_fluxes(solver, mgxs_lib):
 
         # Store the volume-averaged flux
         mgxs = mgxs_lib.get_mgxs(cell_id, 'nu-fission')
+        mgxs_mean = mgxs.get_xs(nuclides='sum', xs_type='macro')
         flux = mgxs.tallies['flux'].mean.flatten()
-        flux = np.flipud(flux) / fsr_volumes[fsr]
-        openmc_fluxes[fsr, :] = flux
+        openmc_fluxes[fsr, :] = flux[::-1] / fsr_volumes[fsr]
+        openmc_fiss += np.sum(flux[::-1] * mgxs_mean)
 
-    # Extract energy group edges
-    group_edges = copy.deepcopy(mgxs_lib.energy_groups.group_edges)
-    group_edges *= 1e6      # Convert to units of eV
-    group_edges[0] = 1e-5     # Adjust lower bound (for loglog scaling)
+    # Normalize OpenMC fluxes to the total integrated fission source
+    openmc_fluxes /= openmc_fiss
 
-    # Compute difference in energy bounds for each group
-    group_deltas = np.ediff1d(group_edges)
-    group_deltas = np.flipud(group_deltas)
-
-    # Normalize fluxes to the total integrated flux
-    openmc_fluxes /= np.sum(openmc_fluxes * group_deltas, axis=1)[:,np.newaxis]
-    openmoc_fluxes /= np.sum(openmoc_fluxes * group_deltas, axis=1)[:,np.newaxis]
     return openmc_fluxes, openmoc_fluxes, fsr_volumes
 
 
@@ -121,7 +114,7 @@ for i, num_groups in enumerate(groups):
         # Get the capture cross section for this cell
         abs_mgxs = condense_lib.get_mgxs(cell_id, 'absorption')
         capt_mgxs = condense_lib.get_mgxs(cell_id, 'capture')
-        fiss_mgxs = condense_lib.get_mgxs(cell_id, 'fission')
+        fiss_mgxs = condense_lib.get_mgxs(cell_id, 'nu-fission')
 
         # Compute OpenMC/OpenMOC total capture rates
         abs_mean = abs_mgxs.get_xs(nuclides='sum', xs_type='macro')
@@ -138,6 +131,11 @@ for i, num_groups in enumerate(groups):
             capt_mean = capt_mgxs.get_xs(nuclides=['U-238'], xs_type='macro')
             openmc_capt += openmc_fluxes[fsr,:] * capt_mean.flatten() * fsr_volumes[fsr]
             openmoc_capt += openmoc_fluxes[fsr,:] * capt_mean.flatten() * fsr_volumes[fsr]
+
+    print('absorption', np.sum(openmc_abs), np.sum(openmoc_abs))
+    print('nu-fission', np.sum(openmc_fiss), np.sum(openmoc_fiss))
+    print('keff', np.sum(openmc_fiss) / np.sum(openmc_abs),
+          np.sum(openmoc_fiss) / np.sum(openmoc_abs))
 
     # Find energy group which encompasses 6.67 eV resonance
     min_ind = condense_lib.energy_groups.get_group(6.67e-6) - 1

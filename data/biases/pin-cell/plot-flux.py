@@ -46,13 +46,16 @@ def get_fluxes(solver, mgxs_lib):
     volumes = np.zeros(num_cells, dtype=np.float64)
     distances = np.zeros(num_cells, dtype=np.float64)
     fuel_indices = []
+    openmc_fiss = 0.
 
     for i, domain in enumerate(mgxs_lib.domains):
 
         # Lookup a proxy MGXS to get the flux for this domain (cell)
         mgxs = mgxs_lib.get_mgxs(domain, 'nu-fission')
+        mgxs_mean = mgxs.get_xs(nuclides='sum', xs_type='macro')
         flux = mgxs.tallies['flux'].mean.flatten()
-        openmc_fluxes[i, :] = np.flipud(flux)
+        openmc_fluxes[i, :] = flux[::-1]
+        openmc_fiss += np.sum(flux[::-1] * mgxs_mean)
 
         # Get the OpenMC flux in each FSR
         for fsr in range(num_fsrs):
@@ -61,6 +64,12 @@ def get_fluxes(solver, mgxs_lib):
             cell = openmoc_geometry.findCellContainingFSR(fsr)
             ancestor = cell.getOldestAncestor()
 
+            # FIXME: For non-sectorized case
+            sectorized = True
+            if ancestor is None:
+                ancestor = cell
+                sectorized = False
+
             # Increment the flux, volume for the ancestor cell for this FSR
             if ancestor.getId() == domain.id:
                 fsr_volume = track_generator.getFSRVolume(fsr)
@@ -68,31 +77,27 @@ def get_fluxes(solver, mgxs_lib):
                 volumes[i] += fsr_volume
 
                 # FIXME
-                centroid = openmoc_geometry.getFSRCentroid(fsr)
-                x, y, z = centroid.getX(), centroid.getY(), centroid.getZ()
-                distances[i] = np.sqrt(x**2 + y**2 + z**2)
+                if sectorized:
+                    centroid = openmoc_geometry.getFSRCentroid(fsr)
+                    x, y, z = centroid.getX(), centroid.getY(), centroid.getZ()
+                    distances[i] = np.sqrt(x**2 + y**2 + z**2)
+                else:
+                    centroid = openmoc_geometry.getFSRPoint(fsr)
+                    x, y, z = centroid.getX(), centroid.getY(), centroid.getZ()
+                    distances[i] = np.sqrt(x**2 + y**2 + z**2)
 
                 if ancestor.getName() == 'fuel':
                     fuel_indices.append(i)
 
     # Divide the fluxes by the ancestor (non-discretized) cell volumes
-    openmc_fluxes /= volumes[:,np.newaxis]
+    openmc_fluxes /= (openmc_fiss * volumes[:,np.newaxis])
     openmoc_fluxes = openmoc_cell_fluxes / volumes[:,np.newaxis]
+
+    openmc_fluxes = openmc_fluxes[:,::-1]
+    openmoc_fluxes = openmoc_fluxes[:,::-1]
 
     fuel_indices = np.unique(fuel_indices)
 
-    # Extract energy group edges
-    group_edges = copy.deepcopy(mgxs_lib.energy_groups.group_edges)
-    group_edges *= 1e6      # Convert to units of eV
-    group_edges[0] = 1e-5     # Adjust lower bound (for loglog scaling)
-
-    # Compute difference in energy bounds for each group
-    group_deltas = np.ediff1d(group_edges)
-    group_deltas = np.flipud(group_deltas)
-
-    # Normalize fluxes to the total integrated flux
-    openmc_fluxes /= np.sum(openmc_fluxes * group_deltas, axis=1)[:,np.newaxis]
-    openmoc_fluxes /= np.sum(openmoc_fluxes * group_deltas, axis=1)[:,np.newaxis]
     return openmc_fluxes, openmoc_fluxes, volumes, distances, fuel_indices
 
 
@@ -148,17 +153,8 @@ openmc_fluxes, openmoc_fluxes, volumes, distances, fuel_indices = \
 
 # Extract energy group edges
 group_edges = mgxs_lib.energy_groups.group_edges
-group_edges *= 1e6      # Convert to units of eV 
+group_edges *= 1e6      # Convert to units of eV
 group_edges[0] = 1e-5   # Adjust lower bound (for loglog scaling)
-
-# Compute difference in energy bounds for each group
-group_deltas = np.ediff1d(group_edges)
-group_edges = np.flipud(group_edges)
-group_deltas = np.flipud(group_deltas)
-
-# Normalize fluxes to the total integrated flux
-openmc_fluxes /= np.sum(openmc_fluxes * group_deltas, axis=1)[:,np.newaxis]
-openmoc_fluxes /= np.sum(openmoc_fluxes * group_deltas, axis=1)[:,np.newaxis]
 
 # Extend the mgxs values array for matplotlib's step plot of fluxes
 openmc_fluxes = np.insert(openmc_fluxes, 0, openmc_fluxes[:,0], axis=1)
@@ -291,12 +287,16 @@ plt.close()
 # Plot the relative error for group 27
 fig = plt.figure()
 
-group_index = 27
+group_index = 70 - 27 + 1
+
+print(rel_err[:, group_index])
 
 # Extend the rel er array for matplotlib's step plot of fluxes
 fuel_indices = fuel_indices[::-1]
 rel_err = rel_err[fuel_indices, group_index]
 rel_err = np.insert(rel_err, 0, rel_err[0], axis=0)
+
+print(fuel_indices)
 
 plt.plot(np.arange(rel_err.shape[0]), rel_err, drawstyle='steps', color='b', linewidth=3)
 plt.xlabel('Fuel FSR', fontsize=12)

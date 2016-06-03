@@ -691,7 +691,7 @@ The trends analyzed in Table~\ref{table:chap4-pin-energy} emerge in a similar ma
 \section{Diagnosing the Error}
 \label{sec:chap4-diagnosis}
 
-The emergence of a negative systematic bias in the eigenvalue with fine energy and spatial discretization for the heterogeneous 1D slab and 2D fuel pin models led to an analysis of the flux spectra computed by OpenMC and OpenMOC. The 70-group volume-averaged flux in energy for both benchmarks is illustrated in Figure~\ref{fig:chap4-flux}. Upon further inspection, it was noted that OpenMOC's flux exhibited large errors with respect to the reference OpenMC flux in those energy groups which isolate large U-238 capture resonances. The error in the 70-group flux is illustrated in Figure~\ref{fig:chap4-rel-err-energy} for the \ac{FSR}s nearest and furthest from the moderator for the benchmark models with a 16$\times$ \ac{FSR} discretization. Figure~\ref{fig:chap4-rel-err-space} highlights the spatial dependence of the error in group 27 across the fuel which isolates the largest U-238 capture resonance at 6.67 eV. The error decreases from a maximum of $\sim$3\% to a minimum of $\sim$0.5\% in those \ac{FSR}s furthest and nearest the moderator, respectively.
+The emergence of a negative systematic bias in the eigenvalue with fine energy and spatial discretization for the heterogeneous 1D slab and 2D fuel pin models led to an analysis of the flux spectra computed by OpenMC and OpenMOC. The 70-group volume-averaged flux in energy for both benchmarks is illustrated in Figure~\ref{fig:chap4-flux}. Upon further inspection, it was noted that OpenMOC's flux exhibited large errors with respect to the reference OpenMC flux in those energy groups which isolate large U-238 capture resonances. The error in the 70-group flux is illustrated in Figure~\ref{fig:chap4-rel-err-energy} for the \ac{FSR}s nearest and furthest from the moderator for the benchmark models with a 16$\times$ \ac{FSR} discretization. Figure~\ref{fig:chap4-rel-err-space} highlights the spatial dependence of the error in group 27 across the fuel which isolates the largest U-238 capture resonance at 6.67 eV. In the case of the slab, the error monotonically decreases from a maximum of $\sim$2.2\% to a minimum of $\sim$-0.3\% in those \ac{FSR}s furthest and nearest the moderator, respectively. The error across the fuel pin, however, does not exhibit a clear trend and wildly swings from -4\% to nearly 8\%, even for equal volume rings which are adjacent to one another. It is unclear why the spatial variation in the fuel pin is so different from that of its ``equivalent'' slab, and this should be investigated in the future.
 
 \begin{figure}[H]
 \begin{subfigure}{.5\textwidth}
@@ -748,13 +748,13 @@ The errors in the multi-group flux directly correspond to equal errors in the re
 \end{itemize}
 \vspace{-0.1in}
 
-As illustrated in the table, both U-238 capture and total absorption rate error grows with the number of energy groups used in the \ac{MGXS} calculation. This trend is particularly pronounced for U-238 capture in the 6.67 eV resonance group which exceeds 1\% when 4 and 25 or more groups are used the multi-group calculation for the 1D slab and 2D fuel pin, respectively. The 0.7\% and 0.3\% error in the total absorption would directly correspond to an under-prediction in the eigenvalue of 800 and 350 pcm for the slab and fuel pin, respectively. Approximately 5 -- 6\% and 16 -- 18\% of the total absorption occurs in energy ranges A and B, with U-238 capture accounting for 80\% and 70\% of the total absorption in each energy range, respectively. Hence, the error in U-238 resonance capture alone would under-predict the eigenvalue by 200 -- 230 pcm, with nearly half of the error deriving from group 27 of 70 due to the resonance at 6.67 eV. 
+As illustrated in the table, both U-238 capture and total absorption rate error grows with the number of energy groups used in the \ac{MGXS} calculation. This trend is particularly pronounced for U-238 capture in the 6.67 eV resonance group which exceeds 1\% when 25 or more groups are used in the multi-group calculation. The 0.1\% and 0.22\% error in the total absorption would directly correspond to an under-prediction in the eigenvalue of 115 and 255 pcm for the slab and fuel pin, respectively, which closely matches the observed eigenvalue biases for each model\footnote{This analysis neglects the contribution of scattering multiplicity (\textit{e.g.,} (n,2n)) to the eigenvalue.}. Approximately 5 -- 6\% and 16 -- 18\% of the total absorption occurs in energy ranges A and B, with U-238 capture accounting for 80\% and 70\% of the total absorption in each energy range, respectively. Hence, the error in U-238 resonance capture alone would under-predict the eigenvalue by 105 and 185 pcm for the slab and pin, with approximately half of the error deriving from group 27 of 70 due to the resonance at 6.67 eV. 
 
 %U-238 capture
-%slab 27: 95 pcm
-%slab all: 230 pcm
-%pin 27: 95 pcm
-%pin all: 200 pcm
+%slab 27: 50 pcm
+%slab all: 105 pcm
+%pin 27: 100 pcm
+%pin all: 185 pcm
 
 %The total energy-integrated fission rate error is $\sim$1\% and $\sim$0.25\% for the slab and pin (and over 2\% in group 27) which would correspond to an over-prediction in the eigenvalue of
 
@@ -786,14 +786,14 @@ As illustrated in the table, both U-238 capture and total absorption rate error 
   \multicolumn{1}{c}{\bf Range B} &
   \multicolumn{1}{c}{\bf Range C} \\
   \cline{2-4} \cline{6-8}
-1 & 0.00 & 0.00 & 0.00 & & 0.00 & 0.00 & 0.00 \\
-2 & 0.00 & 0.00 & -0.19 & & 0.00 & 0.00 & -0.52 \\
-4 & 1.25 & 1.07 & 1.18 & & 1.18 & 1.05 & 0.59 \\
-8 & 1.35 & 1.07 & 1.15 & & 1.34 & 1.05 & 0.61 \\
-16 & 1.35 & 1.07 & 1.14 & & 1.34 & 1.05 & 0.61 \\
-25 & 1.96 & 1.57 & 1.37 & & 1.92 & 1.55 & 0.65 \\
-40 & 1.94 & 1.64 & 1.39 & & 1.90 & 1.61 & 0.66 \\
-70 & 2.01 & 1.77 & 1.46 & & 1.97 & 1.73 & 0.71 \\
+1 & -0.02 & -0.02 & -0.02 & & -0.52 & -0.52 & -0.52 \\
+2 & 0.48 & 0.48 & 0.30 & & 0.45 & 0.45 & -0.21 \\
+4 & 0.19 & 0.00 & 0.11 & & 0.20 & 0.00 & -0.20 \\
+8 & 0.46 & 0.17 & 0.26 & & 0.49 & 0.17 & -0.03 \\
+16 & 0.50 & 0.21 & 0.28 & & 0.53 & 0.21 & 0.01 \\
+25 & 1.05 & 0.65 & 0.45 & & 1.07 & 0.67 & 0.06 \\
+40 & 1.07 & 0.75 & 0.49 & & 1.09 & 0.76 & 0.09 \\
+70 & 1.07 & 0.81 & 0.50 & & 1.10 & 0.82 & 0.10 \\
 %1 & 0.00 & 0.00 & 0.00 & & 0.00 & 0.00 & 0.00 \\
 %2 & 0.00 & 0.00 & 0.00 & & 0.00 & 0.00 & 0.00 \\
 %4 & 0.73 & 0.21 & 0.55 & & 0.73 & 0.20 & 0.37 \\
@@ -813,14 +813,14 @@ As illustrated in the table, both U-238 capture and total absorption rate error 
   \multicolumn{1}{c}{\bf Range B} &
   \multicolumn{1}{c}{\bf Range C} \\
   \cline{2-4} \cline{6-8}
-1 & 0.00 & 0.00 & 0.00 & & 0.00 & 0.00 & 0.00 \\
-2 & 0.00 & 0.00 & -0.05 & & 0.00 & 0.00 & -0.15 \\
-4 & 0.97 & 0.48 & 0.72 & & 0.91 & 0.47 & 0.29 \\
-8 & 1.10 & 0.48 & 0.77 & & 1.08 & 0.47 & 0.29 \\
-16 & 1.10 & 0.48 & 0.76 & & 1.08 & 0.47 & 0.29 \\
-25 & 1.68 & 1.21 & 0.92 & & 1.65 & 1.17 & 0.27 \\
-40 & 1.66 & 1.27 & 0.95 & & 1.64 & 1.23 & 0.27 \\
-70 & 1.71 & 1.37 & 0.99 & & 1.68 & 1.32 & 0.30 \\
+1 & 0.11 & 0.11 & 0.11 & & -0.04 & -0.04 & -0.04 \\
+2 & 0.31 & 0.31 & 0.21 & & 0.23 & 0.23 & -0.01 \\
+4 & 0.82 & 0.13 & 0.50 & & 0.73 & 0.10 & 0.08 \\
+8 & 1.00 & 0.17 & 0.58 & & 0.94 & 0.14 & 0.12 \\
+16 & 1.01 & 0.18 & 0.59 & & 0.95 & 0.15 & 0.13 \\
+25 & 1.75 & 1.11 & 0.81 & & 1.69 & 1.05 & 0.19 \\
+40 & 1.75 & 1.20 & 0.85 & & 1.70 & 1.13 & 0.21 \\
+70 & 1.76 & 1.26 & 0.86 & & 1.70 & 1.19 & 0.22 \\
   \bottomrule
 \end{tabular}
 \end{table}}
