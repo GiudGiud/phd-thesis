@@ -111,7 +111,7 @@ for i, num_groups in enumerate(groups):
         cell.setNumSectors(8)
 
     # Generate tracks
-    track_generator = openmoc.TrackGenerator(openmoc_geometry, 128, 0.05)
+    track_generator = openmoc.TrackGenerator(openmoc_geometry, 512, 0.001)
     track_generator.setNumThreads(opts.num_omp_threads)
     track_generator.generateTracks(store=False)
 

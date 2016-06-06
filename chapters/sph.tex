@@ -1,16 +1,32 @@
 \chapter{Angular-Dependent MGXS}
 \label{chap:sph}
 
+The results in Chapter~\ref{chap:biases} demonstrated that using the ``true'' flux spectrum from Monte Carlo to perform energy condensation and spatial homogenization will not necessarily result in accurate deterministic multi-group calculations. Large systematic biases in the eigenvalue were observed even for simple heterogeneous benchmark models, and these biases were highly dependent on the energy group structure and spatial discretization used in the multi-group deterministic calculation. In Section~\ref{sec:chap4-diagnosis} it was shown that the bias largely derives from errors in the multi-group reaction rates in the large thermal U-238 capture resonances, and that the errors systematically vary in space within the fuel. These results indicate that one or more of the approximations made in multi-group transport theory are invalidated in heterogeneous geometries and prevents spatial self-shielding at the fuel/moderator interface in \ac{PWR} geometries to be treated appropriately.
+
+Although Chapter~\ref{chap:biases} quantified energy and spatial approximations in multi-group theory, it did not consider the constant-in-angle approximation (see Section~\ref{subsubsec:chap2-const-in-angle}). This chapter reviews some recent work by by Gibson~\cite{gibson2016thesis} to quantify the approximation error resolved with angular dependent \ac{MGXS}, which closely mirrors the trends observed in Chapter~\ref{chap:biases}. The historical \ac{SPH} factor concept is introduced in the context of angular-dependent \ac{MGXS}, and \ac{SPH} factors are applied to simple heterogeneous benchmarks and the results analyzed. Finally, this chapter concludes with a summary of the shortcomings of the \ac{SPH} approach and the need for new methods to account for the angular dependence in \ac{MGXS}.
+
+%Chapter~\ref{chap:mgxs} detailed the approximations made in the multi-group form of the transport equation. 
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Background}
 \label{sec:chap5-background}
+
+The results in Chapter~\ref{chap:biases} demonstrated systematic biases between continuous energy Monte Carlo and deterministic multi-group simulations of simple heterogeneous benchmark models. In Section~\ref{sec:chap4-diagnosis} it was shown that these biases largely derive from errors in the multi-group fluxes/reaction rates in the large thermal U-238 capture resonances. 
+
+-sentence wrapping this paragraph up - talk about spatial self-shielding and segue
+
+These results closely mirror observations by Gibson~\cite{gibson2016thesis} which quantified the errors fundamental to the total 
+
+ illustrated 
 
 \begin{itemize}[noitemsep]
   \item return to angular vs. flux weighting (Section~\ref{subsubsec:chap2-const-in-angle})
   \item Gibson's ``batman'' plot and results
   \item Nelson's 1D slab plot(s)?
 \end{itemize}
+
+\cite{gibson2016thesis}
 
 
 \begin{figure}[H]
