@@ -1,87 +1,59 @@
 \chapter{Multi-Group Transport Theory}
 \label{chap:mgxs}
 
-%The continuous energy neutron transport equation describes the distribution of neutrons as a function of time, position, energy and direction of motion. The transport equation equates the rate of change of the population of neutrons in some closed system of interest to the difference between the production rate and loss rate of neutrons within that system. 
 
-The steady-state continuous energy transport equation models the distribution of neutrons within a six-dimensional phase space with respect to a neutron's position $\mathbf{r}$, energy $E$ and direction of travel $\mathbf{\Omega}$\footnote{Vector-valued quantities are expressed in boldface font.}. The transport equation balances the rate of change of the population of neutrons to the difference between the production and loss rates of neutrons within some closed system. The transport equation is integro-differential in the neutron angular flux $\psi(\mathbf{r},\mathbf{\Omega},E)$:
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Background}
+\label{sec:chap2-background}
+
+The field of reactor physics is concerned with computing the distribution of nuclear reaction rates throughout a nuclear reactor core. Nuclear reaction rates are dependent on two fundamental quantities: the density of neutrons and the probability of interaction. The angular neutron flux $\psi(\mathbf{r},\mathbf{\Omega},E)$ models the neutron density\footnote{Unlike the common definition of flux used in other areas of science and engineering, the angular flux $\psi$ is the product of the volume density and speed of neutrons in phase space.} and is dependent on a neutron's spatial position $\mathbf{r}$, direction of motion $\mathbf{\Omega}$ and energy $E$\footnote{This thesis focuses on steady-state calculations and the time dependence of the flux is neglected here for simplicity.}$^{,}$\footnote{Vector-valued quantities are expressed in boldface font.}. The macroscopic cross section $\Sigma_{x}(\mathbf{r},E)$ is defined as the probability of interaction $x$ per unit of length travelled by a neutron at some position and energy. A reaction rate $\mathcal{R}_{x}$ can be simply computed as the product of the angular flux and cross section:
+
+\begin{equation}
+\label{eqn:chap2-rxn-rates}
+\mathcal{R}_{x}(\mathbf{r},\mathbf{\Omega},E) = \Sigma_{x}(\mathbf{r},E) \psi(\mathbf{r},\mathbf{\Omega},E)
+\end{equation}
+
+%-integrate out angle, introduce scalar flux\\
+
+The macroscopic cross section $\Sigma$ is proportional to a quantity known as the microscopic cross section $\sigma_{x}$. The microscopic cross section is a property of a particular nuclide, and is measured experimentally for various reaction types which include fission $f$, radiative capture $\gamma$ and scattering $s$\footnote{Scattering as defined here includes both inelastic and elastic scattering.}. The macroscopic cross section is then the sum of the microscopic cross sections of each nuclide $i$ weighted by its number density $N_{i}$:
+
+\begin{equation}
+\label{eqn:chap2-macro-xs-sum}
+\Sigma_{x} = \sum_{i}N_{i}\sigma_{i,x}
+\end{equation}
+
+The microscopic cross section is highly dependent on the energy of the incoming neutron. As illustrated in see Figure~\ref{fig:chap2-u238-xs}, a cross section may vary several orders of magnitude near resonances which may span only a few eV. The distribution of neutrons in \ac{LWRs} spans 11 orders of magnitude from a few MeV at birth from fission emission to death through absorption at energies as low as 10$^{-5}$ eV. The accurate determination of the reaction rate distribution is primarily challenged by the complicated energy structure of cross sections coupled with the wide energy range of neutrons in a system.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.8\linewidth]{figures/mgxs/u238-capture-xs}
+\caption[U-238 capture cross section]{The continuous energy capture cross section for U-238.}
+\label{fig:chap2-u238-xs}
+\end{figure}
+ 
+The probability of some interactions may also depend on other properties which characterize the output channel of the reaction. For example, the scattering cross section $\sigma_{s}$ depends on the energy and direction of motion of the outgoing neutron. The fission cross section $\sigma_{f}$ also depends on the energy of the emitted neutron(s) but the outgoing angular distribution is typically treated as isotropic. The macroscopic cross section varies in space if the nuclide number densities depend on the position $\mathbf{r}$ within a heterogeneous system.
+
+Although cross sections are experimentally measured, the neutron flux must be calculated analytically or with simulation. The steady-state continuous energy transport equation is integro-differential in the neutron angular flux $\psi(\mathbf{r},\mathbf{\Omega},E)$ and balances the rate of change of the population of neutrons to the difference between the production and loss rates of neutrons within a closed system:
 
 \begin{dmath}
 \label{eqn:chap1-eqn1}
 \mathbf{\Omega} \cdot \nabla \psi(\mathbf{r},\mathbf{\Omega},E) + \Sigma_{t}(\mathbf{r},E)\psi(\mathbf{r},\mathbf{\Omega},E) = \;\;\; \int_{0}^{\infty}\int_{4\pi} \Sigma_{s}(\mathbf{r},{\mathbf{\Omega'}\rightarrow\mathbf{\Omega}},{E'\rightarrow E}) \psi(\mathbf{r},\mathbf{\Omega'},E') \mathrm{d}\mathbf{\Omega'} \mathrm{d}E' + Q(\mathbf{r},\mathbf{\Omega},E)
 \end{dmath}
 
-The angular flux $\psi(\mathbf{r},\mathbf{\Omega},E)$ is the density distribution of neutrons in phase space multiplied by the neutron velocity. On the left hand side of the equation, the first term represents the streaming of neutrons within space and the second term is the total neutron collision rate determined by the total scattering cross section $\Sigma_{t}$. On the right hand side, the first term models the scattering of neutrons at energy $E'$ and direction $\Omega'$ into some new energy $E$ and direction $\Omega$. The final term represents a generic source $Q$ of neutrons. In the case of critical systems, such as nuclear reactors, $Q$ is a source of fission neutrons:
-
-%, such that $\psi(\mathbf{r},\mathbf{\Omega},E)dVd\mathbf{\Omega}dE$ is the total distance travelled by neutrons per unit time in volume $dV$ centered at $\mathbf{r}$ with energies $dE$ about $E$ and directions of motion $d\mathbf{\Omega}$ about $\mathbf{\Omega}$
+The first term on the left hand side of the equation represents the streaming of neutrons within space and the second term is the total neutron collision rate determined by the total cross section $\Sigma_{t}$. On the right hand side, the first term models the scattering of neutrons at energy $E'$ and direction $\mathbf{\Omega'}$ into some new energy $E$ and direction $\mathbf{\Omega}$. The final term represents a generic source $Q$ of neutrons. In the case of critical systems, such as nuclear reactors, $Q$ is a source of fission neutrons:
 
 \begin{dmath}
 \label{eqn:chap1-source}
-Q(\mathbf{r},\mathbf{\Omega},E) = \frac{1}{4\pi k_{eff}}\int_{0}^{\infty}\int_{4\pi} \nu\Sigma_{f}(\mathbf{r},E')\psi(\mathbf{r},\mathbf{\Omega'},{E'\rightarrow E}) \mathrm{d}\mathbf{\Omega'} \mathrm{d}E'
+Q(\mathbf{r},\mathbf{\Omega},E) = \frac{1}{4\pi k_{eff}}\int_{0}^{\infty}\int_{4\pi} \nu\Sigma_{f}(\mathbf{r},{E'\rightarrow E})\psi(\mathbf{r},\mathbf{\Omega'},E') \mathrm{d}\mathbf{\Omega'} \mathrm{d}E'
 \end{dmath}
 
-The fission source is 
+A solution for the neutron flux must computed from the transport equation. The complicated energy dependence of the cross sections precludes an analytical solution to Equation~\ref{eqn:chap1-eqn1} without significant simplifying assumptions. Instead, numerical simulation is used to solve the transport equation for the flux. Although the spatial and angular variables using standard discretization techniques for PDEs, the energy variable presents its own complications. Monte Carlo techniques may be employed to exactly treat the energy dependence in Equation~\ref{eqn:chap1-eqn1}\footnote{The treatment is only as exact as the measured nuclear cross section data will permit.}, but are computationally burdensome and not yet practical for routine nuclear reactor analysis.
 
-The total cross section $\Sigma_{t}(\mathbf{r},E)$ represents t
+The following section describes the approximations used to derive the multi-group form. 
 
-
-*we want to prepare the reader to understand the approximations introduced next
--explain the total xs, scattering xs
--explain the fission source here
-
-In this equation, the neutron angular flux $\psi(\mathbf{r},\mathbf{\Omega},E)$ is defined in terms of the total, scattering and fission cross sections. 
-
-second paragraph:
--define terms within the equation
--mention phase space volume (nelson thesis)
-
-first paragraph:
--used for nuclear reactor physics calculations
--compute reaction rates
-
-Each of the variables in use is defined in \autoref{tab:chap1-variables}. This is a balance equation between neutrons lost to transport, lost to absorption, produced or lost from scattering and those produced from fission. It should be noted that this equation assumes isotropic emission from fission.
-
-\begin{table}[hbt]
-  \caption{Variables in the Boltzmann equation.}
-  \label{tab:chap1-variables}
-  \begin{center}
-    \begin{tabular}{ l l }
-    \toprule
-    Variable & Description \\
-    \midrule
-    $k_{eff}$ & Effective neutron multiplication factor \\
-    $\Sigma^T$ & Neutron total cross section \\
-    $\Sigma^S$ & Neutron scattering cross section \\
-    $\Sigma^F$ & Neutron fission cross section \\
-    $\chi$ & Energy spectrum for fission neutrons \\
-    $\nu$ & Average number of neutrons emitted per fission \\
-    \bottomrule
-  \end{tabular}
-  \end{center}
-\end{table}
-
-The first step is to simplify this equation by defining those quantities on the right hand side as the total neutron source $Q(\mathbf{r},\mathbf{\Omega},E)$:
-
-\begin{dmath}
-\label{eqn:chap1-source}
-Q(\mathbf{r},\mathbf{\Omega},E) = \int_{0}^{\infty} \mathrm{d}E' \int_{4\pi} \mathrm{d}\mathbf{\Omega'}\Sigma^S(\mathbf{r},{\mathbf{\Omega'}\rightarrow\mathbf{\Omega}},{E'\rightarrow E}) \Psi(\mathbf{r},\mathbf{\Omega'},E') + \frac{\chi(\mathbf{r},E)}{4\pi k_{eff}} \int_{0}^{\infty} \mathrm{d}E' \int_{4\pi} \mathrm{d}\mathbf{\Omega'} \nu\Sigma^F(\mathbf{r},E')\Psi(\mathbf{r},\mathbf{\Omega'},E')
-\end{dmath}
-
-The transport equation can now be more concisely written as follows:
-
-\begin{equation}
-\label{eqn:chap1-transport-eqn-src}
-\mathbf{\Omega} \cdot \nabla \Psi(\mathbf{r},\mathbf{\Omega},E) + \Sigma^T(\mathbf{r},E)\Psi(\mathbf{r},\mathbf{\Omega},E) = Q(\mathbf{r},\mathbf{\Omega},E)
-\end{equation}
-
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Background}
-\label{sec:chap2-background}
-
-
-
-
+-talk about how it is tough to solve equation numerically due to energy dependence; other variables can be treated numerically using standard techniques for PDEs\\
+-need to define keff \\
+-need to define nu\\
 
 -discuss each approximation in sequence, building approximations upon one another similar to \ac{MOC} derivation in M.S. thesis??
 
