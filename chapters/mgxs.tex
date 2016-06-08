@@ -22,7 +22,9 @@ The macroscopic cross section $\Sigma$ is proportional to a quantity known as th
 \Sigma_{x}(\mathbf{r},E) = \sum_{i}N_{i}(\mathbf{r})\sigma_{i,x}(E)
 \end{dmath}
 
-The microscopic cross section is highly dependent on the energy of the incoming neutron. As illustrated in see Fig.~\ref{fig:chap2-u238-xs}, a cross section may vary several orders of magnitude near resonances which may span only a few eV. The probability of some interactions may also depend on other properties which characterize the output channel of the reaction. For example, the scattering cross section $\sigma_{s}$ depends on the energy and direction of motion of the outgoing neutron. The fission cross section $\sigma_{f}$ also depends on the energy of the emitted neutron(s) but the outgoing angular distribution is typically treated as isotropic. The macroscopic cross section varies in space when nuclide densities depend on the position within a heterogeneous system.
+The microscopic cross section is highly dependent on the energy of the incoming neutron. As illustrated in see Fig.~\ref{fig:chap2-u238-xs}, a cross section may vary several orders of magnitude near resonances which may span only a few eV. The probability of some interactions also depend on other properties which characterize the output channel of the reaction. For example, the scattering cross section $\sigma_{s}$ depends on the energy and direction of motion of the outgoing neutron. The macroscopic cross section varies in space when nuclide densities depend on the position within a heterogeneous system.
+
+%The fission cross section $\sigma_{f}$ also depends on the energy of the emitted neutron(s) but the outgoing angular distribution is typically treated as isotropic.
 
 \begin{figure}[H]
   \centering
@@ -42,19 +44,28 @@ The first term on the left hand side of the equation represents the streaming of
 
 \begin{dmath}
 \label{eqn:chap1-source}
-Q(\mathbf{r},\mathbf{\Omega},E) = \frac{1}{4\pi k_{eff}}\int\displaylimits_{0}^{\infty}\int\displaylimits_{4\pi} \nu\Sigma_{f}(\mathbf{r},{E'\rightarrow E})\psi(\mathbf{r},\mathbf{\Omega'},E') \mathrm{d}\mathbf{\Omega'} \mathrm{d}E'
+Q(\mathbf{r},\mathbf{\Omega},E) = \frac{1}{4\pi k_{eff}}\int\displaylimits_{0}^{\infty}\int\displaylimits_{4\pi} \nu\Sigma_{f}(\mathbf{r},{\Omega'\rightarrow \Omega},{E'\rightarrow E})\psi(\mathbf{r},\mathbf{\Omega'},E') \mathrm{d}\mathbf{\Omega'} \mathrm{d}E'
 \end{dmath}
 
-The $\nu\Sigma_{f}$ cross section is the probability of neutrons of energy $E$ resulting from fission at $E'$. The eigenvalue $k_{eff}$ of a critical system represents the multiplication of neutrons from fission and balances neutron sources with losses due to absorption and leakage.
+The $\nu\Sigma_{f}$ cross section is the probability of neutrons of energy $E$ and angle $\Omega$ resulting from fission at $E'$ and $\Omega'$. The eigenvalue $k_{eff}$ of a critical system represents the multiplication of neutrons from fission and balances neutron sources with losses due to absorption and leakage.
 
-A solution for the neutron flux must computed from the transport equation. The accurate determination of the reaction rate distribution is primarily challenged by  the complicated energy structure of the cross sections. In addition, the distribution of neutrons in \ac{LWRs} spans 11 orders of magnitude from a few MeV at birth from fission emission to death by absorption at energies as low as 10$^{-5}$ eV. As a result, analytical solutions to Eqn.~\ref{eqn:chap1-transport-ce} are intractable without significant simplifying assumptions.
+A solution for the neutron flux must computed from the transport equation. The accurate determination of the reaction rate distribution is primarily challenged by  the complicated energy structure of the cross sections. In addition, the distribution of neutrons in \ac{LWRs} spans 11 orders of magnitude from a few MeV at birth from fission emission to death by absorption at energies which approach 0 eV. As a result, analytical solutions to Eqn.~\ref{eqn:chap1-transport-ce} are intractable without significant simplifying assumptions.
 
-Instead, numerical simulation is used to solve the transport equation for the flux. Monte Carlo techniques may be employed to exactly treat the energy dependence in Eqn.~\ref{eqn:chap1-transport-ce}\footnote{The treatment is only as exact as the measured nuclear cross section data will permit.}, but are computationally burdensome and impractical for routine nuclear reactor analysis. Although space and angle may be discretized using standard techniques for the solution of PDEs, special treatment must be given to the energy variable as discussed in the following section.
+Instead, numerical simulation is used to solve the transport equation for the flux. Monte Carlo techniques may be employed to exactly treat the energy dependence in Eqn.~\ref{eqn:chap1-transport-ce}\footnote{The treatment is only as exact as the uncertainties in measured nuclear cross section data will permit.}, but are computationally burdensome and impractical for routine nuclear reactor analysis. Although space and angle may be discretized using standard techniques for the solution of PDEs, special treatment must be given to the angular and energy variables as discussed in the following sections.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Approximations in Angle}
-\label{sec:chap2-angule}
+\label{sec:chap2-angle}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Fission Source}
+\label{sec:chap2-angle-fiss}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Scattering Source}
+\label{sec:chap2-angle-scatt}
 
 -expand angular flux using spherical harmonics as basis functions of the angular dependence\\
 -perhaps leave angular dependence in general form of transport equation above\\
@@ -84,7 +95,7 @@ The multi-group approach used to solve the transport equation subdivides the neu
 \psi_{g}(\mathbf{r},\mathbf{\Omega}) = \int\displaylimits_{E_{g}}^{E_{g-1}} \psi(\mathbf{r},\mathbf{\Omega},E)\mathrm{d}E
 \end{dmath}
 
-Next, the continuous energy transport equation with a fission source can be transformed into its multi-group form by first integrating over each energy group:
+Next, the continuous energy transport equation (Eqn.~\ref{eqn:chap1-transport-ce}) with a fission source (Eqn.~\ref{eqn:chap1-source}) can be transformed into its multi-group form by first integrating over each energy group:
 
 \begin{dmath}
 \label{eqn:chap1-transport-mg-1}
@@ -92,7 +103,7 @@ Next, the continuous energy transport equation with a fission source can be tran
 \int\displaylimits_{E_{g}}^{E_{g-1}}\frac{1}{4\pi k_{eff}}\sum_{g'=1}^{G} \int\displaylimits_{E_{g'}}^{E_{g'-1}}\int\displaylimits_{4\pi} \nu\Sigma_{f}(\mathbf{r},{E'\rightarrow E})\psi(\mathbf{r},\mathbf{\Omega'},E') \mathrm{d}\mathbf{\Omega'} \mathrm{d}E'\mathrm{d}E
 \end{dmath}
 
-The integral over incoming neutron energy in the scattering kernel and fission source was treated as a summation over discrete integrals over each energy group. Although the streaming term is easily expressed in terms of the multi-group flux $\psi_{g}$, the total collision, scattering and fission terms are defined as integral quantities. These three terms can be simplified by multiplying each by $\frac{\psi_{g}}{\psi_{g}}$ as follows:
+The integral in Eqn.~\ref{eqn:chap1-transport-mg-1} over incoming neutron energy in the scattering kernel and fission source is treated as a summation over discrete integrals over each energy group. Although the streaming term is easily expressed in terms of the multi-group flux $\psi_{g}$, the total collision, scattering and fission terms are defined as integral quantities. These three terms can be simplified by multiplying each by unity in the form of $\frac{\psi_{g}}{\psi_{g}}$ as follows:
 
 \begin{dmath}
 \label{eqn:chap1-transport-mg-2}
@@ -107,60 +118,79 @@ The fractional terms in the Eqn.~\ref{eqn:chap1-transport-mg-2} are defined as t
 
 \begin{dmath}
 \label{eqn:chap1-sigt-mg}
-\Sigma_{t,g}(\mathbf{r},\mathbf{\Omega}) = \ddfrac{\int\displaylimits_{E_{g}}^{E_{g-1}} \Sigma_{t}(\mathbf{r},E)\psi(\mathbf{r},\mathbf{\Omega},E)\mathrm{d}E}{\psi_{g}(\mathbf{r},\mathbf{\Omega})}
+\Sigma_{t,g}(\mathbf{r},\mathbf{\Omega}) = \frac{\int\displaylimits_{E_{g}}^{E_{g-1}} \Sigma_{t}(\mathbf{r},E)\psi(\mathbf{r},\mathbf{\Omega},E)\mathrm{d}E}{\psi_{g}(\mathbf{r},\mathbf{\Omega})}
 \end{dmath}
 
 \begin{dmath}
 \label{eqn:chap1-sigs-mg}
-\Sigma_{s,g' \rightarrow g}(\mathbf{r},\mathbf{\Omega}) = \ddfrac{\int\displaylimits_{E_{g}}^{E_{g-1}} \int\displaylimits_{E_{g'}}^{E_{g'-1}}\int\displaylimits_{4\pi} \Sigma_{s}(\mathbf{r},{\mathbf{\Omega'}\rightarrow\mathbf{\Omega}},{E'\rightarrow E}) \psi(\mathbf{r},\mathbf{\Omega'},E') \mathrm{d}\mathbf{\Omega'} \mathrm{d}E' \mathrm{d}E} {\psi_{g'}(\mathbf{r},\mathbf{\Omega'})}
+\Sigma_{s,g' \rightarrow g}(\mathbf{r},\mathbf{\Omega}) = \frac{\int\displaylimits_{E_{g}}^{E_{g-1}} \int\displaylimits_{E_{g'}}^{E_{g'-1}}\int\displaylimits_{4\pi} \Sigma_{s}(\mathbf{r},{\mathbf{\Omega'}\rightarrow\mathbf{\Omega}},{E'\rightarrow E}) \psi(\mathbf{r},\mathbf{\Omega'},E') \mathrm{d}\mathbf{\Omega'} \mathrm{d}E' \mathrm{d}E} {\psi_{g'}(\mathbf{r},\mathbf{\Omega'})}
 \end{dmath}
 
 \begin{dmath}
 \label{eqn:chap1-nusigf-mg}
-\nu\Sigma_{f,g' \rightarrow g}(\mathbf{r},\mathbf{\Omega}) = \ddfrac{\int\displaylimits_{E_{g}}^{E_{g-1}} \int\displaylimits_{E_{g'}}^{E_{g'-1}}\int\displaylimits_{4\pi} \nu\Sigma_{f}(\mathbf{r},{E'\rightarrow E},\mathbf{\Omega})\psi(\mathbf{r},\mathbf{\Omega'},E') \mathrm{d}\mathbf{\Omega'} \mathrm{d}E'\mathrm{d}E}{\psi_{g'}(\mathbf{r},\mathbf{\Omega'})}
+\nu\Sigma_{f,g' \rightarrow g}(\mathbf{r},\mathbf{\Omega}) = \frac{\int\displaylimits_{E_{g}}^{E_{g-1}} \int\displaylimits_{E_{g'}}^{E_{g'-1}}\int\displaylimits_{4\pi} \nu\Sigma_{f}(\mathbf{r},{E'\rightarrow E})\psi(\mathbf{r},\mathbf{\Omega'},E') \mathrm{d}\mathbf{\Omega'} \mathrm{d}E'\mathrm{d}E}{\psi_{g'}(\mathbf{r},\mathbf{\Omega'})}
 \end{dmath}
 
 With these definitions of the \ac{MGXS}, the multi-group form of the transport equation in Eqn.~\ref{eqn:chap1-transport-mg-1} can be more succinctly in terms of only the group-wise angular flux $\psi_{g}$:
 
+\begin{dmath}
+\label{eqn:chap1-transport-mg-3}
+\mathbf{\Omega} \cdot \nabla \psi_{g}(\mathbf{r},\mathbf{\Omega}) + \Sigma_{t,g}(\mathbf{r},E)\psi_{g}(\mathbf{r},\mathbf{\Omega}) \;\;\;\; = \;\;\;\;\;
+\sum_{g'=1}^{G} \int\displaylimits_{4\pi} \Sigma_{s,g' \rightarrow g}(\mathbf{r},{\mathbf{\Omega'}\rightarrow\mathbf{\Omega}}) \psi_{g}(\mathbf{r},\mathbf{\Omega'}) \mathrm{d}\mathbf{\Omega'} + 
+\frac{1}{4\pi k_{eff}}\sum_{g'=1}^{G} \int\displaylimits_{4\pi} \nu\Sigma_{f,g' \rightarrow g}(\mathbf{r})\psi_{g}(\mathbf{r},\mathbf{\Omega'}) \mathrm{d}\mathbf{\Omega'}
+\end{dmath}
+
+Thus far, no approximations have been made in the energy discretization of multi-group transport equation given in Eqn.~\ref{eqn:chap1-transport-mg-3}. However, the expressions for the \ac{MGXS} $\Sigma_{t,g}$, $\Sigma_{s,g' \rightarrow g}$ and $\nu\Sigma_{f,g' \rightarrow g}$ in Eqns.~\Crefrange{eqn:chap1-sigt-mg}{eqn:chap1-nusigf-mg} presents a complication since the angular flux is unknown, which is discussed in the following section.
+
+The dependence on the angular flux to compute the 
+
 -should I expand in angular moments first?\\
 -it's not appropriate to simply remove the energy dependence in the scattering cross section is it?\\
 
-\begin{dmath}
-\label{eqn:chap1-transport-mg-3}
-\mathbf{\Omega} \cdot \nabla \psi_{g}(\mathbf{r},\mathbf{\Omega}) + \Sigma_{t,g}(\mathbf{r},E)\psi_{g}(\mathbf{r},\mathbf{\Omega}) \;\;\;\;\;\;\;\; = \;\;\;\;\;\;\;\; 
-\sum_{g'=1}^{G} \int\displaylimits_{4\pi} \Sigma_{s,g' \rightarrow g}(\mathbf{r},{\mathbf{\Omega'}\rightarrow\mathbf{\Omega}}) \psi_{g}(\mathbf{r},\mathbf{\Omega'}) \mathrm{d}\mathbf{\Omega'} + 
-\frac{1}{4\pi k_{eff}}\sum_{g'=1}^{G} \int\displaylimits_{4\pi} \nu\Sigma_{f,g' \rightarrow g}(\mathbf{r}\mathbf{\Omega})\psi_{g}(\mathbf{r},\mathbf{\Omega'}) \mathrm{d}\mathbf{\Omega'}
-\end{dmath}
-
-second paragraph:
--define summation over incoming energy groups
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Angular Dependence}
+\subsection{Flux Separability Approximation}
 \label{sec:chap2-angle}
 
-The angular dependence of the \ac{MGXS} 
+The angular dependence of the \ac{MGXS} is is commonly treated with the \textit{flux separability approximation}. Flux separability makes the simplifying assumption that the energy and angular dependence of the flux varies independently such that the angular flux can be written in terms of the scalar neutron flux $\phi(\mathbf{r},E)$ and some function $W(\mathbf{r}, \mathbf{\Omega})$ as follows:
 
--present flux separability approximation \\
--refer to consistent-p approximation \\
--cite nuclear eng handbook?\\
--need to define scalar flux and its integral in energy \\
+\begin{dmath}
+  \label{eqn:chap1-flux-separate}
+  \psi(\mathbf{r},\mathbf{\Omega},E) = \phi(\mathbf{r},E) W(\mathbf{r},\mathbf{\Omega})
+\end{dmath}
+
+\begin{dmath}
+\label{eqn:chap1-scalar-flux}
+\phi(\mathbf{r},E) = \int\displaylimits_{4\pi} \psi(\mathbf{r},\mathbf{\Omega},E)\mathrm{d}\mathbf{\Omega}
+\end{dmath}
+
+The angular dependence of the \ac{MGXS} is eliminated by inserting Eqn.~\ref{eqn:chap1-flux-separate} into Eqns.~\cref{eqn:chap1-sigt-mg,eqn:chap1-sigs-mg,eqn:chap1-nusigf-mg}, such that the \ac{MGXS} can be written in terms of the scalar flux:
 
 \begin{dmath}
 \label{eqn:chap1-sigt-mg-scalar}
-\Sigma_{t,g}(\mathbf{r}) \equiv \ddfrac{\int\displaylimits_{E_{g}}^{E_{g-1}} \Sigma_{t}(\mathbf{r},E)\phi(\mathbf{r},E)\mathrm{d}E}{\phi_{g}(\mathbf{r})}
+\Sigma_{t,g}(\mathbf{r}) \equiv \frac{\int\displaylimits_{E_{g}}^{E_{g-1}} \Sigma_{t}(\mathbf{r},E)\phi(\mathbf{r},E)\mathrm{d}E}{\phi_{g}(\mathbf{r})}
 \end{dmath}
 
 \begin{dmath}
 \label{eqn:chap1-sigs-mg-scalar}
-\Sigma_{s,g' \rightarrow g}(\mathbf{r}) \equiv \ddfrac{\int\displaylimits_{E_{g}}^{E_{g-1}} \int\displaylimits_{E_{g'}}^{E_{g'-1}} \Sigma_{s}(\mathbf{r},{\mathbf{\Omega'}\rightarrow\mathbf{\Omega}},{E'\rightarrow E}) \phi(\mathbf{r},E') \mathrm{d}E' \mathrm{d}E} {\phi_{g'}(\mathbf{r})}
+\Sigma_{s,g' \rightarrow g}(\mathbf{r}) \equiv \frac{\int\displaylimits_{E_{g}}^{E_{g-1}} \int\displaylimits_{E_{g'}}^{E_{g'-1}} \Sigma_{s}(\mathbf{r},{E'\rightarrow E}) \phi(\mathbf{r},E') \mathrm{d}E' \mathrm{d}E} {\phi_{g'}(\mathbf{r})}
 \end{dmath}
 
 \begin{dmath}
 \label{eqn:chap1-nusigf-mg-scalar}
-\nu\Sigma_{f,g' \rightarrow g}(\mathbf{r}) \equiv \ddfrac{\int\displaylimits_{E_{g}}^{E_{g-1}} \int\displaylimits_{E_{g'}}^{E_{g'-1}} \nu\Sigma_{f}(\mathbf{r},{E'\rightarrow E},\mathbf{\Omega})\phi(\mathbf{r},E') \mathrm{d}E'\mathrm{d}E}{\phi_{g'}(\mathbf{r})}
+\nu\Sigma_{f,g' \rightarrow g}(\mathbf{r}) \equiv \frac{\int\displaylimits_{E_{g}}^{E_{g-1}} \int\displaylimits_{E_{g'}}^{E_{g'-1}} \nu\Sigma_{f}(\mathbf{r},{E'\rightarrow E})\phi(\mathbf{r},E') \mathrm{d}E'\mathrm{d}E}{\phi_{g'}(\mathbf{r})}
 \end{dmath}
+
+The group-wise scalar flux $\phi_{g}$ is the corollary to its angle dependent counterpart $\psi_{g}$:
+
+\begin{dmath}
+\label{eqn:chap1-scalar-flux-mg}
+\phi_{g}(\mathbf{r}) = \int\displaylimits_{E_{g}}^{E_{g-1}}\phi(\mathbf{r},E)\mathrm{d}E
+\end{dmath}
+
+-mention that this approx. will be reivisited in later sections\\
+-refer to consistent-p approximation \\
+-cite nuclear eng handbook?\\
 
 
 
@@ -168,35 +198,30 @@ The angular dependence of the \ac{MGXS}
 \subsection{Spatial Homogenization}
 \label{sec:chap2-space}
 
-%Instead, a series of approximations are typically made to discretize the transport equation in space, angle and energy such that it can be solved using standard methods used to solve PDEs. 
+Up to this point the \ac{MGXS} have been defined as continuously varying in space. Most deterministic methods for solving the multi-group transport equation discretize space and assume that the material properties are constant across each mesh cell. \textit{Spatial homogenization} is used to to compute volume-averaged cross sections within each mesh cell $i$ with volume $V_{i}$ are defined as:
 
-%The energy variable presents the greatest challenge to discretization, and a series of approximations are presented to in the following section.
+\begin{dmath}
+\label{eqn:chap1-sigt-mg-scalar}
+\Sigma_{t,i,g} = \frac{\int\displaylimits_{\mathbf{r} \in V_{i}}\int\displaylimits_{E_{g}}^{E_{g-1}} \Sigma_{t}(\mathbf{r},E)\phi(\mathbf{r},E)\mathrm{d}E\mathrm{d}\mathbf{r}}{\int\displaylimits_{\mathbf{r} \in V_{i}}\phi_{g}(\mathbf{r})\mathrm{d}\mathbf{r}}
+\end{dmath}
 
-%Although the spatial and angular variables using standard discretization techniques for PDEs, the energy variable presents its own complications. 
+\begin{dmath}
+\label{eqn:chap1-sigs-mg-scalar}
+\Sigma_{s,i,g' \rightarrow g} \equiv \frac{\int\displaylimits_{\mathbf{r} \in V_{i}}\int\displaylimits_{E_{g}}^{E_{g-1}} \int\displaylimits_{E_{g'}}^{E_{g'-1}} \Sigma_{s}(\mathbf{r},{E'\rightarrow E}) \phi(\mathbf{r},E') \mathrm{d}E' \mathrm{d}E\mathrm{d}\mathbf{r}}{\int\displaylimits_{\mathbf{r} \in V_{i}}\phi_{g'}(\mathbf{r})\mathrm{d}\mathbf{r}}
+\end{dmath}
 
-%The following section describes the approximations used to derive the multi-group form. 
-
--discuss each approximation in sequence, building approximations upon one another similar to \ac{MOC} derivation in M.S. thesis??
+\begin{dmath}
+\label{eqn:chap1-nusigf-mg-scalar}
+\nu\Sigma_{f,i,g' \rightarrow g} \equiv \frac{\int\displaylimits_{\mathbf{r} \in V_{i}}\int\displaylimits_{E_{g}}^{E_{g-1}} \int\displaylimits_{E_{g'}}^{E_{g'-1}} \nu\Sigma_{f}(\mathbf{r},{E'\rightarrow E})\phi(\mathbf{r},E') \mathrm{d}E'\mathrm{d}E\mathrm{d}\mathbf{r}}{\int\displaylimits_{\mathbf{r} \in V_{i}}\phi_{g'}(\mathbf{r})\mathrm{d}\mathbf{r}}
+\end{dmath}
 
 \begin{itemize}[noitemsep]
-  \item continuous energy neutron transport equation
-  \item \ac{MGXS} equations
-  \begin{itemize}[noitemsep]
-    \item generic reaction
-    \item scattering matrix
-    \item chi fission spectrum
-  \end{itemize}
   \item equation and figures mapped to variables
   \item tally ``noise'' model
   \item uncertainty propagation equations
   \item mention that this intro is agnostic to the method used to solve the transport eqn.
-   \item define subscripts for $\Sigma$ and $R$ - $a$, $f$, $\gamma$, $t$, $s$
-   \item define neutron transport equation with generic source $Q$
-   \item then define source specifically for criticality problem
-   \item energy indices are defined in order for decreasing energy
    \item in constant-in-angle section, mention Nate Eqn. 1.13 as one possible approach for deterministic methods for the collapse. In MC we use the angular flux in the collapse though.
    \item cite boltzmann transport equation (see adam's thesis pg. 1) 
-   \item tie back to experimental data and its uncertainties - MC is only as accurate as measured reaction data (maybe in the intro chap. 1)
    \item mention recent work to use MC for MGXS (chap. 3 of nelson's thesis)
    \item define angular flux - neutron angular density multiplied by neutron speed
    \item phase space defn from adam's thesis pg 5 - as tot dist traveled
@@ -255,10 +280,6 @@ Although \autoref{eqn:moc-theory-condensed-chi} assumes a dependence of $\chi$ o
 \chi_{g}(\mathbf{r}) = \displaystyle\sum\limits_{g=1}^{G}\chi_{g'\rightarrow g}(\mathbf{r})
 \end{equation}
 
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsubsection{Energy Discretization}
-\label{subsubsec:chap2-energy-discrete}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Spatial Discretization}
