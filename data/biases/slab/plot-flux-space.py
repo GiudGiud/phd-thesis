@@ -43,7 +43,7 @@ openmoc_geometry = get_openmoc_geometry(condense_lib.opencg_geometry)
 openmoc.materialize.load_openmc_mgxs_lib(condense_lib, openmoc_geometry)
 
 # Generate tracks
-track_generator = openmoc.TrackGenerator(openmoc_geometry, 128, 0.05)
+track_generator = openmoc.TrackGenerator(openmoc_geometry, 128, 0.01)
 track_generator.setNumThreads(opts.num_omp_threads)
 track_generator.generateTracks()
 
