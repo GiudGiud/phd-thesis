@@ -63,41 +63,6 @@ These results closely mirror observations by Gibson~\cite{gibson2016thesis} whic
 \label{sec:chap5-sph-openmoc}
 
 
-\begin{landscape}
-\begin{algorithm}[!ht]
-\caption{Transport Sweep Algorithm}
-\label{alg:transport-sweep}
-\begin{algorithmic}
-    \State $\Phi_{i,g} \gets 0 \;\;\;\; \forall \; i,g \in \{I,G\}$ \Comment{Initialize FSR scalar fluxes to zero}
-    \While{$\Phi_{i,g} \; \forall\; i$ not converged}
-        \ForAll{$m \in M$}\Comment{Loop over azimuthal angles}
-            \ForAll{$k \in K(m)$}\Comment{Loop over tracks}
-                \ForAll{$s \in S(k)$}\Comment{Loop over segments}
-                    \ForAll{$g \in G$}\Comment{Loop over energy groups}
-                        \ForAll{$p \in P$}\Comment{Loop over polar angles}
-                            \State $i \gets I(s)$\Comment{Get FSR for this segment}
-                            \State $\Delta\Psi_{k,i,g,p} \gets \left(\Psi_{k,g,p} - \frac{Q_{i,g}}{\Sigma^T_{i,g}}\right)(1 - e^{-\tau_{k,i,g,p}})$ \Comment{Compute angular flux change along segment}
-                            \State $\Phi_{i,g} \gets \Phi_{i,g} + \frac{4\pi}{A_i} \omega_{m}\omega_{p}\omega_{k}\sin\theta_{p}\Delta\Psi_{k,i,g,p}$ 
-                            \Comment{Increment FSR scalar flux}
-                            \State $\Psi_{k,g,p} \gets \Psi_{k,g,p} - \Delta\Psi_{k,g,p}$ \Comment{Update track outgoing flux}
-                        \EndFor
-                    \EndFor
-                \EndFor
-            \EndFor
-            \If{B.C. are reflective}\Comment{Set incoming flux for outgoing track}
-                \State $\Psi_{k',g,p}(0) \gets \Psi_{k,g,p}$  
-                \Comment{Reflective B.C.'s}
-            \Else
-                \State $\Psi_{k',g,p}(0) \gets 0$ \Comment{Vacuum B.C.'s}
-                \State $L \gets L + \Psi_{k,g,p}$
-            \EndIf
-        \EndFor
-        \State Update $k_{eff}$ and FSR sources $Q_{i,g} \;\forall\; i$ \Comment{\autoref{alg:source-update}}
-    \EndWhile
-\end{algorithmic}
-\end{algorithm}
-\end{landscape}
-
 
 
 %%%%%%%%%%%%%%%%%%%%%%

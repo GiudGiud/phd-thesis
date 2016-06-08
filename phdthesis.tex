@@ -3,6 +3,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % PREAMBLE
 
+\usepackage{units}
 \usepackage[bitstream-charter]{mathdesign} % Use BT Charter font
 \usepackage[T1]{fontenc}                   % Use T1 encoding instead of OT1
 \usepackage[utf8]{inputenc}                % Use UTF8 input encoding
@@ -15,16 +16,9 @@
 \usepackage{listings}                      % Source code listings
 \usepackage{caption}
 \usepackage{subcaption}
-\usepackage[rgb]{xcolor}
-\usepackage{url}
-\usepackage{array}
-\usepackage{pdfpages}
-\usepackage{mathtools}
+\usepackage[table,rgb,x11names]{xcolor}
 \usepackage{setspace}
 \usepackage{pbox}
-\usepackage{tikz}
-\usetikzlibrary{calc,shapes,decorations.pathreplacing,positioning}
-\usepackage{pgfplots}
 \usepackage{siunitx}
 \usepackage{multirow}
 \usepackage{enumitem}
@@ -32,7 +26,22 @@
 \usepackage{breqn}
 \usepackage{eucal}
 \usepackage[multiple,hang,flushmargin]{footmisc}
-%\usepackage[hang,flushmargin]{footmisc} 
+
+% Define colors for table rows
+\definecolor{lightgreen}{rgb}{0.56, 0.93, 0.56}
+\definecolor{carolinablue}{rgb}{0.6, 0.73, 0.89}
+\definecolor{lightsalmonpink}{rgb}{1.0, 0.6, 0.6}
+\definecolor{darktangerine}{rgb}{1.0, 0.66, 0.07}
+
+% Define color macros for table columns
+\definecolor{beaublue}{rgb}{0.74, 0.83, 0.9}
+\newcommand{\mc}[2]{\multicolumn{#1}{c}{#2}}
+\newcolumntype{a}{>{\columncolor{beaublue}}c}
+\newcolumntype{b}{>{\columncolor{beaublue}}l}
+
+\setlength{\aboverulesep}{0pt}
+\setlength{\belowrulesep}{0pt}
+\setlength{\extrarowheight}{.75ex}
 
 \usepackage{caption}
 \captionsetup{skip=0pt}
@@ -75,9 +84,6 @@
 
 % Use Latin Modern for typewriter fonts
 \renewcommand{\ttdefault}{lmtt}
-
-% Add \unit macro
-\newcommand{\unit}[1]{\ensuremath{\, \mathrm{#1}}}
 
 \definecolor{gray}{rgb}{0.4,0.4,0.4}
 \definecolor{darkblue}{rgb}{0.0,0.0,0.6}

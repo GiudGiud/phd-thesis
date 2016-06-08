@@ -16,8 +16,6 @@
     \item need to preserve chord lengths and use isolated slab/pin rather than reflective
     \item update slab widths for clad and gap and re-run cases
   \end{itemize}
-  \item re-generate error-by-group table with fine track spacing
-  \item 
 \end{itemize}
 
 As discussed in Chapter~\ref{chap:mgxs}, a number of approximations are made in the multi-group formulation of the neutron transport equation and the \ac{MGXS} generation process. These approximations remain even if one uses the ``true'' scalar flux for energy condensation and spatial homogenization, as is the case with energy condensation and spatial homogenization in Monte Carlo\footnote{By the Law of Large Numbers, the \ac{MC} flux will be exactly correct in the limit of an infinite number of particle histories, though it is only a ``noisy'' proxy for a finite number of particles.}. The observed bias between a continuous energy \ac{MC} and a multi-group deterministic calculation reflects the convolution of these approximations, which may (or may not) lead to some degree of fortuitous cancellation of error. Although this thesis is motivated by the need for \ac{MGXS} for whole core calculations, it is instructive to investigate the approximations inherent in multi-group theory and quantify their impact for simple benchmark models.
@@ -50,10 +48,11 @@ An initial case study was performed for a homogeneous infinite medium problem. T
   \small
   \label{table:chap4-inf-med-isotopes} 
   \vspace{6pt}
-  \begin{tabular}{c c}
+  \begin{tabular}{a c}
   \toprule
-  \multicolumn{1}{c}{\bf Nuclide} &
-  \multicolumn{1}{c}{\bf Density [at/b-cm]} \\
+  \rowcolor{lightgray}
+  {\bf Nuclide} &
+  {\bf Density [at/b-cm]} \\
   \midrule
   H-1 &   4.123778597552705E-2 \\
   O-16 &  2.062180312907649E-2 \\
@@ -74,8 +73,9 @@ The reference eigenvalues computed with continuous energy cross sections in Open
   \vspace{6pt}
   \begin{tabular}{c c}
   \toprule
-  \multicolumn{1}{c}{\bf Anisotropic} &
-  \multicolumn{1}{c}{\bf Isotropic in Lab} \\
+  \rowcolor{lightgray}
+  {\bf Anisotropic} &
+  {\bf Isotropic in Lab} \\
   \midrule
   1.15908 $\pm$ 0.00001 & 1.15907 $\pm$ 0.00001 \\
   \bottomrule
@@ -90,22 +90,24 @@ Table~\ref{table:chap4-inf-med-angle} presents the bias $\Delta\rho$ between Ope
   \small
   \label{table:chap4-inf-med-angle}
   \vspace{6pt}
-  \begin{tabular}{c S[table-format=2.1] S[table-format=2.1] S[table-format=2.1] c S[table-format=2.1] S[table-format=2.1] S[table-format=2.1]} 
+  \begin{tabular}{a S[table-format=2.1] S[table-format=2.1] S[table-format=2.1] c S[table-format=2.1] S[table-format=2.1] S[table-format=2.1]} 
   \toprule
+  \rowcolor{lightgray}
   & \multicolumn{7}{c}{\boldmath $\Delta\rho$ {\bf [pcm]}} \\
   \midrule
-  \multicolumn{1}{c}{\bf \# Angles} &
-  \multicolumn{1}{c}{\bf 0.1 cm} & 
-  \multicolumn{1}{c}{\bf 0.01 cm} & 
-  \multicolumn{1}{c}{\bf 0.001 cm} &
-  \multicolumn{1}{c}{} &
-  \multicolumn{1}{c}{\bf 0.1 cm} & 
-  \multicolumn{1}{c}{\bf 0.01 cm} & 
-  \multicolumn{1}{c}{\bf 0.001 cm} \\
+  \rowcolor{lightgray}
+  {\bf \# Angles} &
+  {\bf 0.1 cm} & 
+  {\bf 0.01 cm} & 
+  {\bf 0.001 cm} &
+  &
+  {\bf 0.1 cm} & 
+  {\bf 0.01 cm} & 
+  {\bf 0.001 cm} \\
   \midrule
-  & \multicolumn{3}{c}{\bf Anisotropic} &
+  & \multicolumn{3}{c}{\cellcolor{carolinablue} \bf Anisotropic} &
   \multicolumn{1}{c}{} &
-  \multicolumn{3}{c}{\bf Isotropic in Lab} \\
+  \multicolumn{3}{c}{\cellcolor{lightgreen} \bf Isotropic in Lab} \\
   \cline{2-4} \cline{6-8}
 4 & 1.3 & 1.3 & 1.3 & & -0.1 & -0.1 & -0.1 \\
 8 & 1.3 & 1.3 & 1.3 & & -0.1 & -0.1 & -0.1 \\
@@ -125,13 +127,15 @@ Table~\ref{table:chap4-inf-med-energy} presents the bias $\Delta\rho$ between Op
   \small
   \label{table:chap4-inf-med-energy} 
   \vspace{6pt}
-  \begin{tabular}{c S[table-format=2.1] S[table-format=2.1]}
+  \begin{tabular}{a S[table-format=2.1] S[table-format=2.1]}
   \toprule
-  \multicolumn{1}{c}{\textbf{\# Groups}} &
-  \multicolumn{2}{c}{\boldmath $\Delta\rho$ {\bf [pcm]}} \\
+  \rowcolor{lightgray}
+  & \multicolumn{2}{c}{\boldmath $\Delta\rho$ {\bf [pcm]}} \\
   \midrule
-  & \multicolumn{1}{c}{\bf Anisotropic} &
-  \multicolumn{1}{c}{\bf Isotropic in Lab} \\
+  \rowcolor{lightgray}
+  {\textbf{\# Groups}} &
+  {\bf Anisotropic} &
+  {\bf Isotropic in Lab} \\
   \midrule
 1 & -11.1 & -10.5 \\
 2 & -9.5 & -7.1 \\
@@ -177,8 +181,9 @@ A simple slab model was constructed to quantify approximation errors in a 1D het
   \small
   \label{table:chap4-slab-widths} 
   \vspace{6pt}
-  \begin{tabular}{l c}
+  \begin{tabular}{b c}
   \toprule
+  \rowcolor{lightgray}
   \multicolumn{1}{c}{\bf Material} &
   \multicolumn{1}{c}{\bf Width [cm]} \\
   \midrule
@@ -196,11 +201,12 @@ A simple slab model was constructed to quantify approximation errors in a 1D het
   \small
   \label{table:chap4-slab-isotopes} 
   \vspace{6pt}
-  \begin{tabular}{l c c}
+  \begin{tabular}{b c c}
   \toprule
-  \multicolumn{1}{c}{\bf Material} &
-  \multicolumn{1}{c}{\bf Nuclide} &
-  \multicolumn{1}{c}{\bf Atom Density [at/b-cm]} \\
+  \rowcolor{lightgray}
+  {\bf Material} &
+  {\bf Nuclide} &
+  {\bf Atom Density [at/b-cm]} \\
   \midrule
   \multirow{3}{*}{\bf UO$_2$} & O-16 &  4.5850826385693E-2 \\
   & U-235 & 5.5841582288888E-4 \\
@@ -230,8 +236,9 @@ The reference eigenvalues computed with continuous energy cross sections in Open
   \vspace{6pt}
   \begin{tabular}{c c}
   \toprule
-  \multicolumn{1}{c}{\bf Anisotropic} &
-  \multicolumn{1}{c}{\bf Isotropic in Lab} \\
+  \rowcolor{lightgray}
+  {\bf Anisotropic} &
+  {\bf Isotropic in Lab} \\
   \midrule
   1.16060 $\pm$ 0.00003 & 1.15567 $\pm$ 0.00003 \\
   \bottomrule
@@ -240,33 +247,30 @@ The reference eigenvalues computed with continuous energy cross sections in Open
 
 Table~\ref{table:chap4-slab-angle} presents the bias $\Delta\rho$ between OpenMC and OpenMOC for a matrix of azimuthal angles and track spacings. No transport correction was applied to the total cross section $\Sigma^T_g$ or the scattering matrix $\nu_s\Sigma^S_{gg'}$. No spatial discretization was applied to the materials for the \ac{FSR} mesh in OpenMOC. The results for anisotropic and ``iso-in-lab'' scattering exhibit a bias resulting from the multi-group approximation which converges to 1200 and 1745 pcm, respectively. The magnitude of the bias appears to converge with 128 azimuthal angles and 0.01 cm spacing. The \ac{MGXS} tallied with ``iso-in-lab'' scattering in OpenMC eliminates the isotropic scattering approximation in OpenMOC but increases the overall bias by roughly 550 pcm with respect to the anisotropic case due to the cancellation of other approximation errors.
 
-\begin{itemize}
-  \item add 0.05 cm spacing to table or re-run with 0.01 cm spacing for other tables
-\end{itemize}
-
 \begin{table}[h!]
   \centering
   \caption[Angular discretization error for a 1D slab]{Convergence study of the eigenvalue bias $\Delta\rho$ with varying azimuthal angle quadratures and track spacings for a 1D slab.}
   \small
   \label{table:chap4-slab-angle}
   \vspace{6pt}
-  \begin{tabular}{c S[table-format=6.1] S[table-format=6.1] S[table-format=6.1] c S[table-format=6.1] S[table-format=6.1] S[table-format=6.1]} 
+  \begin{tabular}{a S[table-format=6.1] S[table-format=6.1] S[table-format=6.1] c S[table-format=6.1] S[table-format=6.1] S[table-format=6.1]} 
   \toprule
+  \rowcolor{lightgray}
   & \multicolumn{7}{c}{\boldmath $\Delta\rho$ {\bf [pcm]}} \\
   \midrule
-  \multicolumn{1}{c}{\bf \# Angles} &
-  \multicolumn{1}{c}{\bf 0.1 cm} & 
-  \multicolumn{1}{c}{\bf 0.01 cm} & 
-  \multicolumn{1}{c}{\bf 0.001 cm} &
-  \multicolumn{1}{c}{} &
-  \multicolumn{1}{c}{\bf 0.1 cm} & 
-  \multicolumn{1}{c}{\bf 0.01 cm} & 
-  \multicolumn{1}{c}{\bf 0.001 cm} \\
+  \rowcolor{lightgray}
+  {\bf \# Angles} &
+  {\bf 0.1 cm} & 
+  {\bf 0.01 cm} & 
+  {\bf 0.001 cm} &
+  &
+  {\bf 0.1 cm} & 
+  {\bf 0.01 cm} & 
+  {\bf 0.001 cm} \\
   \midrule
-  & \multicolumn{3}{c}{\bf Anisotropic} &
+  & \multicolumn{3}{c}{\cellcolor{carolinablue} \bf Anisotropic} &
   \multicolumn{1}{c}{} &
-  \multicolumn{3}{c}{\bf Isotropic in Lab} \\
-  \cline{2-4} \cline{6-8}
+  \multicolumn{3}{c}{\cellcolor{lightgreen} \bf Isotropic in Lab} \\
 4 & 2338 & 2217 & 2203 & & 2885 & 2764 & 2750 \\
 8 & 1641 & 1455 & 1418 & & 2187 & 2000 & 1964 \\
 16 & 1463 & 1201 & 1177 & & 2009 & 1746 & 1721 \\
@@ -275,14 +279,6 @@ Table~\ref{table:chap4-slab-angle} presents the bias $\Delta\rho$ between OpenMC
 128 & 1223 & 1198 & 1200 & & 1767 & 1743 & 1744 \\
 256 & 1224 & 1200 & 1200 & & 1769 & 1745 & 1745 \\
 512 & 1223 & 1200 & 1201 & & 1768 & 1744 & 1745 \\
-%4 & -1160 & -1160 & -1160 & & -1181 & -1181 & -1181 \\
-%8 & -985 & -879 & -864 & & -1006 & -899 & -885 \\
-%16 & -762 & -556 & -515 & & -783 & -576 & -535 \\
-%32 & -474 & -361 & -321 & & -494 & -382 & -341 \\
-%64 & -477 & -297 & -265 & & -497 & -317 & -286 \\
-%128 & -486 & -258 & -250 & & -507 & -279 & -270 \\
-%256 & -479 & -246 & -245 & & -499 & -267 & -265 \\
-%512 & -486 & -249 & -244 & & -507 & -269 & -265 \\
   \bottomrule
 \end{tabular}
 \end{table}
@@ -295,24 +291,24 @@ Table~\ref{table:chap4-slab-energy} presents the bias $\Delta\rho$ between OpenM
 
 \begin{table}[h!]
   \centering
-  \caption[Energy and spatial discretization error for a 1D slab]{Convergence study of the eigenvalue bias $\Delta\rho$ with varying energy groups structures and \ac{FSR} spatial discretizations for a 1D slab with \ac{MGXS} tallied by material.}
+  \caption[Energy and spatial discretization error for a 1D slab]{Convergence study of the eigenvalue bias $\Delta\rho$ with varying energy groups structures and \ac{FSR} spatial discretizations for a 1D slab with \textit{\ac{MGXS} tallied by material}.}
   \small
   \label{table:chap4-slab-energy} 
   \vspace{6pt}
-  \begin{tabular}{c S[table-format=6.1] S[table-format=6.1] S[table-format=6.1] S[table-format=6.1] S[table-format=6.1]}
+  \begin{tabular}{a S[table-format=6.1] S[table-format=6.1] S[table-format=6.1] S[table-format=6.1] S[table-format=6.1]}
   \toprule
+  \rowcolor{lightgray}
   & \multicolumn{5}{c}{\boldmath $\Delta\rho$ {\bf [pcm]}} \\
-  \midrule  
-  \multicolumn{1}{c}{\textbf{\# Groups}} &
-  \multicolumn{1}{c}{\bf 1$\times$} &
-  \multicolumn{1}{c}{\bf 2$\times$} &
-  \multicolumn{1}{c}{\bf 4$\times$} &
-  \multicolumn{1}{c}{\bf 8$\times$} &
-  \multicolumn{1}{c}{\bf 16$\times$} \\
-%  \multicolumn{1}{c}{\bf 32$\times$} \\
   \midrule
-  & \multicolumn{5}{c}{\bf Anisotropic $\left(\Sigma^T_g\right)$} \\
-  \cline{2-6}
+  \rowcolor{lightgray}
+  {\textbf{\# Groups}} &
+  {\bf 1$\times$} &
+  {\bf 2$\times$} &
+  {\bf 4$\times$} &
+  {\bf 8$\times$} &
+  {\bf 16$\times$} \\
+  \midrule
+  \multicolumn{6}{c}{\cellcolor{carolinablue} \bf Anisotropic $\left(\Sigma^T_g\right)$} \\
 1 & 459 & 473 & 480 & 482 & 482 \\
 2 & 789 & 183 & -214 & -367 & -412 \\
 4 & 802 & 212 & -181 & -334 & -385 \\
@@ -320,26 +316,8 @@ Table~\ref{table:chap4-slab-energy} presents the bias $\Delta\rho$ between OpenM
 16 & 1156 & 313 & -304 & -555 & -639 \\
 25 & 1129 & 307 & -299 & -547 & -633 \\
 40 & 1173 & 326 & -308 & -570 & -661 \\
-70 & 1191 & 336 & -309 & -577 & -670 \\
-%1 & -1 & -1 & -1 & -1 & -1 \\
-%2 & 8 & 0 & -3 & -4 & -2 \\
-%4 & -157 & -157 & -158 & -162 & -161 \\
-%8 & -195 & -198 & -200 & -205 & -204 \\
-%16 & -193 & -197 & -200 & -205 & -204 \\
-%25 & -310 & -306 & -308 & -308 & -307 \\
-%40 & -328 & -323 & -325 & -325 & -325 \\
-%70 & -336 & -330 & -332 & -332 & -331 \\
-%1 & 4241 & 4640 & 4932 & 5084 & 5094 \\
-%2 & 8786 & 4998 & 734 & -2486 & -2732 \\
-%4 & 8972 & 4685 & -222 & -3925 & -4207 \\
-%8 & 10069 & 5382 & -73 & -4337 & -4671 \\
-%16 & 10172 & 5479 & 43 & -4219 & -4555 \\
-%25 & 10250 & 5525 & -36 & -4410 & -4755 \\
-%40 & 10355 & 5609 & 17 & -4395 & -4745 \\
-%70 & 10375 & 5636 & 31 & -4398 & -4750 \\
-  \cline{2-6}
-  & \multicolumn{5}{c}{\bf Anisotropic $\left(\Sigma^{Tr}_g\right)$} \\
-  \cline{2-6}
+70 & 1191 & 336 & -309 & -577 & {\cellcolor{darktangerine}} -670 \\
+  \multicolumn{6}{c}{\cellcolor{lightgreen} \bf Anisotropic $\left(\Sigma^{Tr}_g\right)$} \\
 1 & 404 & 410 & 413 & 413 & 413 \\
 2 & 1113 & 716 & 488 & 406 & 385 \\
 4 & 932 & 526 & 291 & 206 & 169 \\
@@ -347,26 +325,8 @@ Table~\ref{table:chap4-slab-energy} presents the bias $\Delta\rho$ between OpenM
 16 & 1243 & 575 & 133 & -39 & -104 \\
 25 & 1130 & 467 & 26 & -152 & -210 \\
 40 & 1162 & 470 & 1 & -191 & -255 \\
-70 & 1178 & 476 & -6 & -204 & -270 \\
-%1 & 2 & 2 & 2 & 2 & 2 \\
-%2 & 29 & 24 & 22 & 25 & 25 \\
-%4 & -157 & -156 & -164 & -170 & -174 \\
-%8 & -190 & -191 & -201 & -209 & -215 \\
-%16 & -190 & -193 & -202 & -211 & -215 \\
-%25 & -275 & -271 & -275 & -308 & -307 \\
-%40 & -283 & -279 & -282 & -320 & -317 \\
-%70 & -290 & -286 & -289 & -327 & -324 \\
-%1 & 4041 & 4263 & 4383 & 4435 & 4438 \\
-%2 & 9201 & 5755 & 2525 & 497 & 358 \\
-%4 & 9134 & 5365 & 1868 & -312 & -462 \\
-%8 & 10296 & 6284 & 2347 & -305 & -497 \\
-%16 & 10417 & 6441 & 2566 & -75 & -269 \\
-%25 & 10376 & 6385 & 2480 & -181 & -381 \\
-%40 & 10474 & 6471 & 2550 & -140 & -344 \\
-%70 & 10482 & 6486 & 2569 & -124 & -329 \\
-  \cline{2-6}
-  & \multicolumn{5}{c}{\bf Isotropic in Lab $\left(\Sigma^T_g\right)$} \\
-  \cline{2-6}
+70 & 1178 & 476 & -6 & -204 & {\cellcolor{darktangerine}} -270 \\
+  \multicolumn{6}{c}{\cellcolor{lightsalmonpink} \bf Isotropic in Lab $\left(\Sigma^T_g\right)$} \\
 1 & 585 & 599 & 606 & 609 & 609 \\
 2 & 1467 & 856 & 455 & 300 & 254 \\
 4 & 1352 & 757 & 360 & 206 & 154 \\
@@ -374,23 +334,7 @@ Table~\ref{table:chap4-slab-energy} presents the bias $\Delta\rho$ between OpenM
 16 & 1778 & 932 & 313 & 61 & -23 \\
 25 & 1686 & 863 & 255 & 7 & -79 \\
 40 & 1721 & 873 & 239 & -24 & -115 \\
-70 & 1735 & 879 & 234 & -34 & -127 \\
-%1 & 26 & 26 & 26 & 26 & 26 \\
-%2 & 58 & 50 & 47 & 46 & 47 \\
-%4 & -145 & -145 & -146 & -151 & -149 \\
-%8 & -181 & -184 & -186 & -191 & -190 \\
-%16 & -181 & -185 & -188 & -193 & -192 \\
-%25 & -327 & -323 & -325 & -325 & -324 \\
-%40 & -349 & -343 & -345 & -345 & -345 \\
-%70 & -356 & -351 & -352 & -352 & -352 \\
-%1 & 4654 & 5126 & 5480 & 5668 & 5680 \\
-%2 & 13926 & 10000 & 5563 & 2201 & 1943 \\
-%4 & 13752 & 9389 & 4388 & 604 & 315 \\
-%8 & 15103 & 10367 & 4861 & 560 & 223 \\
-%16 & 15194 & 10452 & 4968 & 672 & 332 \\
-%25 & 15089 & 10350 & 4774 & 389 & 42 \\
-%40 & 15165 & 10413 & 4813 & 396 & 46 \\
-%70 & 15177 & 10435 & 4827 & 396 & 44 \\
+70 & 1735 & 879 & 234 & -34 & {\cellcolor{darktangerine}} -127 \\
   \bottomrule
 \end{tabular}
 \end{table}
@@ -401,24 +345,24 @@ Table~\ref{table:chap4-slab-space} presents the bias $\Delta\rho$ for a matrix o
 
 \begin{table}[h!]
   \centering
-  \caption[Spatial homogenization error for a 1D slab]{Convergence study of the eigenvalue bias $\Delta\rho$ with varying energy groups structures and \ac{FSR} spatial discretizations for a 1D slab with \ac{MGXS} tallied by \ac{FSR}.}
+  \caption[Spatial homogenization error for a 1D slab]{Convergence study of the eigenvalue bias $\Delta\rho$ with varying energy groups structures and \ac{FSR} spatial discretizations for a 1D slab with \textit{\ac{MGXS} tallied by \ac{FSR}}.}
   \small
   \label{table:chap4-slab-space} 
   \vspace{6pt}
-  \begin{tabular}{c S[table-format=6.1] S[table-format=6.1] S[table-format=6.1] S[table-format=6.1] S[table-format=6.1]}
+  \begin{tabular}{a S[table-format=6.1] S[table-format=6.1] S[table-format=6.1] S[table-format=6.1] S[table-format=6.1]}
   \toprule
+  \rowcolor{lightgray}
   & \multicolumn{5}{c}{\boldmath $\Delta\rho$ {\bf [pcm]}} \\
-  \midrule  
-  \multicolumn{1}{c}{\textbf{\# Groups}} &
-  \multicolumn{1}{c}{\bf 1$\times$} &
-  \multicolumn{1}{c}{\bf 2$\times$} &
-  \multicolumn{1}{c}{\bf 4$\times$} &
-  \multicolumn{1}{c}{\bf 8$\times$} &
-  \multicolumn{1}{c}{\bf 16$\times$} \\
-%  \multicolumn{1}{c}{\bf 32$\times$} \\
   \midrule
-  & \multicolumn{5}{c}{\bf Anisotropic $\left(\Sigma^T_g\right)$} \\
-  \cline{2-6}
+  \rowcolor{lightgray}
+  {\textbf{\# Groups}} &
+  {\bf 1$\times$} &
+  {\bf 2$\times$} &
+  {\bf 4$\times$} &
+  {\bf 8$\times$} &
+  {\bf 16$\times$} \\
+  \midrule
+  \multicolumn{6}{c}{\cellcolor{carolinablue} \bf Anisotropic $\left(\Sigma^T_g\right)$} \\
 1 & 452 & 472 & 448 & 495 & 454 \\
 2 & 782 & 170 & -233 & -354 & -437 \\
 4 & 795 & 231 & -131 & -260 & -333 \\
@@ -426,26 +370,8 @@ Table~\ref{table:chap4-slab-space} presents the bias $\Delta\rho$ for a matrix o
 16 & 1149 & 306 & -300 & -540 & -636 \\
 25 & 1122 & 305 & -294 & -530 & -616 \\
 40 & 1166 & 326 & -300 & -552 & -643 \\
-70 & 1184 & 339 & -298 & -558 & -648 \\
-%1 & -5 & -6 & 8 & 4 & 29 \\
-%2 & 4 & -3 & 4 & -2 & 24 \\
-%4 & -161 & -161 & -152 & -154 & -149 \\
-%8 & -199 & -199 & -197 & -198 & -190 \\
-%16 & -197 & -200 & -197 & -199 & -192 \\
-%25 & -314 & -319 & -319 & -310 & -303 \\
-%40 & -333 & -337 & -338 & -328 & -321 \\
-%70 & -340 & -344 & -344 & -336 & -328 \\
-%1 & 4253 & 4750 & 5094 & 5263 & 5271 \\
-%2 & 8797 & 4796 & 404 & -2817 & -3062 \\
-%4 & 8983 & 4754 & -65 & -3610 & -3876 \\
-%8 & 10080 & 5329 & -201 & -4491 & -4826 \\
-%16 & 10184 & 5422 & -92 & -4401 & -4742 \\
-%25 & 10262 & 5519 & -63 & -4436 & -4780 \\
-%40 & 10366 & 5611 & 4 & -4411 & -4758 \\
-%70 & 10387 & 5633 & 19 & -4406 & -4756 \\
-  \cline{2-6}
-  & \multicolumn{5}{c}{\bf Anisotropic $\left(\Sigma^{Tr}_g\right)$} \\
-  \cline{2-6}
+70 & 1184 & 339 & -298 & -558 & {\cellcolor{darktangerine}} -648 \\
+  \multicolumn{6}{c}{\cellcolor{lightgreen} \bf Anisotropic $\left(\Sigma^{Tr}_g\right)$} \\
 1 & 397 & 419 & 439 & 449 & 444 \\
 2 & 1106 & 728 & 527 & 451 & 429 \\
 4 & 925 & 555 & 358 & 282 & 248 \\
@@ -453,26 +379,8 @@ Table~\ref{table:chap4-slab-space} presents the bias $\Delta\rho$ for a matrix o
 16 & 1236 & 566 & 137 & -33 & -98 \\
 25 & 1123 & 451 & 20 & -155 & -212 \\
 40 & 1155 & 454 & -8 & -199 & -262 \\
-70 & 1171 & 461 & -13 & -211 & -276 \\
-%1 & -2 & 1 & 1 & 5 & 13 \\
-%2 & 25 & 18 & 20 & 24 & 31 \\
-%4 & -161 & -167 & -173 & -180 & -180 \\
-%8 & -194 & -205 & -214 & -223 & -224 \\
-%16 & -194 & -206 & -217 & -225 & -224 \\
-%25 & -279 & -303 & -318 & -356 & -351 \\
-%40 & -288 & -313 & -330 & -373 & -367 \\
-%70 & -294 & -320 & -338 & -380 & -375 \\
-%1 & 4052 & 4338 & 4475 & 4541 & 4544 \\
-%2 & 9212 & 5615 & 2393 & 470 & 346 \\
-%4 & 9145 & 5475 & 2172 & 201 & 72 \\
-%8 & 10308 & 6245 & 2277 & -363 & -550 \\
-%16 & 10429 & 6405 & 2490 & -164 & -356 \\
-%25 & 10387 & 6380 & 2464 & -193 & -388 \\
-%40 & 10486 & 6472 & 2543 & -147 & -348 \\
-%70 & 10494 & 6483 & 2561 & -130 & -332 \\
-  \cline{2-6}
-  & \multicolumn{5}{c}{\bf Isotropic in Lab $\left(\Sigma^T_g\right)$} \\
-  \cline{2-6}
+70 & 1171 & 461 & -13 & -211 & {\cellcolor{darktangerine}} -276 \\
+  \multicolumn{6}{c}{\cellcolor{lightsalmonpink} \bf Isotropic in Lab $\left(\Sigma^T_g\right)$} \\
 1 & 585 & 608 & 589 & 589 & 590 \\
 2 & 1467 & 852 & 449 & 272 & 238 \\
 4 & 1352 & 786 & 421 & 261 & 218 \\
@@ -480,23 +388,7 @@ Table~\ref{table:chap4-slab-space} presents the bias $\Delta\rho$ for a matrix o
 16 & 1777 & 932 & 318 & 55 & -26 \\
 25 & 1685 & 863 & 251 & 3 & -77 \\
 40 & 1721 & 873 & 236 & -25 & -110 \\
-70 & 1735 & 881 & 235 & -32 & -122 \\
-%1 & 27 & 16 & 12 & 5 & -3 \\
-%2 & 58 & 33 & 31 & 21 & 18 \\
-%4 & -144 & -156 & -161 & -158 & -156 \\
-%8 & -181 & -194 & -200 & -202 & -198 \\
-%16 & -180 & -195 & -203 & -204 & -200 \\
-%25 & -326 & -331 & -338 & -336 & -336 \\
-%40 & -348 & -351 & -359 & -357 & -358 \\
-%70 & -355 & -359 & -366 & -364 & -366 \\
-%1 & 4654 & 5303 & 5731 & 5972 & 6011 \\
-%2 & 13926 & 9470 & 4647 & 1130 & 883 \\
-%4 & 13752 & 9266 & 4241 & 540 & 266 \\
-%8 & 15103 & 10190 & 4546 & 169 & -165 \\
-%16 & 15194 & 10282 & 4658 & 269 & -68 \\
-%25 & 15089 & 10319 & 4723 & 322 & -17 \\
-%40 & 15165 & 10395 & 4783 & 351 & 9 \\
-%70 & 15177 & 10416 & 4803 & 370 & 29 \\
+70 & 1735 & 881 & 235 & -32 & {\cellcolor{darktangerine}} -122 \\
   \bottomrule
 \end{tabular}
 \end{table}
@@ -515,10 +407,11 @@ A \ac{PWR} fuel pin cell model was constructed to quantify approximation errors 
   \caption[2D fuel pin dimensions]{2D fuel pin dimensions.}
   \label{table:chap4-pin-dimensions} 
   \vspace{6pt}
-  \begin{tabular}{l c}
+  \begin{tabular}{b c}
   \toprule
-  \multicolumn{1}{c}{\bf Material} &
-  \multicolumn{1}{c}{\bf Dimension [cm]} \\
+  \rowcolor{lightgray}
+  {\bf Material} &
+  {\bf Dimension [cm]} \\
   \midrule
   Fuel Outer Radius &     0.39218 \\
   Gap Outer Radius &      0.40005 \\
@@ -557,8 +450,9 @@ The reference eigenvalues computed with continuous energy cross sections in Open
   \vspace{6pt}
   \begin{tabular}{c c}
   \toprule
-  \multicolumn{1}{c}{\bf Anisotropic} &
-  \multicolumn{1}{c}{\bf Isotropic in Lab} \\
+  \rowcolor{lightgray}
+  {\bf Anisotropic} &
+  {\bf Isotropic in Lab} \\
   \midrule
   1.17486 $\pm$ 0.00003 & 1.17421 $\pm$ 0.00002 \\
   \bottomrule
@@ -567,32 +461,29 @@ The reference eigenvalues computed with continuous energy cross sections in Open
 
 Table~\ref{table:chap4-pin-angle} presents the bias $\Delta\rho$ for a matrix of azimuthal angles and track spacings. No transport correction was applied to the total cross section $\Sigma^T_g$ or the scattering matrix $\nu_s\Sigma^S_{gg'}$. A single radial tally zone was applied to each material for the \ac{MGXS} calculation with OpenMC. The fuel and moderator were each discretized into 5 equal volume radial rings, and each material zone was discretized into 8 angular sectors for the \ac{FSR} mesh in OpenMOC. The results for both normal anisotropic scattering and ``iso-in-lab'' scattering exhibit a few hundred pcm bias which appears to converge with 128 azimuthal angles and is largely invariant with the track spacing. The \ac{MGXS} tallied with ``iso-in-lab'' scattering in OpenMC converge to an eigenvalue that is roughly 95 pcm less than that computed for the anisotropic case, with a bias of approximately -170 pcm.
 
-\begin{itemize}[noitemsep]
-  \item add 0.05 cm spacing to table or re-run with 0.01 cm spacing for other tables
-\end{itemize}
-
 \begin{table}[h!]
   \centering
   \caption[Angular discretization error for a 2D fuel pin]{Convergence study of the eigenvalue bias $\Delta\rho$ with varying azimuthal angle quadratures and track spacings for a 2D fuel pin.}
   \label{table:chap4-pin-angle}
   \vspace{6pt}
-  \begin{tabular}{c S[table-format=2.1] S[table-format=2.1] S[table-format=2.1] c S[table-format=2.1] S[table-format=2.1] S[table-format=2.1]} 
+  \begin{tabular}{a S[table-format=2.1] S[table-format=2.1] S[table-format=2.1] c S[table-format=2.1] S[table-format=2.1] S[table-format=2.1]} 
   \toprule
+  \rowcolor{lightgray}
   & \multicolumn{7}{c}{\boldmath $\Delta\rho$ {\bf [pcm]}} \\
   \midrule
-  \multicolumn{1}{c}{\bf \# Angles} &
-  \multicolumn{1}{c}{\bf 0.1 cm} & 
-  \multicolumn{1}{c}{\bf 0.01 cm} & 
-  \multicolumn{1}{c}{\bf 0.001 cm} &
-  \multicolumn{1}{c}{} &
-  \multicolumn{1}{c}{\bf 0.1 cm} & 
-  \multicolumn{1}{c}{\bf 0.01 cm} & 
-  \multicolumn{1}{c}{\bf 0.001 cm} \\
+  \rowcolor{lightgray}
+  {\bf \# Angles} &
+  {\bf 0.1 cm} & 
+  {\bf 0.01 cm} & 
+  {\bf 0.001 cm} &
+  &
+  {\bf 0.1 cm} & 
+  {\bf 0.01 cm} & 
+  {\bf 0.001 cm} \\
   \midrule
-  & \multicolumn{3}{c}{\bf Anisotropic} &
+  & \multicolumn{3}{c}{\cellcolor{carolinablue} \bf Anisotropic} &
   \multicolumn{1}{c}{} &
-  \multicolumn{3}{c}{\bf Isotropic in Lab} \\
-  \cline{2-4} \cline{6-8}
+  \multicolumn{3}{c}{\cellcolor{lightgreen} \bf Isotropic in Lab} \\
 4 & 372 & 425 & 427 & & 467 & 519 & 521 \\
 8 & -377 & -419 & -418 & & -282 & -325 & -323 \\
 16 & -436 & -408 & -412 & & -341 & -314 & -318 \\
@@ -605,7 +496,7 @@ Table~\ref{table:chap4-pin-angle} presents the bias $\Delta\rho$ for a matrix of
 \end{tabular}
 \end{table}
 
-Table~\ref{table:chap4-pin-energy} presents the bias $\Delta\rho$ between OpenMC and OpenMOC for a matrix of energy group structures and \ac{FSR} spatial discretizations. In each case, the \ac{MGXS} used in OpenMOC were tallied by material in OpenMC. The OpenMOC calculations used 128 azimuthal angles and 0.05 cm track spacing. Each of the materials in the fuel pin was discretized into 8 angular sectors. The fuel and moderator were each discretized into 1 -- 16 equal volume radial rings. 
+Table~\ref{table:chap4-pin-energy} presents the bias $\Delta\rho$ between OpenMC and OpenMOC for a matrix of energy group structures and \ac{FSR} spatial discretizations. In each case, the \ac{MGXS} used in OpenMOC were tallied by material in OpenMC. The OpenMOC calculations used 128 azimuthal angles and 0.01 cm track spacing. Each of the materials in the fuel pin was discretized into 8 angular sectors. The fuel and moderator were each discretized into 1 -- 16 equal volume radial rings. 
 
 \begin{itemize}[noitemsep]
   \item refer back to figure (a) and (b) for energy/space table
@@ -613,113 +504,109 @@ Table~\ref{table:chap4-pin-energy} presents the bias $\Delta\rho$ between OpenMC
 
 \begin{table}[h!]
   \centering
-  \caption[Energy and spatial discretization error for a 2D fuel pin]{Convergence study of the eigenvalue bias $\Delta\rho$ with varying energy groups structures and \ac{FSR} spatial discretizations for a 2D fuel pin with \ac{MGXS} tallied by material.}
+  \caption[Energy and spatial discretization error for a 2D fuel pin]{Convergence study of the eigenvalue bias $\Delta\rho$ with varying energy groups structures and \ac{FSR} spatial discretizations for a 2D fuel pin with \textit{\ac{MGXS} tallied by material}.}
   \label{table:chap4-pin-energy} 
   \vspace{6pt}
-  \begin{tabular}{c S[table-format=6.1] S[table-format=6.1] S[table-format=6.1] S[table-format=6.1] S[table-format=6.1]}
+  \begin{tabular}{a S[table-format=6.1] S[table-format=6.1] S[table-format=6.1] S[table-format=6.1] S[table-format=6.1]}
   \toprule
+  \rowcolor{lightgray}
   & \multicolumn{5}{c}{\boldmath $\Delta\rho$ {\bf [pcm]}} \\
-  \midrule  
-  \multicolumn{1}{c}{\textbf{\# Groups}} &
-  \multicolumn{1}{c}{\bf 1$\times$} &
-  \multicolumn{1}{c}{\bf 2$\times$} &
-  \multicolumn{1}{c}{\bf 4$\times$} &
-  \multicolumn{1}{c}{\bf 8$\times$} &
-  \multicolumn{1}{c}{\bf 16$\times$} \\
   \midrule
-  & \multicolumn{5}{c}{\bf Anisotropic $\left(\Sigma^T_g\right)$} \\
-  \cline{2-6}
-1 & 77 & 78 & 78 & 78 & 78 \\
-2 & 34 & -10 & -40 & -52 & -50 \\
-4 & -55 & -95 & -123 & -137 & -145 \\
-8 & -71 & -131 & -177 & -198 & -208 \\
-16 & -68 & -135 & -188 & -212 & -223 \\
-25 & -126 & -189 & -241 & -267 & -275 \\
-40 & -129 & -197 & -253 & -282 & -290 \\
-70 & -129 & -200 & -259 & -289 & -298 \\
-  \cline{2-6}
-  & \multicolumn{5}{c}{\bf Anisotropic $\left(\Sigma^{Tr}_g\right)$} \\
-  \cline{2-6}
-1 & 63 & 64 & 64 & 64 & 63 \\
-2 & 52 & 22 & 4 & -2 & 6 \\
-4 & -60 & -89 & -108 & -125 & -126 \\
-8 & -75 & -123 & -157 & -180 & -183 \\
-16 & -68 & -123 & -165 & -191 & -194 \\
-25 & -128 & -182 & -225 & -250 & -253 \\
-40 & -133 & -192 & -241 & -268 & -272 \\
-70 & -135 & -196 & -248 & -277 & -281 \\
-  \cline{2-6}
-  & \multicolumn{5}{c}{\bf Isotropic in Lab $\left(\Sigma^T_g\right)$} \\
-  \cline{2-6}
-1 & 91 & 92 & 92 & 93 & 92 \\
-2 & 153 & 109 & 78 & 67 & 69 \\
-4 & 31 & -9 & -38 & -51 & -59 \\
-8 & 31 & -29 & -75 & -95 & -106 \\
-16 & 41 & -26 & -79 & -103 & -114 \\
-25 & -27 & -91 & -142 & -169 & -177 \\
-40 & -34 & -103 & -159 & -187 & -196 \\
-70 & -35 & -106 & -165 & -195 & -204 \\
+  \rowcolor{lightgray}
+  {\textbf{\# Groups}} &
+  {\bf 1$\times$} &
+  {\bf 2$\times$} &
+  {\bf 4$\times$} &
+  {\bf 8$\times$} &
+  {\bf 16$\times$} \\
+  \midrule
+  \multicolumn{6}{c}{\cellcolor{carolinablue} \bf Anisotropic $\left(\Sigma^T_g\right)$} \\
+1 & 65 & 66 & 66 & 66 & 66 \\
+2 & 21 & -23 & -54 & -65 & -64 \\
+4 & -60 & -100 & -129 & -143 & -151 \\
+8 & -77 & -137 & -183 & -204 & -215 \\
+16 & -74 & -141 & -194 & -219 & -230 \\
+25 & -130 & -194 & -245 & -272 & -281 \\
+40 & -133 & -201 & -257 & -286 & -296 \\
+70 & -134 & -204 & -263 & -294 & {\cellcolor{darktangerine}} -304 \\
+  \multicolumn{6}{c}{\cellcolor{lightgreen} \bf Anisotropic $\left(\Sigma^{Tr}_g\right)$} \\
+1 & 51 & 52 & 52 & 52 & 51 \\
+2 & 35 & 6 & -13 & -19 & -11 \\
+4 & -60 & -89 & -109 & -125 & -126 \\
+8 & -76 & -123 & -158 & -181 & -184 \\
+16 & -69 & -124 & -165 & -192 & -196 \\
+25 & -126 & -180 & -223 & -249 & -252 \\
+40 & -131 & -190 & -239 & -267 & -271 \\
+70 & -133 & -194 & -246 & -276 & {\cellcolor{darktangerine}} -280 \\
+  \multicolumn{6}{c}{\cellcolor{lightsalmonpink} \bf Isotropic in Lab $\left(\Sigma^T_g\right)$} \\
+1 & 79 & 80 & 80 & 80 & 80 \\
+2 & 140 & 96 & 65 & 53 & 55 \\
+4 & 26 & -14 & -43 & -57 & -65 \\
+8 & 25 & -35 & -81 & -102 & -113 \\
+16 & 34 & -33 & -86 & -110 & -122 \\
+25 & -32 & -95 & -147 & -173 & -182 \\
+40 & -39 & -107 & -163 & -192 & -202 \\
+70 & -40 & -110 & -169 & -199 & {\cellcolor{darktangerine}} -210 \\
   \bottomrule
 \end{tabular}
 \end{table}
 
-As was demonstrated for the 1D slab, the results for the fuel pin indicate a strong interaction between the energy and spatial discretization. The eigenvalue bias exhibits a swing of nearly 400 pcm between energy and spatial meshes. The bias exceeds 200 pcm for all scattering approximations. The application of the transport correction only reduces the bias by up to 20 pcm depending on the energy group structure. Unlike the 1D slab, the use of the ``iso-in-lab'' scattering feature does not have a marked impact on the magnitude of the bias, though $\Delta\rho$ is negative for all scattering approximations as was observed for the 1D slab. 
+As was demonstrated for the 1D slab, the results for the fuel pin indicate a strong interaction between the energy and spatial discretization. The eigenvalue bias exhibits a swing of $\sim$350 pcm between energy and spatial meshes. The bias exceeds 200 pcm for all scattering approximations. The application of the transport correction only reduces the bias by up to 25 pcm depending on the energy group structure. The use of the ``iso-in-lab'' scattering feature reduces the bias by roughly $\nicefrac{1}{3}$ or 100 pcm. As was observed for the 1D slab, the bias is negative for all scattering approximations. 
 
-Table~\ref{table:chap4-pin-space} presents the bias for a matrix of energy group structures and \ac{MGXS} spatial tally zone meshes. In each case, the \ac{MGXS} were tallied on the \ac{FSR} mesh used in OpenMOC with 1 -- 16 equal volume rings per material. The OpenMOC calculations used 128 azimuthal angles and 0.05 cm track spacing.
+Table~\ref{table:chap4-pin-space} presents the bias for a matrix of energy group structures and \ac{MGXS} spatial tally zone meshes. In each case, the \ac{MGXS} were tallied on the \ac{FSR} mesh used in OpenMOC with 1 -- 16 equal volume rings per material. The OpenMOC calculations used 128 azimuthal angles and 0.01 cm track spacing.
 
 \begin{table}[h!]
   \centering
-  \caption[Spatial homogenization error for a 2D fuel pin]{Convergence study of the eigenvalue bias $\Delta\rho$ with varying energy groups structures and \ac{FSR} spatial discretizations for a 2D fuel pin with \ac{MGXS} tallied by \ac{FSR}.}
+  \caption[Spatial homogenization error for a 2D fuel pin]{Convergence study of the eigenvalue bias $\Delta\rho$ with varying energy groups structures and \ac{FSR} spatial discretizations for a 2D fuel pin with \textit{\ac{MGXS} tallied by \ac{FSR}}.}
   \label{table:chap4-pin-space} 
   \vspace{6pt}
-  \begin{tabular}{c S[table-format=6.1] S[table-format=6.1] S[table-format=6.1] S[table-format=6.1] S[table-format=6.1]}
+  \begin{tabular}{a S[table-format=6.1] S[table-format=6.1] S[table-format=6.1] S[table-format=6.1] S[table-format=6.1]}
   \toprule
+  \rowcolor{lightgray}
   & \multicolumn{5}{c}{\boldmath $\Delta\rho$ {\bf [pcm]}} \\
-  \midrule  
-  \multicolumn{1}{c}{\textbf{\# Groups}} &
-  \multicolumn{1}{c}{\bf 1$\times$} &
-  \multicolumn{1}{c}{\bf 2$\times$} &
-  \multicolumn{1}{c}{\bf 4$\times$} &
-  \multicolumn{1}{c}{\bf 8$\times$} &
-  \multicolumn{1}{c}{\bf 16$\times$} \\
   \midrule
-  & \multicolumn{5}{c}{\bf Anisotropic $\left(\Sigma^T_g\right)$} \\
-  \cline{2-6}
- & 79 & 78 & 62 & 62 & 53 \\
-2 & 36 & -7 & -57 & -93 & -92 \\
-4 & -53 & -90 & -136 & -173 & -184 \\
-8 & -70 & -127 & -190 & -240 & -247 \\
-16 & -66 & -130 & -198 & -255 & -257 \\
-25 & -124 & -189 & -257 & -321 & -324 \\
-40 & -127 & -200 & -272 & -339 & -344 \\
-70 & -128 & -204 & -278 & -347 & -353 \\
-  \cline{2-6}
-  & \multicolumn{5}{c}{\bf Anisotropic $\left(\Sigma^{Tr}_g\right)$} \\
-  \cline{2-6}
-1 & 65 & 79 & 74 & 30 & 33 \\
-2 & 54 & 34 & 4 & -45 & -33 \\
-4 & -58 & -77 & -106 & -166 & -165 \\
-8 & -73 & -111 & -159 & -227 & -227 \\
-16 & -66 & -111 & -168 & -238 & -240 \\
-25 & -126 & -178 & -238 & -310 & -310 \\
-40 & -131 & -188 & -256 & -330 & -331 \\
-70 & -133 & -193 & -263 & -339 & -340 \\
-  \cline{2-6}
-  & \multicolumn{5}{c}{\bf Isotropic in Lab $\left(\Sigma^T_g\right)$} \\
-  \cline{2-6}
-1 & 92 & 109 & 54 & 48 & 28 \\
-2 & 154 & 107 & 28 & 12 & -6 \\
-4 & 32 & -3 & -52 & -91 & -107 \\
-8 & 32 & -22 & -93 & -136 & -152 \\
-16 & 42 & -23 & -99 & -147 & -161 \\
-25 & -26 & -95 & -169 & -220 & -238 \\
-40 & -33 & -104 & -186 & -241 & -259 \\
-70 & -34 & -107 & -193 & -247 & -267 \\
+  \rowcolor{lightgray}
+  {\textbf{\# Groups}} &
+  {\bf 1$\times$} &
+  {\bf 2$\times$} &
+  {\bf 4$\times$} &
+  {\bf 8$\times$} &
+  {\bf 16$\times$} \\
+  \midrule
+  \multicolumn{6}{c}{\cellcolor{carolinablue} \bf Anisotropic $\left(\Sigma^T_g\right)$} \\
+1 & 67 & 60 & 63 & 98 & 92 \\
+2 & 22 & -27 & -56 & -55 & -51 \\
+4 & -58 & -101 & -128 & -128 & -135 \\
+8 & -75 & -139 & -182 & -194 & -197 \\
+16 & -73 & -142 & -190 & -209 & -207 \\
+25 & -128 & -198 & -246 & -271 & -268 \\
+40 & -131 & -209 & -261 & -288 & -288 \\
+70 & -132 & -214 & -267 & -296 & {\cellcolor{darktangerine}} -297 \\
+  \multicolumn{6}{c}{\cellcolor{lightgreen} \bf Anisotropic $\left(\Sigma^{Tr}_g\right)$} \\
+1 & 53 & 61 & 75 & 66 & 72 \\
+2 & 37 & 11 & 1 & -10 & 4 \\
+4 & -58 & -83 & -92 & -114 & -109 \\
+8 & -74 & -117 & -145 & -175 & -170 \\
+16 & -67 & -118 & -154 & -186 & -183 \\
+25 & -124 & -181 & -221 & -253 & -245 \\
+40 & -130 & -191 & -238 & -272 & -265 \\
+70 & -131 & -196 & -245 & -281 & {\cellcolor{darktangerine}} -274 \\
+  \multicolumn{6}{c}{\cellcolor{lightsalmonpink} \bf Isotropic in Lab $\left(\Sigma^T_g\right)$} \\
+1 & 80 & 92 & 55 & 83 & 66 \\
+2 & 141 & 87 & 29 & 50 & 34 \\
+4 & 27 & -15 & -43 & -45 & -57 \\
+8 & 26 & -34 & -85 & -90 & -102 \\
+16 & 35 & -35 & -91 & -101 & -111 \\
+25 & -31 & -105 & -158 & -170 & -182 \\
+40 & -38 & -114 & -174 & -189 & -202 \\
+70 & -39 & -117 & -182 & -196 & {\cellcolor{darktangerine}} -211 \\
   \bottomrule
 \end{tabular}
 \end{table}
 
-The trends analyzed in Table~\ref{table:chap4-pin-energy} emerge in a similar manner with spatially-dependent \ac{MGXS}. In particular, the eigenvalue bias grows in magnitude with more energy groups and \ac{FSR}s but is largely insensitive to the the elimination of the isotropic scattering approximation. The eigenvalues for the fine energy and spatial mesh are $\sim$60 pcm less than those computed with \ac{MGXS} tallied by material, increasing the magnitude of the bias $\Delta\rho$ by the same amount. The results in Table~\ref{table:chap4-pin-space} demonstrate that spatial self-shielding effects captured with spatially-varying scalar flux-weighted \ac{MGXS} for each \ac{FSR} has a larger impact (60 pcm) than was the case for the 1D slab. However, the overall systematic error between OpenMC and OpenMOC is not resolved and in fact increases with greater spatial resolution of the \ac{MGXS}.
+The trends analyzed in Table~\ref{table:chap4-pin-energy} emerge in a similar manner with spatially-dependent \ac{MGXS}. In particular, the eigenvalue bias grows in magnitude with more energy groups and \ac{FSR}s but is largely insensitive to the the elimination of the isotropic scattering approximation. As was observed for the 1D slab, the overall systematic error between OpenMC and OpenMOC is not resolved and in fact increases with greater spatial resolution of the \ac{MGXS}. The results in Table~\ref{table:chap4-pin-space} indicate that spatial self-shielding effects captured with spatially-varying scalar flux-weighted MGXS for each FSR do not have a substantial impact on the systematic errors in the eigenvalue.
+
+%The eigenvalues for the fine energy and spatial mesh are $\sim$60 pcm less than those computed with \ac{MGXS} tallied by material, increasing the magnitude of the bias $\Delta\rho$ by the same amount. The results in Table~\ref{table:chap4-pin-space} demonstrate that spatial self-shielding effects captured with spatially-varying scalar flux-weighted \ac{MGXS} for each \ac{FSR} has a larger impact (60 pcm) than was the case for the 1D slab. However, the overall systematic error between OpenMC and OpenMOC is not resolved and in fact increases with greater spatial resolution of the \ac{MGXS}.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -733,18 +620,17 @@ The trends analyzed in Table~\ref{table:chap4-pin-energy} emerge in a similar ma
 The emergence of a negative systematic bias in the eigenvalue with fine energy and spatial discretization for the heterogeneous 1D slab and 2D fuel pin models led to an analysis of the flux spectra computed by OpenMC and OpenMOC. The 70-group volume-averaged flux in energy for both benchmarks is illustrated in Figure~\ref{fig:chap4-flux}. Upon further inspection, it was noted that OpenMOC's flux exhibited large errors with respect to the reference OpenMC flux in those energy groups which isolate large U-238 capture resonances. The error in the 70-group flux is illustrated in Figure~\ref{fig:chap4-rel-err-energy} for the \ac{FSR}s nearest and furthest from the moderator for the benchmark models with a 16$\times$ \ac{FSR} discretization. Figure~\ref{fig:chap4-rel-err-space} highlights the spatial dependence of the error in group 27 across the fuel which isolates the largest U-238 capture resonance at 6.67 eV. For both the slab and the fuel pin the error monotonically decreases from a maximum of more than 2\% to a minimum of $\sim$-0.3\% in those \ac{FSR}s furthest and nearest the moderator, respectively. 
 
 \begin{itemize}[noitemsep]
-  \item Make flux figures bigger - each figure take up one page
   \item Only plot the flux in the fuel
   \item Add footnote making mention of the closeness between OpenMC/MOC
 \end{itemize}
 
 \begin{figure}[H]
-\begin{subfigure}{.5\textwidth}
+\begin{subfigure}{0.9\textwidth}
   \centering
   \includegraphics[width=\linewidth]{figures/biases/slab/vol-avg-flux}
   \caption{}
 \end{subfigure}
-\begin{subfigure}{.5\textwidth}
+\begin{subfigure}{0.9\textwidth}
   \centering
   \includegraphics[width=\linewidth]{figures/biases/pin-cell/vol-avg-flux}
   \caption{}
@@ -754,12 +640,12 @@ The emergence of a negative systematic bias in the eigenvalue with fine energy a
 \end{figure}
 
 \begin{figure}[H]
-\begin{subfigure}{.5\textwidth}
+\begin{subfigure}{.9\textwidth}
   \centering
   \includegraphics[width=\linewidth]{figures/biases/slab/rel-err-inner-outer}
   \caption{}
 \end{subfigure}
-\begin{subfigure}{.5\textwidth}
+\begin{subfigure}{.9\textwidth}
   \centering
   \includegraphics[width=\linewidth]{figures/biases/pin-cell/rel-err-inner-outer}
   \caption{}
@@ -774,12 +660,12 @@ The emergence of a negative systematic bias in the eigenvalue with fine energy a
 \end{itemize}
 
 \begin{figure}[H]
-\begin{subfigure}{.5\textwidth}
+\begin{subfigure}{.9\textwidth}
   \centering
   \includegraphics[width=\linewidth]{figures/biases/slab/rel-err-fuel-fsrs}
   \caption{}
 \end{subfigure}
-\begin{subfigure}{.5\textwidth}
+\begin{subfigure}{.9\textwidth}
   \centering
   \includegraphics[width=\linewidth]{figures/biases/pin-cell/rel-err-fuel-fsrs}
   \caption{}
@@ -819,23 +705,22 @@ As illustrated in the table, both U-238 capture and total absorption rate error 
   \small
   \label{table:chap4-rxn-rate-errors} 
   \vspace{6pt}
-  \begin{tabular}{c S[table-format=6.1] S[table-format=6.1] S[table-format=6.1] c S[table-format=6.1] S[table-format=6.1] S[table-format=6.1]}
+  \begin{tabular}{a S[table-format=6.1] S[table-format=6.1] S[table-format=6.1] c S[table-format=6.1] S[table-format=6.1] S[table-format=6.1]}
   \toprule
+  \rowcolor{lightgray}
   \multicolumn{1}{c}{\bf \# Groups} &
   \multicolumn{3}{c}{\bf U-238 Capture} &
   \multicolumn{1}{c}{} &
   \multicolumn{3}{c}{\bf Total Absorption} \\
   \midrule
-  & \multicolumn{7}{c}{\bf 1D Slab} \\
-  \cline{2-8}
-  & \multicolumn{1}{c}{\bf Range A} &
-  \multicolumn{1}{c}{\bf Range B} &
-  \multicolumn{1}{c}{\bf Range C} &
-  \multicolumn{1}{c}{} &
-  \multicolumn{1}{c}{\bf Range A} &
-  \multicolumn{1}{c}{\bf Range B} &
-  \multicolumn{1}{c}{\bf Range C} \\
-  \cline{2-4} \cline{6-8}
+  \multicolumn{8}{c}{\cellcolor{carolinablue} \bf 1D Slab} \\
+  & {\bf \cellcolor{lightgray} Range A} &
+  {\bf \cellcolor{lightgray} Range B} &
+  {\bf \cellcolor{lightgray} Range C} &
+  &
+  {\bf \cellcolor{lightgray} Range A} &
+  {\bf \cellcolor{lightgray} Range B} &
+  {\bf \cellcolor{lightgray} Range C} \\
 1 & -0.02 & -0.02 & -0.02 & & -0.52 & -0.52 & -0.52 \\
 2 & 0.48 & 0.48 & 0.30 & & 0.45 & 0.45 & -0.21 \\
 4 & 0.19 & 0.00 & 0.11 & & 0.20 & 0.00 & -0.20 \\
@@ -843,26 +728,15 @@ As illustrated in the table, both U-238 capture and total absorption rate error 
 16 & 0.50 & 0.21 & 0.28 & & 0.53 & 0.21 & 0.01 \\
 25 & 1.05 & 0.65 & 0.45 & & 1.07 & 0.67 & 0.06 \\
 40 & 1.07 & 0.75 & 0.49 & & 1.09 & 0.76 & 0.09 \\
-70 & 1.07 & 0.81 & 0.50 & & 1.10 & 0.82 & 0.10 \\
-%1 & 0.00 & 0.00 & 0.00 & & 0.00 & 0.00 & 0.00 \\
-%2 & 0.00 & 0.00 & 0.00 & & 0.00 & 0.00 & 0.00 \\
-%4 & 0.73 & 0.21 & 0.55 & & 0.73 & 0.20 & 0.37 \\
-%8 & 0.82 & 0.21 & 0.59 & & 0.83 & 0.20 & 0.37 \\
-%16 & 0.81 & 0.21 & 0.58 & & 0.82 & 0.20 & 0.37 \\
-%25 & 1.12 & 0.91 & 0.71 & & 1.14 & 0.91 & 0.35 \\
-%40 & 1.08 & 0.95 & 0.73 & & 1.09 & 0.95 & 0.35 \\
-%70 & 1.09 & 1.05 & 0.76 & & 1.10 & 1.03 & 0.37 \\
-  \cline{2-8}
-  & \multicolumn{7}{c}{\bf 2D Fuel Pin} \\
-  \cline{2-8}
-  & \multicolumn{1}{c}{\bf Range A} &
-  \multicolumn{1}{c}{\bf Range B} &
-  \multicolumn{1}{c}{\bf Range C} &
-  \multicolumn{1}{c}{} &
-  \multicolumn{1}{c}{\bf Range A} &
-  \multicolumn{1}{c}{\bf Range B} &
-  \multicolumn{1}{c}{\bf Range C} \\
-  \cline{2-4} \cline{6-8}
+70 & {\cellcolor{darktangerine}} 1.07 & 0.81 & 0.50 & & 1.10 & 0.82 & 0.10 \\
+  \multicolumn{8}{c}{\cellcolor{lightgreen} \bf 2D Fuel Pin} \\
+  & {\bf \cellcolor{lightgray} Range A} &
+  {\bf \cellcolor{lightgray} Range B} &
+  {\bf \cellcolor{lightgray} Range C} &
+  &
+  {\bf \cellcolor{lightgray} Range A} &
+  {\bf \cellcolor{lightgray} Range B} &
+  {\bf \cellcolor{lightgray} Range C} \\
 1 & -0.02 & -0.02 & -0.02 & & -0.07 & -0.07 & -0.07 \\
 2 & 0.11 & 0.11 & 0.07 & & 0.11 & 0.11 & -0.03 \\
 4 & 0.55 & 0.07 & 0.32 & & 0.54 & 0.07 & 0.04 \\
@@ -870,15 +744,7 @@ As illustrated in the table, both U-238 capture and total absorption rate error 
 16 & 0.72 & 0.12 & 0.41 & & 0.73 & 0.12 & 0.09 \\
 25 & 1.32 & 0.85 & 0.61 & & 1.34 & 0.85 & 0.15 \\
 40 & 1.33 & 0.93 & 0.64 & & 1.34 & 0.92 & 0.16 \\
-70 & 1.33 & 0.99 & 0.65 & & 1.35 & 0.97 & 0.17 \\
-%1 & 0.11 & 0.11 & 0.11 & & -0.04 & -0.04 & -0.04 \\
-%2 & 0.31 & 0.31 & 0.21 & & 0.23 & 0.23 & -0.01 \\
-%4 & 0.82 & 0.13 & 0.50 & & 0.73 & 0.10 & 0.08 \\
-%8 & 1.00 & 0.17 & 0.58 & & 0.94 & 0.14 & 0.12 \\
-%16 & 1.01 & 0.18 & 0.59 & & 0.95 & 0.15 & 0.13 \\
-%25 & 1.75 & 1.11 & 0.81 & & 1.69 & 1.05 & 0.19 \\
-%40 & 1.75 & 1.20 & 0.85 & & 1.70 & 1.13 & 0.21 \\
-%70 & 1.76 & 1.26 & 0.86 & & 1.70 & 1.19 & 0.22 \\
+70 & {\cellcolor{darktangerine}} 1.33 & 0.99 & 0.65 & & 1.35 & 0.97 & 0.17 \\
   \bottomrule
 \end{tabular}
 \end{table}}
