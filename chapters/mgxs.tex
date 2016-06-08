@@ -198,7 +198,16 @@ The group-wise scalar flux $\phi_{g}$ is the corollary to its angle dependent co
 \subsection{Spatial Homogenization}
 \label{sec:chap2-space}
 
-Up to this point the \ac{MGXS} have been defined as continuously varying in space. Most deterministic methods for solving the multi-group transport equation discretize space and assume that the material properties are constant across each mesh cell. \textit{Spatial homogenization} is used to to compute volume-averaged cross sections within each mesh cell $i$ with volume $V_{i}$ are defined as:
+Up to this point the \ac{MGXS} have been defined as continuously varying in space. Most deterministic methods solve the multi-group transport equation by discretizing the spatial domain. The following equation introduces an integral over each mesh cell $i$ to each term in the multi-group transport equation:
+
+\begin{dmath}
+\label{eqn:chap1-transport-mg-4}
+\int\displaylimits_{\mathbf{r} \in V_{i}}\left(\mathbf{\Omega} \cdot \nabla \psi_{g}(\mathbf{r},\mathbf{\Omega}) + \Sigma_{t,g}(\mathbf{r})\psi_{g}(\mathbf{r},\mathbf{\Omega})\right)\mathrm{d}\mathbf{r} \;\;\;\; = \;\;\;\;\;
+\int\displaylimits_{\mathbf{r} \in V_{i}}\sum_{g'=1}^{G} \int\displaylimits_{4\pi} \Sigma_{s,g' \rightarrow g}(\mathbf{r},{\mathbf{\Omega'}\rightarrow\mathbf{\Omega}}) \psi_{g}(\mathbf{r},\mathbf{\Omega'}) \mathrm{d}\mathbf{\Omega'} \mathrm{d}\mathbf{r} + 
+\frac{1}{4\pi k_{eff}}\int\displaylimits_{\mathbf{r} \in V_{i}}\sum_{g'=1}^{G} \int\displaylimits_{4\pi} \nu\Sigma_{f,g' \rightarrow g}(\mathbf{r})\psi_{g}(\mathbf{r},\mathbf{\Omega'}) \mathrm{d}\mathbf{\Omega'} \mathrm{d}\mathbf{r}
+\end{dmath}
+
+In practice, most deterministic methods to solve the multi-group transport equation make  the simplifying assumption that the material properties are constant across each mesh cell. Spatial homogenization is used to to compute volume-averaged cross sections within each mesh cell $i$ with volume $V_{i}$ as follows:
 
 \begin{dmath}
 \label{eqn:chap1-sigt-mg-scalar}
@@ -215,7 +224,21 @@ Up to this point the \ac{MGXS} have been defined as continuously varying in spac
 \nu\Sigma_{f,i,g' \rightarrow g} \equiv \frac{\int\displaylimits_{\mathbf{r} \in V_{i}}\int\displaylimits_{E_{g}}^{E_{g-1}} \int\displaylimits_{E_{g'}}^{E_{g'-1}} \nu\Sigma_{f}(\mathbf{r},{E'\rightarrow E})\phi(\mathbf{r},E') \mathrm{d}E'\mathrm{d}E\mathrm{d}\mathbf{r}}{\int\displaylimits_{\mathbf{r} \in V_{i}}\phi_{g'}(\mathbf{r})\mathrm{d}\mathbf{r}}
 \end{dmath}
 
+A variety of discretization schemes may be used to solve the following multi-group transport equation in Eqn.~\ref{eqn:chap1-transport-mg-4}, including the \ac{MOC} and discrete ordinates (S$_N$) methods. For first order discretization schemes in space, the transport equation can be re-written in terms of the volume-averaged group-wise fluxes $\psi_{i,g}$ and the spatially homogenized \ac{MGXS} in each mesh cell and energy group:
+
+\begin{dmath}
+\label{eqn:chap1-transport-mg-5}
+\mathbf{\Omega} \cdot \nabla \psi_{i,g}(\mathbf{\Omega}) + \Sigma_{t,i,g}\psi_{i,g}(\mathbf{\Omega}) \;\;\;\; = \;\;\;\;\;
+\sum_{g'=1}^{G} \int\displaylimits_{4\pi} \Sigma_{s,i,g' \rightarrow g}({\mathbf{\Omega'}\rightarrow\mathbf{\Omega}}) \psi_{i,g}(\mathbf{\Omega'}) \mathrm{d}\mathbf{\Omega'} + 
+\frac{1}{4\pi k_{eff}}\sum_{g'=1}^{G} \int\displaylimits_{4\pi} \nu\Sigma_{f,i,g' \rightarrow g}\psi_{i,g}(\mathbf{\Omega'}) \mathrm{d}\mathbf{\Omega'}
+\end{dmath}
+
+This is the form of the multi-group transport equation solved using the deterministic OpenMOC code in this thesis. 
+
+
 \begin{itemize}[noitemsep]
+  \item fission source in terms of scalar flux
+  \item use $x$ in place of $t$ for general \ac{MGXS}?
   \item equation and figures mapped to variables
   \item tally ``noise'' model
   \item uncertainty propagation equations
@@ -231,80 +254,32 @@ Up to this point the \ac{MGXS} have been defined as continuously varying in spac
 \end{itemize}
 
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Scattering Production}
+\label{sec:chap2-scatt-prod}
+
+Although neutron production is dominated by fission in nuclear reactors, there may also be non-negligible production of neutrons due to scattering multiplicity $(n,xn)$ reactions. Production from scattering is typically accounted for with a factor $\nu_{scatt,g' \rightarrow g}$ which represents the average number of neutrons produced in a scattering reaction. The factor $\nu_{scatt,g' \rightarrow g}$ may be lumped into the scattering matrix $\nu_{scatt,g' \rightarrow g}\Sigma_{s,g' \rightarrow g}$ and substituted directly into the scattering source term in the multi-group transport equation. 
+
+It should be noted that deterministic methods which compute the eigenvalue using the fission production, absorption and leakage rates will fail to capture the scatter production in $\nu_{scatt,g' \rightarrow g}\Sigma_{s,g' \rightarrow g}$.
+In order to account for $(n,xn)$ reactions, the absorption cross section $\Sigma_{a,g}$ must be reduced by $(1-\nu_{scatt,g' \rightarrow g})\Sigma_{s,g' \rightarrow g}$ to preserve neutron balance. Alternatively, $(n,xn)$ reactions will be appropriately accounted for if the eigenvalue is computed as the ratio of successive fission sources.
+
+-note that the eigenvalue is only applied to the fission source term in the equation\\
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Fission Matrix Condensation}
+\label{sec:chap2-fiss-mat}
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Approximations}
 \label{subsec:chap2-approx}
-
-\begin{itemize}
-  \item motivate bias studies in chapter 4
-\end{itemize}
-
-Eqn.~\ref{eqn:chap1-transport-eqn-src} is defined with $\Psi$, $Q$ and $\Sigma^T$ as continuous functions of energy. The first approximation to numerically solve this equation is to discretize the energy domain into distinct \textit{energy groups} $g \in G = \{1, 2, ..., G\}$ where group $g$ spans the continuous range of energies from $E_{g}$ to $E_{g-1}$. This is otherwise known as the \textit{multi-group approximation}. The multi-group form of the Boltzmann equation is presented below:
-
-\begin{equation}
-\label{eqn:chap2-transport-eqn-mg}
-\mathbf{\Omega} \cdot \nabla \Psi_g(\mathbf{r},\mathbf{\mathbf{\Omega}}) + \Sigma^T_{g}(\mathbf{r})\Psi_g(s,\mathbf{\Omega}) = Q_g(\mathbf{r},\mathbf{\Omega})
-\end{equation}
-
-Likewise, the multi-group form of the neutron source (Eqn.~\ref{eqn:chap1-source}) is given by:
-
-\begin{dmath}
-\label{eqn:chap2-source-mg}
-Q_g(\mathbf{r},\mathbf{\Omega}) = \displaystyle\sum\limits_{g'=1}^G \int_{4\pi} \mathrm{d}\mathbf{\Omega'}\Sigma_{g'\rightarrow g}^S(\mathbf{r},{\mathbf{\Omega'}\rightarrow\mathbf{\Omega}}) \Psi_{g'}(\mathbf{r},\mathbf{\Omega'}) + \\ \frac{\chi_{g}(\mathbf{r})}{4\pi k_{eff}} \displaystyle\sum\limits_{g'=1}^G \nu\Sigma_{g'}^F(\mathbf{r}) \int_{4\pi} \mathrm{d}\mathbf{\Omega'} \Psi_{g'}(\mathbf{r},\mathbf{\Omega'})
-\end{dmath}
-
-\begin{equation}
-\label{eqn:moc-theory-condensed-total-xs}
-\Sigma_{g}^T(\mathbf{r}) = \frac{\int_{E_{g}}^{E_{g-1}}\mathrm{d}E'\Sigma^T(\mathbf{r},E')\Psi(\mathbf{r},\mathbf{\Omega},E')}{\int_{E_{g}}^{E_{g-1}}\mathrm{d}E'\Psi(\mathbf{r},\mathbf{\Omega},E')}
-\end{equation}
-
-\begin{equation}
-\label{eqn:moc-theory-condensed-fission-xs}
-\Sigma_{g}^F(\mathbf{r}) = \frac{\int_{E_{g}}^{E_{g-1}}\mathrm{d}E'\Sigma^F(\mathbf{r},E')\Psi(\mathbf{r},\mathbf{\Omega},E')}{\int_{E_{g}}^{E_{g-}1}\mathrm{d}E'\Psi(\mathbf{r},\mathbf{\Omega},E')}
-\end{equation}
-
-\begin{equation}
-\label{eqn:moc-theory-condensed-scatter-xs}
-\Sigma_{g'\rightarrow g}^S(\mathbf{r},\mathbf{\Omega'}\rightarrow \mathbf{\Omega}) = \frac{\int_{E_{g'}}^{E_{g'-1}}\mathrm{d}E'\int_{E_{g}}^{E_{g-1}}\mathrm{d}E''\Sigma^S(\mathbf{r},\mathbf{\Omega'}\rightarrow \mathbf{\Omega},E'\rightarrow E'')\Psi(\mathbf{r},\mathbf{\Omega'},E')}{\int_{E_{g'}}^{E_{g'-1}}\mathrm{d}E'\Psi(\mathbf{r},\mathbf{\Omega'},E')}
-\end{equation}
-
-\begin{equation}
-\label{eqn:moc-theory-condensed-chi}
-\chi_{g'\rightarrow g}(\mathbf{r}) = \frac{\int_{E_{g'}}^{E_{g'-1}}\mathrm{d}E'\int_{E_{g}}^{E_{g-1}}\mathrm{d}E''\chi(\mathbf{r},E'\rightarrow E'')\nu\Sigma^F(\mathbf{r},\mathbf{\Omega},E')\Psi(\mathbf{r},\mathbf{\Omega'},E')}{\int_{E_{g'}}^{E_{g'-1}}\mathrm{d}E'\nu\Sigma^F(\mathbf{r},\mathbf{\Omega},E')\Psi(\mathbf{r},\mathbf{\Omega'},E')}
-\end{equation}
 
 Although \autoref{eqn:moc-theory-condensed-chi} assumes a dependence of $\chi$ on both the energy of the neutron causing fission $g'$ and the fission emission energy group $g$, the former is typically summed over to simplify the multi-group $\chi$ to the following approximation:
 
 \begin{equation}
 \label{eqn:moc-theory-condensed-chi-group}
 \chi_{g}(\mathbf{r}) = \displaystyle\sum\limits_{g=1}^{G}\chi_{g'\rightarrow g}(\mathbf{r})
-\end{equation}
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsubsection{Spatial Discretization}
-\label{subsubsec:chap2-space-discrete}
-
-In addition to the flat source approximation, it is assumed that the material properties are constant across each FSR. The area-averaged cross sections for FSR $i \in \{1, 2, ..., I\}$ with area $A_{i}$ are defined as:
-
-\begin{equation}
-\label{eqn:chap2-area-avg-total-xs}
-\Sigma_{i,g}^{T} = \frac{\int_{\mathbf{r}\in A_{i}}\mathrm{d}\mathbf{r}\Sigma_{g}^T(\mathbf{r})\Phi_{g}(\mathbf{r})}{\int_{\mathbf{r}\in A_{i}}\mathrm{d}\mathbf{r}\Phi_{g}(\mathbf{r})}
-\end{equation}
-
-\begin{equation}
-\label{eqn:chap2-area-avg-fission-xs}
-\Sigma_{i,g}^{F} = \frac{\int_{\mathbf{r}\in A_{i}}\mathrm{d}\mathbf{r}\Sigma_{g}^F(\mathbf{r})\Phi_{g}(\mathbf{r})}{\int_{\mathbf{r}\in A_{i}}\mathrm{d}\mathbf{r}\Phi_{g}(\mathbf{r})}
-\end{equation}
-
-\begin{equation}
-\label{eqn:chap2-area-avg-scatter-xs}
-\Sigma_{i,g'\rightarrow g}^{S} = \frac{\int_{\mathbf{r}\in A_{i}}\mathrm{d}\mathbf{r}\Sigma_{g'\rightarrow g}^S(\mathbf{r})\Phi_{g'}(\mathbf{r})}{\int_{\mathbf{r}\in A_{i}}\mathrm{d}\mathbf{r}\Phi_{g'}(\mathbf{r})}
-\end{equation}
-
-\begin{equation}
-\label{eqn:chap2-area-avg-chi}
-\chi_{i,g} = \frac{\int_{\mathbf{r}\in A_{i}}\mathrm{d}\mathbf{r}\chi_{g}(\mathbf{r})}{\int_{\mathbf{r}\in A_{i}}\mathrm{d}\mathbf{r}}
 \end{equation}
 
 
