@@ -153,7 +153,7 @@ With these definitions of the \ac{MGXS}, the multi-group form of the transport e
 \begin{dmath}
 \label{eqn:chap1-transport-mg-3}
 \mathbf{\Omega} \cdot \nabla \psi_{g}(\mathbf{r},\mathbf{\Omega}) + \Sigma_{t,g}(\mathbf{r},E)\psi_{g}(\mathbf{r},\mathbf{\Omega}) =
-\sum_{g'=1}^{G} \int\displaylimits_{4\pi} \Sigma_{s,g' \rightarrow g}(\mathbf{r},{\mathbf{\Omega'}\rightarrow\mathbf{\Omega}}) \psi_{g}(\mathbf{r},\mathbf{\Omega'}) \mathrm{d}\mathbf{\Omega'} + \frac{1}{4\pi k_{eff}}\sum_{g'=1}^{G} \int\displaylimits_{4\pi} \nu\Sigma_{f,g' \rightarrow g}(\mathbf{r})\psi_{g}(\mathbf{r},\mathbf{\Omega'}) \mathrm{d}\mathbf{\Omega'}
+\sum_{g'=1}^{G} \int\displaylimits_{4\pi} \Sigma_{s,g' \rightarrow g}(\mathbf{r},{\mathbf{\Omega'}\rightarrow\mathbf{\Omega}}) \psi_{g'}(\mathbf{r},\mathbf{\Omega'}) \mathrm{d}\mathbf{\Omega'} + \frac{1}{4\pi k_{eff}}\sum_{g'=1}^{G} \int\displaylimits_{4\pi} \nu\Sigma_{f,g' \rightarrow g}(\mathbf{r})\psi_{g}(\mathbf{r},\mathbf{\Omega'}) \mathrm{d}\mathbf{\Omega'}
 \end{dmath}
 
 Thus far, no approximations have been made in the energy discretization of multi-group transport equation given in Eqn.~\ref{eqn:chap1-transport-mg-3}. However, the expressions for the \ac{MGXS} $\Sigma_{t,g}$, $\Sigma_{s,g' \rightarrow g}$ and $\nu\Sigma_{f,g' \rightarrow g}$ in Eqns.~\Crefrange{eqn:chap1-sigt-mg}{eqn:chap1-nusigf-mg} present a complication since they are dependent on the unknown angular flux as discussed in the following section.
@@ -243,7 +243,7 @@ A variety of discretization schemes may be used to solve the following multi-gro
 \begin{dmath}
 \label{eqn:chap1-transport-mg-4}
 \mathbf{\Omega} \cdot \nabla \psi_{i,g}(\mathbf{\Omega}) + \Sigma_{t,i,g}\psi_{i,g}(\mathbf{\Omega}) \;\;\;\; = \;\;\;\;\;
-\sum_{g'=1}^{G} \int\displaylimits_{4\pi} \Sigma_{s,i,g' \rightarrow g}({\mathbf{\Omega'}\rightarrow\mathbf{\Omega}}) \psi_{i,g}(\mathbf{\Omega'}) \mathrm{d}\mathbf{\Omega'} + 
+\sum_{g'=1}^{G} \int\displaylimits_{4\pi} \Sigma_{s,i,g' \rightarrow g}({\mathbf{\Omega'}\rightarrow\mathbf{\Omega}}) \psi_{i,g'}(\mathbf{\Omega'}) \mathrm{d}\mathbf{\Omega'} + 
 \frac{1}{4\pi k_{eff}}\sum_{g'=1}^{G} \int\displaylimits_{4\pi} \nu\Sigma_{f,i,g' \rightarrow g}\psi_{i,g}(\mathbf{\Omega'}) \mathrm{d}\mathbf{\Omega'}
 \end{dmath}
 
