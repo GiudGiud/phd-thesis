@@ -14,7 +14,6 @@
   \item mention that 1D slab and fuel pin are not equivalent
   \begin{itemize}
     \item need to preserve chord lengths and use isolated slab/pin rather than reflective
-    \item update slab widths for clad and gap and re-run cases
   \end{itemize}
 \end{itemize}
 
@@ -119,7 +118,7 @@ Table~\ref{table:chap4-inf-med-angle} presents the bias $\Delta\rho$ between Ope
 \end{tabular}
 \end{table}
 
-Table~\ref{table:chap4-inf-med-energy} presents the bias $\Delta\rho$ between OpenMC and OpenMOC for a matrix of energy group structures and \ac{FSR} spatial discretizations. The OpenMOC calculations each used 128 azimuthal angles and 0.05 cm track spacing. The eigenvalues vary slightly between energy group structures, but the small deviations are likely due to numerical roundoff error in the MOC calculation.
+Table~\ref{table:chap4-inf-med-energy} presents the bias $\Delta\rho$ between OpenMC and OpenMOC for a matrix of energy group structures and \ac{FSR} spatial discretizations. The OpenMOC calculations each used 128 azimuthal angles and 0.01 cm track spacing. Although the eigenvalues differ by approximately 10 pcm for 1 -- 2 groups, the OpenMOC eigenvalues match the eigenvalues computed analytically from the 1- and 2-group \ac{MGXS} to within 1 pcm. The small $\Delta\rho$ for few groups may be due to numerical roundoff error since the \ac{MGXS} library was tallied in 70 groups in OpenMC and condensed to the coarser group structures with downstream data processing.
 
 \begin{table}[h!]
   \centering
@@ -148,10 +147,6 @@ Table~\ref{table:chap4-inf-med-energy} presents the bias $\Delta\rho$ between Op
   \bottomrule
 \end{tabular}
 \end{table}
-
-\begin{itemize}
-  \item Analytically compute 1- and 2-group keff to see how they compare to results
-\end{itemize}
 
 
 %%%%%%%%%%%%%%%%%%%%
