@@ -221,7 +221,7 @@ A simple slab model was constructed to quantify approximation errors in a 1D het
 \end{tabular}
 \end{table}
 
-The reference eigenvalues computed with continuous energy cross sections in OpenMC are shown in Table~\ref{table:chap4-slab-reference} for both normal anisotropic as well as ``iso-in-lab'' scattering. The reference calculations were computed for 100 batches of 1E7 particles per batch. The reference eigenvalues for the two cases vary by nearly 500 pcm due to anisotropies resulting from thermal scattering in the moderator. The \texttt{openc.mgxs} module was used to compute 70-group libraries of $\Sigma^T_g$, $\Sigma^{Tr}_g$, $\nu\Sigma^F_g$, $\nu_s\Sigma^S_{gg'}$ and $\chi_g$ from OpenMC tallies. An installation of OpenMOC compiled with double precision floating point arithmetic was used for each deterministic simulation. In each calculation, OpenMOC was converged to a criterion of 1E-7 on the energy-integrated fission source.
+The reference eigenvalues computed with continuous energy cross sections in OpenMC are shown in Table~\ref{table:chap4-slab-reference} for both normal anisotropic as well as ``iso-in-lab'' scattering. The reference calculations were computed for 100 batches of 1E7 particles per batch. The reference eigenvalues for the two cases vary by nearly 75 pcm due to anisotropies resulting from thermal scattering in the moderator. The \texttt{openc.mgxs} module was used to compute 70-group libraries of $\Sigma^T_g$, $\Sigma^{Tr}_g$, $\nu\Sigma^F_g$, $\nu_s\Sigma^S_{gg'}$ and $\chi_g$ from OpenMC tallies. An installation of OpenMOC compiled with double precision floating point arithmetic was used for each deterministic simulation. In each calculation, OpenMOC was converged to a criterion of 1E-7 on the energy-integrated fission source.
 
 \begin{table}[h!]
   \centering
@@ -235,7 +235,7 @@ The reference eigenvalues computed with continuous energy cross sections in Open
   {\bf Anisotropic} &
   {\bf Isotropic in Lab} \\
   \midrule
-  1.06513 $\pm$ 0.00003 & 1.05266 $\pm$ 0.00003 \\
+  1.16275 $\pm$ 0.00003 & 1.16202 $\pm$ 0.00003 \\
   \bottomrule
 \end{tabular}
 \end{table}
@@ -266,22 +266,14 @@ Table~\ref{table:chap4-slab-angle} presents the bias $\Delta\rho$ between OpenMC
   & \multicolumn{3}{c}{\cellcolor{carolinablue} \bf Anisotropic} &
   \multicolumn{1}{c}{} &
   \multicolumn{3}{c}{\cellcolor{lightgreen} \bf Isotropic in Lab} \\
-4 & 5624 & 5265 & 5232 & & 6908 & 6549 & 6516 \\
-8 & 4348 & 3902 & 3821 & & 5631 & 5185 & 5103 \\
-16 & 3869 & 3381 & 3335 & & 5152 & 4663 & 4617 \\
-32 & 3398 & 3305 & 3289 & & 4680 & 4586 & 4570 \\
-64 & 3425 & 3297 & 3293 & & 4707 & 4578 & 4575 \\
-128 & 3427 & 3293 & 3293 & & 4708 & 4575 & 4575 \\
-256 & 3432 & 3294 & 3293 & & 4713 & 4575 & 4575 \\
-512 & 3434 & 3293 & 3293 & & 4716 & 4575 & 4575 \\
-%4 & 2338 & 2217 & 2203 & & 2885 & 2764 & 2750 \\
-%8 & 1641 & 1455 & 1418 & & 2187 & 2000 & 1964 \\
-%16 & 1463 & 1201 & 1177 & & 2009 & 1746 & 1721 \\
-%32 & 1203 & 1180 & 1178 & & 1748 & 1725 & 1723 \\
-%64 & 1218 & 1192 & 1197 & & 1763 & 1736 & 1742 \\
-%128 & 1223 & 1198 & 1200 & & 1767 & 1743 & 1744 \\
-%256 & 1224 & 1200 & 1200 & & 1769 & 1745 & 1745 \\
-%512 & 1223 & 1200 & 1201 & & 1768 & 1744 & 1745 \\
+4 & 731 & 731 & 731 & & 840 & 840 & 840 \\
+8 & 472 & 339 & 323 & & 581 & 448 & 432 \\
+16 & 282 & 166 & 149 & & 390 & 275 & 257 \\
+32 & 154 & 135 & 131 & & 262 & 243 & 239 \\
+64 & 158 & 146 & 156 & & 266 & 254 & 265 \\
+128 & 165 & 164 & 169 & & 274 & 272 & 278 \\
+256 & 161 & 171 & 172 & & 270 & 280 & 280 \\
+512 & 165 & 170 & 172 & & 274 & 278 & 281 \\
   \bottomrule
 \end{tabular}
 \end{table}
@@ -312,56 +304,32 @@ Table~\ref{table:chap4-slab-energy} presents the bias $\Delta\rho$ between OpenM
   {\bf 16$\times$} \\
   \midrule
   \multicolumn{6}{c}{\cellcolor{carolinablue} \bf Anisotropic $\left(\Sigma^T_g\right)$} \\
-1 & 1215 & 1295 & 1342 & 1359 & 1364 \\
-2 & 2265 & 922 & -213 & -712 & -872 \\
-4 & 2362 & 980 & -199 & -718 & -890 \\
-8 & 2980 & 1294 & -246 & -956 & -1197 \\
-16 & 3164 & 1423 & -200 & -961 & -1221 \\
-25 & 3159 & 1436 & -180 & -940 & -1200 \\
-40 & 3259 & 1501 & -168 & -960 & -1233 \\
-70 & 3293 & 1526 & -159 & -963 & {\cellcolor{darktangerine}} -1242 \\
-%1 & 459 & 473 & 480 & 482 & 482 \\
-%2 & 789 & 183 & -214 & -367 & -412 \\
-%4 & 802 & 212 & -181 & -334 & -385 \\
-%8 & 1067 & 271 & -298 & -527 & -604 \\
-%16 & 1156 & 313 & -304 & -555 & -639 \\
-%25 & 1129 & 307 & -299 & -547 & -633 \\
-%40 & 1173 & 326 & -308 & -570 & -661 \\
-%70 & 1191 & 336 & -309 & -577 & {\cellcolor{darktangerine}} -670 \\
+1 & 70 & 71 & 72 & 72 & 71 \\
+2 & 106 & -16 & -80 & -101 & -85 \\
+4 & 112 & -2 & -63 & -90 & -87 \\
+8 & 158 & -13 & -109 & -149 & -160 \\
+16 & 182 & -9 & -117 & -162 & -173 \\
+25 & 146 & -37 & -143 & -190 & -201 \\
+40 & 155 & -40 & -155 & -205 & -217 \\
+70 & 164 & -38 & -156 & -208 & {\cellcolor{darktangerine}} -221 \\
   \multicolumn{6}{c}{\cellcolor{lightgreen} \bf Anisotropic $\left(\Sigma^{Tr}_g\right)$} \\
-1 & 1126 & 1165 & 1185 & 1191 & 1192 \\
-2 & 2620 & 1624 & 915 & 634 & 551 \\
-4 & 2556 & 1516 & 778 & 484 & 386 \\
-8 & 3135 & 1766 & 681 & 220 & 65 \\
-16 & 3325 & 1898 & 727 & 214 & 40 \\
-25 & 3262 & 1837 & 666 & 146 & -23 \\
-40 & 3350 & 1888 & 664 & 111 & -71 \\
-70 & 3384 & 1910 & 667 & 101 & {\cellcolor{darktangerine}} -86 \\
-%1 & 404 & 410 & 413 & 413 & 413 \\
-%2 & 1113 & 716 & 488 & 406 & 385 \\
-%4 & 932 & 526 & 291 & 206 & 169 \\
-%8 & 1151 & 533 & 140 & -10 & -68 \\
-%16 & 1243 & 575 & 133 & -39 & -104 \\
-%25 & 1130 & 467 & 26 & -152 & -210 \\
-%40 & 1162 & 470 & 1 & -191 & -255 \\
-%70 & 1178 & 476 & -6 & -204 & {\cellcolor{darktangerine}} -270 \\
+1 & 87 & 88 & 88 & 88 & 87 \\
+2 & 285 & 211 & 175 & 167 & 189 \\
+4 & 188 & 113 & 75 & 51 & 63 \\
+8 & 211 & 81 & 13 & -23 & -24 \\
+16 & 232 & 82 & 1 & -39 & -40 \\
+25 & 148 & -1 & -89 & -123 & -128 \\
+40 & 148 & -14 & -111 & -149 & -156 \\
+70 & 153 & -16 & -118 & -158 & {\cellcolor{darktangerine}} -166 \\
   \multicolumn{6}{c}{\cellcolor{lightsalmonpink} \bf Isotropic in Lab $\left(\Sigma^T_g\right)$} \\
-1 & 1464 & 1548 & 1598 & 1617 & 1622 \\
-2 & 3660 & 2305 & 1159 & 654 & 493 \\
-4 & 3619 & 2228 & 1040 & 517 & 343 \\
-8 & 4339 & 2648 & 1103 & 390 & 149 \\
-16 & 4516 & 2770 & 1143 & 380 & 120 \\
-25 & 4456 & 2731 & 1112 & 352 & 91 \\
-40 & 4544 & 2785 & 1115 & 323 & 49 \\
-70 & 4575 & 2806 & 1120 & 316 & {\cellcolor{darktangerine}} 37 \\
-%1 & 585 & 599 & 606 & 609 & 609 \\
-%2 & 1467 & 856 & 455 & 300 & 254 \\
-%4 & 1352 & 757 & 360 & 206 & 154 \\
-%8 & 1686 & 887 & 316 & 86 & 9 \\
-%16 & 1778 & 932 & 313 & 61 & -23 \\
-%25 & 1686 & 863 & 255 & 7 & -79 \\
-%40 & 1721 & 873 & 239 & -24 & -115 \\
-%70 & 1735 & 879 & 234 & -34 & {\cellcolor{darktangerine}} -127 \\
+1 & 132 & 134 & 135 & 135 & 133 \\
+2 & 289 & 167 & 102 & 81 & 97 \\
+4 & 226 & 112 & 50 & 24 & 26 \\
+8 & 296 & 126 & 30 & -10 & -21 \\
+16 & 321 & 131 & 22 & -22 & -33 \\
+25 & 258 & 75 & -31 & -78 & -88 \\
+40 & 262 & 67 & -47 & -98 & -110 \\
+70 & 272 & 71 & -48 & -100 & {\cellcolor{darktangerine}} -113 \\
   \bottomrule
 \end{tabular}
 \end{table}
@@ -390,56 +358,32 @@ Table~\ref{table:chap4-slab-space} presents the bias $\Delta\rho$ for a matrix o
   {\bf 16$\times$} \\
   \midrule
   \multicolumn{6}{c}{\cellcolor{carolinablue} \bf Anisotropic $\left(\Sigma^T_g\right)$} \\
-1 & 1217 & 1351 & 1390 & 1431 & 1398 \\
-2 & 2268 & 918 & -230 & -704 & -892 \\
-4 & 2365 & 1023 & -105 & -599 & -769 \\
-8 & 2982 & 1290 & -249 & -944 & -1187 \\
-16 & 3167 & 1408 & -217 & -970 & -1236 \\
-25 & 3161 & 1427 & -191 & -939 & -1202 \\
-40 & 3261 & 1497 & -171 & -953 & -1228 \\
-70 & 3296 & 1525 & -158 & -950 & {\cellcolor{darktangerine}} -1228 \\
-%1 & 452 & 472 & 448 & 495 & 454 \\
-%2 & 782 & 170 & -233 & -354 & -437 \\
-%4 & 795 & 231 & -131 & -260 & -333 \\
-%8 & 1060 & 267 & -288 & -504 & -596 \\
-%16 & 1149 & 306 & -300 & -540 & -636 \\
-%25 & 1122 & 305 & -294 & -530 & -616 \\
-%40 & 1166 & 326 & -300 & -552 & -643 \\
-%70 & 1184 & 339 & -298 & -558 & {\cellcolor{darktangerine}} -648 \\
-  \multicolumn{6}{c}{\cellcolor{lightgreen} \bf Anisotropic $\left(\Sigma^{Tr}_g\right)$} \\
-1 & 1129 & 1201 & 1230 & 1253 & 1244 \\
-2 & 2623 & 1635 & 949 & 692 & 608 \\
-4 & 2559 & 1577 & 892 & 634 & 539 \\
-8 & 3138 & 1764 & 689 & 244 & 86 \\
-16 & 3328 & 1886 & 709 & 205 & 26 \\
-25 & 3265 & 1826 & 649 & 139 & -34 \\
-40 & 3353 & 1882 & 653 & 109 & -78 \\
-70 & 3387 & 1907 & 663 & 105 & {\cellcolor{darktangerine}} -88 \\
-%1 & 397 & 419 & 439 & 449 & 444 \\
-%2 & 1106 & 728 & 527 & 451 & 429 \\
-%4 & 925 & 555 & 358 & 282 & 248 \\
-%8 & 1144 & 533 & 158 & 14 & -44 \\
-%16 & 1236 & 566 & 137 & -33 & -98 \\
-%25 & 1123 & 451 & 20 & -155 & -212 \\
-%40 & 1155 & 454 & -8 & -199 & -262 \\
-%70 & 1171 & 461 & -13 & -211 & {\cellcolor{darktangerine}} -276 \\
+1 & 68 & 107 & 111 & 78 & 113 \\
+2 & 104 & 9 & -63 & -107 & -82 \\
+4 & 110 & 10 & -36 & -80 & -71 \\
+8 & 156 & -11 & -86 & -144 & -141 \\
+16 & 180 & -10 & -97 & -158 & -153 \\
+25 & 144 & -39 & -127 & -180 & -173 \\
+40 & 153 & -42 & -138 & -196 & -190 \\
+70 & 162 & -39 & -142 & -202 & {\cellcolor{darktangerine}} -198 \\
+ \multicolumn{6}{c}{\cellcolor{lightgreen} \bf Anisotropic $\left(\Sigma^{Tr}_g\right)$} \\
+1 & 85 & 90 & 103 & 92 & 98 \\
+2 & 283 & 213 & 189 & 167 & 201 \\
+4 & 186 & 120 & 96 & 62 & 86 \\
+8 & 209 & 84 & 26 & -19 & -11 \\
+16 & 230 & 84 & 11 & -40 & -31 \\
+25 & 146 & -3 & -82 & -125 & -118 \\
+40 & 147 & -16 & -107 & -152 & -147 \\
+70 & 152 & -19 & -114 & -161 & {\cellcolor{darktangerine}} -156 \\
   \multicolumn{6}{c}{\cellcolor{lightsalmonpink} \bf Isotropic in Lab $\left(\Sigma^T_g\right)$} \\
-1 & 1466 & 1622 & 1692 & 1682 & 1686 \\
-2 & 3662 & 2264 & 1123 & 601 & 451 \\
-4 & 3621 & 2261 & 1116 & 625 & 464 \\
-8 & 4341 & 2637 & 1094 & 383 & 144 \\
-16 & 4518 & 2751 & 1118 & 352 & 93 \\
-25 & 4458 & 2715 & 1097 & 341 & 82 \\
-40 & 4547 & 2776 & 1110 & 322 & 49 \\
-70 & 4577 & 2799 & 1118 & 318 & {\cellcolor{darktangerine}} 39 \\
-%1 & 585 & 608 & 589 & 589 & 590 \\
-%2 & 1467 & 852 & 449 & 272 & 238 \\
-%4 & 1352 & 786 & 421 & 261 & 218 \\
-%8 & 1686 & 894 & 334 & 92 & 20 \\
-%16 & 1777 & 932 & 318 & 55 & -26 \\
-%25 & 1685 & 863 & 251 & 3 & -77 \\
-%40 & 1721 & 873 & 236 & -25 & -110 \\
-%70 & 1735 & 881 & 235 & -32 & {\cellcolor{darktangerine}} -122 \\
+1 & 139 & 97 & 127 & 162 & 140 \\
+2 & 296 & 145 & 100 & 90 & 88 \\
+4 & 233 & 125 & 77 & 61 & 51 \\
+8 & 304 & 136 & 45 & 7 & -9 \\
+16 & 329 & 139 & 38 & -6 & -23 \\
+25 & 266 & 83 & -11 & -54 & -70 \\
+40 & 270 & 75 & -29 & -73 & -89 \\
+70 & 280 & 76 & -33 & -81 & {\cellcolor{darktangerine}} -93 \\
   \bottomrule
 \end{tabular}
 \end{table}
@@ -772,22 +716,14 @@ As illustrated in the table, both U-238 capture and total absorption rate error 
   {\bf \cellcolor{lightgray} Range A} &
   {\bf \cellcolor{lightgray} Range B} &
   {\bf \cellcolor{lightgray} Range C} \\
-1 & -0.03 & -0.03 & -0.03 & & -1.58 & -1.58 & -1.58 \\
-2 & 1.17 & 1.17 & 0.66 & & 1.03 & 1.03 & -0.43 \\
-4 & -0.18 & 0.23 & -0.07 & & -0.17 & 0.22 & -0.44 \\
-8 & 0.20 & 0.53 & 0.13 & & 0.23 & 0.52 & -0.14 \\
-16 & 0.25 & 0.58 & 0.16 & & 0.28 & 0.57 & -0.09 \\
-25 & 0.61 & 0.35 & 0.21 & & 0.64 & 0.37 & -0.08 \\
-40 & 0.63 & 0.44 & 0.25 & & 0.66 & 0.45 & -0.05 \\
-70 & {\cellcolor{darktangerine}} 0.64 & 0.48 & 0.26 & & 0.67 & 0.49 & -0.04 \\
-%1 & -0.02 & -0.02 & -0.02 & & -0.52 & -0.52 & -0.52 \\
-%2 & 0.48 & 0.48 & 0.30 & & 0.45 & 0.45 & -0.21 \\
-%4 & 0.19 & 0.00 & 0.11 & & 0.20 & 0.00 & -0.20 \\
-%8 & 0.46 & 0.17 & 0.26 & & 0.49 & 0.17 & -0.03 \\
-%16 & 0.50 & 0.21 & 0.28 & & 0.53 & 0.21 & 0.01 \\
-%25 & 1.05 & 0.65 & 0.45 & & 1.07 & 0.67 & 0.06 \\
-%40 & 1.07 & 0.75 & 0.49 & & 1.09 & 0.76 & 0.09 \\
-%70 & {\cellcolor{darktangerine}} 1.07 & 0.81 & 0.50 & & 1.10 & 0.82 & 0.10 \\
+1 & -0.02 & -0.02 & -0.02 & & -0.11 & -0.11 & -0.11 \\
+2 & 0.05 & 0.05 & 0.03 & & 0.05 & 0.05 & -0.07 \\
+4 & 0.11 & -0.08 & 0.06 & & 0.12 & -0.08 & -0.05 \\
+8 & 0.19 & -0.03 & 0.11 & & 0.22 & -0.03 & 0.00 \\
+16 & 0.21 & -0.02 & 0.12 & & 0.23 & -0.02 & 0.02 \\
+25 & 0.58 & 0.36 & 0.26 & & 0.61 & 0.37 & 0.06 \\
+40 & 0.58 & 0.43 & 0.30 & & 0.61 & 0.44 & 0.07 \\
+70 & {\cellcolor{darktangerine}} 0.59 & 0.46 & 0.30 & & 0.61 & 0.47 & 0.08 \\
   \multicolumn{8}{c}{\cellcolor{lightgreen} \bf 2D Fuel Pin} \\
   & {\bf \cellcolor{lightgray} Range A} &
   {\bf \cellcolor{lightgray} Range B} &
