@@ -51,16 +51,16 @@ opencg_water = openmc.opencg_compatible.get_opencg_material(borated_water)
 # Create bounding surfaces
 # Preserve the moderator-to-fuel ratio with the fuel pin
 min_x = opencg.XPlane(boundary='reflective', x0=0.0)
-max_x = opencg.XPlane(boundary='reflective', x0=1.69632)
+max_x = opencg.XPlane(boundary='reflective', x0=0.62992)
 min_y = opencg.YPlane(boundary='reflective', y0=0.0)
 max_y = opencg.YPlane(boundary='reflective', y0=0.62992)
 min_z = opencg.ZPlane(boundary='reflective', z0=0.0)
 max_z = opencg.ZPlane(boundary='reflective', z0=0.62992)
 
 # Create material interfacial surfaces
-mid1 = opencg.XPlane(surface_id=1, boundary='interface', x0=0.39218)
-mid2 = opencg.XPlane(surface_id=2, boundary='interface', x0=0.40808)
-mid3 = opencg.XPlane(surface_id=3, boundary='interface', x0=0.53330)
+mid1 = opencg.XPlane(surface_id=1, boundary='interface', x0=0.19177)
+mid2 = opencg.XPlane(surface_id=2, boundary='interface', x0=0.19954)
+mid3 = opencg.XPlane(surface_id=3, boundary='interface', x0=0.26063)
 
 # Create a Universe to encapsulate the 1D slab
 slab_universe = opencg.Universe(name='1D slab')
