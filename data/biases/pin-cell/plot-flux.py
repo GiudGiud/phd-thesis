@@ -166,12 +166,24 @@ openmoc_fluxes = np.insert(openmoc_fluxes, 0, openmoc_fluxes[:,0], axis=1)
 ###############################################################################
 
 # Compute volume-weighted FSR fluxes across the geometry
-vol_avg_openmc_fluxes = np.nansum(openmc_fluxes * volumes[:, np.newaxis], axis=0)
-vol_avg_openmoc_fluxes = np.nansum(openmoc_fluxes * volumes[:, np.newaxis], axis=0)
+vol_avg_openmc_fluxes = np.nansum(openmc_fluxes[fuel_indices,:] *
+                                  volumes[fuel_indices, np.newaxis], axis=0)
+vol_avg_openmoc_fluxes = np.nansum(openmoc_fluxes[fuel_indices,:] *
+                                   volumes[fuel_indices, np.newaxis], axis=0)
 
 # Normalize the fluxes to the mean
 vol_avg_openmc_fluxes /= np.mean(vol_avg_openmc_fluxes)
 vol_avg_openmoc_fluxes /= np.mean(vol_avg_openmoc_fluxes)
+
+# Compute lethargy for each group
+lethargies = np.ediff1d(np.log(group_edges))
+
+# Normalize the fluxes to the mean
+vol_avg_openmc_fluxes[1:] /= lethargies
+vol_avg_openmoc_fluxes[1:] /= lethargies
+
+vol_avg_openmc_fluxes[0] = vol_avg_openmc_fluxes[1]
+vol_avg_openmoc_fluxes[0] = vol_avg_openmoc_fluxes[1]
 
 plt.plot(group_edges, vol_avg_openmc_fluxes,
          drawstyle='steps', color='r', linewidth=2)
@@ -181,7 +193,7 @@ plt.plot(group_edges, vol_avg_openmoc_fluxes,
 plt.yscale('log')
 plt.xscale('log')
 plt.xlabel('Energy [eV]', fontsize=12)
-plt.ylabel('Flux', fontsize=12)
+plt.ylabel('Flux / Lethargy', fontsize=12)
 plt.xlim((min(group_edges), max(group_edges)))
 plt.legend(['OpenMC', 'OpenMOC'], loc='best', fontsize=12)
 plt.savefig('vol-avg-flux.png', bbox_inches='tight')
