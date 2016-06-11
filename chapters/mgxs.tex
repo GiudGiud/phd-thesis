@@ -15,8 +15,6 @@ The field of reactor physics is concerned with computing the distribution of nuc
 \mathcal{R}_{x}(\mathbf{r},\mathbf{\Omega},E) = \Sigma_{x}(\mathbf{r},E) \psi(\mathbf{r},\mathbf{\Omega},E)
 \end{dmath}
 
-%-integrate out angle, introduce scalar flux\\
-
 The macroscopic cross section $\Sigma$ is proportional to a quantity known as the microscopic cross section $\sigma_{x}$. The microscopic cross section is a property of a particular nuclide and is measured experimentally for various reaction types which include fission $f$, radiative capture $\gamma$ and scattering $s$\footnote{Scattering as defined here includes both inelastic and elastic scattering.}. The macroscopic cross section is then the sum of the microscopic cross sections of each nuclide $i$ weighted by its number density $N_{i}$:
 
 \begin{dmath}
@@ -25,8 +23,6 @@ The macroscopic cross section $\Sigma$ is proportional to a quantity known as th
 \end{dmath}
 
 The microscopic cross section is highly dependent on the energy of the incoming neutron. As illustrated in see Fig.~\ref{fig:chap2-u238-xs}, a cross section may vary several orders of magnitude near resonances which may span only a few eV. The probability of some interactions also depend on other properties which characterize the output channel of the reaction. For example, the scattering cross section $\sigma_{s}$ depends on the energy and direction of motion of the outgoing neutron. The macroscopic cross section varies in space when nuclide densities depend on the position within a heterogeneous system.
-
-%The fission cross section $\sigma_{f}$ also depends on the energy of the emitted neutron(s) but the outgoing angular distribution is typically treated as isotropic.
 
 \begin{figure}[H]
   \centering
@@ -103,33 +99,33 @@ Unlike the fission source, the scattering source cannot be treated as isotropic 
 
 \begin{dmath}
 \label{eqn:chap2-flux-moment}
-\psi_{\ell}^{m}(\mathbf{r},E) = \displaystyle\int\limits_{4\pi} \psi(\mathbf{r},\mathbf{\Omega'},E)Y_{\ell}^{m}(\mathbf{\Omega'}) \mathrm{d}\Omega'
+\psi_{\ell}^{m}(\mathbf{r},E) = \displaystyle\int\limits_{4\pi} \psi(\mathbf{r},\mathbf{\Omega},E)Y_{\ell}^{m}(\mathbf{\Omega}) \mathrm{d}\mathbf{\Omega}
 \end{dmath}
 
 Similarly, the angular dependence of the scattering cross section $\Sigma_{s}(\mathbf{r},{\mathbf{\Omega'}\rightarrow\mathbf{\Omega}},{E'\rightarrow E})$ can be treated with a basis function expansion. The scattering cross section can be simplified without approximation by noting that the distribution over the change in direction $\mu$ is independent of the incoming angle $\mathbf{\Omega'}$ in scattering collisions. The re-parametrized scattering cross section $\Sigma_{s}(\mathbf{r},\mu,E'\rightarrow E)$ can then expanded as an infinite sum of Legendre polynomials $P_{\ell}(\mu)$ and scattering moments $\Sigma_{s,\ell}$:
 
 \begin{dmath}
 \label{eqn:chap2-scatt-expand}
-\Sigma_{s}(\mathbf{r},\mu,E'\rightarrow E) = \displaystyle\sum\limits_{\ell=0}^{\infty} \frac{2\ell+1}{2} \displaystyle\sum\limits_{\ell=0}^{\infty}\Sigma_{s,\ell}(\mathbf{r},{E'\rightarrow E})P_{\ell}(\mu)
+\Sigma_{s}(\mathbf{r},\mu,E'\rightarrow E) = \displaystyle\sum\limits_{\ell=0}^{\infty} \frac{2\ell+1}{2} \Sigma_{s,\ell}(\mathbf{r},{E'\rightarrow E})P_{\ell}(\mu)
 \end{dmath}
 
 \begin{dmath}
 \label{eqn:chap2-scatt-moment}
-\Sigma_{s,\ell}(\mathbf{r},E'\rightarrow E) = \displaystyle\int\limits_{-1}^{1} \Sigma_{s}(\mathbf{r},\mu',{E\rightarrow E})P_{\ell}(\mu')\mathrm{d}\mu'
+\Sigma_{s,\ell}(\mathbf{r},E'\rightarrow E) = \displaystyle\int\limits_{-1}^{1} \Sigma_{s}(\mathbf{r},\mu,{E\rightarrow E})P_{\ell}(\mu)\mathrm{d}\mu
 \end{dmath}
 
-The expansions of the angular flux in spherical harmonics and scattering cross section in Legendre polynomials may be substituted into the scattering kernel. The spherical harmonic addition theorem can be applied to simplify the kernel in terms of only the real components $R_{l}^{m}$ of the spherical harmonics:
+The expansions of the angular flux in spherical harmonics and scattering cross section in Legendre polynomials may be substituted into the scattering kernel. The spherical harmonic addition theorem can be applied to simplify the kernel in terms of only the real components $R_{\ell}^{m}$ of the spherical harmonics:
 
 \begin{dmath}
 \label{eqn:chap2-scatt-src-expand}
-\int\displaylimits_{0}^{\infty}\int\displaylimits_{4\pi} \Sigma_{s}(\mathbf{r},{\mathbf{\Omega'}\rightarrow\mathbf{\Omega}},{E'\rightarrow E}) \psi(\mathbf{r},\mathbf{\Omega'},E') \mathrm{d}\mathbf{\Omega'} \mathrm{d}E' = \int\displaylimits_{0}^{\infty} \displaystyle\sum\limits_{\ell=0}^{\infty} \frac{2\ell+1}{4\pi} \displaystyle\sum\limits_{m=-\ell}^{\ell} \Sigma_{s,\ell}(\mathbf{r},{E'\rightarrow E}) \psi_{\ell}^{m}(\mathbf{r},E')R_{l}^{m}(\mathbf{\Omega}) \mathrm{d}E'
+\int\displaylimits_{0}^{\infty}\int\displaylimits_{4\pi} \Sigma_{s}(\mathbf{r},{\mathbf{\Omega'}\rightarrow\mathbf{\Omega}},{E'\rightarrow E}) \psi(\mathbf{r},\mathbf{\Omega'},E') \mathrm{d}\mathbf{\Omega'} \mathrm{d}E' = \int\displaylimits_{0}^{\infty} \displaystyle\sum\limits_{\ell=0}^{\infty} \frac{2\ell+1}{4\pi} \Sigma_{s,\ell}(\mathbf{r},{E'\rightarrow E}) \psi_{\ell}^{m}(\mathbf{r},E')R_{\ell}^{m}(\mathbf{\Omega}) \mathrm{d}E'
 \end{dmath}
 
 No approximation has been made to the scattering kernel's angular dependence in Eqn.~\ref{eqn:chap2-scatt-src-expand}. In practice, however, the expansion is truncated to a finite number of spherical harmonics $L$ to make the transport equation computationally tractable. The transport equation with the scattering source expansion and isotropic fission source is then:
 
 \begin{dmath}
 \label{eqn:chap2-transport-ce-2}
-\mathbf{\Omega} \cdot \nabla \psi(\mathbf{r},\mathbf{\Omega},E) + \Sigma_{t}(\mathbf{r},E)\psi(\mathbf{r},\mathbf{\Omega},E) = \int\displaylimits_{0}^{\infty} \displaystyle\sum\limits_{\ell=0}^{\infty} \frac{2\ell+1}{4\pi} \displaystyle\sum\limits_{m=-\ell}^{\ell} \Sigma_{s,\ell}(\mathbf{r},{E'\rightarrow E}) \psi_{\ell}^{m}(\mathbf{r},E')R_{l}^{m}(\mathbf{\Omega}) \mathrm{d}E' + \frac{1}{4\pi k_{eff}}\int\displaylimits_{0}^{\infty}\int\displaylimits_{4\pi} \nu\Sigma_{f}(\mathbf{r},{E'\rightarrow E})\psi(\mathbf{r},\mathbf{\Omega'},E') \mathrm{d}\mathbf{\Omega'} \mathrm{d}E'
+\mathbf{\Omega} \cdot \nabla \psi(\mathbf{r},\mathbf{\Omega},E) + \Sigma_{t}(\mathbf{r},E)\psi(\mathbf{r},\mathbf{\Omega},E) = \int\displaylimits_{0}^{\infty} \displaystyle\sum\limits_{\ell=0}^{L} \frac{2\ell+1}{4\pi} \displaystyle\sum\limits_{m=-\ell}^{\ell} \Sigma_{s,\ell}(\mathbf{r},{E'\rightarrow E}) \psi_{\ell}^{m}(\mathbf{r},E')R_{\ell}^{m}(\mathbf{\Omega}) \mathrm{d}E' + \frac{1}{4\pi k_{eff}}\int\displaylimits_{0}^{\infty}\int\displaylimits_{4\pi} \nu\Sigma_{f}(\mathbf{r},{E'\rightarrow E})\psi(\mathbf{r},\mathbf{\Omega'},E') \mathrm{d}\mathbf{\Omega'} \mathrm{d}E'
 \end{dmath}
 
 
@@ -137,44 +133,110 @@ No approximation has been made to the scattering kernel's angular dependence in 
 \subsection{Transport Correction}
 \label{subsec:chap2-transport-corr}
 
-\cite{bell1970nuclear}\cite{macfarlane2000njoy}\cite{bell1967transport}
+The scattering matrix and flux moments substantially increase the memory and storage requirements for calculation schemes which model anisotropic scattering with a finite moment expansion as introduced in Sec.~\ref{subsec:chap2-scatt-src}. In practice, many methods attempt to implicitly model anisotropic scattering effects with transport corrected cross sections. These approaches seek to define a correction which makes the transport equation with isotropic scattering in the laboratory system ($L=0$) equivalent to the general equation with anisotropic scattering. Various transport corrections are thoroughly detailed in \cite{macfarlane1993transx,macfarlane2000njoy}, both of which follow~\cite{bell1967transport}. This section summarizes the analysis in~\cite{hebert2009applied}.
 
-The scattering matrix and flux moments substantially increase the memory and storage requirements for calculation schemes which model anisotropic scattering with a finite moment expansion as introduced in Sec.~\ref{subsec:chap2-scatt-src}. One common approach to implicitly model anisotropic scattering is with transport corrected cross sections~\cite{bell1967transport,macfarlane1993transx,macfarlane2000njoy}. This approach first substitutes the angular flux expansion in Eqns.~\Crefrange{eqn:chap2-flux-expand}{eqn:chap2-flux-moment} into the total collision term in the transport equation:
+First, consider a truncated form of the Legendre polynomial expansion of the scattering cross section $\Sigma_{s}(\mathbf{r},\mu,E'\rightarrow E)$ in Eqn.~\ref{eqn:chap2-scatt-expand}:
 
 \begin{dmath}
-\label{eqn:chap2-tot-expand}
-\Sigma_{t}(\mathbf{r},E)\psi(\mathbf{r},\mathbf{\Omega},E) = \displaystyle\sum\limits_{\ell=0}^{\infty} \frac{2\ell+1}{4\pi} \displaystyle\sum\limits_{m=-\ell}^{\ell} \Sigma_{t,\ell}^{m}(\mathbf{r},E) \psi_{\ell}^{m}(\mathbf{r},E)Y_{l}^{m}(\mathbf{\Omega})
+\label{eqn:chap2-scatt-expand-truncate}
+\Sigma_{s}(\mathbf{r},\mu,E'\rightarrow E) = \displaystyle\sum\limits_{\ell=0}^{\infty} \frac{2\ell+1}{2} \Sigma_{s,\ell}(\mathbf{r},{E'\rightarrow E})P_{\ell}(\mu) \approx \displaystyle\sum\limits_{\ell=0}^{L} \frac{2\ell+1}{2} \hat{\Sigma}_{s,\ell}(\mathbf{r},{E'\rightarrow E})P_{\ell}(\mu) + \Delta\Sigma_{tr}(\mathbf{r},{E'\rightarrow E})\delta(\mu-1)
+\end{dmath}
+
+where $\hat{\Sigma}_{s,\ell}$ is a modified form of the scattering moment $\Sigma_{s,\ell}$ and $\Delta\Sigma_{tr}$ is a transport correction term. These coefficients are defined such that the Legendre moments of the scattering cross section in Eqn.~\ref{eqn:chap2-scatt-moment} are preserved for $0 \le \ell \le L+1$:
+
+\begin{dmath}
+\label{eqn:chap2-scatt-moment-preserve}
+\Sigma_{s,\ell}(\mathbf{r},E'\rightarrow E) = \displaystyle\int\limits_{-1}^{1} \Sigma_{s}(\mathbf{r},\mu,{E\rightarrow E})P_{\ell}(\mu)\mathrm{d}\mu \approx \displaystyle\int\limits_{-1}^{1} \displaystyle\sum\limits_{\ell'=0}^{L} \frac{2\ell'+1}{2} \hat{\Sigma}_{s,\ell'}(\mathbf{r},{E'\rightarrow E})P_{\ell'}(\mu)P_{\ell}(\mu)\mathrm{d}\mu + \displaystyle\int\limits_{-1}^{1} \Delta\Sigma_{tr}(\mathbf{r},{E'\rightarrow E})\delta(\mu-1)P_{\ell}(\mu)\mathrm{d}\mu
+\end{dmath}
+
+The following equalities follow from the identity $P_{\ell}(1) = 1$ and the orthogonality relation of the Legendre polynomial basis set:
+
+\begin{dmath}
+\label{eqn:chap2-sigsl}
+\hat{\Sigma}_{s,\ell}(\mathbf{r},{E'\rightarrow E}) + \Delta\Sigma_{tr}(\mathbf{r},{E'\rightarrow E}) = \Sigma_{s,\ell}(\mathbf{r},{E'\rightarrow E})
 \end{dmath}
 
 \begin{dmath}
-\label{eqn:chap2-tot-moment}
-\Sigma_{t,\ell}^{m}(\mathbf{r},E) = \frac{\Sigma_{t}(\mathbf{r},E)\psi_{\ell}^{m}(\mathbf{r},E)}{\psi_{\ell}^{m}(\mathbf{r},E)}
+\label{eqn:chap2-delta-transport}
+\Delta\Sigma_{tr}(\mathbf{r},{E'\rightarrow E}) = \Sigma_{s,L+1}(\mathbf{r},{E'\rightarrow E})
 \end{dmath}
 
-The expanded total collision term in Eqn.~\ref{eqn:chap2-tot-expand} can be moved to the right hand side of Eqn.~\ref{eqn:chap2-transport-ce-2}, and with some simplifications, incorporated into the scattering kernel expansion. A new free parameter for the transport corrected total cross section $\Sigma_{tr}$ is then added as a reaction rate to each side of the transport equation, where the spatial and energy variables have been dropped for simplicity:
+For isotropic in lab scattering with $L = 0$ the Eqns.~\ref{eqn:chap2-scatt-expand-truncate} and~\ref{eqn:chap2-delta-transport} simplify in terms of the only the zeroth and first order scattering moments:
+
+\begin{dmath}
+\label{eqn:chap2-iso-scatt-kernel-transport}
+\Sigma_{s}(\mathbf{r},\mu,E'\rightarrow E) \approx \frac{1}{2}\left[\Sigma_{s,\ell=0}(\mathbf{r},{E'\rightarrow E}) - \Sigma_{s,\ell=1}(\mathbf{r},{E'\rightarrow E})\right] + \Sigma_{s,\ell=1}(\mathbf{r},{E'\rightarrow E})\delta(\mu-1)
+\end{dmath}
+
+The transport corrected scattering cross section in Eqn.~\ref{eqn:chap2-iso-scatt-kernel-transport} is then substituted into the transport equation in Eqn.~\ref{eqn:chap2-transport-ce-2} with an isotropic scattering kernel and rearranged to produce:
 
 \begin{dmath}
 \label{eqn:chap2-transport-ce-3}
-\mathbf{\Omega} \cdot \nabla \psi + \Sigma_{tr}\psi = \int\displaylimits_{0}^{\infty} \displaystyle\sum\limits_{\ell=0}^{L} \frac{2\ell+1}{4\pi} \displaystyle\sum\limits_{m=-\ell}^{\ell} \left(\Sigma_{s,\ell} - \left(\Sigma_{t,\ell}^{m} - \Sigma_{tr}\right)\delta_{E',E}\right) \psi_{\ell}^{m}R_{l}^{m}(\mathbf{\Omega}) \mathrm{d}E' + \frac{1}{4\pi k_{eff}}\int\displaylimits_{0}^{\infty}\int\displaylimits_{4\pi} \nu\Sigma_{f}\psi \mathrm{d}\mathbf{\Omega'} \mathrm{d}E'
+\mathbf{\Omega} \cdot \nabla \psi(\mathbf{r},\mathbf{\Omega},E) + \Sigma_{t}(\mathbf{r},E)\psi(\mathbf{r},\mathbf{\Omega},E) - \frac{1}{4\pi}\int\displaylimits_{0}^{\infty} \int\displaylimits_{4\pi} \Sigma_{s,\ell=1}(\mathbf{r},{E'\rightarrow E})\psi(\mathbf{r},\mathbf{\Omega'},E')\mathrm{d}\mathbf{\Omega'}\mathrm{d}E' = \frac{1}{4\pi} \int\displaylimits_{0}^{\infty} \int\displaylimits_{4\pi} \left[\Sigma_{s,\ell=0}(\mathbf{r},{E'\rightarrow E}) - \Sigma_{s,\ell=1}(\mathbf{r},{E'\rightarrow E})\right] \psi(\mathbf{r},\mathbf{\Omega'},E') \mathrm{d}\mathbf{\Omega'}\mathrm{d}E' + \frac{1}{4\pi k_{eff}}\int\displaylimits_{0}^{\infty}\int\displaylimits_{4\pi} \nu\Sigma_{f}(\mathbf{r},{E'\rightarrow E})\psi(\mathbf{r},\mathbf{\Omega'},E') \mathrm{d}\mathbf{\Omega'} \mathrm{d}E'
 \end{dmath}
 
-The scattering kernel expansion has been truncated to order $L$ and the variable $\delta_{E',E}$ is the Kronecker delta function. A variety of forms for the transport cross section $\Sigma_{tr}$ are extensively discussed in the literature. One of the most commonly used versions of $\Sigma_{tr}$ is known as the \textit{in-scatter approximation}~\cite{yamamoto2008simplified}. In the case of isotropic scattering where $L = 0$, the in-scatter approximation is defined as the total cross section with a current-weighted correction term based on $\Sigma_{s,\ell=1}$:
+For the case of an isotropic scattering kernel, the transport correction term $\Delta\Sigma_{tr}(\mathbf{r},E)$ can be defined and lumped into new transport corrected total and scattering cross sections $\hat{\Sigma}_{t}$ and $\hat{\Sigma}_{s,\ell=0}$ as follows:
+
+\begin{dmath}
+\label{eqn:chap2-transport-xs}
+\Delta\Sigma_{tr}(\mathbf{r},E) = \frac{\int\displaylimits_{0}^{\infty}\int\displaylimits_{4\pi} \Sigma_{s,\ell=1}(\mathbf{r},{E'\rightarrow E})\psi(\mathbf{r},\mathbf{\Omega'},E')\mathrm{d}\mathbf{\Omega}' \mathrm{d}E'}{\psi(\mathbf{r},\mathbf{\Omega},E)}
+\end{dmath}
+
+\begin{dmath}
+\label{eqn:chap2-transpot-corr-tot-x}
+\hat{\Sigma}_{t}(\mathbf{r},E) = \Sigma_{t}(\mathbf{r},E) - \Delta\Sigma_{tr}(\mathbf{r},E)
+\end{dmath}
+
+\begin{dmath}
+\label{eqn:chap2-transpot-corr-tot-x}
+\hat{\Sigma}_{s,\ell=0}(\mathbf{r},E) = \Sigma_{s,\ell=0}(\mathbf{r},{E'\rightarrow E}) - \Delta\Sigma_{tr}(\mathbf{r},E)\delta(E'-E)
+\end{dmath}
+
+This definition of the transport correction is termed the \textit{in-scatter approximation} in the literature~\cite{yamamoto2008simplified}. Finally, the transport equation in Eqn.~\ref{eqn:chap2-transport-ce-3} can be simplified with the substitution of the corrected total and scattering cross sections:
+
+\begin{dmath}
+\label{eqn:chap2-transport-ce-4}
+\mathbf{\Omega} \cdot \nabla \psi(\mathbf{r},\mathbf{\Omega},E) + \hat{\Sigma}_{t}(\mathbf{r},E)\psi(\mathbf{r},\mathbf{\Omega},E) = \frac{1}{4\pi} \int\displaylimits_{0}^{\infty} \int\displaylimits_{4\pi} \hat{\Sigma}_{s,\ell=0}(\mathbf{r},{E'\rightarrow E}) \psi(\mathbf{r},\mathbf{\Omega'},E') \mathrm{d}\mathbf{\Omega'}\mathrm{d}E' + \frac{1}{4\pi k_{eff}}\int\displaylimits_{0}^{\infty}\int\displaylimits_{4\pi} \nu\Sigma_{f}(\mathbf{r},{E'\rightarrow E})\psi(\mathbf{r},\mathbf{\Omega'},E') \mathrm{d}\mathbf{\Omega'} \mathrm{d}E'
+\end{dmath}
+
+%The angular flux expansion can be substituted into the total collision terminto the total collision term in the transport equation:
+
+%\begin{dmath}
+%\label{eqn:chap2-tot-expand}
+%\Sigma_{t}(\mathbf{r},E)\psi(\mathbf{r},\mathbf{\Omega},E) = \displaystyle\sum\limits_{\ell=0}^{\infty} \frac{2\ell+1}{4\pi} \displaystyle\sum\limits_{m=-\ell}^{\ell} \Sigma_{t,\ell}^{m}(\mathbf{r},E) \psi_{\ell}^{m}(\mathbf{r},E)Y_{l}^{m}(\mathbf{\Omega})
+%\end{dmath}
+
+%\begin{dmath}
+%\label{eqn:chap2-tot-moment}
+%\Sigma_{t,\ell}^{m}(\mathbf{r},E) = \frac{\Sigma_{t}(\mathbf{r},E)\psi_{\ell}^{m}(\mathbf{r},E)}{\psi_{\ell}^{m}(\mathbf{r},E)}
+%\end{dmath}
+
+%model scattering as isotropic in the laboratory system (equivalent to truncating the scattering kernel with $L = 0$) and define a transport correction which makes the transport equation equivalent to one with anisotropic scattering
+
+%The expanded total collision term in Eqn.~\ref{eqn:chap2-tot-expand} can be moved to the right hand side of Eqn.~\ref{eqn:chap2-transport-ce-2}, and with some simplifications, incorporated into the scattering kernel expansion. A new free parameter for the transport corrected total cross section $\Sigma_{tr}$ is then added as a reaction rate to each side of the transport equation, where the spatial and energy variables have been dropped for simplicity:
+
+%\begin{dmath}
+%\label{eqn:chap2-transport-ce-3}
+%\mathbf{\Omega} \cdot \nabla \psi + \Sigma_{tr}\psi = \int\displaylimits_{0}^{\infty} \displaystyle\sum\limits_{\ell=0}^{L} \frac{2\ell+1}{4\pi} \displaystyle\sum\limits_{m=-\ell}^{\ell} \left(\Sigma_{s,\ell} - \left(\Sigma_{t,\ell}^{m} - \Sigma_{tr}\right)\delta_{E',E}\right) \psi_{\ell}^{m}R_{\ell}^{m}(\mathbf{\Omega}) \mathrm{d}E' + \frac{1}{4\pi k_{eff}}\int\displaylimits_{0}^{\infty}\int\displaylimits_{4\pi} \nu\Sigma_{f}\psi \mathrm{d}\mathbf{\Omega'} \mathrm{d}E'
+%\end{dmath}
+
+%The scattering kernel expansion has been truncated to order $L$ and the variable $\delta_{E',E}$ is the Kronecker delta function. A variety of forms for the transport cross section $\Sigma_{tr}$ are extensively discussed in the literature. One of the most commonly used versions of $\Sigma_{tr}$ is known as the \textit{in-scatter approximation}~\cite{yamamoto2008simplified}. In the case of isotropic scattering where $L = 0$, the in-scatter approximation is defined as the total cross section with a current-weighted correction term based on $\Sigma_{s,\ell=1}$:
 
 %This form is Each of these forms are presented here for the case of isotropic scattering where $L = 0$, as is a common scenario in many deterministic transport codes.
 
-\begin{dmath}
-\label{eqn:chap2-transport-in-scatt-curr}
-\Sigma_{tr}(\mathbf{r},E) \equiv \Sigma_{t}(\mathbf{r},E) - \frac{\int\limits_{0}^{\infty}\Sigma_{s,\ell=1}(\mathbf{r},{E'\rightarrow E})\psi_{1}(\mathbf{r},E')\mathrm{d}E'}{\psi_{1}(\mathbf{r},E)}
-\end{dmath}
+%\begin{dmath}
+%\label{eqn:chap2-transport-in-scatt-curr}
+%\Sigma_{tr}(\mathbf{r},E) \equiv \Sigma_{t}(\mathbf{r},E) - \frac{\int\limits_{0}^{\infty}\Sigma_{s,\ell=1}(\mathbf{r},{E'\rightarrow E})\psi_{1}(\mathbf{r},E')\mathrm{d}E'}{\psi_{1}(\mathbf{r},E)}
+%\end{dmath}
 
-Since it is generally impractical to compute the neutron current \textit{a priori}, the first moment of the flux -- known as the scalar flux $\phi$ -- is more commonly used to weight the correction term:
+%Since it is generally impractical to compute the neutron current \textit{a priori}, the first moment of the flux -- known as the scalar flux $\phi$ -- is more commonly used to weight the correction term:
 
 %In-scatter approximation with scalar flux weighting - make the approximation that weighting with the current $\psi_{1}$ is akin to weighting with the scalar flux $\psi_{0}$:
 
-\begin{dmath}
-\label{eqn:chap2-transport-in-scatt-flux}
-\Sigma_{tr}(\mathbf{r},E) \equiv \Sigma_{t}(\mathbf{r},E) - \frac{\int\limits_{0}^{\infty}\Sigma_{s,\ell=1}(\mathbf{r},{E'\rightarrow E})\psi_{0}(\mathbf{r},E')\mathrm{d}E'}{\psi_{0}(\mathbf{r},E)}
-\end{dmath}
+%\begin{dmath}
+%\label{eqn:chap2-transport-in-scatt-flux}
+%\Sigma_{tr}(\mathbf{r},E) \equiv \Sigma_{t}(\mathbf{r},E) - \frac{\int\limits_{0}^{\infty}\Sigma_{s,\ell=1}(\mathbf{r},{E'\rightarrow E})\psi_{0}(\mathbf{r},E')\mathrm{d}E'}{\psi_{0}(\mathbf{r},E)}
+%\end{dmath}
 
 %Out-scatter approximation:
 
@@ -190,17 +252,17 @@ Since it is generally impractical to compute the neutron current \textit{a prior
 %\end{itemize}
 
 
-Although some deterministic transport codes explicitly treat the anisotropy of the scattering source with a finite moment expansion, it is common for many methods to assume isotropic scattering and model the first term in the expansion in terms of the scalar neutron flux $\phi$:
+%Although some deterministic transport codes explicitly treat the anisotropy of the scattering source with a finite moment expansion, it is common for many methods to assume isotropic scattering and model the first term in the expansion in terms of the scalar neutron flux $\phi$:
 
-\begin{dmath}
-\label{eqn:chap2-scatt-src-iso}
-\int\displaylimits_{0}^{\infty}\int\displaylimits_{4\pi} \Sigma_{s}(\mathbf{r},{\mathbf{\Omega'}\rightarrow\mathbf{\Omega}},{E'\rightarrow E}) \psi(\mathbf{r},\mathbf{\Omega'},E') \mathrm{d}\mathbf{\Omega'} \mathrm{d}E' \approx \frac{1}{4\pi} \int\displaylimits_{0}^{\infty} \Sigma_{s}(\mathbf{r},{E'\rightarrow E}) \psi_{0}(\mathbf{r},E') = \frac{1}{4\pi} \int\displaylimits_{0}^{\infty} \Sigma_{s,0}(\mathbf{r},{E'\rightarrow E}) \phi(\mathbf{r},E') \mathrm{d}E'
-\end{dmath}
+%\begin{dmath}
+%\label{eqn:chap2-scatt-src-iso}
+%\int\displaylimits_{0}^{\infty}\int\displaylimits_{4\pi} \Sigma_{s}(\mathbf{r},{\mathbf{\Omega'}\rightarrow\mathbf{\Omega}},{E'\rightarrow E}) \psi(\mathbf{r},\mathbf{\Omega'},E') \mathrm{d}\mathbf{\Omega'} \mathrm{d}E' \approx \frac{1}{4\pi} \int\displaylimits_{0}^{\infty} \Sigma_{s}(\mathbf{r},{E'\rightarrow E}) \psi_{0}(\mathbf{r},E') = \frac{1}{4\pi} \int\displaylimits_{0}^{\infty} \Sigma_{s,0}(\mathbf{r},{E'\rightarrow E}) \phi(\mathbf{r},E') \mathrm{d}E'
+%\end{dmath}
 
-\begin{dmath}
-\label{eqn:chap2-source-scalar-flux}
-\phi(\mathbf{r},E) = \int\displaylimits_{4\pi}\psi(\mathbf{r},\mathbf{\Omega'},E) \mathrm{d}\Omega'
-\end{dmath}
+%\begin{dmath}
+%\label{eqn:chap2-source-scalar-flux}
+%\phi(\mathbf{r},E) = \int\displaylimits_{4\pi}\psi(\mathbf{r},\mathbf{\Omega'},E) \mathrm{d}\Omega'
+%\end{dmath}
 
 
 
@@ -416,19 +478,6 @@ This is the form of the multi-group transport equation solved using the determin
   \item mention that this intro is agnostic to the method used to solve the transport eqn.
    \item mention recent work to use MC for MGXS (chap. 3 of nelson's thesis)
    \item figure 2.2 from adam's thesis to describe typical approach
-\end{itemize}
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Approximations}
-\label{subsec:chap2-approx}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsubsection{Isotropic Scattering}
-\label{subsubsec:chap2-iso-scatter}
-
-\begin{itemize}
-  \item mention ``iso-in-lab'' feature in OpenMC
 \end{itemize}
 
 
