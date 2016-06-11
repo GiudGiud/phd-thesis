@@ -1,12 +1,14 @@
-\chapter{Multi-Group Transport Theory}
+\chapter{Approximations in Multi-Group Transport Theory}
 \label{chap:mgxs}
+
+This chapter presents an overview of many of the approximations made by methods which solve the multi-group form of the neutron transport equation. This chapter begins by reviewing the neutron transport equation in its most general form in Sec.~\ref{sec:chap2-background}. The remaining sections of this chapter present simplifications to the angular (Sec.~\ref{sec:chap2-approx-angle}), energy (Sec.~\ref{sec:chap2-approx-energy}) and spatial dependence (Sec.~\ref{sec:chap2-approx-space}) of the equation. The approximations introduced here are not specific to a particular approach for solving the transport equation and may be employed in either stochastic or deterministic methods. Sec.~\ref{sec:chap2-mgxs-mg} concludes with a discussion of how these approximations present challenges for accurate \ac{MGXS} generation.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Background}
 \label{sec:chap2-background}
 
-The field of reactor physics is concerned with computing the distribution of nuclear reaction rates throughout a nuclear reactor core. Nuclear reaction rates are dependent on two fundamental quantities: the density of neutrons and the probability of interaction. The angular neutron flux $\psi(\mathbf{r},\mathbf{\Omega},E)$ models the neutron density\footnote{Unlike the common definition of flux used in other areas of science and engineering, the angular flux $\psi$ is the product of the volume density and speed of neutrons in phase space.} and is dependent on a neutron's spatial position $\mathbf{r}$, direction of motion $\mathbf{\Omega}$ and energy $E$\footnote{This thesis focuses on steady-state calculations and time dependence is neglected for simplicity.}$^{,}$\footnote{Vector-valued quantities are expressed in boldface font.}. The macroscopic cross section $\Sigma_{x}(\mathbf{r},E)$ is defined as the probability of interaction $x$ per unit of length travelled by a neutron at some position and energy. A reaction rate $\mathcal{R}_{x}$ can be simply computed as the product of the angular flux and cross section:
+The field of reactor physics is concerned with computing the distribution of nuclear reaction rates throughout a nuclear reactor core. Nuclear reaction rates are dependent on two fundamental quantities: the density of neutrons and the probability of interaction. The angular neutron flux $\psi(\mathbf{r},\mathbf{\Omega},E)$ models the neutron density\footnote{Unlike the common definition of flux used in other areas of science and engineering, the angular flux $\psi$ is the product of the volume density and speed of neutrons in phase space.} as the path length traveled by neutrons per unit volume and is dependent on a neutron's spatial position $\mathbf{r}$, direction of motion $\mathbf{\Omega}$ and energy $E$\footnote{This thesis focuses on steady-state calculations and time dependence is neglected for simplicity.}$^{,}$\footnote{Vector-valued quantities are expressed in boldface font.}. The macroscopic cross section $\Sigma_{x}(\mathbf{r},E)$ is defined as the probability of interaction $x$ per unit of length travelled by a neutron at some position and energy. A reaction rate $\mathcal{R}_{x}$ can be simply computed as the product of the angular flux and cross section:
 
 \begin{dmath}
 \label{eqn:chap2-rxn-rates}
@@ -44,14 +46,16 @@ The first term on the left hand side of the equation represents the streaming of
 
 \begin{dmath}
 \label{eqn:chap2-source}
-Q(\mathbf{r},\mathbf{\Omega},E) = \frac{1}{k_{eff}}\int\displaylimits_{0}^{\infty}\int\displaylimits_{4\pi} \nu\Sigma_{f}(\mathbf{r},{\Omega'\rightarrow \Omega},{E'\rightarrow E})\psi(\mathbf{r},\mathbf{\Omega'},E') \mathrm{d}\mathbf{\Omega'} \mathrm{d}E'
+Q(\mathbf{r},\mathbf{\Omega},E) = \frac{1}{k_{eff}}\int\displaylimits_{0}^{\infty}\int\displaylimits_{4\pi} \nu\Sigma_{f}(\mathbf{r},{\mathbf{\Omega'}\rightarrow \mathbf{\Omega}},{E'\rightarrow E})\psi(\mathbf{r},\mathbf{\Omega'},E') \mathrm{d}\mathbf{\Omega'} \mathrm{d}E'
 \end{dmath}
 
-The $\nu\Sigma_{f}$ cross section is the probability of neutrons of energy $E$ and angle $\Omega$ resulting from fission at $E'$ and $\Omega'$. The eigenvalue $k_{eff}$ of a critical system represents the multiplication of neutrons from fission and balances neutron sources with losses due to absorption and leakage.
+The fission production cross section $\nu\Sigma_{f}$ represents the probability of neutrons of emitted at energy $E$ and angle $\mathbf{\Omega}$ resulting from fission events precipitated by neutrons at $E'$ and $\mathbf{\Omega'}$. The eigenvalue $k_{eff}$ of a critical system represents the multiplication of neutrons from fission and forces balance between neutron sources and losses due to absorption and leakage.
 
-A solution for the neutron flux must computed from the transport equation. The accurate determination of the reaction rate distribution is primarily challenged by  the complicated energy structure of the cross sections. In addition, the distribution of neutrons in \ac{LWRs} spans 11 orders of magnitude from a few MeV at birth from fission emission to death by absorption at energies which approach 0 eV. As a result, analytical solutions to Eqn.~\ref{eqn:chap2-transport-ce} are intractable without significant simplifying assumptions.
+A solution for the neutron flux must computed from the transport equation. The accurate determination of the reaction rate distribution is primarily challenged by  the complicated energy structure of the cross sections. In addition, the distribution of neutrons in \ac{LWRs} spans 11 orders of magnitude from a few MeV at birth from fission emission to death by absorption at energies approaching 10$^{-5}$ eV. As a result, analytical solutions to Eqn.~\ref{eqn:chap2-transport-ce} are intractable without significant simplifying assumptions.
 
-Instead, numerical simulation is used to solve the transport equation for the flux. Monte Carlo techniques may be employed to exactly treat the energy dependence in Eqn.~\ref{eqn:chap2-transport-ce}\footnote{The treatment is only as exact as the uncertainties in measured nuclear cross section data will permit.}, but are computationally burdensome and impractical for routine nuclear reactor analysis. Although space and angle may be discretized using standard techniques for the solution of PDEs, special treatment must be given to the angular and energy variables as discussed in the following sections.
+Instead, numerical simulation is used to solve the transport equation for the flux. Monte Carlo may be employed to exactly treat the energy dependence in Eqn.~\ref{eqn:chap2-transport-ce}\footnote{The treatment is only as exact as the uncertainties in measured nuclear cross section data will permit.}, but it is computationally burdensome and impractical for routine nuclear reactor analysis. Although space and angle may be discretized using standard techniques for the solution of PDEs, special treatment must be given to the energy variable. The following sections introduce approximations used to reduce the dimensionality of the equation to permit tractable multi-group calculations.
+
+%The following sections present standard approximations made in multi-group theory to reduce the dimensionality of the angular, energy and spatial variables 
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -62,7 +66,7 @@ Instead, numerical simulation is used to solve the transport equation for the fl
 \subsection{Isotropic Fission Source}
 \label{subsec:chap2-fiss-src}
 
-The neutrons emitted from fission form a nearly isotropic distribution independent of the energy or angle of the incoming neutron. As a result, the fission production cross section can be approximated as $\nu\Sigma_{f}(\mathbf{r},{\Omega'\rightarrow \Omega},{E'\rightarrow E}) \approx \nu\Sigma_{f}(\mathbf{r},{E'\rightarrow E})$. This permits the fission source in Eqn.~\ref{eqn:chap2-source} to be written as:
+The neutrons emitted from fission form a nearly isotropic distribution independent of the energy or angle of the incoming neutron. As a result, the fission production cross section can be approximated as $\nu\Sigma_{f}(\mathbf{r},{\mathbf{\Omega'}\rightarrow \mathbf{\Omega}},{E'\rightarrow E}) \approx \nu\Sigma_{f}(\mathbf{r},{E'\rightarrow E})$. This permits the fission source in Eqn.~\ref{eqn:chap2-source} to be written as:
 
 \begin{dmath}
 \label{eqn:chap2-source-scalar-flux}
@@ -90,7 +94,7 @@ The isotropic approximation reduces the dimensionality of the fission production
 \subsection{Angular Expansion of the Scattering Kernel}
 \label{subsec:chap2-scatt-src}
 
-Unlike the fission source, the scattering source cannot be treated as isotropic since it is strongly dependent on the relationship between the incoming and outgoing directions of motion. The dimensionality of the scattering source term in the transport equation -- known as the double differential scattering kernel -- is commonly reduced with basis function expansions in angle. The angular flux is first expanded as an infinite sum of spherical harmonic functions $Y_{\ell}^{m}(\mathbf{\Omega})$ and angular flux moments $\psi_{\ell}^{m}$:
+Unlike the fission source, the scattering source cannot be treated as isotropic since it is strongly dependent on the relationship between the incoming and outgoing directions of motion. The dimensionality of the scattering source term in the transport equation -- known as the double differential scattering kernel -- is commonly reduced with basis function expansions in angle~\cite{hebert2009applied, cacuci2010handbook}. The angular flux is first expanded as an infinite sum of spherical harmonic functions $Y_{\ell}^{m}(\mathbf{\Omega})$ and angular flux moments $\psi_{\ell}^{m}$:
 
 \begin{dmath}
 \label{eqn:chap2-flux-expand}
@@ -114,28 +118,28 @@ Similarly, the angular dependence of the scattering cross section $\Sigma_{s}(\m
 \Sigma_{s,\ell}(\mathbf{r},E'\rightarrow E) = \displaystyle\int\limits_{-1}^{1} \Sigma_{s}(\mathbf{r},\mu',{E\rightarrow E})P_{\ell}(\mu')\mathrm{d}\mu'
 \end{dmath}
 
-The expansions of the angular flux in spherical harmonics and scattering cross section in Legendre polynomials may be substituted into the scattering kernel. The spherical harmonic addition theorem can be applied to simplify the kernel in terms of only the real components of the spherical harmonics $R_{l}^{m}$:
+The expansions of the angular flux in spherical harmonics and scattering cross section in Legendre polynomials may be substituted into the scattering kernel. The spherical harmonic addition theorem can be applied to simplify the kernel in terms of only the real components $R_{l}^{m}$ of the spherical harmonics:
 
 \begin{dmath}
 \label{eqn:chap2-scatt-src-expand}
 \int\displaylimits_{0}^{\infty}\int\displaylimits_{4\pi} \Sigma_{s}(\mathbf{r},{\mathbf{\Omega'}\rightarrow\mathbf{\Omega}},{E'\rightarrow E}) \psi(\mathbf{r},\mathbf{\Omega'},E') \mathrm{d}\mathbf{\Omega'} \mathrm{d}E' = \int\displaylimits_{0}^{\infty} \displaystyle\sum\limits_{\ell=0}^{\infty} \frac{2\ell+1}{4\pi} \displaystyle\sum\limits_{m=-\ell}^{\ell} \Sigma_{s,\ell}(\mathbf{r},{E'\rightarrow E}) \psi_{\ell}^{m}(\mathbf{r},E')R_{l}^{m}(\mathbf{\Omega}) \mathrm{d}E'
 \end{dmath}
 
-No approximation has been made to the scattering kernel's angular dependence in Eqn.~\ref{eqn:chap2-scatt-src-expand}. In practice, however, the expansion is truncated to some finite number spherical harmonics $L$ to make the transport equation computationally tractable. The transport equation with the scattering source expansion and the isotropic fission source is then:
+No approximation has been made to the scattering kernel's angular dependence in Eqn.~\ref{eqn:chap2-scatt-src-expand}. In practice, however, the expansion is truncated to a finite number of spherical harmonics $L$ to make the transport equation computationally tractable. The transport equation with the scattering source expansion and isotropic fission source is then:
 
 \begin{dmath}
 \label{eqn:chap2-transport-ce-2}
 \mathbf{\Omega} \cdot \nabla \psi(\mathbf{r},\mathbf{\Omega},E) + \Sigma_{t}(\mathbf{r},E)\psi(\mathbf{r},\mathbf{\Omega},E) = \int\displaylimits_{0}^{\infty} \displaystyle\sum\limits_{\ell=0}^{\infty} \frac{2\ell+1}{4\pi} \displaystyle\sum\limits_{m=-\ell}^{\ell} \Sigma_{s,\ell}(\mathbf{r},{E'\rightarrow E}) \psi_{\ell}^{m}(\mathbf{r},E')R_{l}^{m}(\mathbf{\Omega}) \mathrm{d}E' + \frac{1}{4\pi k_{eff}}\int\displaylimits_{0}^{\infty}\int\displaylimits_{4\pi} \nu\Sigma_{f}(\mathbf{r},{E'\rightarrow E})\psi(\mathbf{r},\mathbf{\Omega'},E') \mathrm{d}\mathbf{\Omega'} \mathrm{d}E'
 \end{dmath}
 
-\cite{bell1970nuclear}\cite{macfarlane2000njoy}\cite{bell1967transport}
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Transport Correction}
 \label{subsec:chap2-transport-corr}
 
-The scattering matrix and flux moments substantially increases the memory and storage requirements for calculation schemes which model anisotropic scattering with a finite moment expansion as introduced in Sec.~\ref{subsec:chap2-scatt-src}. One common approach to implicitly model anisotropic scattering is with transport corrected cross sections. This approach first substitutes the angular flux expansion in Eqns.~\Crefrange{eqn:chap2-flux-expand}{eqn:chap2-flux-moment} into the total collision term in the transport equation:
+\cite{bell1970nuclear}\cite{macfarlane2000njoy}\cite{bell1967transport}
+
+The scattering matrix and flux moments substantially increase the memory and storage requirements for calculation schemes which model anisotropic scattering with a finite moment expansion as introduced in Sec.~\ref{subsec:chap2-scatt-src}. One common approach to implicitly model anisotropic scattering is with transport corrected cross sections~\cite{bell1967transport,macfarlane1993transx,macfarlane2000njoy}. This approach first substitutes the angular flux expansion in Eqns.~\Crefrange{eqn:chap2-flux-expand}{eqn:chap2-flux-moment} into the total collision term in the transport equation:
 
 \begin{dmath}
 \label{eqn:chap2-tot-expand}
@@ -151,29 +155,39 @@ The expanded total collision term in Eqn.~\ref{eqn:chap2-tot-expand} can be move
 
 \begin{dmath}
 \label{eqn:chap2-transport-ce-3}
-\mathbf{\Omega} \cdot \nabla \psi + \Sigma_{tr}\psi = \int\displaylimits_{0}^{\infty} \displaystyle\sum\limits_{\ell=0}^{\infty} \frac{2\ell+1}{4\pi} \displaystyle\sum\limits_{m=-\ell}^{\ell} \left(\Sigma_{s,\ell} - \Sigma_{t,\ell}^{m} + \Sigma_{tr}\right) \psi_{\ell}^{m}R_{l}^{m}(\mathbf{\Omega}) \mathrm{d}E' + \frac{1}{4\pi k_{eff}}\int\displaylimits_{0}^{\infty}\int\displaylimits_{4\pi} \nu\Sigma_{f}\psi \mathrm{d}\mathbf{\Omega'} \mathrm{d}E'
+\mathbf{\Omega} \cdot \nabla \psi + \Sigma_{tr}\psi = \int\displaylimits_{0}^{\infty} \displaystyle\sum\limits_{\ell=0}^{L} \frac{2\ell+1}{4\pi} \displaystyle\sum\limits_{m=-\ell}^{\ell} \left(\Sigma_{s,\ell} - \left(\Sigma_{t,\ell}^{m} - \Sigma_{tr}\right)\delta_{E',E}\right) \psi_{\ell}^{m}R_{l}^{m}(\mathbf{\Omega}) \mathrm{d}E' + \frac{1}{4\pi k_{eff}}\int\displaylimits_{0}^{\infty}\int\displaylimits_{4\pi} \nu\Sigma_{f}\psi \mathrm{d}\mathbf{\Omega'} \mathrm{d}E'
 \end{dmath}
 
-In-scatter approximation with current weighting:
+The scattering kernel expansion has been truncated to order $L$ and the variable $\delta_{E',E}$ is the Kronecker delta function. A variety of forms for the transport cross section $\Sigma_{tr}$ are extensively discussed in the literature. One of the most commonly used versions of $\Sigma_{tr}$ is known as the \textit{in-scatter approximation}~\cite{yamamoto2008simplified}. In the case of isotropic scattering where $L = 0$, the in-scatter approximation is defined as the total cross section with a current-weighted correction term based on $\Sigma_{s,\ell=1}$:
+
+%This form is Each of these forms are presented here for the case of isotropic scattering where $L = 0$, as is a common scenario in many deterministic transport codes.
 
 \begin{dmath}
 \label{eqn:chap2-transport-in-scatt-curr}
 \Sigma_{tr}(\mathbf{r},E) \equiv \Sigma_{t}(\mathbf{r},E) - \frac{\int\limits_{0}^{\infty}\Sigma_{s,\ell=1}(\mathbf{r},{E'\rightarrow E})\psi_{1}(\mathbf{r},E')\mathrm{d}E'}{\psi_{1}(\mathbf{r},E)}
 \end{dmath}
 
-In-scatter approximation with scalar flux weighting - make the approximation that weighting with the current $\psi_{1}$ is akin to weighting with the scalar flux $\psi_{0}$:
+Since it is generally impractical to compute the neutron current \textit{a priori}, the first moment of the flux -- known as the scalar flux $\phi$ -- is more commonly used to weight the correction term:
+
+%In-scatter approximation with scalar flux weighting - make the approximation that weighting with the current $\psi_{1}$ is akin to weighting with the scalar flux $\psi_{0}$:
 
 \begin{dmath}
 \label{eqn:chap2-transport-in-scatt-flux}
 \Sigma_{tr}(\mathbf{r},E) \equiv \Sigma_{t}(\mathbf{r},E) - \frac{\int\limits_{0}^{\infty}\Sigma_{s,\ell=1}(\mathbf{r},{E'\rightarrow E})\psi_{0}(\mathbf{r},E')\mathrm{d}E'}{\psi_{0}(\mathbf{r},E)}
 \end{dmath}
 
-Out-scatter approximation:
+%Out-scatter approximation:
 
-\begin{dmath}
-\label{eqn:chap2-transport-out-scatt}
-\Sigma_{tr}(\mathbf{r},E) \equiv \Sigma_{t}(\mathbf{r},E) - \int\limits_{0}^{\infty}\Sigma_{s,\ell=1}(\mathbf{r},{E'\rightarrow E})\mathrm{d}E'
-\end{dmath}
+%\begin{dmath}
+%\label{eqn:chap2-transport-out-scatt}
+%\Sigma_{tr}(\mathbf{r},E) \equiv \Sigma_{t}(\mathbf{r},E) - \int\limits_{0}^{\infty}%\Sigma_{s,\ell=1}(\mathbf{r},{E'\rightarrow E})\mathrm{d}E'
+%\end{dmath}
+
+%\begin{itemize}[noitemsep]
+%  \item present consistent-p approx.
+%  \item present our form of the transport correction
+%  \item talk about isotropic scattering approx. in deterministic codes
+%\end{itemize}
 
 
 Although some deterministic transport codes explicitly treat the anisotropy of the scattering source with a finite moment expansion, it is common for many methods to assume isotropic scattering and model the first term in the expansion in terms of the scalar neutron flux $\phi$:
@@ -187,19 +201,6 @@ Although some deterministic transport codes explicitly treat the anisotropy of t
 \label{eqn:chap2-source-scalar-flux}
 \phi(\mathbf{r},E) = \int\displaylimits_{4\pi}\psi(\mathbf{r},\mathbf{\Omega'},E) \mathrm{d}\Omega'
 \end{dmath}
-
-
-
-\begin{itemize}[noitemsep]
-  \item follow Nate's thesis pg. 132, 134
-  \item consider Adam's thesis pg. 12-14
-  \item cite NJOY, TRANSX, BHS
-  \item present consistent-p approx.
-  \item present our form of the transport correction
-  \item talk about isotropic scattering approx. in deterministic codes
-\end{itemize}
-
-
 
 
 
