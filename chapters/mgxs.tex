@@ -102,7 +102,7 @@ Unlike the fission source, the scattering source cannot be treated as isotropic 
 \psi_{\ell}^{m}(\mathbf{r},E) = \displaystyle\int\limits_{4\pi} \psi(\mathbf{r},\mathbf{\Omega},E)Y_{\ell}^{m}(\mathbf{\Omega}) \mathrm{d}\mathbf{\Omega}
 \end{dmath}
 
-Similarly, the angular dependence of the scattering cross section $\Sigma_{s}(\mathbf{r},{\mathbf{\Omega'}\rightarrow\mathbf{\Omega}},{E'\rightarrow E})$ can be treated with a basis function expansion. The scattering cross section can be simplified without approximation by noting that the distribution over the change in direction $\mu$ is independent of the incoming angle $\mathbf{\Omega'}$ in scattering collisions. The re-parametrized scattering cross section $\Sigma_{s}(\mathbf{r},\mu,E'\rightarrow E)$ can then expanded as an infinite sum of Legendre polynomials $P_{\ell}(\mu)$ and scattering moments $\Sigma_{s,\ell}$:
+Similarly, the angular dependence of the scattering cross section $\Sigma_{s}(\mathbf{r},{\mathbf{\Omega'}\rightarrow\mathbf{\Omega}},{E'\rightarrow E})$ can be treated with a basis function expansion. The scattering cross section can be simplified without approximation by noting that the distribution over the change in direction $\mu$ is independent of the incoming angle $\mathbf{\Omega'}$ in isotropic media. The re-parametrized scattering cross section $\Sigma_{s}(\mathbf{r},\mu,E'\rightarrow E)$ can then expanded as an infinite sum of Legendre polynomials $P_{\ell}(\mu)$ and scattering moments $\Sigma_{s,\ell}$:
 
 \begin{dmath}
 \label{eqn:chap2-scatt-expand}
@@ -111,7 +111,7 @@ Similarly, the angular dependence of the scattering cross section $\Sigma_{s}(\m
 
 \begin{dmath}
 \label{eqn:chap2-scatt-moment}
-\Sigma_{s,\ell}(\mathbf{r},E'\rightarrow E) = \displaystyle\int\limits_{-1}^{1} \Sigma_{s}(\mathbf{r},\mu,{E\rightarrow E})P_{\ell}(\mu)\mathrm{d}\mu
+\Sigma_{s,\ell}(\mathbf{r},E'\rightarrow E) = \displaystyle\int\limits_{-1}^{1} \Sigma_{s}(\mathbf{r},\mu,{E'\rightarrow E})P_{\ell}(\mu)\mathrm{d}\mu
 \end{dmath}
 
 The expansions of the angular flux in spherical harmonics and scattering cross section in Legendre polynomials may be substituted into the scattering kernel. The spherical harmonic addition theorem can be applied to simplify the kernel in terms of only the real components $R_{\ell}^{m}$ of the spherical harmonics:
@@ -133,7 +133,7 @@ No approximation has been made to the scattering kernel's angular dependence in 
 \subsection{Transport Correction}
 \label{subsec:chap2-transport-corr}
 
-The scattering matrix and flux moments substantially increase the memory and storage requirements for calculation schemes which model anisotropic scattering with a finite moment expansion as introduced in Sec.~\ref{subsec:chap2-scatt-src}. In practice, many methods attempt to implicitly model anisotropic scattering effects with transport corrected cross sections. These approaches seek to define a correction which makes the transport equation with isotropic scattering in the laboratory system ($L=0$) equivalent to the general equation with anisotropic scattering. Various transport corrections are thoroughly detailed in \cite{macfarlane1993transx,macfarlane2000njoy}, both of which follow~\cite{bell1967transport}. This section summarizes the analysis in~\cite{hebert2009applied}.
+The scattering matrix and flux moments substantially increase the memory and storage requirements for calculation schemes which model anisotropic scattering with a finite moment expansion as introduced in Sec.~\ref{subsec:chap2-scatt-src}. In practice, many methods attempt to implicitly model anisotropic scattering effects with transport corrected cross sections. These approaches seek to define a correction which makes the transport equation with isotropic scattering in the laboratory system ($L=0$) equivalent to the general equation with anisotropic scattering. Various transport corrections are thoroughly detailed in \cite{macfarlane1993transx,macfarlane2000njoy}, each of which follow~\cite{bell1967transport}. This section summarizes the analysis in~\cite{hebert2009applied}.
 
 First, consider a truncated form of the Legendre polynomial expansion of the scattering cross section $\Sigma_{s}(\mathbf{r},\mu,E'\rightarrow E)$ in Eqn.~\ref{eqn:chap2-scatt-expand}:
 
@@ -142,7 +142,7 @@ First, consider a truncated form of the Legendre polynomial expansion of the sca
 \Sigma_{s}(\mathbf{r},\mu,E'\rightarrow E) = \displaystyle\sum\limits_{\ell=0}^{\infty} \frac{2\ell+1}{2} \Sigma_{s,\ell}(\mathbf{r},{E'\rightarrow E})P_{\ell}(\mu) \approx \displaystyle\sum\limits_{\ell=0}^{L} \frac{2\ell+1}{2} \hat{\Sigma}_{s,\ell}(\mathbf{r},{E'\rightarrow E})P_{\ell}(\mu) + \Delta\Sigma_{tr}(\mathbf{r},{E'\rightarrow E})\delta(\mu-1)
 \end{dmath}
 
-where $\hat{\Sigma}_{s,\ell}$ is a modified form of the scattering moment $\Sigma_{s,\ell}$ and $\Delta\Sigma_{tr}$ is a transport correction term. These coefficients are defined such that the Legendre moments of the scattering cross section in Eqn.~\ref{eqn:chap2-scatt-moment} are preserved for $0 \le \ell \le L+1$:
+where $\hat{\Sigma}_{s,\ell}$ is a modified form of the scattering moment $\Sigma_{s,\ell}$ and $\Delta\Sigma_{tr}$ is a transport correction term. The Kronecker delta $\delta(\mu-1)$ is used to drive a forward-peaked transport correction. The coefficients $\hat{\Sigma}_{s,\ell}$ and $\Sigma_{s,\ell}$ are defined such that the Legendre moments of the scattering cross section in Eqn.~\ref{eqn:chap2-scatt-moment} are preserved for $0 \le \ell \le L+1$:
 
 \begin{dmath}
 \label{eqn:chap2-scatt-moment-preserve}
@@ -161,25 +161,25 @@ The following equalities follow from the identity $P_{\ell}(1) = 1$ and the orth
 \Delta\Sigma_{tr}(\mathbf{r},{E'\rightarrow E}) = \Sigma_{s,L+1}(\mathbf{r},{E'\rightarrow E})
 \end{dmath}
 
-For isotropic in lab scattering with $L = 0$ the Eqns.~\ref{eqn:chap2-scatt-expand-truncate} and~\ref{eqn:chap2-delta-transport} simplify in terms of the only the zeroth and first order scattering moments:
+For isotropic in lab scattering with $L = 0$ the Eqns.~\ref{eqn:chap2-scatt-expand-truncate} and~\ref{eqn:chap2-delta-transport} simplify in terms of only the zeroth and first order scattering moments:
 
 \begin{dmath}
 \label{eqn:chap2-iso-scatt-kernel-transport}
-\Sigma_{s}(\mathbf{r},\mu,E'\rightarrow E) \approx \frac{1}{2}\left[\Sigma_{s,\ell=0}(\mathbf{r},{E'\rightarrow E}) - \Sigma_{s,\ell=1}(\mathbf{r},{E'\rightarrow E})\right] + \Sigma_{s,\ell=1}(\mathbf{r},{E'\rightarrow E})\delta(\mu-1)
+\Sigma_{s}(\mathbf{r},\mu,E'\rightarrow E) \approx \frac{1}{2}\left[\Sigma_{s,0}(\mathbf{r},{E'\rightarrow E}) - \Sigma_{s,1}(\mathbf{r},{E'\rightarrow E})\right] + \Sigma_{s,1}(\mathbf{r},{E'\rightarrow E})\delta(\mu-1)
 \end{dmath}
 
 The transport corrected scattering cross section in Eqn.~\ref{eqn:chap2-iso-scatt-kernel-transport} is then substituted into the transport equation in Eqn.~\ref{eqn:chap2-transport-ce-2} with an isotropic scattering kernel and rearranged to produce:
 
 \begin{dmath}
 \label{eqn:chap2-transport-ce-3}
-\mathbf{\Omega} \cdot \nabla \psi(\mathbf{r},\mathbf{\Omega},E) + \Sigma_{t}(\mathbf{r},E)\psi(\mathbf{r},\mathbf{\Omega},E) - \frac{1}{4\pi}\int\displaylimits_{0}^{\infty} \int\displaylimits_{4\pi} \Sigma_{s,\ell=1}(\mathbf{r},{E'\rightarrow E})\psi(\mathbf{r},\mathbf{\Omega'},E')\mathrm{d}\mathbf{\Omega'}\mathrm{d}E' = \frac{1}{4\pi} \int\displaylimits_{0}^{\infty} \int\displaylimits_{4\pi} \left[\Sigma_{s,\ell=0}(\mathbf{r},{E'\rightarrow E}) - \Sigma_{s,\ell=1}(\mathbf{r},{E'\rightarrow E})\right] \psi(\mathbf{r},\mathbf{\Omega'},E') \mathrm{d}\mathbf{\Omega'}\mathrm{d}E' + \frac{1}{4\pi k_{eff}}\int\displaylimits_{0}^{\infty}\int\displaylimits_{4\pi} \nu\Sigma_{f}(\mathbf{r},{E'\rightarrow E})\psi(\mathbf{r},\mathbf{\Omega'},E') \mathrm{d}\mathbf{\Omega'} \mathrm{d}E'
+\mathbf{\Omega} \cdot \nabla \psi(\mathbf{r},\mathbf{\Omega},E) + \Sigma_{t}(\mathbf{r},E)\psi(\mathbf{r},\mathbf{\Omega},E) - \frac{1}{4\pi}\int\displaylimits_{0}^{\infty} \int\displaylimits_{4\pi} \Sigma_{s,1}(\mathbf{r},{E'\rightarrow E})\psi(\mathbf{r},\mathbf{\Omega'},E')\mathrm{d}\mathbf{\Omega'}\mathrm{d}E' = \frac{1}{4\pi} \int\displaylimits_{0}^{\infty} \int\displaylimits_{4\pi} \left[\Sigma_{s,0}(\mathbf{r},{E'\rightarrow E}) - \Sigma_{s,1}(\mathbf{r},{E'\rightarrow E})\right] \psi(\mathbf{r},\mathbf{\Omega'},E') \mathrm{d}\mathbf{\Omega'}\mathrm{d}E' + \frac{1}{4\pi k_{eff}}\int\displaylimits_{0}^{\infty}\int\displaylimits_{4\pi} \nu\Sigma_{f}(\mathbf{r},{E'\rightarrow E})\psi(\mathbf{r},\mathbf{\Omega'},E') \mathrm{d}\mathbf{\Omega'} \mathrm{d}E'
 \end{dmath}
 
-For the case of an isotropic scattering kernel, the transport correction term $\Delta\Sigma_{tr}(\mathbf{r},E)$ can be defined and lumped into new transport corrected total and scattering cross sections $\hat{\Sigma}_{t}$ and $\hat{\Sigma}_{s,\ell=0}$ as follows:
+For the case of an isotropic scattering kernel, the transport correction term $\Delta\Sigma_{tr}(\mathbf{r},E)$ can be defined and lumped into new transport corrected total and scattering cross sections $\hat{\Sigma}_{t}$ and $\hat{\Sigma}_{s,0}$ as follows:
 
 \begin{dmath}
 \label{eqn:chap2-transport-xs}
-\Delta\Sigma_{tr}(\mathbf{r},E) = \frac{\int\displaylimits_{0}^{\infty}\int\displaylimits_{4\pi} \Sigma_{s,\ell=1}(\mathbf{r},{E'\rightarrow E})\psi(\mathbf{r},\mathbf{\Omega'},E')\mathrm{d}\mathbf{\Omega}' \mathrm{d}E'}{\psi(\mathbf{r},\mathbf{\Omega},E)}
+\Delta\Sigma_{tr}(\mathbf{r},E) = \frac{\int\displaylimits_{0}^{\infty}\int\displaylimits_{4\pi} \Sigma_{s,1}(\mathbf{r},{E'\rightarrow E})\psi(\mathbf{r},\mathbf{\Omega'},E')\mathrm{d}\mathbf{\Omega}' \mathrm{d}E'}{\psi(\mathbf{r},\mathbf{\Omega},E)}
 \end{dmath}
 
 \begin{dmath}
@@ -189,15 +189,19 @@ For the case of an isotropic scattering kernel, the transport correction term $\
 
 \begin{dmath}
 \label{eqn:chap2-transpot-corr-tot-x}
-\hat{\Sigma}_{s,\ell=0}(\mathbf{r},E) = \Sigma_{s,\ell=0}(\mathbf{r},{E'\rightarrow E}) - \Delta\Sigma_{tr}(\mathbf{r},E)\delta(E'-E)
+\hat{\Sigma}_{s,0}(\mathbf{r},E) = \Sigma_{s,0}(\mathbf{r},{E'\rightarrow E}) - \Delta\Sigma_{tr}(\mathbf{r},E)\delta(E'-E)
 \end{dmath}
 
 This definition of the transport correction is termed the \textit{in-scatter approximation} in the literature~\cite{yamamoto2008simplified}. Finally, the transport equation in Eqn.~\ref{eqn:chap2-transport-ce-3} can be simplified with the substitution of the corrected total and scattering cross sections:
 
 \begin{dmath}
 \label{eqn:chap2-transport-ce-4}
-\mathbf{\Omega} \cdot \nabla \psi(\mathbf{r},\mathbf{\Omega},E) + \hat{\Sigma}_{t}(\mathbf{r},E)\psi(\mathbf{r},\mathbf{\Omega},E) = \frac{1}{4\pi} \int\displaylimits_{0}^{\infty} \int\displaylimits_{4\pi} \hat{\Sigma}_{s,\ell=0}(\mathbf{r},{E'\rightarrow E}) \psi(\mathbf{r},\mathbf{\Omega'},E') \mathrm{d}\mathbf{\Omega'}\mathrm{d}E' + \frac{1}{4\pi k_{eff}}\int\displaylimits_{0}^{\infty}\int\displaylimits_{4\pi} \nu\Sigma_{f}(\mathbf{r},{E'\rightarrow E})\psi(\mathbf{r},\mathbf{\Omega'},E') \mathrm{d}\mathbf{\Omega'} \mathrm{d}E'
+\mathbf{\Omega} \cdot \nabla \psi(\mathbf{r},\mathbf{\Omega},E) + \hat{\Sigma}_{t}(\mathbf{r},E)\psi(\mathbf{r},\mathbf{\Omega},E) = \frac{1}{4\pi} \int\displaylimits_{0}^{\infty} \int\displaylimits_{4\pi} \hat{\Sigma}_{s,0}(\mathbf{r},{E'\rightarrow E}) \psi(\mathbf{r},\mathbf{\Omega'},E') \mathrm{d}\mathbf{\Omega'}\mathrm{d}E' + \frac{1}{4\pi k_{eff}}\int\displaylimits_{0}^{\infty}\int\displaylimits_{4\pi} \nu\Sigma_{f}(\mathbf{r},{E'\rightarrow E})\psi(\mathbf{r},\mathbf{\Omega'},E') \mathrm{d}\mathbf{\Omega'} \mathrm{d}E'
 \end{dmath}
+
+This is the form of the transport equation that will be used throughout the remainder of this chapter. 
+
+%The approximations in energy and space that will be introduced in the following sections are directly applicable to the transport equation with explicit treatment of anisotropic scattering with a moment expansion as given in Eqn.~\ref{eqn:chap2-transport-ce-2}.
 
 %The angular flux expansion can be substituted into the total collision terminto the total collision term in the transport equation:
 
@@ -274,7 +278,7 @@ This definition of the transport correction is termed the \textit{in-scatter app
 \subsection{Energy Discretization}
 \label{subsec:chap2-energy}
 
-The multi-group approach used to solve the transport equation subdivides the neutron's energy into discrete bins known as energy groups. The energy groups are indexed starting at 1 for high energies and ending with $G$ for the lowest energies of interest. An energy group $g \in \left\{1, 2, \ldots, G\right\}$  spans a range of energies from $\left[E_{g}, E_{g-1}\right]$ where $E_{0}$ is the lowest energy under consideration\footnote{Although $E_{0}$ is often taken to be zero, this may not be appropriate in practice since cross sections can only be accurately measured for finite neutron energies.} and $E_{g}$ is the upper bound of group $g$. First, a group-wise angular flux $\psi_{g}$ is defined for each energy group:
+The multi-group approach used to solve the transport equation subdivides the neutron's energy into discrete bins known as energy groups. The energy groups are indexed starting at 1 for high energies and ending with $G$ for the lowest energies of interest. An energy group $g \in \left\{1, 2, \ldots, G\right\}$ spans a range of energies from $\left[E_{g}, E_{g-1}\right]$ where $E_{0}$ is the highest energy under consideration and $E_{g}$ is the upper bound of group $g$\footnote{This convention derives from the fact that neutrons are emitted at high energies from fission and are absorbed at lesser energies in \ac{LWRs}.}. First, a group-wise angular flux $\psi_{g}$ is defined for each energy group:
 
 \begin{dmath}
 \label{eqn:chap2-groupwise-flux}
@@ -283,57 +287,50 @@ The multi-group approach used to solve the transport equation subdivides the neu
 
 %A group-wise scalar flux $\phi_{g}$ can be similarly defined.
 
-Next, the continuous energy transport equation (Eqn.~\ref{eqn:chap2-transport-ce}) with a fission source (Eqn.~\ref{eqn:chap2-source}) can be transformed into its multi-group form by first integrating over each energy group:
+The continuous energy transport equation with isotropic fission and scattering sources and transport corrected cross sections in Eqn.~\ref{eqn:chap2-transport-ce-4} can be transformed into its multi-group form by first integrating over each energy group\footnote{The multi-group approximation with energy discretization may be similarly applied to the transport equation in Eqn.~\ref{eqn:chap2-transport-ce-2} if anisotropic scattering is to be explicitly treated with scattering moments.}:
 
 \begin{dmath}
 \label{eqn:chap2-transport-mg-1}
-\mathbf{\Omega} \cdot \nabla \psi_{g}(\mathbf{r},\mathbf{\Omega}) + \int\displaylimits_{E_{g}}^{E_{g-1}} \Bigg[\Sigma_{t}(\mathbf{r},E)\psi(\mathbf{r},\mathbf{\Omega},E)\Bigg]\mathrm{d}E = \;\;\; \int\displaylimits_{E_{g}}^{E_{g-1}} \Bigg[\sum_{g'=1}^{G} \int\displaylimits_{E_{g'}}^{E_{g'-1}}\int\displaylimits_{4\pi} \Sigma_{s}(\mathbf{r},{\mathbf{\Omega'}\rightarrow\mathbf{\Omega}},{E'\rightarrow E}) \psi(\mathbf{r},\mathbf{\Omega'},E') \mathrm{d}\mathbf{\Omega'} \mathrm{d}E'\Bigg]\mathrm{d}E + 
-\int\displaylimits_{E_{g}}^{E_{g-1}}\Bigg[\frac{1}{4\pi k_{eff}}\sum_{g'=1}^{G} \int\displaylimits_{E_{g'}}^{E_{g'-1}}\int\displaylimits_{4\pi}\nu\Sigma_{f}(\mathbf{r},{E'\rightarrow E})\psi(\mathbf{r},\mathbf{\Omega'},E')\mathrm{d}\mathbf{\Omega'}\mathrm{d}E'\Bigg]\mathrm{d}E
+\mathbf{\Omega} \cdot \nabla \psi_{g}(\mathbf{r},\mathbf{\Omega}) + \int\displaylimits_{E_{g}}^{E_{g-1}} \Bigg[\hat{\Sigma}_{t}(\mathbf{r},E)\psi(\mathbf{r},\mathbf{\Omega},E)\Bigg]\mathrm{d}E = \;\;\; \int\displaylimits_{E_{g}}^{E_{g-1}} \Bigg[\frac{1}{4\pi} \sum_{g'=1}^{G} \int\displaylimits_{E_{g'}}^{E_{g'-1}}\int\displaylimits_{4\pi} \hat{\Sigma}_{s,0}(\mathbf{r},{E'\rightarrow E}) \psi(\mathbf{r},\mathbf{\Omega'},E') \mathrm{d}\mathbf{\Omega'}\mathrm{d}E'\Bigg]\mathrm{d}E + \int\displaylimits_{E_{g}}^{E_{g-1}}\Bigg[\frac{1}{4\pi k_{eff}}\sum_{g'=1}^{G} \int\displaylimits_{E_{g'}}^{E_{g'-1}}\int\displaylimits_{4\pi}\nu\Sigma_{f}(\mathbf{r},{E'\rightarrow E})\psi(\mathbf{r},\mathbf{\Omega'},E')\mathrm{d}\mathbf{\Omega'}\mathrm{d}E'\Bigg]\mathrm{d}E
 \end{dmath}
 
-The integrals in Eqn.~\ref{eqn:chap2-transport-mg-1} over incoming neutron energy in the scattering kernel and fission source are treated as summations of discrete integrals over each incoming energy group. 
-
-
-Although the streaming term is easily expressed in terms of the multi-group flux $\psi_{g}$, the total collision, scattering and fission terms are defined as integral quantities. These three terms can be simplified by multiplying each by unity in the form of $\nicefrac{\psi_{g}}{\psi_{g}}$:
+The integrals over incoming neutron energy in the scattering kernel and fission source in Eqn.~\ref{eqn:chap2-transport-mg-1} are treated as summations of discrete integrals over each incoming energy group. Although the streaming term is easily expressed in terms of the multi-group flux $\psi_{g}$, the total collision, scattering and fission terms are defined as integral quantities in energy. These three terms can be simplified by multiplying each by unity in the form of $\nicefrac{\psi_{g}}{\psi_{g}}$:
 
 \begin{dmath}
 \label{eqn:chap2-transport-mg-2}
-\mathbf{\Omega} \cdot \nabla \psi_{g}(\mathbf{r},\mathbf{\Omega}) + \ddfrac{\int\displaylimits_{E_{g}}^{E_{g-1}} \Sigma_{t}(\mathbf{r},E)\psi(\mathbf{r},\mathbf{\Omega},E)\mathrm{d}E}{\psi_{g}(\mathbf{r},\mathbf{\Omega})}\psi_{g}(\mathbf{r},\mathbf{\Omega}) 
+\mathbf{\Omega} \cdot \nabla \psi_{g}(\mathbf{r},\mathbf{\Omega}) + \left[\frac{\int\displaylimits_{E_{g}}^{E_{g-1}} \hat{\Sigma}_{t}(\mathbf{r},E)\psi(\mathbf{r},\mathbf{\Omega},E)\mathrm{d}E}{\psi_{g}(\mathbf{r},\mathbf{\Omega})}\right]\psi_{g}(\mathbf{r},\mathbf{\Omega}) 
 = \;\;\; 
-\sum_{g'=1}^{G} \ddfrac{\int\displaylimits_{E_{g}}^{E_{g-1}} \int\displaylimits_{E_{g'}}^{E_{g'-1}}\int\displaylimits_{4\pi} \Sigma_{s}(\mathbf{r},{\mathbf{\Omega'}\rightarrow\mathbf{\Omega}},{E'\rightarrow E}) \psi(\mathbf{r},\mathbf{\Omega'},E') \mathrm{d}\mathbf{\Omega'} \mathrm{d}E'}{\psi_{g'}(\mathbf{r},\mathbf{\Omega'})}\psi_{g'}(\mathbf{r},\mathbf{\Omega'})
+\frac{1}{4\pi} \sum_{g'=1}^{G} \left[\frac{\int\displaylimits_{E_{g}}^{E_{g-1}} \int\displaylimits_{E_{g}}^{E_{g-1}} \int\displaylimits_{4\pi} \hat{\Sigma}_{s,0}(\mathbf{r},{E'\rightarrow E}) \psi(\mathbf{r},\mathbf{\Omega'},E') \mathrm{d}\mathbf{\Omega'}\mathrm{d}E'\mathrm{d}E}{\psi_{g'}(\mathbf{r},\mathbf{\Omega})}\right]\psi_{g'}(\mathbf{r},\mathbf{\Omega})
 + 
-\dfrac{1}{4\pi k_{eff}} \sum_{g'=1}^{G} \ddfrac{\int\displaylimits_{E_{g}}^{E_{g-1}} \int\displaylimits_{E_{g'}}^{E_{g'-1}}\int\displaylimits_{4\pi} \nu\Sigma_{f}(\mathbf{r},{E'\rightarrow E})\psi(\mathbf{r},\mathbf{\Omega'},E') \mathrm{d}\mathbf{\Omega'} \mathrm{d}E'\mathrm{d}E}{\psi_{g'}(\mathbf{r},\mathbf{\Omega'})}\psi_{g'}(\mathbf{r},\mathbf{\Omega'})
+\dfrac{1}{4\pi k_{eff}} \sum_{g'=1}^{G} \left[\frac{\int\displaylimits_{E_{g}}^{E_{g-1}} \int\displaylimits_{E_{g'}}^{E_{g'-1}}\int\displaylimits_{4\pi} \nu\Sigma_{f}(\mathbf{r},{E'\rightarrow E})\psi(\mathbf{r},\mathbf{\Omega'},E') \mathrm{d}\mathbf{\Omega'} \mathrm{d}E'\mathrm{d}E}{\psi_{g'}(\mathbf{r},\mathbf{\Omega})}\right]\psi_{g'}(\mathbf{r},\mathbf{\Omega})
 \end{dmath}
 
-The fractional terms in the Eqn.~\ref{eqn:chap2-transport-mg-2} are defined as the \ac{MGXS} for total, scattering and fission production reactions. The \ac{MGXS} are the averages of the corresponding continuous energy cross sections weighted by the angular neutron flux $\psi$ in each energy group. The \ac{MGXS} $\Sigma_{t,g}$, $\Sigma_{s,g' \rightarrow g}$ and $\nu\Sigma_{f,g' \rightarrow g}$ are defined below for completeness:
+The bracketed terms in Eqn.~\ref{eqn:chap2-transport-mg-2} are defined as the \ac{MGXS} for total, scattering and fission production reactions. The \ac{MGXS} are the averages of the corresponding continuous energy cross sections weighted by the angular neutron flux $\psi$ in each energy group. The \ac{MGXS} $\hat{\Sigma}_{t,g}$, $\hat{\Sigma}_{s,0,g' \rightarrow g}$ and $\nu\Sigma_{f,g' \rightarrow g}$ are defined below for completeness:
 
 \begin{dmath}
 \label{eqn:chap2-sigt-mg}
-\Sigma_{t,g}(\mathbf{r},\mathbf{\Omega}) \equiv \frac{\int\displaylimits_{E_{g}}^{E_{g-1}} \Sigma_{t}(\mathbf{r},E)\psi(\mathbf{r},\mathbf{\Omega},E)\mathrm{d}E}{\psi_{g}(\mathbf{r},\mathbf{\Omega})}
+\hat{\Sigma}_{t,g}(\mathbf{r},\mathbf{\Omega}) \equiv \frac{\int\displaylimits_{E_{g}}^{E_{g-1}} \hat{\Sigma}_{t}(\mathbf{r},E)\psi(\mathbf{r},\mathbf{\Omega},E)\mathrm{d}E}{\psi_{g}(\mathbf{r},\mathbf{\Omega})}
 \end{dmath}
 
 \begin{dmath}
 \label{eqn:chap2-sigs-mg}
-\Sigma_{s,g' \rightarrow g}(\mathbf{r},\mathbf{\Omega}) \equiv \frac{\int\displaylimits_{E_{g}}^{E_{g-1}} \int\displaylimits_{E_{g'}}^{E_{g'-1}}\int\displaylimits_{4\pi} \Sigma_{s}(\mathbf{r},{\mathbf{\Omega'}\rightarrow\mathbf{\Omega}},{E'\rightarrow E}) \psi(\mathbf{r},\mathbf{\Omega'},E') \mathrm{d}\mathbf{\Omega'} \mathrm{d}E' \mathrm{d}E} {\psi_{g'}(\mathbf{r},\mathbf{\Omega'})}
+\hat{\Sigma}_{s,0,g' \rightarrow g}(\mathbf{r},\mathbf{\Omega}) \equiv \frac{\int\displaylimits_{E_{g}}^{E_{g-1}} \int\displaylimits_{E_{g'}}^{E_{g'-1}}\int\displaylimits_{4\pi} \hat{\Sigma}_{s,0}(\mathbf{r},{E'\rightarrow E}) \psi(\mathbf{r},\mathbf{\Omega'},E') \mathrm{d}\mathbf{\Omega'} \mathrm{d}E' \mathrm{d}E} {\psi_{g'}(\mathbf{r},\mathbf{\Omega})}
 \end{dmath}
 
 \begin{dmath}
 \label{eqn:chap2-nusigf-mg}
-\nu\Sigma_{f,g' \rightarrow g}(\mathbf{r},\mathbf{\Omega}) \equiv \frac{\int\displaylimits_{E_{g}}^{E_{g-1}} \int\displaylimits_{E_{g'}}^{E_{g'-1}}\int\displaylimits_{4\pi} \nu\Sigma_{f}(\mathbf{r},{E'\rightarrow E})\psi(\mathbf{r},\mathbf{\Omega'},E') \mathrm{d}\mathbf{\Omega'} \mathrm{d}E'\mathrm{d}E}{\psi_{g'}(\mathbf{r},\mathbf{\Omega'})}
+\nu\Sigma_{f,g' \rightarrow g}(\mathbf{r},\mathbf{\Omega}) \equiv \frac{\int\displaylimits_{E_{g}}^{E_{g-1}} \int\displaylimits_{E_{g'}}^{E_{g'-1}}\int\displaylimits_{4\pi} \nu\Sigma_{f}(\mathbf{r},{E'\rightarrow E})\psi(\mathbf{r},\mathbf{\Omega'},E') \mathrm{d}\mathbf{\Omega'} \mathrm{d}E'\mathrm{d}E}{\psi_{g'}(\mathbf{r},\mathbf{\Omega})}
 \end{dmath}
 
 With these definitions of the \ac{MGXS}, the multi-group form of the transport equation in Eqn.~\ref{eqn:chap2-transport-mg-1} can be expressed succinctly in terms of the group-wise angular flux $\psi_{g}$:
 
 \begin{dmath}
 \label{eqn:chap2-transport-mg-3}
-\mathbf{\Omega} \cdot \nabla \psi_{g}(\mathbf{r},\mathbf{\Omega}) + \Sigma_{t,g}(\mathbf{r},E)\psi_{g}(\mathbf{r},\mathbf{\Omega}) =
-\sum_{g'=1}^{G} \int\displaylimits_{4\pi} \Sigma_{s,g' \rightarrow g}(\mathbf{r},{\mathbf{\Omega'}\rightarrow\mathbf{\Omega}}) \psi_{g}(\mathbf{r},\mathbf{\Omega'}) \mathrm{d}\mathbf{\Omega'} + \frac{1}{4\pi k_{eff}}\sum_{g'=1}^{G} \int\displaylimits_{4\pi} \nu\Sigma_{f,g' \rightarrow g}(\mathbf{r})\psi_{g}(\mathbf{r},\mathbf{\Omega'}) \mathrm{d}\mathbf{\Omega'}
+\mathbf{\Omega} \cdot \nabla \psi_{g}(\mathbf{r},\mathbf{\Omega}) + \hat{\Sigma}_{t,g}(\mathbf{r},\mathbf{\Omega})\psi_{g}(\mathbf{r},\mathbf{\Omega}) =
+\frac{1}{4\pi}\sum_{g'=1}^{G} \hat{\Sigma}_{s,0,g' \rightarrow g}(\mathbf{r},\mathbf{\Omega}) \psi_{g'}(\mathbf{r},\mathbf{\Omega}) + \frac{1}{4\pi k_{eff}}\sum_{g'=1}^{G} \nu\Sigma_{f,g' \rightarrow g}(\mathbf{r},\mathbf{\Omega})\psi_{g'}(\mathbf{r},\mathbf{\Omega})
 \end{dmath}
 
 Thus far, no approximations have been made in the energy discretization of multi-group transport equation given in Eqn.~\ref{eqn:chap2-transport-mg-3}. However, the expressions for the \ac{MGXS} $\Sigma_{t,g}$, $\Sigma_{s,g' \rightarrow g}$ and $\nu\Sigma_{f,g' \rightarrow g}$ in Eqns.~\Crefrange{eqn:chap2-sigt-mg}{eqn:chap2-nusigf-mg} present a complication since they are dependent on the unknown angular flux as discussed in the following section.
-
--should I expand in angular moments first?\\
--it's not appropriate to simply remove the energy dependence in the scattering cross section is it?\\
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -343,8 +340,8 @@ Thus far, no approximations have been made in the energy discretization of multi
 The angular dependence of the \ac{MGXS} is commonly treated with the flux separability approximation. Flux separability makes the simplifying assumption that the energy and angular dependence of the flux varies independently such that the angular flux can be written as the product of the scalar neutron flux $\phi(\mathbf{r},E)$ and some function $W(\mathbf{r}, \mathbf{\Omega})$:
 
 \begin{dmath}
-  \label{eqn:chap2-flux-separate}
-  \psi(\mathbf{r},\mathbf{\Omega},E) = \phi(\mathbf{r},E) W(\mathbf{r},\mathbf{\Omega})
+\label{eqn:chap2-flux-separate}
+\psi(\mathbf{r},\mathbf{\Omega},E) = \phi(\mathbf{r},E) W(\mathbf{r},\mathbf{\Omega})
 \end{dmath}
 
 \begin{dmath}
@@ -358,12 +355,12 @@ The angular dependence of the \ac{MGXS} is eliminated by inserting Eqn.~\ref{eqn
 
 \begin{dmath}
 \label{eqn:chap2-sigt-mg-scalar}
-\Sigma_{t,g}(\mathbf{r}) \equiv \frac{\int\displaylimits_{E_{g}}^{E_{g-1}} \Sigma_{t}(\mathbf{r},E)\phi(\mathbf{r},E)\mathrm{d}E}{\phi_{g}(\mathbf{r})}
+\hat{\Sigma}_{t,g}(\mathbf{r}) \equiv \frac{\int\displaylimits_{E_{g}}^{E_{g-1}} \hat{\Sigma}_{t}(\mathbf{r},E)\phi(\mathbf{r},E)\mathrm{d}E}{\phi_{g}(\mathbf{r})}
 \end{dmath}
 
 \begin{dmath}
 \label{eqn:chap2-sigs-mg-scalar}
-\Sigma_{s,g' \rightarrow g}(\mathbf{r}) \equiv \frac{\int\displaylimits_{E_{g}}^{E_{g-1}} \int\displaylimits_{E_{g'}}^{E_{g'-1}} \Sigma_{s}(\mathbf{r},{E'\rightarrow E}) \phi(\mathbf{r},E') \mathrm{d}E' \mathrm{d}E} {\phi_{g'}(\mathbf{r})}
+\hat{\Sigma}_{s,0,g' \rightarrow g}(\mathbf{r}) \equiv \frac{\int\displaylimits_{E_{g}}^{E_{g-1}} \int\displaylimits_{E_{g'}}^{E_{g'-1}} \hat{\Sigma}_{s,0}(\mathbf{r},{E'\rightarrow E}) \phi(\mathbf{r},E') \mathrm{d}E' \mathrm{d}E} {\phi_{g'}(\mathbf{r})}
 \end{dmath}
 
 \begin{dmath}
@@ -378,18 +375,16 @@ The angular dependence of the \ac{MGXS} is eliminated by inserting Eqn.~\ref{eqn
 %\phi_{g}(\mathbf{r}) = \int\displaylimits_{E_{g}}^{E_{g-1}}\phi(\mathbf{r},E)\mathrm{d}E
 %\end{dmath}
 
--mention that this approx. will be reivisited in later sections\\
--refer to consistent-p approximation \\
--cite nuclear eng handbook?\\
+-mention that this approx. will be revisited in later sections\\
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Scattering Production}
 \label{sec:chap2-scatt-prod}
 
-Although neutron production is dominated by fission in nuclear reactors, there may also be non-negligible production of neutrons due to scattering multiplicity $(n,xn)$ reactions. Production from scattering is typically accounted for with a factor $\nu_{scatt,i,g' \rightarrow g}$ which represents the average number of neutrons produced in a scattering reaction. The factor $\nu_{scatt,i,g' \rightarrow g}$ may be lumped into the scattering matrix $\nu_{scatt,i,g' \rightarrow g}\Sigma_{s,i,g' \rightarrow g}$ and substituted directly into the scattering source term in the multi-group transport equation. 
+Although neutron production is dominated by fission in nuclear reactors, there may also be non-negligible production of neutrons due to scattering multiplicity $(n,xn)$ reactions. Production from scattering is typically accounted for with a factor $\nu_{scatt,g' \rightarrow g}$ which represents the average number of neutrons produced in a scattering reaction. The factor $\nu_{scatt,g' \rightarrow g}$ may be lumped into the scattering matrix $\nu_{scatt,g' \rightarrow g}\Sigma_{s,g' \rightarrow g}$ and substituted directly into the scattering source term in the multi-group transport equation. 
 
-The $k_{eff}$ eigenvalue is only defined for fission operator in the transport equation. As a result, deterministic methods which compute the eigenvalue using the fission production, absorption and leakage rates will fail to capture the scattering production in in the multiplication factor. In order to account for $(n,xn)$ reactions, a ``corrected'' absorption cross section $\tilde{\Sigma}_{a,i,g} = \Sigma_{a,i,g} - (1-\nu_{scatt,i,g' \rightarrow g})\Sigma_{s,i,g' \rightarrow g}$ must be used to preserve neutron balance. Alternatively, $(n,xn)$ reactions will be accounted for if the eigenvalue is computed as the ratio of successive fission sources in iterative deterministic methods.
+The $k_{eff}$ eigenvalue is only defined for the fission operator in the transport equation. As a result, deterministic methods which compute the eigenvalue using the fission production, absorption and leakage rates will fail to capture scattering production in the multiplication factor. In order to account for $(n,xn)$ reactions, a ``corrected'' absorption cross section $\tilde{\Sigma}_{a,g} = \Sigma_{a,g} - (1-\nu_{scatt,g' \rightarrow g})\Sigma_{s,g' \rightarrow g}$ must be used to preserve neutron balance. Alternatively, $(n,xn)$ reactions will be accounted for if the eigenvalue is computed as the ratio of successive fission sources in iterative deterministic methods.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -412,13 +407,13 @@ The group-wise fission production cross section $\nu\Sigma_{f,g}$ is defined as 
 \nu\Sigma_{f,g'} \equiv \displaystyle\sum\limits_{g'=1}^{G}\nu\Sigma_{f,g'\rightarrow g}\phi_{g'}
 \end{dmath}
 
-Upon substituting $\chi_{g}$ and $\nu\Sigma_{f,g}$ into Eqn.~\ref{eqn:chap2-transport-mg-4} one obtains:
+Upon substituting $\chi_{g}$ and $\nu\Sigma_{f,g}$ into Eqn.~\ref{eqn:chap2-transport-mg-3} one obtains:
 
 \begin{dmath}
-\label{eqn:chap2-transport-mg-6}
-\mathbf{\Omega} \cdot \nabla \psi_{g}(\mathbf{r},\mathbf{\Omega}) + \Sigma_{t,i,g}\psi_{g}(\mathbf{r},\mathbf{\Omega}) \;\;\;\; = \;\;\;\;\;
-\sum_{g'=1}^{G} \int\displaylimits_{4\pi} \Sigma_{s,i,g' \rightarrow g}(\mathbf{r},{\mathbf{\Omega'}\rightarrow\mathbf{\Omega}}) \psi_{g}(\mathbf{r},\mathbf{\Omega'}) \mathrm{d}\mathbf{\Omega'} + 
-\frac{\chi_{i,g}}{4\pi k_{eff}}\sum_{g'=1}^{G} \int\displaylimits_{4\pi} \nu\Sigma_{f,i,g}\psi_{g}(\mathbf{r},\mathbf{\Omega'}) \mathrm{d}\mathbf{\Omega'}
+\label{eqn:chap2-transport-mg-4}
+\mathbf{\Omega} \cdot \nabla \psi_{g}(\mathbf{r},\mathbf{\Omega}) + \hat{\Sigma}_{t,g}\psi_{g}(\mathbf{r},\mathbf{\Omega}) \;\;\;\; = \;\;\;\;\;
+\frac{1}{4\pi} \sum_{g'=1}^{G} \hat{\Sigma}_{s,0,g' \rightarrow g}(\mathbf{r}) \psi_{g}(\mathbf{r},\mathbf{\Omega}) + 
+\frac{\chi_{g}}{4\pi k_{eff}}\sum_{g'=1}^{G} \nu\Sigma_{f,g}\psi_{g}(\mathbf{r})
 \end{dmath}
 
 
@@ -442,21 +437,21 @@ Upon substituting $\chi_{g}$ and $\nu\Sigma_{f,g}$ into Eqn.~\ref{eqn:chap2-tran
 %\int\displaylimits_{\mathbf{r} \in V_{i}}\left(\mathbf{\Omega} \cdot \nabla \psi_{g}(\mathbf{r},\mathbf{\Omega}) + \Sigma_{t,g}(\mathbf{r})\psi_{g}(\mathbf{r},\mathbf{\Omega})\right)\mathrm{d}\mathbf{r} \;\;\;\; = \;\;\;\;\; \int\displaylimits_{\mathbf{r} \in V_{i}}\sum_{g'=1}^{G} \int\displaylimits_{4\pi} \Sigma_{s,g' \rightarrow g}(\mathbf{r},{\mathbf{\Omega'}\rightarrow\mathbf{\Omega}}) \psi_{g}(\mathbf{r},\mathbf{\Omega'}) \mathrm{d}\mathbf{\Omega'} \mathrm{d}\mathbf{r} + \frac{1}{4\pi k_{eff}}\int\displaylimits_{\mathbf{r} \in V_{i}}\sum_{g'=1}^{G} \int\displaylimits_{4\pi} \nu\Sigma_{f,g' \rightarrow g}(\mathbf{r})\psi_{g}(\mathbf{r},\mathbf{\Omega'}) \mathrm{d}\mathbf{\Omega'} \mathrm{d}\mathbf{r}
 %\end{dmath}
 
-Up to this point the \ac{MGXS} have been defined as continuously varying in space. In practice, most deterministic methods used to solve the multi-group transport equation make the simplifying assumption that the material properties are constant across each mesh cell. Spatial homogenization is used to to compute flux-weighted volume-averaged cross sections within each mesh cell $i$ with volume $V_{i}$ as follows:
+Up to this point the \ac{MGXS} have been defined as continuously varying in space. In practice, most deterministic methods used to solve the multi-group transport equation make the simplifying assumption that the material properties are constant across each mesh cell. Spatial homogenization is used to compute flux-weighted volume-averaged cross sections within each mesh cell $i$ with volume $V_{i}$ as follows:
 
 \begin{dmath}
 \label{eqn:chap2-sigt-mg-scalar}
-\Sigma_{t,i,g} = \frac{\int\displaylimits_{\mathbf{r} \in V_{i}}\int\displaylimits_{E_{g}}^{E_{g-1}} \Sigma_{t}(\mathbf{r},E)\phi(\mathbf{r},E)\mathrm{d}E\mathrm{d}\mathbf{r}}{\int\displaylimits_{\mathbf{r} \in V_{i}}\phi_{g}(\mathbf{r})\mathrm{d}\mathbf{r}}
+\hat{\Sigma}_{t,i,g} = \frac{\int\displaylimits_{\mathbf{r} \in V_{i}}\left[\int\displaylimits_{E_{g}}^{E_{g-1}} \hat{\Sigma}_{t}(\mathbf{r},E)\phi(\mathbf{r},E)\mathrm{d}E\right]\mathrm{d}\mathbf{r}}{\int\displaylimits_{\mathbf{r} \in V_{i}}\phi_{g}(\mathbf{r})\mathrm{d}\mathbf{r}}
 \end{dmath}
 
 \begin{dmath}
 \label{eqn:chap2-sigs-mg-scalar}
-\Sigma_{s,i,g' \rightarrow g} \equiv \frac{\int\displaylimits_{\mathbf{r} \in V_{i}}\int\displaylimits_{E_{g}}^{E_{g-1}} \int\displaylimits_{E_{g'}}^{E_{g'-1}} \Sigma_{s}(\mathbf{r},{E'\rightarrow E}) \phi(\mathbf{r},E') \mathrm{d}E' \mathrm{d}E\mathrm{d}\mathbf{r}}{\int\displaylimits_{\mathbf{r} \in V_{i}}\phi_{g'}(\mathbf{r})\mathrm{d}\mathbf{r}}
+\hat{\Sigma}_{s,0,i,g' \rightarrow g} \equiv \frac{\int\displaylimits_{\mathbf{r} \in V_{i}}\left[\int\displaylimits_{E_{g}}^{E_{g-1}} \int\displaylimits_{E_{g'}}^{E_{g'-1}} \hat{\Sigma}_{s,0}(\mathbf{r},{E'\rightarrow E}) \phi(\mathbf{r},E') \mathrm{d}E' \mathrm{d}E\right]\mathrm{d}\mathbf{r}}{\int\displaylimits_{\mathbf{r} \in V_{i}}\phi_{g'}(\mathbf{r})\mathrm{d}\mathbf{r}}
 \end{dmath}
 
 \begin{dmath}
 \label{eqn:chap2-nusigf-mg-scalar}
-\nu\Sigma_{f,i,g' \rightarrow g} \equiv \frac{\int\displaylimits_{\mathbf{r} \in V_{i}}\int\displaylimits_{E_{g}}^{E_{g-1}} \int\displaylimits_{E_{g'}}^{E_{g'-1}} \nu\Sigma_{f}(\mathbf{r},{E'\rightarrow E})\phi(\mathbf{r},E') \mathrm{d}E'\mathrm{d}E\mathrm{d}\mathbf{r}}{\int\displaylimits_{\mathbf{r} \in V_{i}}\phi_{g'}(\mathbf{r})\mathrm{d}\mathbf{r}}
+\nu\Sigma_{f,i,g} \equiv \frac{\int\displaylimits_{\mathbf{r} \in V_{i}}\left[\int\displaylimits_{E_{g}}^{E_{g-1}} \int\displaylimits_{E_{g'}}^{E_{g'-1}} \nu\Sigma_{f}(\mathbf{r},{E'\rightarrow E})\phi(\mathbf{r},E') \mathrm{d}E'\mathrm{d}E\right]\mathrm{d}\mathbf{r}}{\int\displaylimits_{\mathbf{r} \in V_{i}}\phi_{g'}(\mathbf{r})\mathrm{d}\mathbf{r}}
 \end{dmath}
 
 A variety of discretization schemes may be used to solve the following multi-group transport equation in Eqn.~\ref{eqn:chap2-transport-mg-3}, including the \ac{MOC} and discrete ordinates (S$_N$). For first order discretization schemes in space, the transport equation can be re-written in terms of the volume-averaged group-wise fluxes $\psi_{i,g}$ and the spatially homogenized \ac{MGXS} in each mesh cell and energy group:
@@ -464,8 +459,8 @@ A variety of discretization schemes may be used to solve the following multi-gro
 \begin{dmath}
 \label{eqn:chap2-transport-mg-4}
 \mathbf{\Omega} \cdot \nabla \psi_{i,g}(\mathbf{\Omega}) + \Sigma_{t,i,g}\psi_{i,g}(\mathbf{\Omega}) \;\;\;\; = \;\;\;\;\;
-\sum_{g'=1}^{G} \int\displaylimits_{4\pi} \Sigma_{s,i,g' \rightarrow g}({\mathbf{\Omega'}\rightarrow\mathbf{\Omega}}) \psi_{i,g}(\mathbf{\Omega'}) \mathrm{d}\mathbf{\Omega'} + 
-\frac{1}{4\pi k_{eff}}\sum_{g'=1}^{G} \int\displaylimits_{4\pi} \nu\Sigma_{f,i,g' \rightarrow g}\psi_{i,g}(\mathbf{\Omega'}) \mathrm{d}\mathbf{\Omega'}
+\sum_{g'=1}^{G} \int\displaylimits_{4\pi} \Sigma_{s,i,g' \rightarrow g}\psi_{i,g}(\mathbf{\Omega'}) \mathrm{d}\mathbf{\Omega'} + 
+\frac{1}{4\pi k_{eff}}\sum_{g'=1}^{G} \int\displaylimits_{4\pi} \nu\Sigma_{f,i,g'}\psi_{i,g}(\mathbf{\Omega'}) \mathrm{d}\mathbf{\Omega'}
 \end{dmath}
 
 This is the form of the multi-group transport equation solved using the deterministic OpenMOC code in this thesis. 
