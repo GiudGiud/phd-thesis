@@ -523,56 +523,27 @@ The primary challenge throughout this multi-level scheme is to incorporate spect
 
 There is a long history of approximations for the flux for \ac{MGXS} generation~\cite{cacuci2010handbook}. These include the narrow, wide and intermediate resonance (NR, WR, and IR) approximations used to model the flux in a resonance self-shielding calculation. Lattice physics calculations typically use equivalence in dilution or subgroup methods to model physics in heterogeneous geometries. These are approximations are based on simplifying assumptions regarding the geometric configuration, resonance interference effects (mutually overlapping resonances) and temperature distributions\footnote{Although the temperature dependence of cross sections has been neglected thus far for brevity, it must be captured in \ac{MGXS} libraries in order to model Doppler broadening for reactivity coefficient calculations.}. Although ultra-fine methods may be used to compute reference solutions for comparison, they are are typically too computationally expensive for routine use. 
 
-As a result of the various approximations employed to model the flux spectrum, the conventional approach for \ac{MGXS} generation is subject to significant ``engineering prescriptions'' for different reactor designs.  For example, modifications must be made to lattice physics calculations which account for the impact of local spatial heterogeneities, such as fuel rods adjacent to burnable absorbers. Similarly, it is typical to use infinite boundary conditions (reflective, periodic, white) in resonance self-shielding and lattice physics calculations. This may lead to approximation error in whole core calculations which must capture leakage with vacuum boundary conditions and the varying flux spectrum at the interface between different adjacent assemblies and/or a reflector. As a result, adjustments must be made to the standard multi-level approach in order for the final whole-core calculation to accurately account for the effects of spatial heterogeneity.
+As a result of the various approximations employed to model the flux spectrum, the conventional approach for \ac{MGXS} generation is subject to significant ``engineering prescriptions'' for different reactor designs.  For example, modifications must be made to lattice physics calculations which account for the impact of local spatial heterogeneities, such as fuel rods adjacent to burnable absorbers. Similarly, it is typical to use infinite boundary conditions (reflective, periodic, white) in resonance self-shielding and lattice physics calculations. This may lead to approximation error in whole core calculations which must model the neutron leakage spectra with vacuum boundary conditions, as well as the flux at the interface between different adjacent assemblies and/or a reflector. As a result, adjustments must be made to the standard multi-level approach in order for the final whole-core calculation to accurately account for the effects of spatial heterogeneity.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{An Alternative Pathway with Monte Carlo}
 \label{subsec:chap2-mgxs-lib-mc}
 
--reactor agnostic
+The multi-level approach of approximations used to generate \ac{MGXS} is the ``achilles heel'' of multi-group methods. The approximate flux used to compute \ac{MGXS}, along with other approximations inherent in multi-group calculations, require careful use of multi-group methods for reactor analysis. As a result, Monte Carlo must be used to generate reference solutions for benchmarking and verification analysis of multi-group methods. In recent years, there has been growing interest in the use of \ac{MC} in the \ac{MGXS} generation process\cite{redmond1997multigroup,leppanen2007serpent,hoogenboom2007generation,
+yoshioka2011multi,tohjoh2005application,yoshioka2010multigroup,park2012generation,
+fridman2011serpent,pounders2006stochastically,nelson2014improved} since it offers a potential pathway to use a stochastic approximation to the exact flux in \ac{MGXS} generation.
 
-\begin{itemize}[noitemsep]
-  \item equation and figures mapped to variables
-  \item tally ``noise'' model
-  \item uncertainty propagation equations
-  \item mention recent work to use MC for MGXS (chap. 3 of nelson's thesis)
-\end{itemize}
+Continuous energy Monte Carlo is considered the ``gold standard'' for neutron transport calculations since it is reactor agnostic and samples over the entire phase space of angle, energy and position. \ac{MC} is not widely used in routine reactor analysis, however, since its computational expense renders it many orders of magnitude slower than deterministic multi-group methods. Some of recent work in the community adopts a hybrid approach which combines the resonance self-shielding and lattice physics stages in a single \ac{MC} simulation. These schemes minimize the computational expense by modeling sub-components (\textit{e.g.}, fuel pins and assemblies) rather than a full reactor. Although the hybrid approach has the advantage of using the ``true'' flux sampled in \ac{MC} to generate \ac{MGXS}, special treatment must still be given to accommodate infinite boundary conditions and neutron leakage spectra.
 
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{MGXS Generation with Monte Carlo}
-\label{sec:chap2-mgxs-mc}
-
-\begin{itemize}[noitemsep]
-  \item \ac{MC} is \emph{reactor agnostic}
-  \item stochastic approx. to integrals in Section~\ref{sec:chap2-background}
-\end{itemize}
+The following chapter introduces the \ac{MC} approach discussed in the literature, and proposes a new scheme to improve the accuracy and convergence rate of \ac{MGXS} generation with \ac{MC}.
 
 
-%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Past Work}
-\label{subsec:chap2-past-work}
 
-\begin{itemize}[noitemsep]
-  \item \ac{MGXS} for coarse mesh diffusion
-  \begin{itemize}[noitemsep]
-    \item Redmond
-    \item Pounders
-    \item Serpent
-  \end{itemize}
-  \item \ac{MGXS} for fine mesh transport
-  \begin{itemize}[noitemsep]
-    \item Nelson with NDPP
-  \end{itemize}
-\end{itemize}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Spatial Self-Shielding Treatment}
-\label{subsec:chap2-spatial-shield}
 
-\begin{itemize}[noitemsep]
-  \item spatial self-shielding treatment is natural in \ac{MC}
-  \item challenge is slow convergence rate
-  \item motivate clustering
-\end{itemize}
+
+
+
+
+
