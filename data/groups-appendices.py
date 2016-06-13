@@ -9,5 +9,5 @@ print('# groups: {}'.format(num_groups))
 for i in range(num_groups):
     left = groups.group_edges[i]
     right = groups.group_edges[i+1]
-    print('{} & {:0.5E} & {:0.5E} \\\\'.format(num_groups-i, left, right))
+    print('{} & {:0.4E} & {:0.4E} \\\\'.format(num_groups-i, left, right))
 
