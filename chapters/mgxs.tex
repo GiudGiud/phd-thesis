@@ -477,7 +477,7 @@ The preceding sections described approximations to reduce the dimensionality of 
 \subsection{Challenges}
 \label{subsec:chap2-mgxs-lib-challenges}
 
-The preceding sections introduced a series of approximations which resulted in multi-group forms of the total, scattering and fission cross sections in Eqns.~\Crefrange{eqn:chap2-sigt-mg-scalar}{eqn:chap2-nusigf-mg-scalar}. Given a solution to the transport equation for the multi-group flux, general reactions rate distributions may be computed (\textit{e.g.}, radiative capture, fission power) for each nuclide and reaction type of interest given multi-group microscopic cross sections. Energy condensation and spatial homogenization may be applied to compute multi-group microscopic cross sections $\sigma_{x,i}$ for each reaction type $x$ and nuclide $i$:
+The preceding sections introduced a series of approximations which resulted in multi-group forms of the total, scattering and fission cross sections in Eqns.~\Crefrange{eqn:chap2-sigt-mg-scalar}{eqn:chap2-nusigf-mg-scalar}. Given a solution to the transport equation for the multi-group flux, general reactions rate distributions may be computed (\textit{e.g.}, radiative capture, recoverable fission energy) with multi-group cross sections for each nuclide and reaction type of interest. Energy condensation and spatial homogenization may be applied to compute multi-group microscopic cross sections $\sigma_{x,i}$ for each reaction type $x$ and nuclide $i$:
 
 \begin{dmath}
 \label{eqn:chap2-micro-sigx}
@@ -499,9 +499,6 @@ The accurate determination of \ac{MGXS} depends on an accurate understanding of 
 
 The \ac{MGXS} are need to compute the flux, but the flux is needed to compute \ac{MGXS}. An iterative approach could be used to resolve this issue, but the computational expense would prohibit such a scheme for practical whole-core calculations. Instead, an ``informed guess'' is generally made about the flux distribution in order to compute \ac{MGXS}. Such estimates of the flux introduce further approximations in addition to those presented in Secs.~\Crefrange{sec:chap2-approx-angle}{sec:chap2-approx-space}. The following section discusses a high-level overview of the standard multi-level approach to estimating the flux for \ac{MGXS} generation.
 
-%third paragraph:\\
-%-primary challenge is the resonances\\
-
 %\begin{dmath}
 %\label{eqn:chap2-sigt-mg-color}
 %\sigma_{x,i,k,g} = \frac{\int\displaylimits_{\mathbf{r} \in V_{k}} \int\displaylimits_{E_{g}}^{E_{g-1}} \sigma_{x,i}(\textcolor{carolinablue}{\mathbf{r}},\textcolor{darktangerine}{E})\phi(\textcolor{lightsalmonpink}{\mathbf{r}},\textcolor{lightgreen}{E})\mathrm{d}E\mathrm{d}\mathbf{r}}{\int\displaylimits_{\mathbf{r} \in V_{k}} \int\displaylimits_{E_{g}}^{E_{g-1}} \phi(\textcolor{lightsalmonpink}{\mathbf{r},\textcolor{lightgreen}{E}})\mathrm{d}E\mathrm{d}\mathbf{r}}
@@ -511,17 +508,29 @@ The \ac{MGXS} are need to compute the flux, but the flux is needed to compute \a
 \subsection{Standard Multi-Level Approach}
 \label{subsec:chap2-mgxs-lib-std-approach}
 
+The standard techniques for multi-group cross section generation use a multi-level framework to draw a compromise between accuracy and computational efficiency. The goal in this process is to define a library of \ac{MGXS} which enforces an equivalence between an accurate fine mesh transport calculation and a corresponding computationally efficient coarse mesh transport or diffusion calculation. The angular, energy and spatial variation of the flux is treated with varying degrees of complexity at each level as illustrated in Fig.~\ref{fig:chap2-mgxs-process}. The process begins with a resonance self-shielding calculation that solves the slowing down problem with point-wise nuclear cross section data in a simple infinite medium, slab or pin cell geometry. The self-shielding calculation produces an \ac{MGXS} library with $\mathcal{O}(100)$ energy groups that is next used by a lattice physics calculation to capture spectral interactions within and between fuel pins in each unique fuel assembly. The lattice physics calculation performs spatial homogenization across each assembly and produces a condensed library with $\mathcal{O}(2-10)$ groups. This assembly-homogenized few-group \ac{MGXS} library is finally used by a whole core nodal diffusion calculation.
+
 \begin{figure}[h!]
   \centering
   \includegraphics[width=0.9\linewidth]{figures/mgxs/nuke-handbook-mgxs-process}
-\caption[]{}
+\caption[Standard multi-level framework for MGXS generation]{The standard multi-level framework for \ac{MGXS} generation taken from the \textit{Handbook of Nuclear Engineering}~\cite{cacuci2010handbook}. The energy dependence of the nuclear cross sections is successively coarsened with resonance self-shielding and lattice physics calculations to generate multi-group libraries for whole-core simulations.}
 \label{fig:chap2-mgxs-process}
 \end{figure}
+
+%The primary challenge throughout this multi-level scheme is to incorporate effects from the resonances in the point-wise cross sections. The spectral interactions which must be accurately accounted for are often referred to as \textit{self-shielding effects} in energy and space. 
+
+The primary challenge throughout this multi-level scheme is to incorporate spectral interactions known as \textit{self-shielding effects} in energy and space. Energy self-shielding refers to the impact that resonance interactions may have on the shape of the flux in energy. For example, the sharp depressions in \ac{PWR} flux spectra at energies near the large U-238 thermal capture resonances is an example of energy self-shielding (see Fig.~\ref{fig:chap2-mgxs-overlay}d). These depressions must be accurately captured in the flux used to generate \ac{MGXS}. Spatial self-shielding refers to the impact of the material properties in different spatial zones on the flux in other nearby zones. An empty control rod guide tube filled with water, for example, will provide additional moderation and therefore soften the spectrum for nearby fuel pins in \ac{LWRs}, which must be reflected in the \ac{MGXS} calculation.
+
+There is a long history of approximations for the flux for \ac{MGXS} generation~\cite{cacuci2010handbook}. These include the narrow, wide and intermediate resonance (NR, WR, and IR) approximations used to model the flux in a resonance self-shielding calculation. Lattice physics calculations typically use equivalence in dilution or subgroup methods to model physics in heterogeneous geometries. These are approximations are based on simplifying assumptions regarding the geometric configuration, resonance interference effects (mutually overlapping resonances) and temperature distributions\footnote{Although the temperature dependence of cross sections has been neglected thus far for brevity, it must be captured in \ac{MGXS} libraries in order to model Doppler broadening for reactivity coefficient calculations.}. Although ultra-fine methods may be used to compute reference solutions for comparison, they are are typically too computationally expensive for routine use. 
+
+As a result of the various approximations employed to model the flux spectrum, the conventional approach for \ac{MGXS} generation is subject to significant ``engineering prescriptions'' for different reactor designs.  For example, modifications must be made to lattice physics calculations which account for the impact of local spatial heterogeneities, such as fuel rods adjacent to burnable absorbers. Similarly, it is typical to use infinite boundary conditions (reflective, periodic, white) in resonance self-shielding and lattice physics calculations. This may lead to approximation error in whole core calculations which must capture leakage with vacuum boundary conditions and the varying flux spectrum at the interface between different adjacent assemblies and/or a reflector. As a result, adjustments must be made to the standard multi-level approach in order for the final whole-core calculation to accurately account for the effects of spatial heterogeneity.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{An Alternative Pathway with Monte Carlo}
 \label{subsec:chap2-mgxs-lib-mc}
+
+-reactor agnostic
 
 \begin{itemize}[noitemsep]
   \item equation and figures mapped to variables
