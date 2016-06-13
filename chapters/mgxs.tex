@@ -173,11 +173,11 @@ The transport corrected scattering cross section in Eqn.~\ref{eqn:chap2-iso-scat
 \mathbf{\Omega} \cdot \nabla \psi(\mathbf{r},\mathbf{\Omega},E) + \Sigma_{t}(\mathbf{r},E)\psi(\mathbf{r},\mathbf{\Omega},E) - \int\displaylimits_{0}^{\infty} \Sigma_{s,1}(\mathbf{r},{E'\rightarrow E})\phi(\mathbf{r},E')\mathrm{d}E' = \frac{1}{4\pi} \int\displaylimits_{0}^{\infty} \left[\Sigma_{s,0}(\mathbf{r},{E'\rightarrow E}) - \Sigma_{s,1}(\mathbf{r},{E'\rightarrow E})\right] \phi(\mathbf{r},E')\mathrm{d}E' + \frac{1}{4\pi k_{eff}}\int\displaylimits_{0}^{\infty}\nu\Sigma_{f}(\mathbf{r},{E'\rightarrow E})\phi(\mathbf{r},E') \mathrm{d}E'
 \end{dmath}
 
-where the relation $\phi = \psi_{0}^{0}$ for the scalar flux has been used to completely remove the angular dependence from the isotropic scattering kernel. The transport correction term $\Delta\Sigma_{tr}(\mathbf{r},E)$ can be lumped into new transport corrected total and scattering cross sections $\hat{\Sigma}_{t}$ and $\hat{\Sigma}_{s}$ as follows:
+where the relation $\phi = \psi_{0}^{0}$ for the scalar flux has been used to completely remove the angular dependence from the isotropic scattering kernel. The transport correction term $\Delta\Sigma_{tr}(\mathbf{r},E)$ can be defined such that it can be lumped into new transport corrected total and scattering cross sections $\hat{\Sigma}_{t}$ and $\hat{\Sigma}_{s}$ as follows:
 
 \begin{dmath}
 \label{eqn:chap2-transport-xs}
-\Delta\Sigma_{tr}(\mathbf{r},E) = \frac{\int\displaylimits_{0}^{\infty} \Sigma_{s,1}(\mathbf{r},{E'\rightarrow E})\phi(\mathbf{r},E') \mathrm{d}E'}{\phi(\mathbf{r},E)}
+\Delta\Sigma_{tr}(\mathbf{r},E) \equiv \frac{\int\displaylimits_{0}^{\infty} \int\displaylimits_{4\pi} \Sigma_{s,1}(\mathbf{r},{E'\rightarrow E})\psi(\mathbf{r},\mathbf{\Omega'},E') \mathrm{d}\mathbf{\Omega'}\mathrm{d}E'}{\psi(\mathbf{r},\mathbf{\Omega},E)}
 \end{dmath}
 
 \begin{dmath}
@@ -429,28 +429,28 @@ Upon substituting $\chi_{g}$ and $\nu\Sigma_{f,g}$ into Eqn.~\ref{eqn:chap2-tran
 %\int\displaylimits_{\mathbf{r} \in V_{i}}\left(\mathbf{\Omega} \cdot \nabla \psi_{g}(\mathbf{r},\mathbf{\Omega}) + \Sigma_{t,g}(\mathbf{r})\psi_{g}(\mathbf{r},\mathbf{\Omega})\right)\mathrm{d}\mathbf{r} \;\;\;\; = \;\;\;\;\; \int\displaylimits_{\mathbf{r} \in V_{i}}\sum_{g'=1}^{G} \int\displaylimits_{4\pi} \Sigma_{s,g' \rightarrow g}(\mathbf{r},{\mathbf{\Omega'}\rightarrow\mathbf{\Omega}}) \psi_{g}(\mathbf{r},\mathbf{\Omega'}) \mathrm{d}\mathbf{\Omega'} \mathrm{d}\mathbf{r} + \frac{1}{4\pi k_{eff}}\int\displaylimits_{\mathbf{r} \in V_{i}}\sum_{g'=1}^{G} \int\displaylimits_{4\pi} \nu\Sigma_{f,g' \rightarrow g}(\mathbf{r})\psi_{g}(\mathbf{r},\mathbf{\Omega'}) \mathrm{d}\mathbf{\Omega'} \mathrm{d}\mathbf{r}
 %\end{dmath}
 
-Up to this point the \ac{MGXS} have been defined as continuously varying in space. In practice, most deterministic methods used to solve the multi-group transport equation make the simplifying assumption that the material properties are constant across each mesh cell. Spatial homogenization is used to compute flux-weighted volume-averaged cross sections within each mesh cell $i$ with volume $V_{i}$ as follows:
+Up to this point the \ac{MGXS} have been defined as continuously varying in space. In practice, most deterministic methods used to solve the multi-group transport equation make the simplifying assumption that the material properties are constant across each mesh cell. Spatial homogenization is used to compute flux-weighted volume-averaged cross sections within each mesh cell $k$ with volume $V_{k}$ as follows:
 
 \begin{dmath}
 \label{eqn:chap2-sigt-mg-scalar}
-\hat{\Sigma}_{t,i,g} = \frac{\int\displaylimits_{\mathbf{r} \in V_{i}}\left[\int\displaylimits_{E_{g}}^{E_{g-1}} \hat{\Sigma}_{t}(\mathbf{r},E)\phi(\mathbf{r},E)\mathrm{d}E\right]\mathrm{d}\mathbf{r}}{\int\displaylimits_{\mathbf{r} \in V_{i}}\phi_{g}(\mathbf{r})\mathrm{d}\mathbf{r}}
+\hat{\Sigma}_{t,k,g} \equiv \frac{\int\displaylimits_{\mathbf{r} \in V_{k}}\left[\int\displaylimits_{E_{g}}^{E_{g-1}} \hat{\Sigma}_{t}(\mathbf{r},E)\phi(\mathbf{r},E)\mathrm{d}E\right]\mathrm{d}\mathbf{r}}{\int\displaylimits_{\mathbf{r} \in V_{k}}\phi_{g}(\mathbf{r})\mathrm{d}\mathbf{r}}
 \end{dmath}
 
 \begin{dmath}
 \label{eqn:chap2-sigs-mg-scalar}
-\hat{\Sigma}_{s,i,g' \rightarrow g} \equiv \frac{\int\displaylimits_{\mathbf{r} \in V_{i}}\left[\int\displaylimits_{E_{g}}^{E_{g-1}} \int\displaylimits_{E_{g'}}^{E_{g'-1}} \hat{\Sigma}_{s}(\mathbf{r},{E'\rightarrow E}) \phi(\mathbf{r},E') \mathrm{d}E' \mathrm{d}E\right]\mathrm{d}\mathbf{r}}{\int\displaylimits_{\mathbf{r} \in V_{i}}\phi_{g'}(\mathbf{r})\mathrm{d}\mathbf{r}}
+\hat{\Sigma}_{s,k,g' \rightarrow g} \equiv \frac{\int\displaylimits_{\mathbf{r} \in V_{k}}\left[\int\displaylimits_{E_{g}}^{E_{g-1}} \int\displaylimits_{E_{g'}}^{E_{g'-1}} \hat{\Sigma}_{s}(\mathbf{r},{E'\rightarrow E}) \phi(\mathbf{r},E') \mathrm{d}E' \mathrm{d}E\right]\mathrm{d}\mathbf{r}}{\int\displaylimits_{\mathbf{r} \in V_{k}}\phi_{g'}(\mathbf{r})\mathrm{d}\mathbf{r}}
 \end{dmath}
 
 \begin{dmath}
 \label{eqn:chap2-nusigf-mg-scalar}
-\nu\Sigma_{f,i,{g'\rightarrow g}} \equiv \frac{\int\displaylimits_{\mathbf{r} \in V_{i}}\left[\int\displaylimits_{E_{g}}^{E_{g-1}} \int\displaylimits_{E_{g'}}^{E_{g'-1}} \nu\Sigma_{f}(\mathbf{r},{E'\rightarrow E})\phi(\mathbf{r},E') \mathrm{d}E'\mathrm{d}E\right]\mathrm{d}\mathbf{r}}{\int\displaylimits_{\mathbf{r} \in V_{i}}\phi_{g'}(\mathbf{r})\mathrm{d}\mathbf{r}}
+\nu\Sigma_{f,k,{g'\rightarrow g}} \equiv \frac{\int\displaylimits_{\mathbf{r} \in V_{k}}\left[\int\displaylimits_{E_{g}}^{E_{g-1}} \int\displaylimits_{E_{g'}}^{E_{g'-1}} \nu\Sigma_{f}(\mathbf{r},{E'\rightarrow E})\phi(\mathbf{r},E') \mathrm{d}E'\mathrm{d}E\right]\mathrm{d}\mathbf{r}}{\int\displaylimits_{\mathbf{r} \in V_{k}}\phi_{g'}(\mathbf{r})\mathrm{d}\mathbf{r}}
 \end{dmath}
 
-Blah blah blah
+Blah blah blah - the following equation must hold true for each and every spatial zone $k$ and energy group $g$, i.e., $\mathbf{r} \in V_{k}$:
 
 \begin{dmath}
 \label{eqn:chap2-transport-mg-5}
-\mathbf{\Omega} \cdot \nabla \psi_{g}(\mathbf{r},\mathbf{\Omega}) + \hat{\Sigma}_{t,i,g}\psi_{g}(\mathbf{r}) = \frac{1}{4\pi} \sum_{g'=1}^{G} \hat{\Sigma}_{s,i,g' \rightarrow g}\phi{g}(\mathbf{r}) + \frac{\chi_{g}}{4\pi k_{eff}}\sum_{g'=1}^{G} \nu\Sigma_{f,i,g}\phi{g}(\mathbf{r})
+\mathbf{\Omega} \cdot \nabla \psi_{g}(\mathbf{r},\mathbf{\Omega}) + \hat{\Sigma}_{t,g}\psi_{g}(\mathbf{r},\mathbf{\Omega}) = \frac{1}{4\pi} \sum_{g'=1}^{G} \hat{\Sigma}_{s,k,g' \rightarrow g}\phi_{g'}(\mathbf{r}) + \frac{\chi_{g}}{4\pi k_{eff}}\sum_{g'=1}^{G} \nu\Sigma_{f,k,g'}\phi_{g'}(\mathbf{r})
 \end{dmath}
 
 
@@ -470,12 +470,46 @@ This is the form of the multi-group transport equation solved using the determin
 \section{MGXS Generation}
 \label{sec:chap2-mgxs-lib}
 
-\begin{itemize}[noitemsep]
-  \item equation and figures mapped to variables
-  \item tally ``noise'' model
-  \item uncertainty propagation equations
-  \item mention recent work to use MC for MGXS (chap. 3 of nelson's thesis)
-\end{itemize}
+The preceding sections described approximations to reduce the dimensionality of the transport equation to permit efficient computational simulation. The solution of the transport equation in Eqn.~\ref{eqn:chap2-transport-mg-5} requires knowledge of the energy condensed and spatially homogenized \ac{MGXS} in Eqns.~\Crefrange{eqn:chap2-sigt-mg-scalar}{eqn:chap2-nusigf-mg-scalar}. This section describes the challenges to computing \ac{MGXS} and outlines the standard multi-level approach for \ac{MGXS} generation. The chapter concludes with a brief introduction to the potential for Monte Carlo methods as an alternative pathway for accurate \ac{MGXS} generation.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Challenges}
+\label{subsec:chap2-mgxs-lib-challenges}
+
+The preceding sections introduced a series of approximations which resulted in multi-group forms of the total, scattering and fission cross sections in Eqns.~\Crefrange{eqn:chap2-sigt-mg-scalar}{eqn:chap2-nusigf-mg-scalar}. Given a solution to the transport equation for the multi-group flux, general reactions rate distributions may be computed (\textit{e.g.}, radiative capture, fission power) for each nuclide and reaction type of interest given multi-group microscopic cross sections. Energy condensation and spatial homogenization may be applied to compute multi-group microscopic cross sections $\sigma_{x,i}$ for each reaction type $x$ and nuclide $i$:
+
+\begin{dmath}
+\label{eqn:chap2-micro-sigx}
+\sigma_{x,i,k,g} = \frac{\int\displaylimits_{\mathbf{r} \in V_{k}} \int\displaylimits_{E_{g}}^{E_{g-1}} \sigma_{x,i}(\mathbf{r},E)\phi(\mathbf{r},E)\mathrm{d}E\mathrm{d}\mathbf{r}}{\int\displaylimits_{\mathbf{r} \in V_{k}} \int\displaylimits_{E_{g}}^{E_{g-1}} \phi(\mathbf{r},E)\mathrm{d}E\mathrm{d}\mathbf{r}}
+\end{dmath}
+
+The accurate determination of \ac{MGXS} depends on an accurate understanding of the spatial and energy dependence of the microscopic cross sections and the flux, each of which is depicted in Fig.~\ref{fig:chap2-mgxs-overlay}. The spatial variation of $\sigma_{x,i}$ is known from the reactor's geometric configuration\footnote{The microscopic cross section $\sigma_{x,i}$ is a property unique to each nuclide and reaction and does not vary in space. However, the volume $V_{k}$ may span different regions some of which do and others which do not contain nuclide $n$. The discrete spatial variation in the number density $N_{i}$ may be modeled as $\sigma_{x,i}(\mathbf{r},E) = \sigma_{x,i}(E)\mathbb{1}_{V_{k}}(\mathbf{r})$ with the indicator function $\mathbb{1}_{V_{k}}$ equal to 1 if $\mathbf{r} \in V_{k}$ and 0 otherwise.}, and the energy dependence is known from experimental data. However, the spatial and energy dependence of the flux are unknown which presents a ``chicken-or-the-egg'' type of quandary for multi-group calculations. This predicament is aptly described in the NJOY manual~\cite{macfarlane2000njoy}:
+
+\begin{displayquote}
+\textit{``Wait a minute,'' you ask, ``the purpose of solving the transport equation is to get the flux, but I have to know the flux to compute the multi-group constants!'' This conundrum is the source of much of the ``art'' in using multi-group methods.}
+\end{displayquote}
+
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=0.9\linewidth]{figures/mgxs/mgxs-overlay}
+\caption[Energy and spatial variation in \ac{MGXS}]{The calculation of multi-group cross sections requires knowledge of the spatial and energy variation of the continuous energy cross section and flux. The color-coded position $\mathbf{r}$ and energy $E$ variables correspond to the figures with the matching colored outlines. The microscopic cross section $\sigma_{x,i}$ depends on reactor configuration (a) and neutron energy (b). The flux $\phi$ varies with position (c) and energy (d).}
+\label{fig:chap2-mgxs-overlay}
+\end{figure}
+
+The \ac{MGXS} are need to compute the flux, but the flux is needed to compute \ac{MGXS}. An iterative approach could be used to resolve this issue, but the computational expense would prohibit such a scheme for practical whole-core calculations. Instead, an ``informed guess'' is generally made about the flux distribution in order to compute \ac{MGXS}. Such estimates of the flux introduce further approximations in addition to those presented in Secs.~\Crefrange{sec:chap2-approx-angle}{sec:chap2-approx-space}. The following section discusses a high-level overview of the standard multi-level approach to estimating the flux for \ac{MGXS} generation.
+
+%third paragraph:\\
+%-primary challenge is the resonances\\
+
+%\begin{dmath}
+%\label{eqn:chap2-sigt-mg-color}
+%\sigma_{x,i,k,g} = \frac{\int\displaylimits_{\mathbf{r} \in V_{k}} \int\displaylimits_{E_{g}}^{E_{g-1}} \sigma_{x,i}(\textcolor{carolinablue}{\mathbf{r}},\textcolor{darktangerine}{E})\phi(\textcolor{lightsalmonpink}{\mathbf{r}},\textcolor{lightgreen}{E})\mathrm{d}E\mathrm{d}\mathbf{r}}{\int\displaylimits_{\mathbf{r} \in V_{k}} \int\displaylimits_{E_{g}}^{E_{g-1}} \phi(\textcolor{lightsalmonpink}{\mathbf{r},\textcolor{lightgreen}{E}})\mathrm{d}E\mathrm{d}\mathbf{r}}
+%\end{dmath}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Standard Multi-Level Approach}
+\label{subsec:chap2-mgxs-lib-std-approach}
 
 \begin{figure}[h!]
   \centering
@@ -484,17 +518,17 @@ This is the form of the multi-group transport equation solved using the determin
 \label{fig:chap2-mgxs-process}
 \end{figure}
 
-%\begin{dmath}
-%\label{eqn:chap2-sigt-mg-color}
-%\sigma_{t,n,i,g} = \frac{\int\displaylimits_{\mathbf{r} \in V_{i}} \int\displaylimits_{E_{g}}^{E_{g-1}} \sigma_{t,n}(\textcolor{carolinablue}{\mathbf{r}},\textcolor{darktangerine}{E})\phi(\textcolor{lightsalmonpink}{\mathbf{r}},\textcolor{lightgreen}{E})\mathrm{d}E\mathrm{d}\mathbf{r}}{\int\displaylimits_{\mathbf{r} \in V_{i}} \int\displaylimits_{E_{g}}^{E_{g-1}} \phi_{g}(\textcolor{lightsalmonpink}{\mathbf{r},\textcolor{lightgreen}{E}})\mathrm{d}E\mathrm{d}\mathbf{r}}
-%\end{dmath}
 
-\begin{figure}[h!]
-  \centering
-  \includegraphics[width=0.9\linewidth]{figures/mgxs/mgxs-overlay}
-\caption[]{}
-\label{fig:chap2-mgxs-overlay}
-\end{figure}
+%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{An Alternative Pathway with Monte Carlo}
+\label{subsec:chap2-mgxs-lib-mc}
+
+\begin{itemize}[noitemsep]
+  \item equation and figures mapped to variables
+  \item tally ``noise'' model
+  \item uncertainty propagation equations
+  \item mention recent work to use MC for MGXS (chap. 3 of nelson's thesis)
+\end{itemize}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
