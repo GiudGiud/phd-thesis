@@ -13,18 +13,59 @@
 \section{Overview of Monte Carlo Methods}
 \label{sec:chap3-mc-overview}
 
-Everything can be found in the MCNP, Serpent and OpenMC manuals. This section follows the OpenMC manual.
+Everything can be found in the MCNP~\cite{mcnpx2003manual}, Serpent~\cite{serpent2013manual} and OpenMC~\cite{openmc2016manual} manuals. This section follows the OpenMC manual~\cite{openmc2016manual}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Monte Carlo Tallies}
 \label{subsec:chap3-mc-tallies}
 
 \begin{itemize}[noitemsep]
-  \item general form eqn (Eqn. (1))
   \item scores/score function, filters
   \item analog vs. collision vs. tracklength tallies (Eqns. (2), (4), (9))
   \item use tilde above transport / scatter xs, and hat above estimates
 \end{itemize}
+
+\begin{dmath}
+\label{eqn:chap3-tallies-general}
+T = \int_{V} \int_{S} \int_{E}  f(\mathbf{r},\mathbf{\Omega},E)\psi(\mathbf{r},\mathbf{\Omega},E)\mathrm{d}E\mathrm{d}\mathbf{\Omega}\mathrm{d}\mathbf{r} 
+\end{dmath}
+
+In OpenMC parlance the integration bounds over space, angle and energy are known as \textit{filters}, while the response function $f$ is termed the \textit{scoring function} or more simply \textit{score}.
+
+Use $i$ here? It is used to index nuclides\\
+Need to define $W$ and $w_{i}$\\
+
+Analog tallies:
+
+\begin{dmath}
+\label{eqn:chap3-tallies-analog}
+\hat{R}_{x} = \frac{1}{W}\displaystyle\sum\limits_{i \in A} w_{i}
+\end{dmath}
+
+Collision tallies - recall that the reaction rates are defined by $R_{x} = \Sigma_{x}\phi$
+
+\begin{dmath}
+\label{eqn:chap3-tallies-collision-flux}
+\hat{\phi} = \frac{1}{W}\displaystyle\sum\limits_{i \in C}\frac{w_{i}}{\Sigma_{t}(E_{i})}
+\end{dmath}
+
+\begin{dmath}
+\label{eqn:chap3-tallies-collision-rxn}
+\hat{R}_{x} = \frac{1}{W}\displaystyle\sum\limits_{i \in C}\frac{w_{i}\Sigma_{x}(E_{i})}{\Sigma_{t}(E_{i})}
+\end{dmath}
+
+Tracklength tallies - need to define $T$ as set of all particle trajectories within volume of interest
+
+\begin{dmath}
+\label{eqn:chap3-tallies-tracklength-flux}
+  \hat{\phi} = \frac{1}{W}\displaystyle\sum\limits_{i \in T}w_{i}\Delta\mathbf{r}_{i}
+\end{dmath}
+
+\begin{dmath}
+\label{eqn:chap3-tallies-tracklength-rxn}
+  \hat{R}_{x} = \frac{1}{W}\displaystyle\sum\limits_{i \in T}w_{i}\Delta\mathbf{r}_{i}\Sigma_{x}(E_{i})
+\end{dmath}
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Sample Statistics}
@@ -38,6 +79,33 @@ Everything can be found in the MCNP, Serpent and OpenMC manuals. This section fo
   \item root mean square convergence rate - mention correlation
 \end{itemize}
 
+
+\begin{dmath}
+\label{eqn:chap3-sample-mean}
+\bar{x} = \frac{1}{N} \displaystyle\sum\limits_{i=1}^{N} x_{i}
+\end{dmath}
+
+unbiased estimate of the sample variance:
+
+\begin{dmath}
+\label{eqn:chap3-variance-sample}
+s^{2} = \frac{1}{N-1}\displaystyle\sum\limits_{i=1}^{N}\left(x_{i} - \bar{x}\right)^{2}
+\end{dmath}
+
+unbiased estimate of the variance of the mean:
+
+\begin{dmath}
+\label{eqn:chap3-variance-mean}
+s_{\bar{x}}^{2} = \frac{1}{N-1}\left(\frac{1}{N}\displaystyle\sum\limits_{i=1}^{N}
+x_{i}^{2} - \bar{x}^2\right)
+\end{dmath}
+
+The standard deviation will decrease in proportion to $s_{\bar{x}} \propto \nicefrac{1}{\sqrt{N}}$
+
+\begin{dmath}
+\label{eqn:chap3-conv-rate}
+s_{\bar{x}} = \frac{\sigma}{\sqrt{N}} \approx \frac{s}{\sqrt{N}}
+\end{dmath}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -86,6 +154,28 @@ Stochastic approx. to integrals in Section~\ref{sec:chap2-background} \\
   \item https://en.wikipedia.org/wiki/Propagation_of_uncertainty
 \end{itemize}
 
+define covariance\\
+two random variables $X$ and $Y$ with standard deviations $\sigma_{X}$ and $\sigma_{Y}$\\
+
+\begin{equation}
+Z = aX \qquad,\qquad \sigma_{Z}^{2} = a^{2}\sigma_{X}^{2}
+\end{equation}
+
+\begin{equation}
+Z = X + Y \qquad,\qquad \sigma_{Z}^{2} = \sigma_{X}^{2} + \sigma_{Y}^{2} + 2\sigma_{XY}
+\end{equation}
+
+\begin{equation}
+Z = X - Y \qquad,\qquad \sigma_{Z}^{2} = \sigma_{X}^{2} + \sigma_{Y}^{2} - 2\sigma_{XY}
+\end{equation}
+
+\begin{equation}
+Z = XY \qquad,\qquad \sigma_{Z}^{2} \approx Z^{2}\left[\left(\frac{\sigma_{X}}{X}\right)^{2} + \left(\frac{\sigma_{Y}}{Y}\right)^{2} + 2\frac{\sigma_{XY}}{Z}\right] \approx Z^{2}\left[\left(\frac{\sigma_{X}}{X}\right)^{2} + \left(\frac{\sigma_{Y}}{Y}\right)^{2}\right]
+\end{equation}
+
+\begin{equation}
+Z = \frac{X}{Y} \qquad,\qquad \sigma_{Z}^{2} \approx Z^{2}\left[\left(\frac{\sigma_{X}}{X}\right)^{2} + \left(\frac{\sigma_{Y}}{Y}\right)^{2} - 2\frac{\sigma_{XY}}{Z}\right] \approx Z^{2}\left[\left(\frac{\sigma_{X}}{X}\right)^{2} + \left(\frac{\sigma_{Y}}{Y}\right)^{2}\right]
+\end{equation}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
