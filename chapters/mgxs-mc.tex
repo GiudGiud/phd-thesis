@@ -2,24 +2,102 @@
 \label{chap:mgxs-mc}
 
 \begin{itemize}[noitemsep]
+  \item mitigate all of the pain and effort of coming up with approximations!!!
   \item \ac{MC} is \emph{reactor agnostic}
-  \item stochastic approx. to integrals in Section~\ref{sec:chap2-background}
-  \item tally ``noise'' model
-  \item uncertainty propagation equations
-  \item mention recent work to use MC for MGXS (chap. 3 of nelson's thesis)
+  \item spatial self-shielding is natural
+  \item look at prospectus for paragraph
 \end{itemize}
 
 
-%%%%%%%%%%%%%%%%%%%%%%
-\section{Past Work}
-\label{sec:chap2-past-work}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Overview of Monte Carlo Methods}
+\label{sec:chap3-mc-overview}
+
+Everything can be found in the MCNP, Serpent and OpenMC manuals. This section follows the OpenMC manual.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Monte Carlo Tallies}
+\label{subsec:chap3-mc-tallies}
+
+\begin{itemize}[noitemsep]
+  \item general form eqn (Eqn. (1))
+  \item scores/score function, filters
+  \item analog vs. collision vs. tracklength tallies (Eqns. (2), (4), (9))
+  \item use tilde above transport / scatter xs, and hat above estimates
+\end{itemize}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Sample Statistics}
+\label{subsec:chap3-mc-stats}
+
+\begin{itemize}[noitemsep]
+  \item batch statistics
+  \item sample mean (Eqn. (11))
+  \item variance of the population (Eqn. (14)
+  \item variance of the mean (Eqn. (17))
+  \item root mean square convergence rate - mention correlation
+\end{itemize}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{\ac{MGXS} Generation with Monte Carlo}
+\label{sec:chap3-mgxs-gen}
+
+DIY \ac{MGXS} generation with \ac{MC} \\
+Stochastic approx. to integrals in Section~\ref{sec:chap2-background} \\
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Tally Types Needed for \ac{MGXS} Generation}
+\label{subsec:chap3-tally-types}
+
+\begin{itemize}[noitemsep]
+  \item recall flux separability approx.
+\end{itemize}
+
+\subsubsection{General Form}
+\label{subsubsec:chap3-gen-xs}
+
+\subsubsection{Total and Transport Cross Sections}
+\label{subsubsec:chap3-tot-xs}
+
+\subsubsection{Scattering Matrices}
+\label{subsubsec:chap3-scatt-mat}
+
+\begin{itemize}[noitemsep]
+  \item refer to adam/redmond's thesis for more details on scattering moments
+\end{itemize}
+
+\subsubsection{Fission Production Cross Sections}
+\label{subsubsec:chap3-fiss-prod}
+
+\subsubsection{Chi Fission Spectrum}
+\label{subsubsec:chap3-chi}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Uncertainty Propagation}
+\label{subsec:chap3-uncertainty-prop}
+
+\begin{itemize}[noitemsep]
+  \item uncertainty propagation eqns
+  \item need a reference
+  \item https://en.wikipedia.org/wiki/Propagation_of_uncertainty
+\end{itemize}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Review of Previous Efforts}
+\label{sec:chap3-lit-review}
 
 \begin{itemize}[noitemsep]
   \item \ac{MGXS} for coarse mesh diffusion
   \begin{itemize}[noitemsep]
+    \item Serpent
     \item Redmond
     \item Pounders
-    \item Serpent
   \end{itemize}
   \item \ac{MGXS} for fine mesh transport
   \begin{itemize}[noitemsep]
@@ -27,11 +105,13 @@
   \end{itemize}
 \end{itemize}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Spatial Self-Shielding Treatment}
-\label{sec:chap2-spatial-shield}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{A New Approach: A Latent Variable Model}
+\label{sec:chap3-latent-variables}
 
 \begin{itemize}[noitemsep]
+  \item tally ``noise'' model
   \item spatial self-shielding treatment is natural in \ac{MC}
   \item challenge is slow convergence rate
   \item motivate clustering
