@@ -67,42 +67,42 @@ Each of the three estimators -- analog, collision and track-length -- may be use
 \subsection{Sample Statistics}
 \label{subsec:chap3-mc-stats}
 
-\begin{itemize}[noitemsep]
-  \item should the statistics be presented earlier?
-  \item batch statistics
-  \item sample mean (Eqn. (11))
-  \item variance of the population (Eqn. (14)
-  \item variance of the mean (Eqn. (17))
-  \item root mean square convergence rate - mention correlation
-\end{itemize}
+As discussed in the preceding section, \ac{MC} performs stochastic integration with one of a number of different estimators. In each case, the tally estimator $\hat{\mathcal{T}}$ is computed as a sample mean
 
-
-\begin{dmath}
+\begin{equation}
 \label{eqn:chap3-sample-mean}
 \bar{x} = \frac{1}{N} \displaystyle\sum\limits_{i=1}^{N} x_{i}
-\end{dmath}
+\end{equation}
 
-unbiased estimate of the sample variance:
+\noindent where each of the $N$ samples is given by a random variable $x_{i}$. For \ac{MC} codes such as OpenMC which use batch-based statistics, $N$ is the number of batches of particles simulated and $x_{i}$ is the tally estimator for the $i$\textsuperscript{th} batch of particles. 
 
-\begin{dmath}
+Each of the random variables $x_{i}$ is sampled from some probability distribution representative of the physics in the simulation. If each batch of particles is independent, then the distribution is normal and $x_{i} \sim \mathcal{N}(\mu,\sigma^{2})$ where $\mathcal{N}(\mu,\sigma^{2})$ signifies a normal distribution with mean $\mu$ and variance $\sigma^{2}$. An unbiased estimate of the variance $\sigma^{2}$ of the distribution from which the population of $x_{i}$ are drawn may be estimated using Bessel's correction for the sample variance $s^{2}$:
+
+\begin{equation}
 \label{eqn:chap3-variance-sample}
 s^{2} = \frac{1}{N-1}\displaystyle\sum\limits_{i=1}^{N}\left(x_{i} - \bar{x}\right)^{2}
-\end{dmath}
+\end{equation}
 
-unbiased estimate of the variance of the mean:
+\noindent As $N \rightarrow \infty$ the population variance estimator will approach the true variance of the underlying distribution. In the case of batch-based statistics, the variance $\sigma^{2}$ will be determined by the number of particles simulated per batch -- the more particle histories simulated per batch, the smaller $\sigma^{2}$ will be, and vice versa.
 
-\begin{dmath}
+In general, it is more useful to quantify the uncertainty of a tally estimator than it is to compute the sample variance. The variance of the sample mean is representative of the distribution from which the random variable $\bar{x}$ is drawn and indicates the degree of confidence one may have in a tally estimator. An unbiased estimate of the variance of the sample mean can be derived from the Bienaym\'{e} formula to give:
+
+\begin{equation}
 \label{eqn:chap3-variance-mean}
 s_{\bar{x}}^{2} = \frac{1}{N-1}\left(\frac{1}{N}\displaystyle\sum\limits_{i=1}^{N}
 x_{i}^{2} - \bar{x}^2\right)
-\end{dmath}
+\end{equation}
+
+\begin{itemize}[noitemsep]
+  \item root mean square convergence rate - mention correlation
+\end{itemize}
 
 The standard deviation will decrease in proportion to $s_{\bar{x}} \propto \nicefrac{1}{\sqrt{N}}$
 
-\begin{dmath}
+\begin{equation}
 \label{eqn:chap3-conv-rate}
 s_{\bar{x}} = \frac{\sigma}{\sqrt{N}} \approx \frac{s}{\sqrt{N}}
-\end{dmath}
+\end{equation}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
