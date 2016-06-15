@@ -1,7 +1,7 @@
 \chapter{MGXS Generation with Monte Carlo}
 \label{chap:mgxs-mc}
 
-In the preceding chapter it was observed that many approximations are made in multi-group theory and the generation of multi-group cross sections. Monte Carlo is an approach to replace some of the steps in the standard multi-level framework for \ac{MGXS} generation with a natural and reactor agnostic treatment of energy and spatial self-shielding. This chapter presents a brief overview of \ac{MC} tallies and statistics in Sec.~\ref{sec:chap3-mc-overview} and \ac{MGXS} generation with \ac{MC} in Sec.~\ref{sec:chap3-mgxs-gen}. Sec.~\ref{sec:chap3-lit-review} discusses past work to apply \ac{MC} for \ac{MGXS} generation, while Sec.~\ref{sec:chap3-latent-variables} introduces a new approach based on a latent variable model for spatial self-shielding.
+In the preceding chapter it was observed that many approximations are made in multi-group theory and the generation of multi-group cross sections. Monte Carlo is an approach to replace some of the steps in the standard multi-level framework for \ac{MGXS} generation with a natural and reactor agnostic treatment of energy and spatial self-shielding. This chapter presents a brief overview of \ac{MC} tallies and statistics in Sec.~\ref{sec:chap3-mc-overview}, and Sec.~\ref{sec:chap3-mgxs-gen} outlines the necessary computation needed to generate \ac{MGXS} with \ac{MC}. Sec.~\ref{sec:chap3-lit-review} discusses past work to apply \ac{MC} for \ac{MGXS} generation, while Sec.~\ref{sec:chap3-latent-variables} introduces a new approach based on a latent variable model for spatial self-shielding.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -14,63 +14,53 @@ Monte Carlo methods have been successfully applied to neutron transport calculat
 \subsection{Monte Carlo Tallies}
 \label{subsec:chap3-mc-tallies}
 
-\ac{MC} simulations method are used to sample the particle distribution in order to compute integral quantities of interest called \textit{tallies}. A tally is an integral of a \textit{scoring function} $f$ weighted by the neutron distribution, or flux, across some region of phase space. A general form for tally $\mathcal{T}$ is given by the following integral expression:
+\ac{MC} simulations sample the particle distribution in order to compute integral quantities of interest called \textit{tallies}. A tally is an integral of a \textit{scoring function} $f$ weighted by the neutron distribution, or flux, across some region of phase space. A general form for tally $\mathcal{T}$ is given by the following integral expression:
 
 \begin{dmath}
 \label{eqn:chap3-tallies-general}
 \mathcal{T} = \int_{V} \int_{S} \int_{E}  f(\mathbf{r},\mathbf{\Omega},E)\psi(\mathbf{r},\mathbf{\Omega},E)\mathrm{d}E\mathrm{d}\mathbf{\Omega}\mathrm{d}\mathbf{r} 
 \end{dmath}
 
-In OpenMC parlance, the integration bounds over space, angle and energy are termed \textit{filters}, while the scoring function $f$ is simply known as a \textit{score}. Various scores may be used to compute volume-integrated flux, reaction rates, functional expansions and more. \ac{MC} does not perform the integration in Eqn.~\ref{eqn:chap3-tallies-general} with the exact flux specified at all points in phase space. Instead, \ac{MC} performs stochastic integration by sampling the particle population across the entirety of phase space to compute a \textit{statistical estimate} $\hat{\mathcal{T}}$ of the true integral $\mathcal{T}$.
+In OpenMC parlance, the integration bounds over space, angle and energy are termed \textit{filters}, while the scoring function $f$ is simply known as a \textit{score}. Various scores may be used to compute volume-integrated fluxes, reaction rates, functional expansions and more. \ac{MC} does not perform the integration in Eqn.~\ref{eqn:chap3-tallies-general} with the exact flux specified at all points in phase space. Instead, \ac{MC} performs stochastic integration by sampling the particle population across the entirety of phase space to compute a \textit{statistical estimate} $\hat{\mathcal{T}}$ of the true integral $\mathcal{T}$.
 
-There are a number of different techniques to estimate a tally $T$. The first and most general method is known as an \textit{analog estimator}. An analog estimator $\hat{\mathcal{T}}$ increments a tally $\mathcal{\hat{T}}$ by the particle weight $w_{i}$ each time an event $i$ occurs from the set of all events of interest $A$ (\textit{e.g.}, fission events). The sum of particle weights is then normalized by the total weight of all particles $W$ to compute the interaction frequency on a per-particle basis within the phase space volume of interest:
+There are a number of different techniques to estimate a tally. The first and most general method is known as an \textit{analog estimator}. An analog estimator $\hat{\mathcal{T}}$ increments a tally by the particle weight $w_{i}$ each time an event $i$ occurs from the set of all events of interest $A$ (\textit{e.g.}, fission events). The sum of particle weights is then normalized by the total weight of all particles $W$ to compute the interaction frequency on a per-particle basis within the phase space volume of interest:
 
 \begin{dmath}
 \label{eqn:chap3-tallies-analog}
 \hat{\mathcal{T}} = \frac{1}{W}\displaystyle\sum\limits_{i \in A} w_{i}
 \end{dmath}
 
-\noindent Although analog estimators permit general filters and scoring functions, they may suffer from poor tallying efficiency if the size of set $A$ is very small compared to the total number of events in a simulation. A \textit{collision estimator} may improve the tallying efficiency by incrementing a tally more frequently than is typically possible with analog estimators. In particular, a collision estimator increments a tally at each collision $i$ that occurs in the phase space of interest $C$. By noting that the total collision rate is given by $R_{t} = \Sigma_{t}\phi$, a collision estimator for the flux $\hat{\phi}$ may be simply defined by dividing by the total macroscopic cross section $\Sigma_{t}$:
+Although analog estimators permit general filters and scoring functions, they may suffer from poor tallying efficiency if the size of set $A$ is very small compared to the total number of events in a simulation. A \textit{collision estimator} improves the tallying efficiency by incrementing a tally more frequently than is possible with analog estimators. In particular, a collision estimator increments a tally at each collision $i$ from the set of all collisions $C$ irregardless of the types of collisions that took place. By noting that the total collision rate is given by $R_{t} = \Sigma_{t}\phi$, a collision estimator for the flux $\hat{\phi}$ may be simply defined by dividing the particle weights by the total macroscopic cross section:
 
 \begin{dmath}
 \label{eqn:chap3-tallies-collision-flux}
 \hat{\phi} = \frac{1}{W}\displaystyle\sum\limits_{i \in C}\frac{w_{i}}{\Sigma_{t}(E_{i})}
 \end{dmath}
 
-\noindent The collision estimator depends on the energy of the incoming particle $E_{i}$ in order to scale the particle weight by the energy-dependent total cross section. It directly follows that the collision estimator for a reaction rate $\hat{\mathcal{R}}_{x}$ is the product of the flux in Eqn.~{eqn:chap3-tallies-collision-flux} and the cross section for the reaction type $x$ of interest:
+\noindent The collision estimator depends on the energy of the incoming particle $E_{i}$ in order to scale the particle weight by the energy-dependent total cross section. It follows that the collision estimator for a reaction rate $\hat{\mathcal{R}}_{x}$ is the product of the flux in Eqn.~\ref{eqn:chap3-tallies-collision-flux} and the cross section for the reaction type $x$ of interest:
 
 \begin{dmath}
 \label{eqn:chap3-tallies-collision-rxn}
 \hat{\mathcal{R}}_{x} = \frac{1}{W}\displaystyle\sum\limits_{i \in C}\frac{w_{i}\Sigma_{x}(E_{i})}{\Sigma_{t}(E_{i})}
 \end{dmath}
 
--introduce R=sigma phi early on?
--then introduce analog, collision and tracklenghth estimates for flux and rxn rates?
-
-fourth paragraph:
--introduce tracklength tallies
-
-final paragraph:
--segue into statistics by comparision the statistics of each tally type
-
-\begin{itemize}[noitemsep]
-  \item analog vs. collision vs. tracklength tallies (Eqns. (2), (4), (9))
-\end{itemize}
-
-Use $i$ here? It is used to index nuclides\\
-Need to define $W$ and $w_{i}$\\
-
-Tracklength tallies - need to define $T$ as set of all particle trajectories within volume of interest
+The collision estimator increases the number of events in $C$ to improve the tallying efficiency with respect to analog tallies. A third known as \textit{track-length estimators} goes one step further and increments a tally each time a particle trajectory crosses the phase space of interest (\textit{e.g.}, a spatial tally mesh zone) even if a collision did not take place. The track-length estimator makes use of a particle's distance travelled $\Delta\mathbf{r}$ to estimate the flux. A track-length estimator of the flux is therefore:
 
 \begin{dmath}
 \label{eqn:chap3-tallies-tracklength-flux}
   \hat{\phi} = \frac{1}{W}\displaystyle\sum\limits_{i \in T}w_{i}\Delta\mathbf{r}_{i}
 \end{dmath}
 
+\noindent where the set $T$ represents each particle trajectory through the phase space volume of interest. Similarly, a track-length estimate of a reaction rate $x$ can be found from simply multiplying the flux in Eqn.~\ref{eqn:chap3-tallies-tracklength-flux} by the cross section:
+
 \begin{dmath}
 \label{eqn:chap3-tallies-tracklength-rxn}
   \hat{\mathcal{R}}_{x} = \frac{1}{W}\displaystyle\sum\limits_{i \in T}w_{i}\Delta\mathbf{r}_{i}\Sigma_{x}(E_{i})
 \end{dmath}
+
+The tallying efficiency for track-length estimators is greatly improved by incrementing a tally for each particle trajectory. As a result, the confidence intervals are generally much tighter for track-length estimators than those for analog and collision estimators. 
+
+Each of the three estimators -- analog, collision and track-length -- may be useful for different scenarios. Although track-length and collision estimators improve statistics over analog estimates, they cannot be employed for all types of filters. For example, track-length tallies may not be used if the scoring function requires information about the outgoing particle since this is not available unless a collision took place. As discussed in Sec.~\ref{sec:chap3-mgxs-gen}, a mixture of estimators which tradeoff generality with efficiency must be used to generate \ac{MGXS} from \ac{MC} tallies.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -78,6 +68,7 @@ Tracklength tallies - need to define $T$ as set of all particle trajectories wit
 \label{subsec:chap3-mc-stats}
 
 \begin{itemize}[noitemsep]
+  \item should the statistics be presented earlier?
   \item batch statistics
   \item sample mean (Eqn. (11))
   \item variance of the population (Eqn. (14)
