@@ -48,31 +48,7 @@
 \newcolumntype{C}[1]{>{\centering\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
 \newcolumntype{R}[1]{>{\raggedleft\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
 
-
-\usepackage{tabu}
-\usepackage{ctable}
-
-\newcommand{\thickcline}[1]{%
-    \@thickcline #1\@nil%
-}
-
-\def\@thickcline#1-#2\@nil{%
-  \omit
-  \@multicnt#1%
-  \advance\@multispan\m@ne
-  \ifnum\@multicnt=\@ne\@firstofone{&\omit}\fi
-  \@multicnt#2%
-  \advance\@multicnt-#1%
-  \advance\@multispan\@ne
-  \leaders\hrule\@height1pt\hfill
-  \cr
-  \noalign{\vskip-1pt}%
-}
-
-\newcommand{\thickhline}{%
-  \noalign {\ifnum 0=`}\fi \hrule height 1pt
-  \futurelet \reserved@a \@xhline
-}
+\newcommand\numberthis{\addtocounter{equation}{1}\tag{\theequation}}
 
 % Define colors for table rows
 \definecolor{lightgreen}{rgb}{0.56, 0.93, 0.56}
