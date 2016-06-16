@@ -177,7 +177,7 @@ mention that the flux separability is used and hence the angle is dropped
 
 \begin{equation}
 \label{eqn:chap3-scatter-macro}
-\hat{\Sigma}_{s,k} = \frac{\langle \Sigma_{s0}, \psi \rangle_{k,g'\rightarrow g}^{a}}{\langle \psi \rangle_{k,g'}^{a}}
+\hat{\Sigma}_{s,k,g} = \frac{\langle \Sigma_{s0}, \psi \rangle_{k,g'\rightarrow g}^{a}}{\langle \psi \rangle_{k,g'}^{a}}
 \end{equation}
 
 -in-scatter approximation:
@@ -218,13 +218,15 @@ mention that the flux separability is used and hence the angle is dropped
 \subsubsection{Summary}
 \label{subsubsec:chap3-tally-types-summary}
 
+%\renewcommand{\arraystretch}{1.5}
+
 \begin{table}[h!]
   \centering
   \caption[Tally types for \ac{MGXS} generation]{The types of tallies used in \ac{MGXS} generation with Monte Carlo.}
   \scriptsize
   \label{table:chap3-tally-types}
   \vspace{6pt}
-  \begin{tabular}{| c | c | C{1.5cm} C{2cm} C{2.5cm} C{1.5cm} |}
+  \begin{tabular}{ m{1.3cm} m{1cm} m{2cm} m{2.5cm} m{2.5cm} m{1.5cm} }
   \toprule
   {\bf Name} &
   {\bf Symbol} &
@@ -232,25 +234,56 @@ mention that the flux separability is used and hence the angle is dropped
   {\bf Score} &
   {\bf Filters} &
   {\bf Estimator} \\
-  \midrule
-  \multirow{2}{*}{\bf General} & \multirow{2}{*}{$\hat{\Sigma}_{x,k,g}$} & $\langle \Sigma_{x}, \psi \rangle_{k,g}$ & reaction $x$ & \parbox{2cm}{\centering \texttt{cell}/\texttt{material} \texttt{energy}} & \texttt{tracklength} \\
+
+  \specialrule{.1em}{.1em}{.1em}
+
+  \multirow{2}{*}[-0.7em]{\bf General} & \multirow{2}{*}[-0.7em]{$\hat{\Sigma}_{x,k,g}$} & $\langle \Sigma_{x}, \psi \rangle_{k,g}$ & reaction $x$ & \parbox{2cm}{\texttt{material}/\texttt{cell} \texttt{energy}} & \texttt{tracklength} \\
   \cline{3-6}
-  & & $\langle \psi \rangle_{k,g}$ & {\centering \texttt{flux}} & \parbox{2cm}{\centering \texttt{cell}/\texttt{material} \texttt{energy}} & \texttt{tracklength} \\
-  \midrule
-  \multirow{2}{*}{\bf Total} & \multirow{2}{*}{$\hat{\Sigma}_{t,k,g}$} & $\langle \Sigma_{x}, \psi \rangle_{k,g}$ & \texttt{total} & \parbox{2cm}{\centering \texttt{cell}/\texttt{material} \texttt{energy}} & \texttt{tracklength} \\
+  & & $\langle \psi \rangle_{k,g}$ & {\texttt{flux}} & \parbox{2cm}{\texttt{material}/\texttt{cell} \texttt{energy}} & \texttt{tracklength} \\
+
+  \specialrule{.1em}{.1em}{.1em}
+
+  \multirow{2}{*}[-0.7em]{\bf Total} & \multirow{2}{*}[-0.7em]{$\hat{\Sigma}_{t,k,g}$} & $\langle \Sigma_{t}, \psi \rangle_{k,g}$ & \texttt{total} & \parbox{2cm}{\texttt{material}/\texttt{cell} \texttt{energy}} & \texttt{tracklength} \\
   \cline{3-6}
-  & & $\langle \psi \rangle_{k,g}$ & \texttt{flux} & \parbox{2cm}{\centering \texttt{cell}/\texttt{material} \texttt{energy}} & \texttt{tracklength} \\
-  \midrule
-  \multirow{2}{*}{\parbox{1.5cm}{\centering \bf Fission Production}} & \multirow{2}{*}{$\hat{\nu\Sigma}_{f,k,g}$} & $\langle \nu\Sigma_{f}, \psi \rangle_{k,g'\rightarrow g}$ & \texttt{nu-fission} & \parbox{2cm}{\centering \texttt{cell}/\texttt{material} \texttt{energy}} & \texttt{tracklength} \\
+  & & $\langle \psi \rangle_{k,g}$ & \texttt{flux} & \parbox{2cm}{\texttt{material}/\texttt{cell} \texttt{energy}} & \texttt{tracklength} \\
+
+  \specialrule{.2em}{.1em}{.1em}
+
+  \multirow{3}{*}[-1em]{\parbox{1.5cm}{\bf Transport-Corrected Total}} & \multirow{3}{*}[-1em]{$\hat{\tilde{\Sigma}}_{t,k,g}$} & $\langle \Sigma_{t}, \psi \rangle_{k,g}$ & \texttt{total} & \parbox{2cm}{\texttt{material}/\texttt{cell} \texttt{energy}} & \texttt{analog} \\
   \cline{3-6}
-  & & $\langle \psi \rangle_{k,g}$ & \texttt{flux} & \parbox{2cm}{\centering \texttt{cell}/\texttt{material} \texttt{energy}} & \texttt{tracklength} \\
-  \midrule
-  \parbox{1.5cm}{\centering \bf Fission Spectrum} & $\hat{\chi}_{k,g}$ & $\langle \nu\Sigma_{f}, \psi \rangle_{k,g'\rightarrow g}$ & \texttt{nu-fission} & \parbox{2cm}{\centering \texttt{cell}/\texttt{material} \texttt{energy} \texttt{energyout}} & \texttt{analog} \\
+  & & $\langle \Sigma_{s1}, \psi \rangle_{k,g'\rightarrow g}$ & \texttt{nu-scatter-1} & \parbox{2cm}{\texttt{material}/\texttt{cell} \texttt{energyout}} & \texttt{analog} \\
+  \cline{3-6}
+  & & $\langle \psi \rangle_{k,g}$ & \texttt{flux} & \parbox{2cm}{ \texttt{material}/\texttt{cell} \texttt{energy}} & \texttt{analog} \\
+
+  \specialrule{.2em}{.1em}{.1em}
+
+  \multirow{2}{*}[-0.5em]{\parbox{1.5cm}{\bf Scattering Matrix}} & \multirow{2}{*}[-0.5em]{$\hat{\Sigma}_{s,k,g}$} & $\langle \Sigma_{s0}, \psi \rangle_{k,g'\rightarrow g}$ & \texttt{nu-scatter-0} & \parbox{2cm}{\texttt{material}/\texttt{cell} \texttt{energy} \texttt{energyout}} & \texttt{analog} \\
+  \cline{3-6}
+  & & $\langle \psi \rangle_{k,g}$ & \texttt{flux} & \parbox{2cm}{\texttt{material}/\texttt{cell} \texttt{energy}} & \texttt{analog} \\
+
+  \specialrule{.2em}{.2em}{.2em}
+
+  \multirow{3}{*}[-1em]{\parbox{1.5cm}{\bf Transport-Corrected Scattering Matrix}} & \multirow{3}{*}[-1em]{$\hat{\Sigma}_{s,k,g}$} & $\langle \Sigma_{s0}, \psi \rangle_{k,g'\rightarrow g}$ & \texttt{nu-scatter-0} & \parbox{2cm}{\texttt{material}/\texttt{cell} \texttt{energy} \texttt{energyout}} & \texttt{analog} \\
+  \cline{3-6}
+  & & $\langle \Sigma_{s1}, \psi \rangle_{k,g'\rightarrow g}$ & \texttt{nu-scatter-1} & \parbox{2cm}{\texttt{material}/\texttt{cell} \texttt{energyout}} & \texttt{analog} \\
+  \cline{3-6}
+  & & $\langle \psi \rangle_{k,g}$ & \texttt{flux} & \parbox{2cm}{\texttt{material}/\texttt{cell} \texttt{energy}} & \texttt{analog} \\
+
+  \specialrule{.2em}{.1em}{.1em}
+
+  \multirow{2}{*}[-0.5em]{\parbox{1.5cm}{\bf Fission \hspace{1cm} Production}} & \multirow{2}{*}[-0.5em]{$\hat{\nu\Sigma}_{f,k,g}$} & $\langle \nu\Sigma_{f}, \psi \rangle_{k,g'\rightarrow g}$ & \texttt{nu-fission} & \parbox{2cm}{\texttt{material}/\texttt{cell} \texttt{energy}} & \texttt{tracklength} \\
+  \cline{3-6}
+  & & $\langle \psi \rangle_{k,g}$ & \texttt{flux} & \parbox{2cm}{\texttt{material}/\texttt{cell} \texttt{energy}} & \texttt{tracklength} \\
+
+  \specialrule{.2em}{.1em}{.1em}
+  
+  \parbox{1.5cm}{\bf Fission Spectrum} & $\hat{\chi}_{k,g}$ & $\langle \nu\Sigma_{f}, \psi \rangle_{k,g'\rightarrow g}$ & \texttt{nu-fission} & \parbox{2cm}{\texttt{material}/\texttt{cell} \texttt{energy} \texttt{energyout}} & \texttt{analog} \\
   \midrule
 
 \end{tabular}
 \end{table}
 
+-probably should include capture here
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
