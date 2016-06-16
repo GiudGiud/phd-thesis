@@ -327,39 +327,74 @@ The energy group structure for energy condensation is specified by \texttt{energ
 \subsection{Uncertainty Propagation}
 \label{subsec:chap3-uncertainty-prop}
 
-\begin{itemize}[noitemsep]
-  \item uncertainty propagation eqns
-  \item need a reference
-  \item https://en.wikipedia.org/wiki/Propagation_of_uncertainty
-\end{itemize}
+As discussed in the preceding sections, \ac{MGXS} may be computed using arithmetic combinations of tally estimators for reaction rates and fluxes. Each tally estimator is a random variable with an associated uncertainty estimated by the variance of the sample mean in Eqn.~\ref{eqn:chap3-variance-mean}. As a result, each multi-group cross section computed for a spatial zone and energy group is itself a random variable from a distribution with some unknown variance. It is therefore usefult to estimate the uncertainty of \ac{MGXS} computed from \ac{MC} tallies in order to quantify whether the \ac{MGXS} are known with enough precision for accurate multi-group calculations. 
 
-define covariance\\
-two random variables $X$ and $Y$ with standard deviations $\sigma_{X}$ and $\sigma_{Y}$\\
+Estimates for the variance may be deduced from standard error propagation. Such analysis is widely discussed in the literature, and only a few of the key results necessary to estimate the variance for \ac{MGXS} will be presented here. The arithmetic combinations of interest for \ac{MGXS} generation include addition, subtraction, multiplication and division. 
+
+Consider two random variables $X$ and $Y$, generated from distributions with variances $\sigma_{X}^2$ and $\sigma_{Y}^2$ which are arithmetically combined into a new random variable $Z$ with variance $\sigma_{Z}^2$. The random variables $X$ and $Y$ may correspond to tallies for reaction rates and the flux, while $Z$ could correspond to a \ac{MGXS}. If $X$ is simply multiplied by some constant scalar $a$ to compute $Z$, then the variance $\sigma_{Z}^{2}$ is given by the following relation:
 
 \begin{equation}
-Z = aX \qquad,\qquad \sigma_{Z}^{2} = a^{2}\sigma_{X}^{2}
+\label{eqn:chap3-scalar-mult}
+Z = aX \qquad\Rightarrow\qquad \sigma_{Z}^{2} = a^{2}\sigma_{X}^{2}
+\end{equation}
+
+\noindent More generally, the following expressions can be derived for the variance $\sigma_{Z}^{2}$ for binary combinations of $X$ and $Y$:
+
+\begin{equation}
+\label{eqn:chap3-add}
+Z = X + Y \qquad\Rightarrow\qquad \sigma_{Z}^{2} = \sigma_{X}^{2} + \sigma_{Y}^{2} + 2\sigma_{XY}
 \end{equation}
 
 \begin{equation}
-Z = X + Y \qquad,\qquad \sigma_{Z}^{2} = \sigma_{X}^{2} + \sigma_{Y}^{2} + 2\sigma_{XY}
+\label{eqn:chap3-sub}
+Z = X - Y \qquad\Rightarrow\qquad \sigma_{Z}^{2} = \sigma_{X}^{2} + \sigma_{Y}^{2} - 2\sigma_{XY}
 \end{equation}
 
 \begin{equation}
-Z = X - Y \qquad,\qquad \sigma_{Z}^{2} = \sigma_{X}^{2} + \sigma_{Y}^{2} - 2\sigma_{XY}
+\label{eqn:chap3-mult}
+Z = XY \qquad\Rightarrow\qquad \sigma_{Z}^{2} \approx Z^{2}\left[\left(\frac{\sigma_{X}}{X}\right)^{2} + \left(\frac{\sigma_{Y}}{Y}\right)^{2} + 2\frac{\sigma_{XY}}{Z}\right]
 \end{equation}
 
 \begin{equation}
-Z = XY \qquad,\qquad \sigma_{Z}^{2} \approx Z^{2}\left[\left(\frac{\sigma_{X}}{X}\right)^{2} + \left(\frac{\sigma_{Y}}{Y}\right)^{2} + 2\frac{\sigma_{XY}}{Z}\right] \approx Z^{2}\left[\left(\frac{\sigma_{X}}{X}\right)^{2} + \left(\frac{\sigma_{Y}}{Y}\right)^{2}\right]
+\label{eqn:chap3-div}
+Z = \frac{X}{Y} \qquad\Rightarrow\qquad \sigma_{Z}^{2} \approx Z^{2}\left[\left(\frac{\sigma_{X}}{X}\right)^{2} + \left(\frac{\sigma_{Y}}{Y}\right)^{2} - 2\frac{\sigma_{XY}}{Z}\right]
+\end{equation}
+
+\noindent These expresssions are given in terms of the covariance $\sigma_{XY}$ of $X$ and $Y$:
+
+\begin{equation}
+\label{eqn:chap3-covariance}
+\sigma_{XY} = \mathbb{E}[(X - \mathbb{E}[X])(Y - \mathbb{E}[Y])]
+\end{equation}
+
+\noindent where $\mathbb{E}$ is the expectation operator. The covariance is not generally computable using the standard formulation for a tally estimator in a Monte Carlo simulation. Although it would be possible to estimate the covariance using ensemble statistics\footnote{The covariance could be estimated from the results of an ensemble of independent \ac{MC} simulations.}, this is not generally feasible or practical. Instead, the covariance terms in Eqns.~\Crefrange{eqn:chap3-add}{eqn:chap3-div} are neglected, resulting in the following approximate forms for the variance:
+
+\begin{equation}
+\label{eqn:chap3-add-approx}
+Z = X + Y \qquad\Rightarrow\qquad \sigma_{Z}^{2} \approx \sigma_{X}^{2} + \sigma_{Y}^{2}
 \end{equation}
 
 \begin{equation}
-Z = \frac{X}{Y} \qquad,\qquad \sigma_{Z}^{2} \approx Z^{2}\left[\left(\frac{\sigma_{X}}{X}\right)^{2} + \left(\frac{\sigma_{Y}}{Y}\right)^{2} - 2\frac{\sigma_{XY}}{Z}\right] \approx Z^{2}\left[\left(\frac{\sigma_{X}}{X}\right)^{2} + \left(\frac{\sigma_{Y}}{Y}\right)^{2}\right]
+\label{eqn:chap3-sub-approx}
+Z = X - Y \qquad\Rightarrow\qquad \sigma_{Z}^{2} \approx \sigma_{X}^{2} + \sigma_{Y}^{2}
 \end{equation}
+
+\begin{equation}
+\label{eqn:chap3-mult-approx}
+Z = XY \qquad\Rightarrow\qquad \sigma_{Z}^{2} \approx Z^{2}\left[\left(\frac{\sigma_{X}}{X}\right)^{2} + \left(\frac{\sigma_{Y}}{Y}\right)^{2}\right]
+\end{equation}
+
+\begin{equation}
+\label{eqn:chap3-div-approx}
+Z = \frac{X}{Y} \qquad\Rightarrow\qquad \sigma_{Z}^{2} \approx Z^{2}\left[\left(\frac{\sigma_{X}}{X}\right)^{2} + \left(\frac{\sigma_{Y}}{Y}\right)^{2}\right]
+\end{equation}
+
+\noindent In general, the random variables for reaction rates and fluxes in the same volume of phase space are highly correlated, and neglecting the covariance leads to a poor approximation for the variance of \ac{MGXS}. However, it should be noted that division is the primary operation needed to combine tallies to compute \ac{MGXS}. Since the reaction rates and flux tallies have a positive correlation, the covariance term in Eqn.~\ref{eqn:chap3-div} reduces the estimate of the covariance. It follows that Eqn.~\ref{eqn:chap3-div-approx} generally provides a conservative estimate of the variance for \ac{MGXS} generated from \ac{MC} tallies.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Review of Previous Efforts}
-\label{sec:chap3-lit-review}
+\label{sec:chap3-lit-review}b
 
 \begin{itemize}[noitemsep]
   \item \ac{MGXS} for coarse mesh diffusion
