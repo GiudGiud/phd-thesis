@@ -97,7 +97,7 @@ The key observation is that the standard deviation of the sample mean varies as 
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{\ac{MGXS} Generation with Monte Carlo}
+\section{MGXS Generation with Monte Carlo}
 \label{sec:chap3-mgxs-gen}
 
 This section describes how multi-group cross sections may be computed using stochastic integration. Sec.~\ref{subsec:chap3-tally-types} outlines the types of OpenMC tallies needed to generate \ac{MGXS} for -- including the scores, filters and estimators for each tally -- and the arithmetic combinations used to combine different tallies. Sec.~\ref{subsec:chap3-uncertainty-prop} illustrates how the uncertainties of the \ac{MGXS} may be estimated using error propagation theory.
@@ -136,7 +136,7 @@ The following sections use angle bracket notation $\langle \cdot , \cdot \rangle
 Finally, the superscripts $a$ and $t\ell$ are given to those inner products computed with analog and track-length estimators, respectively -- \textit{i.e.}, $\langle \cdot,\cdot \rangle^{a}$ is an analog tally estimator and $\langle \cdot,\cdot \rangle^{t\ell}$ is a track-length tally estimator of the corresponding inner products.
 
 
-\subsubsection{General Reaction Cross Sections}
+\subsubsection{General Reaction Cross Section}
 \label{subsubsec:chap3-gen-xs}
 
 A general spatially homogenized and energy condensed macroscopic multi-group cross section for reaction $x$, spatial zone $k$, energy group $g$ can be computed with track-length tally estimators in OpenMC. The \ac{MGXS} is simply the ratio of the group-wise reaction rates $\langle \Sigma_{x}, \psi \rangle_{k,g}^{t\ell}$ and fluxes $\langle \Sigma_{x}, \psi \rangle_{k,g}^{t\ell}$:
@@ -220,7 +220,7 @@ The isotropic scattering matrix is computed with an inner product of scattering 
 %\end{equation}
 
 
-\subsubsection{Fission Production}
+\subsubsection{Fission Production Cross Section}
 \label{subsubsec:chap3-tally-types-fiss-prod}
 
 The fission production cross section was condensed in Eqn.~\ref{eqn:chap2-nusifg} to make it independent of the energies of the neutrons emitted from fission. It is therefore straightforward to treat the fission product macroscopic cross section $\nu\Sigma_{f}$ as a special case of Eqn.~\ref{eqn:chap3-general-micro}, with track-length estimators for the total collision rate and flux:
@@ -231,7 +231,7 @@ The fission production cross section was condensed in Eqn.~\ref{eqn:chap2-nusifg
 \end{equation}
 
 
-\subsubsection{Fission Spectrum}
+\subsubsection{Fission Energy Spectrum}
 \label{subsubsec:chap3-tally-types-chi}
 
 Unlike the fission production cross section, the fission spectrum is dependent on the outgoing neutron energy and must be computed with analog estimators. The fission production matrix from group $g$ into group $g'$ is given by the following inner product:
