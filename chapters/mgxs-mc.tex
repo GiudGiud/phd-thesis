@@ -104,10 +104,13 @@ This section describes how multi-group cross sections may be computed using stoc
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Tally Types Needed for \ac{MGXS} Generation}
+\subsection{Tally Types Needed for \ac{MGXS} Libraries}
 \label{subsec:chap3-tally-types}
 
 The types of \ac{MGXS} needed to solve the neutron transport equation were outlined in Chap.~\ref{chap:mgxs}, including expressions for the transport corrected total cross section and scattering matrix, and the fission production cross section and spectrum. This section outlines the types of tallies needed to compute these \ac{MGXS}. It is important to note that the flux separability approximation (Sec.~\ref{subsec:chap2-angle}) is applied in the tally formulations for each of the group constants.
+
+\subsubsection{Inner Product Notation}
+\label{subsec:chap3-tally-types-notation}
 
 The following sections use angle bracket notation $\langle \cdot , \cdot \rangle$ to represent inner products in phase space. This may correspond to integrals over incoming and/or outgoing energy, space, and angle. Using this notation, a tally estimator for reaction rate $x$ is represented as follows: 
 
@@ -133,69 +136,94 @@ The following sections use angle bracket notation $\langle \cdot , \cdot \rangle
 Finally, the superscripts $a$ and $t\ell$ are given to those inner products computed with analog and track-length estimators, respectively -- \textit{i.e.}, $\langle \cdot,\cdot \rangle^{a}$ is an analog tally estimator and $\langle \cdot,\cdot \rangle^{t\ell}$ is a track-length tally estimator of the corresponding inner products.
 
 
-\subsubsection{General Reactions}
+\subsubsection{General Reaction Cross Sections}
 \label{subsubsec:chap3-gen-xs}
+
+A general spatially homogenized and energy condensed macroscopic multi-group cross section for reaction $x$, spatial zone $k$, energy group $g$ can be computed with track-length tally estimators in OpenMC. The \ac{MGXS} is simply the ratio of the group-wise reaction rates $\langle \Sigma_{x}, \psi \rangle_{k,g}^{t\ell}$ and fluxes $\langle \Sigma_{x}, \psi \rangle_{k,g}^{t\ell}$:
 
 \begin{equation}
 \label{eqn:chap3-general-macro}
 \hat{\Sigma}_{x,k,g} = \frac{\langle \Sigma_{x}, \psi \rangle_{k,g}^{t\ell}}{\langle \psi \rangle_{k,g}^{t\ell}}
 \end{equation}
 
+\noindent Likewise, a microscopic \ac{MGXS} for nuclide $i$ can be computed as follows:
+
 \begin{equation}
 \label{eqn:chap3-general-micro}
 \hat{\sigma}_{x,i,k,g} = \frac{\langle \sigma_{x,i}, \psi \rangle_{k,g}^{t\ell}}{\langle \psi \rangle_{k,g}^{t\ell}}
 \end{equation}
 
+These estimators are used for reaction types which are only dependent on the incoming energy of a neutron, such as total and radiative capture reactions.
 
 
-\subsubsection{Total and Transport}
+\subsubsection{Total Cross Section}
 \label{subsubsec:chap3-tally-types-tot-xs}
+
+The total macroscopic cross section $\Sigma_{t}$ is a special case of Eqn.~\ref{eqn:chap3-general-micro}, with track-length estimators for the total collision rate and flux:
 
 \begin{equation}
 \label{eqn:chap3-total-macro}
 \hat{\Sigma}_{t,k,g} = \frac{\langle \Sigma_{t}, \psi \rangle_{k,g}^{t\ell}}{\langle \psi \rangle_{k,g}^{t\ell}}
 \end{equation}
 
--in-scatter approximation for transport correction:
+As discussed in Sec.~\ref{subsec:chap2-transport-corr}, a transport correction is often used to incorporate anisotropic scattering effects into the transport equation with an isotropic scattering kernel. An expression for the in-scatter approximation~\cite{yamamoto2008simplified} to the transport correction can be computed with an OpenMC tally for the first Legendre scattering moment\footnote{It is assumed that scattering multiplicity is included in the scattering moments as discussed in Sec.~\ref{sec:chap2-scatt-prod}.}. The inner product for this tally is given by:
 
 \begin{equation}
 \label{eqn:chap3-sigs1}
-\langle \Sigma_{s1}, \psi \rangle_{k,g'\rightarrow g} = \int_{\mathbf{r} \in V_{k}} \int_{4\pi} \int_{E_{g}}^{E_{g-1}} \int_{E_{g'}}^{E_{g'-1}} \Sigma_{s1}(\mathbf{r},E'\rightarrow E)\psi(\mathbf{r},E,\mathbf{\Omega}) \mathrm{d}E'\mathrm{d}E\mathrm{d}\mathbf{\Omega}\mathrm{d}\mathbf{r}
+\langle \Sigma_{s1}, \psi \rangle_{k,g'\rightarrow g} = \int_{\mathbf{r} \in V_{k}} \int_{4\pi} \int_{E_{g}}^{E_{g-1}} \int_{E_{g'}}^{E_{g'-1}} \Sigma_{s1}(\mathbf{r},E'\rightarrow E)\psi(\mathbf{r},E',\mathbf{\Omega}) \mathrm{d}E'\mathrm{d}E\mathrm{d}\mathbf{\Omega}\mathrm{d}\mathbf{r}
 \end{equation}
 
+\noindent An analog estimator must be used in OpenMC since the tally includes an integral over the outgoing neutron energy. The spatially homogenized and energy condensed transport corrected total cross section given in Eqn.~\ref{eqn:chap2-transport-xs} is computed by summing over all incoming energy groups:
+
 \begin{equation}
-\label{eqn:chap3-transport-macro}
-\hat{\tilde{\Sigma}}_{t,k,g} = \frac{\langle \Sigma_{t}, \psi \rangle_{k,g}^{a} - \displaystyle\sum\limits_{g'=1}^{G} \langle{\Sigma_{s1}, \psi \rangle_{k,g'\rightarrow g'}^{a}}}
-{\langle \psi \rangle_{k,g}^{a}}
+\label{eqn:chap3-transport-corr-macro}
+\Delta\hat{\Sigma}_{tr,k,g} = \displaystyle\sum\limits_{g'=1}^{G} \langle{\Sigma_{s1}, \psi \rangle_{k,g'\rightarrow g}^{a}}
 \end{equation}
+
+\noindent The transport correction is then subtracted from the group-wise total collision rate and normalized by the flux to compute the transport-corrected total cross section:
+
+\begin{equation}
+\label{eqn:chap3-sigt-transport-macro}
+\hat{\tilde{\Sigma}}_{t,k,g} = \frac{\langle \Sigma_{t}, \psi \rangle_{k,g}^{a} - \Delta\hat{\Sigma}_{tr,k,g}}{\langle \psi \rangle_{k,g}^{a}}
+\end{equation}
+
+\noindent Note that since the transport correction must be computed using an analog estimator, the total collision and flux in Eqn.~\ref{eqn:chap3-sigt-transport-macro} must also be computed with analog estimators.
 
 
 \subsubsection{Scattering Matrix}
 \label{subsubsec:chap3-tally-types-scatt-mat}
+
+The isotropic scattering matrix is computed with an inner product of scattering reactions over both incoming and outgoing energies. An analog estimator must be used since the integral is dependent on the neutron's outgoing energy. Similar to the first Legendre moment in Eqn.~\ref{eqn:chap3-sigs1}, the isotropic scattering moment is given by the following expression:
 
 \begin{equation}
 \label{eqn:chap3-sigs0}
 \langle \Sigma_{s0}, \psi \rangle_{k,g'\rightarrow g} = \int_{\mathbf{r} \in V_{k}} \int_{4\pi} \int_{E_{g}}^{E_{g-1}} \int_{E_{g'}}^{E_{g'-1}} \Sigma_{s0}(\mathbf{r},E'\rightarrow E)\psi(\mathbf{r},E,\mathbf{\Omega}) \mathrm{d}E'\mathrm{d}E\mathrm{d}\mathbf{\Omega}\mathrm{d}\mathbf{r}
 \end{equation}
 
+\noindent The isotropic scattering matrix is then:
+
 \begin{equation}
 \label{eqn:chap3-scatter-macro}
 \hat{\Sigma}_{s,k,g} = \frac{\langle \Sigma_{s0}, \psi \rangle_{k,g'\rightarrow g}^{a}}{\langle \psi \rangle_{k,g'}^{a}}
 \end{equation}
 
--in-scatter approximation:
+\noindent The transport correction in Eqn.~\ref{eqn:chap3-transport-corr-macro} can be applied by subtracting it off the diagonal elements in the matrix to compute the transport-corrected scattering matrix:
 
 \begin{equation}
 \label{eqn:chap3-scatter-trans-macro}
-\hat{\tilde{\Sigma}}_{s,k,g'\rightarrow g} = \frac{\langle \Sigma_{s0}, \psi \rangle_{k,g'\rightarrow g}^{a} - \delta_{g,g'} \displaystyle\sum\limits_{g''=1}^{G} \langle{\Sigma_{s1}, \psi \rangle_{k,g''\rightarrow g}^{a}}}{\langle \psi \rangle_{k,g'}^{a}}
+\hat{\tilde{\Sigma}}_{s,k,g'\rightarrow g} = \frac{\langle \Sigma_{s0}, \psi \rangle_{k,g'\rightarrow g}^{a} - \delta_{g,g'} \Delta\hat{\Sigma}_{tr,k,g}}{\langle \psi \rangle_{k,g'}^{a}}
 \end{equation}
 
-\begin{itemize}[noitemsep]
-  \item refer to adam/redmond's thesis for more details on scattering moments
-\end{itemize}
+%\begin{equation}
+%\label{eqn:chap3-scatter-trans-macro}
+%\hat{\tilde{\Sigma}}_{s,k,g'\rightarrow g} = \frac{\langle \Sigma_{s0}, \psi \rangle_{k,g'\rightarrow g}^{a} - \delta_{g,g'} \displaystyle\sum\limits_{g''=1}^{G} \langle{\Sigma_{s1}, \psi \rangle_{k,g''\rightarrow g}^{a}}}{\langle \psi \rangle_{k,g'}^{a}}
+%\end{equation}
+
 
 \subsubsection{Fission Production}
 \label{subsubsec:chap3-tally-types-fiss-prod}
+
+The fission production cross section was condensed in Eqn.~\ref{eqn:chap2-nusifg} to make it independent of the energies of the neutrons emitted from fission. It is therefore straightforward to treat the fission product macroscopic cross section $\nu\Sigma_{f}$ as a special case of Eqn.~\ref{eqn:chap3-general-micro}, with track-length estimators for the total collision rate and flux:
 
 \begin{equation}
 \label{eqn:chap3-nu-fiss-macro}
@@ -206,26 +234,34 @@ Finally, the superscripts $a$ and $t\ell$ are given to those inner products comp
 \subsubsection{Fission Spectrum}
 \label{subsubsec:chap3-tally-types-chi}
 
+Unlike the fission production cross section, the fission spectrum is dependent on the outgoing neutron energy and must be computed with analog estimators. The fission production matrix from group $g$ into group $g'$ is given by the following inner product:
+
 \begin{equation}
 \label{eqn:chap3-nu-fiss-energies}
 \langle \nu\Sigma_{f}, \psi \rangle_{k,g'\rightarrow g} = \int_{\mathbf{r} \in V_{k}} \int_{4\pi} \int_{E_{g}}^{E_{g-1}} \int_{E_{g'}}^{E_{g'-1}} \nu\Sigma_{f}(\mathbf{r},E'\rightarrow E)\psi(\mathbf{r},E,\mathbf{\Omega}) \mathrm{d}E'\mathrm{d}E\mathrm{d}\mathbf{\Omega}\mathrm{d}\mathbf{r}
 \end{equation}
 
+\noindent The fission spectrum in Eqn.~\ref{eqn:chap2-nusifg} can then be computed from this tally by summing over incoming and outgoing energy groups:
 
 \begin{equation}
 \label{eqn:chap3-nu-fiss-macro}
 \hat{\chi}_{k,g} = \frac{\displaystyle\sum\limits_{g'=1}^{G} \langle \nu\Sigma_{f}, \psi \rangle_{k,g'\rightarrow g}^{a}}{\displaystyle\sum\limits_{g=1}^{G} \displaystyle\sum\limits_{g'=1}^{G} \langle \nu\Sigma_{f}, \psi \rangle_{k,g'\rightarrow g}^{a}}
 \end{equation}
 
+\noindent This expression for the fission spectrum will result in a normalized discrete probability distribution for the energy of neutrons emitted from fission.
+
 
 \subsubsection{Summary}
 \label{subsubsec:chap3-tally-types-summary}
+
+The tallies needed to generate \ac{MGXS} libraries were outlined in detail in the preceding sections, and are summarized in Table~\ref{table:chap3-tally-types}. The scores and filters correspond to the notation used by the OpenMC code to describe the scoring function and integration bounds used in Eqn.~\ref{eqn:chap3-tallies-general}. 
+The energy group structure for energy condensation is specified by \texttt{energy} and/or \texttt{energyout} filters in the table. The regions for spatial homogenization are specified by \texttt{material} or \texttt{cell} filters, although this could potentially include \texttt{universe}, \texttt{distribcell} and \texttt{mesh} filters as well.
 
 %\renewcommand{\arraystretch}{1.5}
 
 \begin{table}[h!]
   \centering
-  \caption[Tally types for \ac{MGXS} generation]{The types of tallies used in \ac{MGXS} generation with Monte Carlo.}
+  \caption[Tally types for \ac{MGXS} generation]{The types of tallies used in \ac{MGXS} generation with OpenMC.}
   \scriptsize
   \label{table:chap3-tally-types}
   \vspace{6pt}
@@ -274,7 +310,7 @@ Finally, the superscripts $a$ and $t\ell$ are given to those inner products comp
 
   \specialrule{.2em}{.1em}{.1em}
 
-  \multirow{2}{*}[-0.5em]{\parbox{1.5cm}{\bf Fission \hspace{1cm} Production}} & \multirow{2}{*}[-0.5em]{$\hat{\nu\Sigma}_{f,k,g}$} & $\langle \nu\Sigma_{f}, \psi \rangle_{k,g'\rightarrow g}$ & \texttt{nu-fission} & \parbox{2cm}{\texttt{material}/\texttt{cell} \texttt{energy}} & \texttt{tracklength} \\
+  \multirow{2}{*}[-0.5em]{\parbox{1.5cm}{\bf Fission \hspace{1cm} Production}} & \multirow{2}{*}[-0.5em]{$\hat{\nu\Sigma}_{f,k,g}$} & $\langle \nu\Sigma_{f}, \psi \rangle_{k,g}$ & \texttt{nu-fission} & \parbox{2cm}{\texttt{material}/\texttt{cell} \texttt{energy}} & \texttt{tracklength} \\
   \cline{3-6}
   & & $\langle \psi \rangle_{k,g}$ & \texttt{flux} & \parbox{2cm}{\texttt{material}/\texttt{cell} \texttt{energy}} & \texttt{tracklength} \\
 
@@ -285,8 +321,6 @@ Finally, the superscripts $a$ and $t\ell$ are given to those inner products comp
 
 \end{tabular}
 \end{table}
-
--probably should include capture here
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
