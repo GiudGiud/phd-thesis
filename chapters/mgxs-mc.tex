@@ -95,50 +95,129 @@ x_{i}^{2} - \bar{x}^2\right)
 
 The key observation is that the standard deviation of the sample mean varies as $s_{\bar{x}} \propto \nicefrac{1}{\sqrt{N}}$ if the samples $x_{i}$ are uncorrelated. This necessarily implies that the uncertainties on a tally estimator can be made arbitrarily small given enough simulated particle histories. However, recent studies have shown that batch-based tally estimators in eigenvalue calculations are not generally independent and identically distributed realizations due to correlated fission sources between batches~\cite{herman2014correlation,miao2016correlation}. 
 
-%A pivotal $t$-statistic may be used to compute $1 - \alpha$ confidence intervals for the sample mean.
-
-%\begin{equation}
-%\label{eqn:chap3-conv-rate}
-%s_{\bar{x}} = \frac{\sigma}{\sqrt{N}} \approx \frac{s}{\sqrt{N}}
-%\end{equation}
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{\ac{MGXS} Generation with Monte Carlo}
 \label{sec:chap3-mgxs-gen}
 
-
-
-DIY \ac{MGXS} generation with \ac{MC} \\
-Stochastic approx. to integrals in Section~\ref{sec:chap2-background} \\
+This section describes how multi-group cross sections may be computed using stochastic integration. Sec.~\ref{subsec:chap3-tally-types} outlines the types of OpenMC tallies needed to generate \ac{MGXS} for -- including the scores, filters and estimators for each tally -- and the arithmetic combinations used to combine different tallies. Sec.~\ref{subsec:chap3-uncertainty-prop} illustrates how the uncertainties of the \ac{MGXS} may be estimated using error propagation theory.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Tally Types Needed for \ac{MGXS} Generation}
 \label{subsec:chap3-tally-types}
 
-\begin{itemize}[noitemsep]
-  \item recall flux separability approx.
-\end{itemize}
+The types of \ac{MGXS} needed to solve the neutron transport equation were outlined in Sec.~\ref{chap:mgxs}, including expressions for the transport corrected total cross section and scattering matrix, and the fission production cross sectionn and fission spectrum. This section outlines the types of tallies needed to compute these \ac{MGXS}. It is important to note that the flux separability approximation (Sec.~\ref{subsec:chap2-angle}) is applied in the tally formulations for each of the group constants.
 
-\subsubsection{General Form}
+The following sections use angle bracket notation $\langle \cdot , \cdot \rangle$ to represent inner products in phase space. This may correspond to integrals over incoming and/or outgoing energy, space, and angle. For example, a tally estimator for reaction rate $x$ would be given as the following: 
+
+\begin{equation}
+\label{eqn:chap3-inner-prod-notation}
+\langle \Sigma_x, \psi \rangle = \int_{V} \int_{S} \int_{E} \Sigma_{x}(\mathbf{r},E)\psi(\mathbf{r},E,\mathbf{\Omega}) \mathrm{d}E\mathrm{d}\mathbf{\Omega}\mathrm{d}\mathbf{r}
+\end{equation}
+
+\begin{equation}
+\label{eqn:chap3-angle-rxn-rate}
+\langle \sigma_{x,i}, \psi \rangle_{k,g} = \int_{\mathbf{r} \in V_{k}} \int_{4\pi} \int_{E_{g}}^{E_{g-1}} \sigma_{x,i}(\mathbf{r},E)\psi(\mathbf{r},E,\mathbf{\Omega}) \mathrm{d}E\mathrm{d}\mathbf{\Omega}\mathrm{d}\mathbf{r}
+\end{equation}
+
+\begin{equation}
+\label{eqn:chap3-angle-flux}
+\langle \psi \rangle_{k,g} = \int_{\mathbf{r} \in V_{k}} \int_{4\pi} \int_{E_{g}}^{E_{g-1}} \psi(\mathbf{r},E,\mathbf{\Omega}) \mathrm{d}E\mathrm{d}\mathbf{\Omega}\mathrm{d}\mathbf{r}
+\end{equation}
+
+finally, the superscripts $a$ and $t\ell$ are given to those inner products computed with analog and track-length estimators, respectively: $\langle \cdot,\cdot \rangle^{a}$ and $\langle \cdot,\cdot \rangle^{t\ell}$
+
+mention that the flux separability is used and hence the angle is dropped
+
+\subsubsection{General Reactions}
 \label{subsubsec:chap3-gen-xs}
 
-\subsubsection{Total and Transport Cross Sections}
-\label{subsubsec:chap3-tot-xs}
+\begin{equation}
+\label{eqn:chap3-general-macro}
+\hat{\Sigma}_{x,k,g} = \frac{\langle \Sigma_{x}, \psi \rangle_{k,g}^{t\ell}}{\langle \psi \rangle_{k,g}^{t\ell}}
+\end{equation}
 
-\subsubsection{Scattering Matrices}
-\label{subsubsec:chap3-scatt-mat}
+\begin{equation}
+\label{eqn:chap3-general-micro}
+\hat{\sigma}_{x,i,k,g} = \frac{\langle \sigma_{x,i}, \psi \rangle_{k,g}^{t\ell}}{\langle \psi \rangle_{k,g}^{t\ell}}
+\end{equation}
+
+
+
+\subsubsection{Total and Transport}
+\label{subsubsec:chap3-tally-types-tot-xs}
+
+\begin{equation}
+\label{eqn:chap3-total-macro}
+\hat{\Sigma}_{t,k,g} = \frac{\langle \Sigma_{t}, \psi \rangle_{k,g}^{t\ell}}{\langle \psi \rangle_{k,g}^{t\ell}}
+\end{equation}
+
+-in-scatter approximation for transport correction:
+
+\begin{equation}
+\label{eqn:chap3-sigs1}
+\langle \Sigma_{s1}, \psi \rangle_{k,g'\rightarrow g} = \int_{\mathbf{r} \in V_{k}} \int_{4\pi} \int_{E_{g}}^{E_{g-1}} \int_{E_{g'}}^{E_{g'-1}} \Sigma_{s1}(\mathbf{r},E'\rightarrow E)\psi(\mathbf{r},E,\mathbf{\Omega}) \mathrm{d}E'\mathrm{d}E\mathrm{d}\mathbf{\Omega}\mathrm{d}\mathbf{r}
+\end{equation}
+
+\begin{equation}
+\label{eqn:chap3-transport-macro}
+\hat{\tilde{\Sigma}}_{t,k,g} = \frac{\langle \Sigma_{t}, \psi \rangle_{k,g}^{a} - \displaystyle\sum\limits_{g'=1}^{G} \langle{\Sigma_{s1}, \psi \rangle_{k,g'\rightarrow g'}^{a}}}
+{\langle \psi \rangle_{k,g}^{a}}
+\end{equation}
+
+
+\subsubsection{Scattering Matrix}
+\label{subsubsec:chap3-tally-types-scatt-mat}
+
+\begin{equation}
+\label{eqn:chap3-sigs0}
+\langle \Sigma_{s0}, \psi \rangle_{k,g'\rightarrow g} = \int_{\mathbf{r} \in V_{k}} \int_{4\pi} \int_{E_{g}}^{E_{g-1}} \int_{E_{g'}}^{E_{g'-1}} \Sigma_{s0}(\mathbf{r},E'\rightarrow E)\psi(\mathbf{r},E,\mathbf{\Omega}) \mathrm{d}E'\mathrm{d}E\mathrm{d}\mathbf{\Omega}\mathrm{d}\mathbf{r}
+\end{equation}
+
+\begin{equation}
+\label{eqn:chap3-scatter-macro}
+\hat{\Sigma}_{s,k} = \frac{\langle \Sigma_{s0}, \psi \rangle_{k,g'\rightarrow g}^{a}}{\langle \psi \rangle_{k,g'}^{a}}
+\end{equation}
+
+-in-scatter approximation:
+
+\begin{equation}
+\label{eqn:chap3-scatter-trans-macro}
+\hat{\tilde{\Sigma}}_{s,k,g'\rightarrow g} = \frac{\langle \Sigma_{s0}, \psi \rangle_{k,g'\rightarrow g}^{a} - \delta_{g,g'} \displaystyle\sum\limits_{g''=1}^{G} \langle{\Sigma_{s1}, \psi \rangle_{k,g''\rightarrow g}^{a}}}{\langle \psi \rangle_{k,g'}^{a}}
+\end{equation}
 
 \begin{itemize}[noitemsep]
   \item refer to adam/redmond's thesis for more details on scattering moments
 \end{itemize}
 
-\subsubsection{Fission Production Cross Sections}
-\label{subsubsec:chap3-fiss-prod}
+\subsubsection{Fission Production}
+\label{subsubsec:chap3-tally-types-fiss-prod}
 
-\subsubsection{Chi Fission Spectrum}
-\label{subsubsec:chap3-chi}
+\begin{equation}
+\label{eqn:chap3-nu-fiss-macro}
+\nu\hat{\Sigma}_{f,k,g} = \frac{\langle \nu\Sigma_{f}, \psi \rangle_{k,g}^{t\ell}}{\langle \psi \rangle_{k,g}^{t\ell}}
+\end{equation}
+
+
+\subsubsection{Fission Spectrum}
+\label{subsubsec:chap3-tally-types-chi}
+
+\begin{equation}
+\label{eqn:chap3-nu-fiss-energies}
+\langle \nu\Sigma_{f}, \psi \rangle_{k,g'\rightarrow g} = \int_{\mathbf{r} \in V_{k}} \int_{4\pi} \int_{E_{g}}^{E_{g-1}} \int_{E_{g'}}^{E_{g'-1}} \nu\Sigma_{f}(\mathbf{r},E'\rightarrow E)\psi(\mathbf{r},E,\mathbf{\Omega}) \mathrm{d}E'\mathrm{d}E\mathrm{d}\mathbf{\Omega}\mathrm{d}\mathbf{r}
+\end{equation}
+
+
+\begin{equation}
+\label{eqn:chap3-nu-fiss-macro}
+\hat{\chi}_{k,g} = \frac{\displaystyle\sum\limits_{g'=1}^{G} \langle \nu\Sigma_{f}, \psi \rangle_{k,g'\rightarrow g}^{a}}{\displaystyle\sum\limits_{g=1}^{G} \displaystyle\sum\limits_{g'=1}^{G} \langle \nu\Sigma_{f}, \psi \rangle_{k,g'\rightarrow g}^{a}}
+\end{equation}
+
+
+
+\subsubsection{Summary}
+\label{subsubsec:chap3-tally-types-summary}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
