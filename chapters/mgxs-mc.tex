@@ -215,9 +215,42 @@ mention that the flux separability is used and hence the angle is dropped
 \end{equation}
 
 
-
 \subsubsection{Summary}
 \label{subsubsec:chap3-tally-types-summary}
+
+\begin{table}[h!]
+  \centering
+  \caption[Tally types for \ac{MGXS} generation]{The types of tallies used in \ac{MGXS} generation with Monte Carlo.}
+  \scriptsize
+  \label{table:chap3-tally-types}
+  \vspace{6pt}
+  \begin{tabular}{| c | c | C{1.5cm} C{2cm} C{2.5cm} C{1.5cm} |}
+  \toprule
+  {\bf Name} &
+  {\bf Symbol} &
+  {\bf Tally} &
+  {\bf Score} &
+  {\bf Filters} &
+  {\bf Estimator} \\
+  \midrule
+  \multirow{2}{*}{\bf General} & \multirow{2}{*}{$\hat{\Sigma}_{x,k,g}$} & $\langle \Sigma_{x}, \psi \rangle_{k,g}$ & reaction $x$ & \parbox{2cm}{\centering \texttt{cell}/\texttt{material} \texttt{energy}} & \texttt{tracklength} \\
+  \cline{3-6}
+  & & $\langle \psi \rangle_{k,g}$ & {\centering \texttt{flux}} & \parbox{2cm}{\centering \texttt{cell}/\texttt{material} \texttt{energy}} & \texttt{tracklength} \\
+  \midrule
+  \multirow{2}{*}{\bf Total} & \multirow{2}{*}{$\hat{\Sigma}_{t,k,g}$} & $\langle \Sigma_{x}, \psi \rangle_{k,g}$ & \texttt{total} & \parbox{2cm}{\centering \texttt{cell}/\texttt{material} \texttt{energy}} & \texttt{tracklength} \\
+  \cline{3-6}
+  & & $\langle \psi \rangle_{k,g}$ & \texttt{flux} & \parbox{2cm}{\centering \texttt{cell}/\texttt{material} \texttt{energy}} & \texttt{tracklength} \\
+  \midrule
+  \multirow{2}{*}{\parbox{1.5cm}{\centering \bf Fission Production}} & \multirow{2}{*}{$\hat{\nu\Sigma}_{f,k,g}$} & $\langle \nu\Sigma_{f}, \psi \rangle_{k,g'\rightarrow g}$ & \texttt{nu-fission} & \parbox{2cm}{\centering \texttt{cell}/\texttt{material} \texttt{energy}} & \texttt{tracklength} \\
+  \cline{3-6}
+  & & $\langle \psi \rangle_{k,g}$ & \texttt{flux} & \parbox{2cm}{\centering \texttt{cell}/\texttt{material} \texttt{energy}} & \texttt{tracklength} \\
+  \midrule
+  \parbox{1.5cm}{\centering \bf Fission Spectrum} & $\hat{\chi}_{k,g}$ & $\langle \nu\Sigma_{f}, \psi \rangle_{k,g'\rightarrow g}$ & \texttt{nu-fission} & \parbox{2cm}{\centering \texttt{cell}/\texttt{material} \texttt{energy} \texttt{energyout}} & \texttt{analog} \\
+  \midrule
+
+\end{tabular}
+\end{table}
+
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
