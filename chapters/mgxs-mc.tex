@@ -366,19 +366,40 @@ Z &= \frac{X}{Y} & \sigma_{Z}^{2} &\approx Z^{2}\left[\left(\frac{\sigma_{X}}{X}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Review of Previous Efforts}
-\label{sec:chap3-lit-review}b
+\section{A Literature Review of MGXS Generation with MC}
+\label{sec:chap3-lit-review}
+
+\subsection{MGXS for Coarse Mesh Diffusion Calculations}
+\label{sec:chap3-lit-review-diffusion}
+
+-serpent\\
+
+
+\subsection{MGXS for Fine Mesh Transport Calculations}
+\label{sec:chap3-lit-review-diffusion}
+
+Redmond~\cite{redmond1997multigroup} performed one of the earliest known in-depth analyses of \ac{MGXS} generation with \ac{MC} methods. Redmond studied two methods to compute group-to-group scattering moment matrices with the MCNP code~\cite{mcnpx2003manual}. The first approach -- known as the \textit{direct method} -- is equivalent to the analog estimator for computing scattering matrices presented in Sec.~\ref{subsubsec:chap3-tally-types-scatt-mat}. The second approach -- termed the \textit{explicit method} -- forces a finite sampling of possible outgoing energies and angles for each scattering and fission event. The explicit method may thereby improve the sampling statistics for the scattering cross section and the fission spectrum. To the author's knowledge, the explicit method is not implemented in any presently available production code nor are there results beyond Redmond's work which evaluate the sampling efficiency of the method.
+
+%-not generally derived for all scattering laws (see page 67)
+
+Like Redmond, Nelson~\cite{nelson2014improved} identified the convergence rate of scattering moments to be a key bottleneck to computing \ac{MGXS} libraries, and developed an approach to mitigate this with deterministic tallies of the energy and angle for outgoing neutrons in collisions. Nelson's methodology permits track-length estimators for tallies which depend on the outgoing neutron energy, and scores to all outgoing energy groups for each particle trajectory. This is advantageous since it greatly improves the tallying efficiency and convergence rate of scattering moment matrices and the fission energy spectrum. However, Nelson's methodology requires a computationally expensive pre-processing step to transform each nuclide's nuclear data for use in an \ac{MC} simulation. Furthermore, the pre-processing step is specific to the energy group structure used in an \ac{MGXS} library, and the computational expense and memory footprint grow as $\mathcal{O}(NG^{2})$ with the number of groups $G$ and nuclides $N$ in a simulation. Although Nelson implemented the scheme in a developmental version of OpenMC, it was not employed for this work.
+
+Li Cai~\cite{cai2014condensation}
+
+
+what's left? me\\
+---------------\\
+
 
 \begin{itemize}[noitemsep]
   \item \ac{MGXS} for coarse mesh diffusion
   \begin{itemize}[noitemsep]
     \item Serpent
-    \item Redmond
     \item Pounders
   \end{itemize}
   \item \ac{MGXS} for fine mesh transport
   \begin{itemize}[noitemsep]
-    \item Nelson with NDPP
+    \item French/Chinese thesis
   \end{itemize}
 \end{itemize}
 
