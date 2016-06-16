@@ -107,28 +107,31 @@ This section describes how multi-group cross sections may be computed using stoc
 \subsection{Tally Types Needed for \ac{MGXS} Generation}
 \label{subsec:chap3-tally-types}
 
-The types of \ac{MGXS} needed to solve the neutron transport equation were outlined in Sec.~\ref{chap:mgxs}, including expressions for the transport corrected total cross section and scattering matrix, and the fission production cross sectionn and fission spectrum. This section outlines the types of tallies needed to compute these \ac{MGXS}. It is important to note that the flux separability approximation (Sec.~\ref{subsec:chap2-angle}) is applied in the tally formulations for each of the group constants.
+The types of \ac{MGXS} needed to solve the neutron transport equation were outlined in Chap.~\ref{chap:mgxs}, including expressions for the transport corrected total cross section and scattering matrix, and the fission production cross section and spectrum. This section outlines the types of tallies needed to compute these \ac{MGXS}. It is important to note that the flux separability approximation (Sec.~\ref{subsec:chap2-angle}) is applied in the tally formulations for each of the group constants.
 
-The following sections use angle bracket notation $\langle \cdot , \cdot \rangle$ to represent inner products in phase space. This may correspond to integrals over incoming and/or outgoing energy, space, and angle. For example, a tally estimator for reaction rate $x$ would be given as the following: 
+The following sections use angle bracket notation $\langle \cdot , \cdot \rangle$ to represent inner products in phase space. This may correspond to integrals over incoming and/or outgoing energy, space, and angle. Using this notation, a tally estimator for reaction rate $x$ is represented as follows: 
 
 \begin{equation}
 \label{eqn:chap3-inner-prod-notation}
 \langle \Sigma_x, \psi \rangle = \int_{V} \int_{S} \int_{E} \Sigma_{x}(\mathbf{r},E)\psi(\mathbf{r},E,\mathbf{\Omega}) \mathrm{d}E\mathrm{d}\mathbf{\Omega}\mathrm{d}\mathbf{r}
 \end{equation}
 
+\noindent This notation is specialized throughout this section with subscripts to indicate the subsets of phase space that are integrated over in the inner product. In particular, subscript $k$ refers to a volume integral over $V_{k}$ for some region of space $k$ for spatial homogenization (Sec.~\ref{subsec:chap2-space}), while subscript $g$ corresponds to an integral over energies with $E \in [E_{g}, E_{g-1}]$ for energy condensation (Sec.~\ref{subsec:chap2-energy}). For example, the microscopic reaction rate for reaction $x$ by nuclide $i$ is denoted as:
+
 \begin{equation}
 \label{eqn:chap3-angle-rxn-rate}
 \langle \sigma_{x,i}, \psi \rangle_{k,g} = \int_{\mathbf{r} \in V_{k}} \int_{4\pi} \int_{E_{g}}^{E_{g-1}} \sigma_{x,i}(\mathbf{r},E)\psi(\mathbf{r},E,\mathbf{\Omega}) \mathrm{d}E\mathrm{d}\mathbf{\Omega}\mathrm{d}\mathbf{r}
 \end{equation}
 
+\noindent The inner product of a function with unity, such as the spatially homogenized and energy-integrated flux is denoted by:
+
 \begin{equation}
 \label{eqn:chap3-angle-flux}
-\langle \psi \rangle_{k,g} = \int_{\mathbf{r} \in V_{k}} \int_{4\pi} \int_{E_{g}}^{E_{g-1}} \psi(\mathbf{r},E,\mathbf{\Omega}) \mathrm{d}E\mathrm{d}\mathbf{\Omega}\mathrm{d}\mathbf{r}
+\langle \psi \rangle_{k,g} \equiv \langle \psi, \mathbb{1} \rangle_{k,g} = \int_{\mathbf{r} \in V_{k}} \int_{4\pi} \int_{E_{g}}^{E_{g-1}} \psi(\mathbf{r},E,\mathbf{\Omega}) \mathrm{d}E\mathrm{d}\mathbf{\Omega}\mathrm{d}\mathbf{r}
 \end{equation}
 
-finally, the superscripts $a$ and $t\ell$ are given to those inner products computed with analog and track-length estimators, respectively: $\langle \cdot,\cdot \rangle^{a}$ and $\langle \cdot,\cdot \rangle^{t\ell}$
+Finally, the superscripts $a$ and $t\ell$ are given to those inner products computed with analog and track-length estimators, respectively -- \textit{i.e.}, $\langle \cdot,\cdot \rangle^{a}$ is an analog tally estimator and $\langle \cdot,\cdot \rangle^{t\ell}$ is a track-length tally estimator of the corresponding inner products.
 
-mention that the flux separability is used and hence the angle is dropped
 
 \subsubsection{General Reactions}
 \label{subsubsec:chap3-gen-xs}
