@@ -385,7 +385,9 @@ Redmond~\cite{redmond1997multigroup} performed one of the earliest known in-dept
 Like Redmond, Nelson~\cite{nelson2014improved} identified the convergence rate of scattering moments to be a key bottleneck to computing \ac{MGXS} libraries, and developed an approach to mitigate this with deterministic tallies of the energy and angle for outgoing neutrons in collisions. Nelson's methodology permits track-length estimators for tallies which depend on the outgoing neutron energy, and scores to all outgoing energy groups for each particle trajectory. This is advantageous since it greatly improves the tallying efficiency and convergence rate of scattering moment matrices and the fission energy spectrum. However, Nelson's methodology requires a computationally expensive pre-processing step to transform each nuclide's nuclear data for use in an \ac{MC} simulation. Furthermore, the pre-processing step is specific to the energy group structure used in an \ac{MGXS} library, and the computational expense and memory footprint grow as $\mathcal{O}(NG^{2})$ with the number of groups $G$ and nuclides $N$ in a simulation. Although Nelson implemented the scheme in a developmental version of OpenMC, it was not employed for this work.
 
 Li Cai~\cite{cai2014condensation}
-
+-focused on fast reactors
+-current-weighting for scattering moment matrices
+-showed large discrepancies with reference continuous energy MC
 
 what's left? me\\
 ---------------\\
