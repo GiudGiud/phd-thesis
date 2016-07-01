@@ -369,19 +369,17 @@ Z &= \frac{X}{Y} & \sigma_{Z}^{2} &\approx Z^{2}\left[\left(\frac{\sigma_{X}}{X}
 \section{A Literature Review of MGXS Generation with MC}
 \label{sec:chap3-lit-review}
 
+Over the last two decades, there has been an increase of interest in Monte Carlo as a means to generate \ac{MGXS} libraries. This section presents a brief overview of the literature which document these efforts. As discussed in Sec.~\ref{subsec:chap3-lit-review-diffusion}, most of the work to date has been directed at generating homogenized few group constants for coarse mesh diffusion-based codes. Sec.~\ref{subsec:chap3-lit-review-transport} reviews a few recent theses which develop \ac{MC} methods to generate \ac{MGXS} for fine mesh transport-based simulations, which is the topic of this thesis.
+
+
 \subsection{MGXS for Coarse Mesh Diffusion Calculations}
-\label{sec:chap3-lit-review-diffusion}
+\label{subsec:chap3-lit-review-diffusion}
 
 -serpent\\
--McCARD~\cite{park2012generation} developed at Seoul National University, capable of generationg \ac{MGXS} for diffusion theory codes\\
--MCNP~\cite{cho2009generation} homogenized nodal parameters with albedo-corrected leakage spectrum\\
--MCNP~\cite{van2006homogenized} collision estimator for homogenized \ac{MGXS} but limited to only cases with reflective boundary conditions\\
--TRIPOLI-4~\cite{both1997computations} first development work to generate \ac{MGXS} with TRIPOLI-4 code for validation \ac{MGXS} calculated with sub-assembly codes and examine spatial self-shielding models (again for diffusion theory codes)\\
-
 
 
 \subsection{MGXS for Fine Mesh Transport Calculations}
-\label{sec:chap3-lit-review-diffusion}
+\label{subsec:chap3-lit-review-transport}
 
 Redmond~\cite{redmond1997multigroup} performed one of the earliest known in-depth analyses of \ac{MGXS} generation with \ac{MC} methods. Redmond studied two methods to compute group-to-group scattering moment matrices with the MCNP code~\cite{mcnpx2003manual}. The first approach -- known as the \textit{direct method} -- is equivalent to the analog estimator for computing scattering matrices presented in Sec.~\ref{subsubsec:chap3-tally-types-scatt-mat}. The second approach -- termed the \textit{explicit method} -- forces a finite sampling of possible outgoing energies and angles for each scattering and fission event. The explicit method may thereby improve the sampling statistics for the scattering cross section and the fission spectrum. To the author's knowledge, the explicit method is not implemented in any presently available production code nor are there results beyond Redmond's work which evaluate the sampling efficiency of the method.
 
@@ -389,10 +387,12 @@ Redmond~\cite{redmond1997multigroup} performed one of the earliest known in-dept
 
 Like Redmond, Nelson~\cite{nelson2014improved} identified the convergence rate of scattering moments to be a key bottleneck to computing \ac{MGXS} libraries, and developed an approach to mitigate this with deterministic tallies of the energy and angle for outgoing neutrons in collisions. Nelson's methodology permits track-length estimators for tallies which depend on the outgoing neutron energy, and scores to all outgoing energy groups for each particle trajectory. This is advantageous since it greatly improves the tallying efficiency and convergence rate of scattering moment matrices and the fission energy spectrum. However, Nelson's methodology requires a computationally expensive pre-processing step to transform each nuclide's nuclear data for use in an \ac{MC} simulation. Furthermore, the pre-processing step is specific to the energy group structure used in an \ac{MGXS} library, and the computational expense and memory footprint grow as $\mathcal{O}(NG^{2})$ with the number of groups $G$ and nuclides $N$ in a simulation. Although Nelson implemented the scheme in a developmental version of OpenMC, it was not employed for this work.
 
-Li Cai~\cite{cai2014condensation}
--focused on fast reactors
--current-weighting for scattering moment matrices
--showed large discrepancies with reference continuous energy MC
+Li Cai~\cite{cai2014condensation} investigated the use of the TRIPOLI-4 code to generate \ac{MGXS} with continuous energy Monte Carlo simulations. Unlike other published works, Cai validated the \ac{MGXS} using the multi-group Monte Carlo solver in TRIPOLI-4 rather than a deterministic multi-group solver. Her thesis primarily focused on methods to enforce neutron balance between reference continuous energy and multi-group Monte Carlo calculations. Cai developed a method termed the ``In-Group Scattering Correction'' (IGSC) as a means to mitigate the flux separability approximation discussed in Sec.~\ref{subsec:chap2-angle}. The IGSC technique employs volumetric neutron current-weighted moments of the total cross section as correction terms to the diagonal entries in the scattering moment matrices. 
+
+%Cai evaluated two approximations to the neutron current with their corresponding \ac{MC} estimators for a variety of homogenized 2D and 3D fast reactor benchmarks. Although the IGSC method appeared to improve the consistency between continuous energy and multi-group \ac{MC} results for some cases, it led to a several thousand \ac{PCM} eigenvalue bias for a few of the benchmarks. Furthermore, Cai's results demonstrated the of approximating volumetric currents within a heterogeneous geometry with strongly varying material properties. Finally, Cai's methodology 
+
+Cai explored IGSC with a \ac{MC} estimator of Todorova's current approximation for a variety of homogenized 2D and 3D fast reactor benchmarks. Although the IGSC method improved the consistency between continuous energy and multi-group \ac{MC} results for some cases, it led to a several thousand \ac{PCM} eigenvalue bias for a few of the benchmarks. Furthermore, Cai's results demonstrated the deficiency of using Todorova's current approximatoin in a heterogeneous geometry with strongly varying material properties. Cai developed and evaluated an alternative approximation to the current, termed the ``Direction-X'' current, to eliminate the approximations made in Todorova's current -- namely, that the gradient of the flux is similar to the flux spectrum itself. Although the ``Direction-X'' current greatly improved the results with respect to Todorova's current, its implementation and analysis was limited to 1D slab geometries.
+
 
 what's left? me\\
 ---------------\\
@@ -403,9 +403,5 @@ what's left? me\\
   \begin{itemize}[noitemsep]
     \item Serpent
     \item Pounders
-  \end{itemize}
-  \item \ac{MGXS} for fine mesh transport
-  \begin{itemize}[noitemsep]
-    \item French/Chinese thesis
   \end{itemize}
 \end{itemize}
