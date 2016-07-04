@@ -401,18 +401,35 @@ Although Serpent is the most popular tool for \ac{MGXS} generation, its use thus
 \subsubsection{MCNP}
 \label{subsec:chap3-lit-review-diffusion-mcnp}
 
--pounders~\cite{pounders2006stochastically}\\
--redmond as well??\\
+The widely used MCNP code~\cite{mcnpx2003manual} developed by Los Alamos National Laboratory has also been employed to generate few group \ac{MGXS} for coarse mesh diffusion methods. Perhaps the most comprehensive study can be found in Pounder's thesis~\cite{pounders2006stochastically} which, like Serpent, aimed to improve the accuracy of standard diffusion codes by generating improved diffusion coefficients with Monte Carlo. In addition to the reactor problems considered in Pounders' thesis, MCNP has also been used to generate diffusion coefficients for analysis of spent fuel storage lattices~\cite{ilas2003monte}.
+
+Pounders considered several approaches to compute diffusion coefficients with Monte Carlo and implemented each in MCNP. The simplest method computed the diffusion coefficient as the inverse of the transport cross section. This formulation is most similar to that used in Serpent, but did not include a fine-to-few group collapse with the B$_{1}$ leakage-corrected spectra. Pounders also considered the flux-limited diffusion coefficient~\cite{pomraning1984flux} widely used in radiation hydrodynamics codes. In addition, Pounders developed an approach to use directional neutron currents to appropriately weight the first order scattering moment used to compute the transport cross section. Lastly, Pounders' most novel contribution, termed the ``stochastic diffusion coefficient,'' attempted to embed higher order anisotropies in the diffusion coefficient by combining direction-dependent diffusion coefficients with volume-integrated flux gradient tallies.
+
+Pounders' results demonstrated that the stochastic diffusion coefficient produced the best results since it mitigated the approximations imposed by P$1$ theory. However, the analysis was limited to simple 1D slab and 2D pin cell problems since the implementation of stochastic diffusion coefficients for arbitrary 3D reactor geometries would be challenging. Most interestingly, Pounders' thesis concluded that the error resulting from diffusion theory's assumption of a linearly anisotropic flux dominated the error induced by each of the diffusion coefficient formulations. Pounders thesis has served as the basis for the development of new methods to generate \ac{MGXS} with MCNP, including new diffusion coefficient formulations~\cite{pounders2009diffusion} and an approach to represent the Legendre expansion of the scattering kernel with equiprobable cosine bins~\cite{pounders2015history}.
+
+\subsubsection{MC21}
+\label{subsec:chap3-lit-review-diffusion-mc21}
+
+Herman utilized the MC21 code developed by Knolls Atomic Power Laboratory to evaluate two approximations used in Monte Carlo calculations of diffusion coefficients~\cite{herman2013improved}. His work was motivated by the multi-step methodology used to compute diffusion coefficients in Serpent with a B$_{1}$ leakage corrected spectra. First, Herman considered whether to energy condense the fine group transport cross sections or diffusion coefficients when computing few group diffusion coefficients. Second, he presented an approach to use a pre-tabulated form of the energy-dependent scattering cosine to correct the traditional form of the diffusion coefficient. His results demonstrated a significant reduction from more than 3\% to nearly 0.25\% in the reconstructed pin powers for a \ac{PWR} assembly. Herman's corrected diffusion coefficient was implemented in the OpenMC code~\cite{romano2013openmc} for use in Coarse Mesh Finite Difference (\ac{CMFD}) acceleration~\cite{herman2014monte}, and has inspired the development of the Cumulative Migration Method (CMM) to calculate diffusion coefficients with Monte Carlo~\cite{liuphysor2016}.
 
 
 \subsection{MGXS for Fine Mesh Transport Calculations}
 \label{subsec:chap3-lit-review-transport}
 
+\subsubsection{MCNP}
+\label{subsec:chap3-lit-review-transport-mcnp}
+
 Redmond~\cite{redmond1997multigroup} performed one of the earliest known in-depth analyses of \ac{MGXS} generation with \ac{MC} methods. Redmond studied two methods to compute group-to-group scattering moment matrices with the MCNP code~\cite{mcnpx2003manual}. The first approach -- known as the \textit{direct method} -- is equivalent to the analog estimator for computing scattering matrices presented in Sec.~\ref{subsubsec:chap3-tally-types-scatt-mat}. The second approach -- termed the \textit{explicit method} -- forces a finite sampling of possible outgoing energies and angles for each scattering and fission event. The explicit method may thereby improve the sampling statistics for the scattering cross section and the fission spectrum. To the author's knowledge, the explicit method is not implemented in any presently available production code nor are there results beyond Redmond's work which evaluate the sampling efficiency of the method.
 
-%-not generally derived for all scattering laws (see page 67)
+More recently, Van der Marck~\cite{van2006homogenized} applied Redmond's method to generate \ac{MGXS} with MCNP to model the Petten High Flux Reactor (HFR) in the Netherlands. Van der Marck was concerned with the slow computational performance of computing \ac{MGXS} with MCNP as a result of using tracklength tallies. Although tracklength tallies increase computational efficiency with improved statistics, they may require the scoring to all tallies each time a neutron travels between material zones which can be exceedingly slow in MCNP. Instead, Van der Marck created a downstream data processing tool called ELNINJO to analyze MCNP binary files with collision data to compute collision estimators for \ac{MGXS} generation. The ELNINJO code was developed to generate either \ac{MGXS} for either diffusion or transport theory codes, and was validated for a few simple 1D and 2D test cases.
+
+\subsubsection{OpenMC}
+\label{subsec:chap3-lit-review-transport-openmc}
 
 Like Redmond, Nelson~\cite{nelson2014improved} identified the convergence rate of scattering moments to be a key bottleneck to computing \ac{MGXS} libraries, and developed an approach to mitigate this with deterministic tallies of the energy and angle for outgoing neutrons in collisions. Nelson's methodology permits track-length estimators for tallies which depend on the outgoing neutron energy, and scores to all outgoing energy groups for each particle trajectory. This is advantageous since it greatly improves the tallying efficiency and convergence rate of scattering moment matrices and the fission energy spectrum. However, Nelson's methodology requires a computationally expensive pre-processing step to transform each nuclide's nuclear data for use in an \ac{MC} simulation. Furthermore, the pre-processing step is specific to the energy group structure used in an \ac{MGXS} library, and the computational expense and memory footprint grow as $\mathcal{O}(NG^{2})$ with the number of groups $G$ and nuclides $N$ in a simulation. Although Nelson implemented the scheme in a developmental version of OpenMC, it was not employed for this work.
+
+\subsubsection{TRIPOLI-4}
+\label{subsec:chap3-lit-review-transport-tripoli}
 
 Li Cai~\cite{cai2014condensation} investigated the use of the TRIPOLI-4 code to generate \ac{MGXS} with continuous energy Monte Carlo simulations. Unlike other published works, Cai validated the \ac{MGXS} using the multi-group Monte Carlo solver in TRIPOLI-4 rather than a deterministic multi-group solver. Her thesis primarily focused on methods to enforce neutron balance between reference continuous energy and multi-group Monte Carlo calculations. Cai developed a method termed the ``In-Group Scattering Correction'' (IGSC) as a means to mitigate the flux separability approximation discussed in Sec.~\ref{subsec:chap2-angle}. The IGSC technique employs volumetric neutron current-weighted moments of the total cross section as correction terms to the diagonal entries in the scattering moment matrices. 
 
@@ -426,10 +443,5 @@ what's left? me\\
 
 
 \begin{itemize}[noitemsep]
-  \item \ac{MGXS} for coarse mesh diffusion
-  \begin{itemize}[noitemsep]
-    \item Pounders
-    \item Serpent
-    \item others
-  \end{itemize}
+  \item others
 \end{itemize}
