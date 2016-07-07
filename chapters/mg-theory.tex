@@ -15,7 +15,7 @@ The field of reactor physics is concerned with computing the distribution of nuc
 \mathcal{R}_{x}(\mathbf{r},\mathbf{\Omega},E) = \Sigma_{x}(\mathbf{r},E) \psi(\mathbf{r},\mathbf{\Omega},E)
 \end{dmath}
 
-The macroscopic cross section $\Sigma$ is proportional to a quantity known as the microscopic cross section $\sigma_{x}$. The microscopic cross section is a property of a particular nuclide and is measured experimentally for various reaction types which include fission $f$, radiative capture $\gamma$ and scattering $s$\footnote{Scattering as defined here includes both inelastic and elastic scattering channels.}. The macroscopic cross section is the sum of the microscopic cross sections of each nuclide $i$ weighted by its number density $N_{i}$:
+\noindent The macroscopic cross section $\Sigma$ is proportional to a quantity known as the microscopic cross section $\sigma_{x}$. The microscopic cross section is a property of a particular nuclide and is measured experimentally for various reaction types which include fission $f$, radiative capture $\gamma$ and scattering $s$\footnote{Scattering as defined here includes both inelastic and elastic scattering channels.}. The macroscopic cross section is the sum of the microscopic cross sections of each nuclide $i$ weighted by its number density $N_{i}$:
 
 \begin{dmath}
 \label{eqn:chap2-macro-xs-sum}
@@ -45,7 +45,7 @@ The first term on the left hand side of the equation represents the streaming of
 Q(\mathbf{r},\mathbf{\Omega},E) = \frac{1}{k_{eff}}\int\displaylimits_{0}^{\infty}\int\displaylimits_{4\pi} \nu\Sigma_{f}(\mathbf{r},{\mathbf{\Omega'}\rightarrow \mathbf{\Omega}},{E'\rightarrow E})\psi(\mathbf{r},\mathbf{\Omega'},E') \mathrm{d}\mathbf{\Omega'} \mathrm{d}E'
 \end{dmath}
 
-The fission production cross section $\nu\Sigma_{f}$ represents the probability of neutrons emitted at energy $E$ and angle $\mathbf{\Omega}$ resulting from fission events precipitated by neutrons at $E'$ and $\mathbf{\Omega'}$. The eigenvalue $k_{eff}$ of a critical system represents the multiplication of neutrons from fission and forces balance between neutron sources and losses due to absorption and leakage.
+\noindent The fission production cross section $\nu\Sigma_{f}$ represents the probability of neutrons emitted at energy $E$ and angle $\mathbf{\Omega}$ resulting from fission events precipitated by neutrons at $E'$ and $\mathbf{\Omega'}$. The eigenvalue $k_{eff}$ of a critical system represents the multiplication of neutrons from fission and forces balance between neutron sources and losses due to absorption and leakage.
 
 A solution for the neutron flux must computed from the transport equation in order to compute reaction rate distributions. The accurate determination of the neutron flux is primarily challenged by  the complicated energy structure of the cross sections. In addition, the distribution of neutrons in \ac{LWRs} spans 11 orders of magnitude from a few MeV at birth from fission emission to death by absorption at energies approaching 10$^{-5}$ eV. As a result, analytical solutions to Eqn.~\ref{eqn:chap2-transport-ce} are intractable without significant simplifying assumptions.
 
@@ -69,7 +69,7 @@ The neutrons emitted from fission form a nearly isotropic distribution independe
 Q(\mathbf{r},\mathbf{\Omega},E) = \frac{1}{4\pi k_{eff}}\int\displaylimits_{0}^{\infty}\int\displaylimits_{4\pi} \nu\Sigma_{f}(\mathbf{r},{E'\rightarrow E})\psi(\mathbf{r},\mathbf{\Omega},E') \mathrm{d}\mathbf{\Omega} \mathrm{d}E'
 \end{dmath}
 
-This expression may be further simplified in terms of the scalar neutron flux $\phi(\mathbf{r},E)$:
+\noindent This expression may be further simplified in terms of the scalar neutron flux $\phi(\mathbf{r},E)$:
 
 \begin{dmath}
 \label{eqn:chap2-source-scalar-flux}
@@ -81,7 +81,7 @@ Q(\mathbf{r},\mathbf{\Omega},E) = \frac{1}{4\pi k_{eff}} \int\displaylimits_{0}^
 \phi_{g}(\mathbf{r},E) = \int\displaylimits_{4\pi}\psi(\mathbf{r},\mathbf{\Omega},E)\mathrm{d}\mathbf{\Omega}
 \end{dmath}
 
-The isotropic approximation reduces the dimensionality of the fission production term in the transport equation and simplifies the derivation of the approximations in the following sections.
+\noindent The isotropic approximation reduces the dimensionality of the fission production term in the transport equation and simplifies the derivation of the approximations in the following sections.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -140,7 +140,7 @@ First, consider a truncated form of the Legendre polynomial expansion of the sca
 \Sigma_{s}(\mathbf{r},\mu,E'\rightarrow E) = \displaystyle\sum\limits_{\ell=0}^{\infty} \frac{2\ell+1}{2} \Sigma_{s,\ell}(\mathbf{r},{E'\rightarrow E})P_{\ell}(\mu) \approx \displaystyle\sum\limits_{\ell=0}^{L} \frac{2\ell+1}{2} \hat{\Sigma}_{s,\ell}(\mathbf{r},{E'\rightarrow E})P_{\ell}(\mu) + \Delta\Sigma_{tr}(\mathbf{r},{E'\rightarrow E})\delta(\mu-1)
 \end{dmath}
 
-where $\hat{\Sigma}_{s,\ell}$ is a modified form of the scattering moment $\Sigma_{s,\ell}$ and $\Delta\Sigma_{tr}$ is a transport correction term. The Kronecker delta function $\delta(\mu-1)$ is used to make the correction term forward peaked in order to best capture the first order anisotropies in thermal reactors. The coefficients $\hat{\Sigma}_{s,\ell}$ and $\Delta\Sigma_{tr}$ are defined such that the Legendre moments of the scattering cross section in Eqn.~\ref{eqn:chap2-scatt-moment} are preserved for $0 \le \ell \le L+1$:
+\noindent where $\hat{\Sigma}_{s,\ell}$ is a modified form of the scattering moment $\Sigma_{s,\ell}$ and $\Delta\Sigma_{tr}$ is a transport correction term. The Kronecker delta function $\delta(\mu-1)$ is used to make the correction term forward peaked in order to best capture the first order anisotropies in thermal reactors. The coefficients $\hat{\Sigma}_{s,\ell}$ and $\Delta\Sigma_{tr}$ are defined such that the Legendre moments of the scattering cross section in Eqn.~\ref{eqn:chap2-scatt-moment} are preserved for $0 \le \ell \le L+1$:
 
 \begin{dmath}
 \label{eqn:chap2-scatt-moment-preserve}
@@ -159,21 +159,21 @@ The following simultaneous system of equalities for $0 \le \ell \le L$ follows f
 \Delta\Sigma_{tr}(\mathbf{r},{E'\rightarrow E}) = \Sigma_{s,L+1}(\mathbf{r},{E'\rightarrow E})
 \end{dmath}
 
-For isotropic in lab scattering with $L = 0$ the Eqns.~\ref{eqn:chap2-scatt-expand-truncate} and~\ref{eqn:chap2-delta-transport} simplify in terms of only the zeroth and first order scattering moments:
+\noindent For isotropic in lab scattering with $L = 0$ the Eqns.~\ref{eqn:chap2-scatt-expand-truncate} and~\ref{eqn:chap2-delta-transport} simplify in terms of only the zeroth and first order scattering moments:
 
 \begin{dmath}
 \label{eqn:chap2-iso-scatt-kernel-transport}
 \Sigma_{s}(\mathbf{r},\mu,E'\rightarrow E) \approx \frac{1}{2}\left[\Sigma_{s,0}(\mathbf{r},{E'\rightarrow E}) - \Sigma_{s,1}(\mathbf{r},{E'\rightarrow E})\right] + \Sigma_{s,1}(\mathbf{r},{E'\rightarrow E})\delta(\mu-1)
 \end{dmath}
 
-The transport corrected scattering cross section in Eqn.~\ref{eqn:chap2-iso-scatt-kernel-transport} is then substituted into the transport equation in Eqn.~\ref{eqn:chap2-transport-ce-2} with an isotropic scattering kernel and rearranged to produce:
+\noindent The transport corrected scattering cross section in Eqn.~\ref{eqn:chap2-iso-scatt-kernel-transport} is then substituted into the transport equation in Eqn.~\ref{eqn:chap2-transport-ce-2} with an isotropic scattering kernel and rearranged to produce:
 
 \begin{dmath}
 \label{eqn:chap2-transport-ce-3}
 \mathbf{\Omega} \cdot \nabla \psi(\mathbf{r},\mathbf{\Omega},E) + \Sigma_{t}(\mathbf{r},E)\psi(\mathbf{r},\mathbf{\Omega},E) - \int\displaylimits_{0}^{\infty} \Sigma_{s,1}(\mathbf{r},{E'\rightarrow E})\phi(\mathbf{r},E')\mathrm{d}E' = \frac{1}{4\pi} \int\displaylimits_{0}^{\infty} \left[\Sigma_{s,0}(\mathbf{r},{E'\rightarrow E}) - \Sigma_{s,1}(\mathbf{r},{E'\rightarrow E})\right] \phi(\mathbf{r},E')\mathrm{d}E' + \frac{1}{4\pi k_{eff}}\int\displaylimits_{0}^{\infty}\nu\Sigma_{f}(\mathbf{r},{E'\rightarrow E})\phi(\mathbf{r},E') \mathrm{d}E'
 \end{dmath}
 
-where the relation $\phi = \psi_{0}^{0}$ for the scalar flux has been used to completely remove the angular dependence from the isotropic scattering kernel. The transport correction term $\Delta\Sigma_{tr}(\mathbf{r},E)$ can be defined such that it can be lumped into new transport corrected total and scattering cross sections $\hat{\Sigma}_{t}$ and $\hat{\Sigma}_{s}$ as follows:
+\noindent where the relation $\phi = \psi_{0}^{0}$ for the scalar flux has been used to completely remove the angular dependence from the isotropic scattering kernel. The transport correction term $\Delta\Sigma_{tr}(\mathbf{r},E)$ can be defined such that it can be lumped into new transport corrected total and scattering cross sections $\hat{\Sigma}_{t}$ and $\hat{\Sigma}_{s}$ as follows:
 
 \begin{dmath}
 \label{eqn:chap2-transport-xs}
@@ -281,14 +281,14 @@ The multi-group approach used to solve the transport equation subdivides the neu
 \phi_{g}(\mathbf{r}) = \int\displaylimits_{E_{g}}^{E_{g-1}} \phi(\mathbf{r},E)\mathrm{d}E
 \end{dmath}
 
-The continuous energy transport equation with isotropic fission and scattering sources and transport corrected cross sections in Eqn.~\ref{eqn:chap2-transport-ce-4} can be transformed into its multi-group form by integrating over each energy group\footnote{The multi-group approximation with energy discretization may be similarly applied to the transport equation in Eqn.~\ref{eqn:chap2-transport-ce-2} if anisotropic scattering is explicitly treated with scattering moments.}:
+\noindent The continuous energy transport equation with isotropic fission and scattering sources and transport corrected cross sections in Eqn.~\ref{eqn:chap2-transport-ce-4} can be transformed into its multi-group form by integrating over each energy group\footnote{The multi-group approximation with energy discretization may be similarly applied to the transport equation in Eqn.~\ref{eqn:chap2-transport-ce-2} if anisotropic scattering is explicitly treated with scattering moments.}:
 
 \begin{dmath}
 \label{eqn:chap2-transport-mg-1}
 \mathbf{\Omega} \cdot \nabla \psi_{g}(\mathbf{r},\mathbf{\Omega}) + \int\displaylimits_{E_{g}}^{E_{g-1}} \Bigg[\hat{\Sigma}_{t}(\mathbf{r},E)\psi(\mathbf{r},\mathbf{\Omega},E)\Bigg]\mathrm{d}E = \;\;\; \int\displaylimits_{E_{g}}^{E_{g-1}} \Bigg[\frac{1}{4\pi} \sum_{g'=1}^{G} \int\displaylimits_{E_{g'}}^{E_{g'-1}} \hat{\Sigma}_{s}(\mathbf{r},{E'\rightarrow E}) \phi(\mathbf{r},E') \mathrm{d}E'\Bigg]\mathrm{d}E + \int\displaylimits_{E_{g}}^{E_{g-1}}\Bigg[\frac{1}{4\pi k_{eff}}\sum_{g'=1}^{G} \int\displaylimits_{E_{g'}}^{E_{g'-1}}\nu\Sigma_{f}(\mathbf{r},{E'\rightarrow E})\phi(\mathbf{r},E')\mathrm{d}E'\Bigg]\mathrm{d}E
 \end{dmath}
 
-The integrals over incoming neutron energy in the scattering kernel and fission source in Eqn.~\ref{eqn:chap2-transport-mg-1} are treated as summations of discrete integrals over each incoming energy group. Although the streaming term is easily expressed in terms of the multi-group flux $\psi_{g}$, the total collision, scattering and fission terms are defined as integral quantities in energy. These three terms can be simplified by multiplying each by unity in the form of $\nicefrac{\psi_{g}}{\psi_{g}}$ and $\nicefrac{\phi_{g}}{\phi_{g}}$:
+\noindent The integrals over incoming neutron energy in the scattering kernel and fission source in Eqn.~\ref{eqn:chap2-transport-mg-1} are treated as summations of discrete integrals over each incoming energy group. Although the streaming term is easily expressed in terms of the multi-group flux $\psi_{g}$, the total collision, scattering and fission terms are defined as integral quantities in energy. These three terms can be simplified by multiplying each by unity in the form of $\nicefrac{\psi_{g}}{\psi_{g}}$ and $\nicefrac{\phi_{g}}{\phi_{g}}$:
 
 \begin{dmath}
 \label{eqn:chap2-transport-mg-2}
@@ -299,7 +299,7 @@ The integrals over incoming neutron energy in the scattering kernel and fission 
 \dfrac{1}{4\pi k_{eff}} \sum_{g'=1}^{G} \left[\frac{\int\displaylimits_{E_{g}}^{E_{g-1}} \int\displaylimits_{E_{g'}}^{E_{g'-1}} \nu\Sigma_{f}(\mathbf{r},{E'\rightarrow E})\phi(\mathbf{r},E') \mathrm{d}E'\mathrm{d}E}{\phi_{g'}(\mathbf{r})}\right]\phi_{g'}(\mathbf{r})
 \end{dmath}
 
-The bracketed terms in Eqn.~\ref{eqn:chap2-transport-mg-2} are defined as the \ac{MGXS} for total, scattering and fission production reactions. The \ac{MGXS} are the averages of the corresponding continuous energy cross sections weighted by the angular neutron flux $\psi$ in each energy group. The \ac{MGXS} $\hat{\Sigma}_{t,g}$, $\hat{\Sigma}_{s,g' \rightarrow g}$ and $\nu\Sigma_{f,g' \rightarrow g}$ are defined below for completeness:
+\noindent The bracketed terms in Eqn.~\ref{eqn:chap2-transport-mg-2} are defined as the \ac{MGXS} for total, scattering and fission production reactions. The \ac{MGXS} are the averages of the corresponding continuous energy cross sections weighted by the angular neutron flux $\psi$ in each energy group. The \ac{MGXS} $\hat{\Sigma}_{t,g}$, $\hat{\Sigma}_{s,g' \rightarrow g}$ and $\nu\Sigma_{f,g' \rightarrow g}$ are defined below for completeness:
 
 \begin{dmath}
 \label{eqn:chap2-sigt-mg}
@@ -349,7 +349,7 @@ The angular dependence of the total cross section is often treated with the flux
 \psi(\mathbf{r},\mathbf{\Omega},E) = \phi(\mathbf{r},E) W(\mathbf{r},\mathbf{\Omega})
 \end{dmath}
 
-The angular dependence of the $\hat{\Sigma}_{t,g}$ may then be eliminated by inserting Eqn.~\ref{eqn:chap2-flux-separate} into Eqn.~\ref{eqn:chap2-sigt-mg}, factoring out $W(\mathbf{r},\mathbf{\Omega})$ and writing $\hat{\Sigma}_{t}$ in terms of the scalar flux:
+\noindent The angular dependence of the $\hat{\Sigma}_{t,g}$ may then be eliminated by inserting Eqn.~\ref{eqn:chap2-flux-separate} into Eqn.~\ref{eqn:chap2-sigt-mg}, factoring out $W(\mathbf{r},\mathbf{\Omega})$ and writing $\hat{\Sigma}_{t}$ in terms of the scalar flux:
 
 \begin{dmath}
 \label{eqn:chap2-sigt-mg-scalar}
@@ -408,7 +408,7 @@ The group-wise fission production cross section $\nu\Sigma_{f,g'}$ is defined as
 \nu\Sigma_{f,g'} \equiv \displaystyle\sum\limits_{g'=1}^{G}\nu\Sigma_{f,g'\rightarrow g}
 \end{dmath}
 
-Upon substituting $\chi_{g}$ and $\nu\Sigma_{f,g}$ into Eqn.~\ref{eqn:chap2-transport-mg-3} one obtains:
+\noindent Upon substituting $\chi_{g}$ and $\nu\Sigma_{f,g}$ into Eqn.~\ref{eqn:chap2-transport-mg-3} one obtains:
 
 \begin{dmath}
 \label{eqn:chap2-transport-mg-4}
@@ -452,7 +452,7 @@ Up to this point the \ac{MGXS} have been defined as continuously varying in spac
 \nu\Sigma_{f,k,{g'\rightarrow g}} \equiv \frac{\int\displaylimits_{\mathbf{r} \in V_{k}}\left[\int\displaylimits_{E_{g}}^{E_{g-1}} \int\displaylimits_{E_{g'}}^{E_{g'-1}} \nu\Sigma_{f}(\mathbf{r},{E'\rightarrow E})\phi(\mathbf{r},E') \mathrm{d}E'\mathrm{d}E\right]\mathrm{d}\mathbf{r}}{\int\displaylimits_{\mathbf{r} \in V_{k}}\phi_{g'}(\mathbf{r})\mathrm{d}\mathbf{r}}
 \end{dmath}
 
-Spatial homogenization may be applied to compute the fission spectrum $\chi_{k,g}$ from the fission production cross section in Eqn.~\ref{eqn:chap2-nusigf-mg-scalar}. The spatially homogenized \ac{MGXS} must be appropriately defined to preserve reaction rates such that the following equation holds true for each spatial zone $k$ and energy group $g$:
+\noindent Spatial homogenization may be applied to compute the fission spectrum $\chi_{k,g}$ from the fission production cross section in Eqn.~\ref{eqn:chap2-nusigf-mg-scalar}. The spatially homogenized \ac{MGXS} must be appropriately defined to preserve reaction rates such that the following equation holds true for each spatial zone $k$ and energy group $g$:
 
 \begin{dmath}
 \label{eqn:chap2-transport-mg-5}
@@ -468,7 +468,7 @@ Spatial homogenization may be applied to compute the fission spectrum $\chi_{k,g
 %\frac{1}{4\pi k_{eff}}\sum_{g'=1}^{G} \int\displaylimits_{4\pi} \nu\Sigma_{f,i,g'}\psi_{i,g}(\mathbf{\Omega'}) \mathrm{d}\mathbf{\Omega'}
 %\end{dmath}
 
-This is the form of the multi-group transport equation solved by the deterministic OpenMOC code in this thesis. 
+\noindent This is the form of the multi-group transport equation solved by the deterministic OpenMOC code in this thesis. 
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
