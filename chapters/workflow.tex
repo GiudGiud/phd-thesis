@@ -14,6 +14,8 @@
 \subsection{Python API}
 \label{sec:chap3-py-api}
 
+Big data OpenMC~\cite{boyd2016bigdata}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Tally Arithmetic}
 \label{sec:chap3-tally-arithmetic}
@@ -22,13 +24,28 @@
 \subsubsection{Pandas DataFrames}
 \label{sec:chap3-pandas-df}
 
+Pandas~\cite{mckinney2010pandas}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Distributed Cell Tallies}
 \label{sec:chap3-distribcells}
 
 \begin{itemize}
-  \item Capture \ac{MGXS} spatial variation
+  \item Capture \ac{MGXS} spatial variation~\cite{lax2014distribcell}
 \end{itemize}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=6in]{figures/workflow/openmc/flow.pdf}
+    \caption{\label{fig:indexing_scheme} Example geometry with 3 universe levels.  Material cells are defined in pin-cell universes $a$ and $b$, which are filled into the cells of lattice universes $B$ and $C$, which are filled into the cells of lattice universe $A$.  The colored numbers in each fill cell are the offsets for each base universe, which can be used to quickly compute a unique ID for each instance of a material cell.}
+\end{figure}
+
+\begin{figure}[htb!]
+    \centering
+    \includegraphics[width=2in]{figures/workflow/openmc/core}\hspace{1cm}
+    \includegraphics[width=2in]{figures/workflow/openmc/core_axial}
+    \caption{\label{fig:beavrs} Geometry of the BEAVRS benchmark. \emph{Left:} Radial view, showing 193 fuel assemblies, colored by enrichment. \emph{Right:} Axial view, showing grid spacers and axial pin-cell features.}
+\end{figure}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{MGXS Generation}
@@ -48,8 +65,8 @@
 \label{sec:chap3-openmoc}
 
 \begin{itemize}[noitemsep]
-  \item reference Annals paper
-  \item reference parallel perf. papers
+  \item reference Annals paper~\cite{boyd2014openmoc}
+  \item multi-core CPUs~\cite{boyd2016parallel} and GPUs~\cite{boyd2013massively}
   \item reference 3D \ac{MOC} papers
   \item brief description of \ac{MOC} equations
   \begin{itemize}[noitemsep]
@@ -60,24 +77,119 @@
   \end{itemize}
 \end{itemize}
 
+\begin{figure*}[ht!]
+  \begin{subfigure}[htb!]{0.32\textwidth}
+    \centering
+    \includegraphics[width=0.95\textwidth]{figures/workflow/openmoc/materials-border}
+    \label{fig:moc-model-materials}
+    \caption{}
+  \end{subfigure}
+  \begin{subfigure}[htb!]{0.32\textwidth}
+    \centering
+    \includegraphics[width=0.95\textwidth]{figures/workflow/openmoc/FSRs}
+    \label{fig:moc-model-fsrs}
+    \caption{}
+  \end{subfigure}
+  \begin{subfigure}[htb!]{0.32\textwidth}
+    \centering
+    \includegraphics[width=0.95\textwidth]{figures/workflow/openmoc/cyclic-tracks}
+    \label{fig:moc-model-tracks}
+    \caption{}
+  \end{subfigure}
+\caption{The coolant and fuel materials (a), method of characteristics flat source region spatial mesh (b), and cyclic characteristic laydown (c) for a 4 $\times$ 4 fuel pin lattice.}
+\label{fig:moc-model}
+\end{figure*}
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{OpenCG}
 \label{sec:chap3-opencg}
 
 \begin{itemize}[noitemsep]
-  \item single physics-agnostic geometries
+  \item single physics-agnostic geometries~\cite{boyd2015opencg}
   \item compatibility modules with OpenMC, OpenMOC
   \item ``glue'' code to map OpenMC distribcells to OpenMOC spatial mesh
 \end{itemize}
+
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=.8\linewidth]{figures/workflow/opencg/compatibility-modules}
+  \caption{OpenCG compatibility modules for various neutron transport codes. The compatibility modules for OpenMC and OpenMOC will be released in future public distributions of each code, while modules for Serpent and MCNP are in progress at the time of this writing.}
+  \label{fig:compatibility-modules}
+\end{figure}
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Local Neighbor Symmetry}
 \label{sec:chap3-lns}
 
+\begin{algorithm}[h!]
+\caption{Local Neighbor Symmetry Identification}
+\label{alg:local-neighbor-symmetry-cells}
+\begin{algorithmic}[1]
+\Procedure{computeNeighborSymmetry}{$path$}
+    \State $G \gets \emptyset$ \Comment{Initialize empty set for graph}
+    \State $k \gets$ \textbf{length}($path$) \Comment{Find number of independent sets}
+    \For{$i := 1, k$}
+        \If{\textbf{type}($path[i]$) \textbf{is} UNIVERSE}
+            \State $G \gets G \cup \{path[i]\}$ \Comment{Append universe to graph}
+        \ElsIf{\textbf{type}($path[i]$) \textbf{is} LATTICE}
+            \State $N \gets$ \Call{BreadthFirstSearch}{$path[i]$} \Comment{Find lattice cell neighbors}
+            \State $G \gets G \cup \{N\}$ \Comment{Append neighbors to graph}
+        \ElsIf{\textbf{type}($path[i]$) \textbf{is} CELL}
+            \State $N \gets$ \Call{BreadthFirstSearch}{$path[i]$} \Comment{Find cell neighbors}
+            \State $G \gets G \cup \{N\}$ \Comment{Append neighbors to graph}
+        \EndIf
+    \EndFor
+    \State \textbf{return} \Call{Hash}{$G$} \Comment{Return $k$-partite graph hash}
+\EndProcedure
+\end{algorithmic}
+\end{algorithm}
+
 \begin{itemize}[noitemsep]
   \item analogy to lattice physics geometric templates based on eng. approx.
 \end{itemize}
+
+\begin{figure}
+\begin{subfigure}{.5\textwidth}
+  \centering
+  \includegraphics[width=.7\linewidth]{figures/workflow/opencg/cells-xy-24-16-assm}
+  \caption{}
+  \label{fig:assm-cells}
+\end{subfigure}%
+\begin{subfigure}{.5\textwidth}
+  \centering
+  \includegraphics[width=.7\linewidth]{figures/workflow/opencg/cells-xy-colorset}
+  \caption{}
+  \label{fig:colorset-cells}
+\end{subfigure}
+\begin{subfigure}{.5\textwidth}
+  \centering
+  \includegraphics[width=.7\linewidth]{figures/workflow/opencg/unique-neighbor-cells-xy-24-16-assm}
+  \caption{}
+  \label{fig:assm-unique-neighbors}
+\end{subfigure}
+\begin{subfigure}{.5\textwidth}
+  \centering
+  \includegraphics[width=.7\linewidth]{figures/workflow/opencg/unique-neighbor-cells-xy-colorset}
+  \caption{}
+  \label{fig:colorset-unique-neighbors}
+\end{subfigure}
+\begin{subfigure}{.5\textwidth}
+  \centering
+  \includegraphics[width=.7\linewidth]{figures/workflow/opencg/neighbor-cells-xy-24-16-assm}
+  \caption{}
+  \label{fig:assm-neighbors}
+\end{subfigure}
+\begin{subfigure}{.5\textwidth}
+  \centering
+  \includegraphics[width=.7\linewidth]{figures/workflow/opencg/neighbor-cells-xy-colorset}
+  \caption{}
+  \label{fig:colorset-neighbors}
+\end{subfigure}
+\caption{Two rectilinear lattice geometries are depicted to illustrate the use of local neighbor symmetry identification~\cite{boyd2015opencg}. The \textit{cells} are depicted for (a) a 17$\times$17 PWR lattice and (b) a 3$\times$3 colorset of two different 17 $\times$ 17 PWR assemblies each with burnable absorbers, guide tubes and instrument tubes. The \textit{unique neighbor} symmetry identifiers are color-coded in (c) and (d) for the assembly and colorset, respectively. Likewise, the \textit{general neighbor} symmetry identifiers are color-coded in (e) and (f).}
+\label{fig:neighbor-cells}
+\end{figure}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Region Differentiation}
@@ -87,3 +199,40 @@
   \item retain CSG's simplicity of repeated primitives for user input
   \item build combinatorial geometries based on arbitrary clustering of cell instances
 \end{itemize}
+
+
+\newpage
+\begin{figure}[h!]
+\begin{subfigure}{\textwidth}
+  \centering
+  \includegraphics[width=0.82\linewidth]{figures/workflow/opencg/region-differentiation-1}
+  \caption{}
+  \label{fig:differentation-1}
+\end{subfigure}
+\begin{subfigure}{\textwidth}
+  \centering
+  \includegraphics[width=0.75\linewidth]{figures/workflow/opencg/region-differentiation-2}
+  \caption{}
+  \label{fig:differentation-2}
+\end{subfigure}
+\begin{subfigure}{\textwidth}
+  \centering
+  \includegraphics[width=0.75\linewidth]{figures/workflow/opencg/region-differentiation-3}
+  \caption{}
+  \label{fig:differentation-3}
+\end{subfigure}
+\begin{subfigure}{\textwidth}
+  \centering
+  \includegraphics[width=0.75\linewidth]{figures/workflow/opencg/region-differentiation-4}
+  \caption{}
+  \label{fig:differentation-4}
+\end{subfigure}
+\begin{subfigure}{\textwidth}
+  \centering
+  \includegraphics[width=0.75\linewidth]{figures/workflow/opencg/region-differentiation-5}
+  \caption{}
+  \label{fig:differentation-5}
+\end{subfigure}
+\caption{A few of the stages of the region differentiation algorithm~\cite{boyd2015opencg}. The regions (cell instances) to be differentiated are grouped and colored blue, orange, green and purple in (a). The first levels of cells and universes for each region group are differentiated in (b). The same is done for the lattices in (c). The algorithm continues to recursively differentiate cells, universes and lattices until no region groups collide at any level of the CG tree in (e).}
+\label{fig:region-differentiation}
+\end{figure}
