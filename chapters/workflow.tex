@@ -5,38 +5,48 @@
 \section{A Simulation Triad}
 \label{chap3:triad}
 
-first paragraph: overview of codes
--openmc as the monte carlo code
--openmoc as deterministic multi-group code
--opencg as the driver for CSG processing
--python to tie it all together into a single framework
+This thesis investigates Monte Carlo as a means to generate multi-group cross sections for fine mesh transport codes. This work required the development of a ``simulation triad'' encompassing three primary codes. First, the OpenMC Monte Carlo code~\cite{romano2013openmc} was utilized to generate \ac{MGXS} as described in Sec.~\ref{sec:chap3-mgxs-gen}. Second, the \ac{MGXS} were used by the OpenMOC \ac{MOC} code~\cite{boyd2014openmoc} for deterministic multi-group transport calculations. Finally, the OpenCG library~\cite{boyd2015opencg} enabled the processing and transfer of tally data on combinatorial geometry (CG) meshes between OpenMC and OpenMOC. In addition, a significant amount of infrastructural code was developed to process the results produced by OpenMC and OpenMOC. This chapter describes the author's contributions to each component code in the simulation triad to support the objectives of this thesis -- namely, the evaluation of intrinsic bias in \ac{MGXS} for fine mesh transport, and the development of a novel metholodogy for spatial homgenization based on unsupervised clustering. An overview of the OpenMC, OpenMOC, and OpenCG codes, along with the features added to each code for this thesis, are presented in Secs.~\ref{sec:chap3-openmc},~\ref{sec:chap3-openmoc}, and~\ref{sec:chap3-opencg}, respectively.
 
-second paragraph: big data -> perhaps this should be in the motivation above?
--explain/assume the need to tally across each spatial mesh zone
--need to process large amounts of tally data
--BEAVRS core figures for motivation
--bulletize requirements?
-  -\# nuclides, \# tally regions, \# groups => data size
+%The infrastructural code framework was developed using the Python programming language due to its flexibility and ease of use, as well as its extensive ecosystem of open source packages for high-performance data analysis.
+
+% including a Monte Carlo code, deterministic multi-group transport code, and the infrastructural code to tie the pieces together. 
+
+%first paragraph: overview of codes
+%-openmc as the monte carlo code
+%-openmoc as deterministic multi-group code
+%-opencg as the driver for CSG processing
+%-python to tie it all together into a single framework
+
+%Much of the code development for this thesis was motivated by the need to perform analysis of large tally datasets produced by OpenMC for \ac{MGXS} generation. The approach to spatial homogenization with unsupervised clustering requires the calculation of microscopic \ac{MGXS} for each nuclide in each spatial region (\textit{e.g.}, fuel pin) across an entire reactor core. For a \ac{PWR} consisting of $\sim$50,000 fuel pins of depleted fuel with $\sim$300 nuclides, subdivided into 100 
+
+%second paragraph: big data -> perhaps this should be in the motivation above?
+%-explain/assume the need to tally across each spatial mesh zone
+%-need to process large amounts of tally data
+%-BEAVRS core figures for motivation
+%-bulletize requirements?
+%  -\# nuclides, \# tally regions, \# groups => data size
   
-third paragraph: requirements for software
--processing/transferring lots of data
-  -requires a robust and scalable framework to ``glue'' triad together
--requires extensions to each code
+%third paragraph: requirements for software
+%-processing/transferring lots of data
+%  -requires a robust and scalable framework to ``glue'' triad together
+%-requires extensions to each code
 
-third paragraph: outline following sections
--openmc
--openmoc
--opencg
+%third paragraph: outline following sections
+%-openmc
+%-openmoc
+%-opencg
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{OpenMC}
 \label{sec:chap3-openmc}
 
-first paragraph: introduce OpenMC
--history
--high-level overview: CE, parallel perf., open source
--not repeating MC theory, point to manual
+The OpenMC code is a continuous energy Monte Carlo neutron transport code~\cite{romano2013openmc} with support for general constructive solid geometry models. OpenMC was initially created by Romano for his PhD thesis~\cite{romano2013parallel} to explore novel parallel algorithms for high-performance computing architectures. The code was released with the MIT open source license, and has attracted growing interest as platform for development of new physics methods and computational algorithms. Although this thesis could have plausibly used any continuous energy \ac{MC} neutron transport code, this author chose OpenMC for its general and extensible implementation, excellent parallel scalability, and open source license agreement which permits the modification of its codebase. The general physics and computational methods used in OpenMC will not be detailed here since they are well documented in the literature. The interested reader is referred to the online code manual~\cite{openmc2016manual} for further information.
+
+%first paragraph: introduce OpenMC
+%-history
+%-high-level overview: CE, parallel perf., open source
+%-not repeating MC theory, point to manual
 
 second paragraph: motivation for big data MC
 -condense paragraphs from PHYSOR paper intro
