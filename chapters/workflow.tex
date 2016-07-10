@@ -46,62 +46,62 @@ However, this thesis did involve the development of software tools to address th
 
 This section describes the features introduced to develop the next-generation model in OpenMC and follows a recent paper by this author~\cite{boyd2016bigdata}. Sec.~\ref{sec:chap3-py-api} presents a fully-featured Python \ac{API} for OpenMC which formed the foundation for much of this work. An algorithm to simplify tally management on unstructured but repeated tally volumes is highlighted in Sec.~\ref{sec:chap3-distribcells}. Finally, a new module to generate \ac{MGXS} was implemented atop many of the newly introduced features in OpenMC as discussed in Sec.~\ref{sec:chap3-mgxs}. All of the feature implementations were peer reviewed and incorporated into the v0.7.1 release of OpenMC.
 
+-cartoon image of simulation triad\\
+
 %%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Python API}
 \label{sec:chap3-py-api}
 
-A fully-featured Python \ac{API} was designed and implemented to enable programmatic pre- and post-processing for OpenMC~\cite{boyd2016bigdata}. The \ac{API} enables tight coupling of input generation, simulation execution, and tally data analysis within dynamic Python script ``input files.'' In addition, the \ac{API} makes it possible to leverage the extensive ecosystem of Python packages for scientific computing alongside OpenMC in a simulation workflow. The \ac{API} forms the basis of the software stack developed to support the \ac{MGXS} generation module created for OpenMC (see Sec.~\ref{sec:chap3-mgxs}).
+A fully-featured Python \ac{API} was designed and implemented to enable programmatic pre- and post-processing for OpenMC~\cite{boyd2016bigdata}. The \ac{API} enables tight coupling of input generation, simulation execution, and tally data analysis within dynamic Python script ``input files.'' In addition, the \ac{API} makes it possible to leverage the extensive ecosystem of Python packages for scientific computing alongside OpenMC in a simulation workflow. The following sections describe the \ac{API} and some of the core features which form the basis of the software stack developed to support the \ac{MGXS} generation module created for OpenMC.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Overview}
+\label{sec:chap3-py-api-overview}
 
 %-important to have flexible handle on the geometry for high-fidelity spatial tallies
 
-The Python \ac{API} is a user-friendly, complementary (and optional) addition to the OpenMC codebase. OpenMC is written in Fortran 2008 and uses \ac{XML} input files to describe the simulation materials, geometry, tallies, and settings. Although \ac{XML} is often hailed as both human-readable and machine-readable, it is cumbersome to write by hand for large and complicated reactor models such as those modeled in this thesis. The Python \ac{API} mitigates this process by leveraging Python's internal \texttt{ElementTree} \ac{API} to generate the \ac{XML} files used by the OpenMC executable. Instead of writing \ac{XML} files by hand, dynamic Python scripts are used to describe one or more OpenMC simulations, including those used to generate \ac{MGXS} with OpenMC.
+The Python \ac{API} is a user-friendly, complementary (and optional) addition to the OpenMC codebase. OpenMC is written in Fortran 2008 and uses \ac{XML} input files to describe the simulation materials, geometry, tallies, and settings. Although \ac{XML} is often hailed as both human-readable and machine-readable, it is cumbersome to write by hand for large and complicated reactor models such as those modeled in this thesis. The Python \ac{API} circumvents this process by leveraging Python's internal \texttt{ElementTree} \ac{API} to generate the \ac{XML} files used by the OpenMC executable. Instead of writing \ac{XML} files by hand, dynamic Python scripts are used to describe one or more OpenMC simulations, including those used to generate \ac{MGXS} with OpenMC.
 
 The OpenMC Python \ac{API} adheres to object-oriented software design principles with extensible class definitions. A user instantiates, manipulates, and connects objects representing items such as cells, materials, and tallies to construct an OpenMC simulation. This is a scalable alternative workflow to traditional ``decks'' of ``cards'' in which data characterizing a simulation is specified in opaque \ac{ASCII} files (\textit{e.g.}, integer identifiers for cells, materials, and tallies). The Python \ac{API} provides classes and routines to represent all features provided by OpenMC's \ac{XML} input specifications.
 
 In addition to its functionality for input generation, the Python \ac{API} also includes a rich framework of tally data processing utilities. The \ac{API} eliminates the time intensive and error prone process of writing code to parse results from OpenMC's output files. The \ac{API} is able to reconstruct the hierarchy of interconnected Python objects used to represent the materials, geometry and tallies from OpenMC's ``statepoint'' and ``summary'' \ac{HDF5} output files~\cite{koranne2011hdf5}. OpenMC's dynamic object-oriented data processing model -- fusing the geometry and materials configuration with tallied data -- enabled the rapid calculation, indexing and storage of \ac{MGXS} from tallies on unstructured meshes for this thesis.
   
-  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Pandas DataFrames}
 \label{sec:chap3-pandas-df}
 
-Pandas~\cite{mckinney2010pandas}
--take from Big Data paper!!!
--look at jupyter notebooks
--should there be a section outlining use for each Python module???
+The Python API encapsulates numerical tally data using $N$-dimensional array objects from the NumPy package~\cite{walt2011numpy}. Although OpenMC's NumPy interface to tally data is more flexible than simply reporting the data in \ac{ASCII} files, NumPy arrays are relatively opaque containers for managing large tally datasets. A single OpenMC \texttt{Tally} object used for \ac{MGXS} generation may encompass many different energy groups, nuclides and reaction types, yet all of this data is tabulated in a single contiguous NumPy array. As a result, it is challenging to implement general algorithms to index, inspect and manipulate tally data in NumPy arrays for specific groups, nuclides or reactions.
 
-first paragraph: opaque data structures
--Python (NumPy) data structures superior to flat \ac{ASCII} files, but opaque
--Pandas DF more accessible, richer, mixed type data
--nice for both reporting, fancy indexing, storage
+The Pandas Python package~\cite{mckinney2010pandas} was implemented in the Python \ac{API} to enable transparent tally data processing for \ac{MGXS} generation. In particular, the \texttt{Tally} class includes a feature to construct a Pandas 
+\texttt{DataFrame} object from tally data. Pandas \texttt{DataFrames} are modeled after data structures in the \textsf{R} programming language used to store data tables in a more accessible format than contiguous arrays. Pandas \texttt{DataFrames} support mixed-type data (\textit{i.e.}, strings and numbers), and allow the use of string keys or labels to index each column or row. The Python \ac{API} uses this capability to build Pandas DataFrames by annotating tally data with the filters, nuclides, and scores associated with each tally bin. 
 
-second paragraph: DFs for tallies
--construct DFs for tallies 
--annotate numerical tally data with filters, nuclides and score info
--makes it simple to manipulate, slice, index, sort, merge data
--nice way to report data in interactive tabular format, e.g., jupyter notebooks
-
-third paragraph: tie back to MGXS
--also works for derived tallies from tally arithmetic, like those usd 
--provides fantastic data structure to perform ML on MGXS tally data
+Pandas' most advanced features are intended for scalable data manipulation operations such as sorting, merging, and joining datasets, and generating pivot tables. In addition, Python's powerful statistics and machine learning packages -- such as SciPy~\cite{jones2011scipy}, statsmodels~\cite{seabold2010statsmodels} and scikit-learn~\cite{pedregosa2011sklearn} -- are well integrated with Pandas and may be easily applied to \texttt{DataFrames} of tally data. Pandas \texttt{DataFrames} were extensively used to encapsulate tally data throughout the statistical data processing framework for the \ac{MGXS} spatial homogenization methology introduced in this thesis.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Tally Slicing and Merging}
 \label{sec:chap3-tally-slice-merge}
 
-Similar to tally arithmetic, the Python \ac{API} enables \textit{tally slicing} and \textit{tally merging} operations. It can be useful to create individual \texttt{Tally} objects for each spatial zone and reaction type when computing \ac{MGXS}. This leads to a  large number of \texttt{Tally} objects for large, complex geometries. Since the 
+Two useful and related features in the OpenMC Python \ac{API} for \ac{MGXS} generation are \textit{tally merging} and \textit{tally slicing} as depicted in Fig.~\ref{fig:tally-merge-slice}. Although it is useful to systematically create individual \texttt{Tally} objects for each spatial zone and reaction type when generating the OpenMC inputs necessary to compute \ac{MGXS}, which leads to a large number (10$^2$ -- 10$^3$) of tallies objects for large, complex geometries. The large number of distinct tallies poses a computational bottleneck since the overhead to tally in OpenMC scales as $\mathcal{O}(N)$ for $N$ tallies. To compensate for this, the Python \ac{API}'s \texttt{Tally} class allow for the automated merging of tallies for input generation. Similarly, the \ac{API} supports the slicing of tallies to simplify downstream data processing which may comprise energy-, nuclide-, and/or reaction-dependent transformations of the tally data. Tally merging and slicing are extensively used throughout the statistical data processing framework for the \ac{MGXS} spatial homogenization methology introduced in this thesis.
 
-third paragraph: aggregation (slicing/merging)
--tally slicing and merging
--mention overhead associated with lots of tallies
--but nice for user to 1) create and 2) process lots of distinct tally objects
-  -create lots of distinct tallies in Python input
-  -automatically merge them for OpenMC \ac{XML} input and runtime efficiency
-  -construct tally objects from HDF5 statepoints
-  -slice tallies apart again for processing
--operations use NumPy to efficiently create derived sliced/merged tallies
--slicing/merging can be used to slice tallies apart by nuclide, group, domain, etc.
-  -necessary for machine learning by nuclide, group, domain, etc.
-  -use tally merging to re-assembly MGXS from outputs of ML algorithms
+\begin{figure}
+\begin{subfigure}{\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{figures/workflow/tally-merge}
+  \caption{}
+\end{subfigure}
+\begin{subfigure}{\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{figures/workflow/tally-slice}
+  \caption{}
+\end{subfigure}
+\caption[Tally merging and slicing operations]{Two \texttt{Tally} objects for different spatial volumes are merged into a single \texttt{Tally} (a). A single \texttt{Tally} is sliced by tally volume into two distinct \texttt{Tally} objects (b).}
+\label{fig:tally-merge-slice}
+\end{figure}
+
+%paragraph: aggregation (slicing/merging)
+%-operations use NumPy to efficiently create derived sliced/merged tallies
+%-slicing/merging can be used to slice tallies apart by nuclide, group, domain, etc.
+%  -use tally merging to re-assembly MGXS from outputs of ML algorithms
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Tally Arithmetic}
