@@ -5,19 +5,11 @@
 \section{A Simulation Triad}
 \label{chap3:triad}
 
-This thesis investigates Monte Carlo as a means to generate multi-group cross sections for fine mesh transport codes. This work required the development of a ``simulation triad'' encompassing three primary codes. First, the OpenMC Monte Carlo code~\cite{romano2013openmc} was utilized to generate \ac{MGXS} as described in Sec.~\ref{sec:chap3-mgxs-gen}. Second, the \ac{MGXS} were used by the OpenMOC \ac{MOC} code~\cite{boyd2014openmoc} for deterministic multi-group transport calculations. Finally, the OpenCG library~\cite{boyd2015opencg} enabled the processing and transfer of tally data on combinatorial geometry (CG) meshes between OpenMC and OpenMOC. In addition, a significant amount of infrastructural code was developed to process the results produced by OpenMC and OpenMOC. This chapter describes the author's contributions to each component code in the simulation triad to support the objectives of this thesis -- namely, the evaluation of intrinsic bias in \ac{MGXS} for fine mesh transport, and the development of a novel metholodogy for spatial homgenization based on unsupervised clustering. An overview of the OpenMC, OpenMOC, and OpenCG codes, along with the features added to each code for this thesis, are presented in Secs.~\ref{sec:chap3-openmc},~\ref{sec:chap3-openmoc}, and~\ref{sec:chap3-opencg}, respectively.
+This thesis investigates Monte Carlo as a means to generate multi-group cross sections for fine mesh transport codes. This work required the development of a ``simulation triad'' encompassing three primary codes. First, the OpenMC Monte Carlo code~\cite{romano2013openmc} was utilized to generate multi-gropu cross sections. Second, the \ac{MGXS} were used by the OpenMOC \ac{MOC} code~\cite{boyd2014openmoc} for deterministic multi-group transport calculations. Finally, the OpenCG library~\cite{boyd2015opencg} enabled the processing and transfer of tally data on combinatorial geometry (CG) meshes between OpenMC and OpenMOC. In addition, a significant amount of infrastructural code was developed to process the results produced by OpenMC and OpenMOC. 
+
+This chapter describes the author's contributions to each component code in the simulation triad to support the objectives of this thesis -- namely, the evaluation of intrinsic bias in \ac{MGXS} for fine mesh transport, and the development of a novel metholodogy for spatial homgenization based on unsupervised clustering. An overview of the OpenMC, OpenMOC, and OpenCG codes, along with the features added to each code to support this thesis, are presented in Secs.~\ref{sec:chap3-openmc},~\ref{sec:chap3-openmoc}, and~\ref{sec:chap3-opencg}, respectively.
 
 %The infrastructural code framework was developed using the Python programming language due to its flexibility and ease of use, as well as its extensive ecosystem of open source packages for high-performance data analysis.
-
-% including a Monte Carlo code, deterministic multi-group transport code, and the infrastructural code to tie the pieces together. 
-
-%first paragraph: overview of codes
-%-openmc as the monte carlo code
-%-openmoc as deterministic multi-group code
-%-opencg as the driver for CSG processing
-%-python to tie it all together into a single framework
-
-%Much of the code development for this thesis was motivated by the need to perform analysis of large tally datasets produced by OpenMC for \ac{MGXS} generation. The approach to spatial homogenization with unsupervised clustering requires the calculation of microscopic \ac{MGXS} for each nuclide in each spatial region (\textit{e.g.}, fuel pin) across an entire reactor core. For a \ac{PWR} consisting of $\sim$50,000 fuel pins of depleted fuel with $\sim$300 nuclides, subdivided into 100 
 
 %second paragraph: big data -> perhaps this should be in the motivation above?
 %-explain/assume the need to tally across each spatial mesh zone
@@ -31,102 +23,43 @@ This thesis investigates Monte Carlo as a means to generate multi-group cross se
 %  -requires a robust and scalable framework to ``glue'' triad together
 %-requires extensions to each code
 
-%third paragraph: outline following sections
-%-openmc
-%-openmoc
-%-opencg
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{OpenMC}
 \label{sec:chap3-openmc}
 
-The OpenMC code is a continuous energy Monte Carlo neutron transport code~\cite{romano2013openmc} with support for general constructive solid geometry models. OpenMC was initially created by Romano for his PhD thesis~\cite{romano2013parallel} to explore novel parallel algorithms for high-performance computing architectures. The code was released with the MIT open source license, and has attracted growing interest as platform for development of new physics methods and computational algorithms. Although this thesis could have plausibly used any continuous energy \ac{MC} neutron transport code, this author chose OpenMC for its general and extensible implementation, excellent parallel scalability, and open source license agreement which permits the modification of its codebase. The general physics and computational methods used in OpenMC will not be detailed here since they are well documented in the literature. The interested reader is referred to the online code manual~\cite{openmc2016manual} for further information.
+The OpenMC code is a continuous energy Monte Carlo neutron transport code~\cite{romano2013openmc} with support for general constructive solid geometry models. OpenMC was initially created by Romano for his PhD thesis~\cite{romano2013parallel} to explore novel parallel algorithms for \ac{HPC} architectures. The code was released for public use with the MIT open source license, and has attracted growing interest as a platform for the development of new physics methods and computational algorithms. Although this thesis could have plausibly used any continuous energy \ac{MC} neutron transport code to generate \ac{MGXS}, this author chose OpenMC for its general and extensible implementation, excellent parallel scalability, and open source license agreement which permits the modification of its codebase. The general physics and computational methods used in OpenMC will not be detailed here since they are well documented in the literature. The interested reader is referred to the online code manual~\cite{openmc2016manual} for further information.
 
-%first paragraph: introduce OpenMC
-%-history
-%-high-level overview: CE, parallel perf., open source
-%-not repeating MC theory, point to manual
+This thesis developed new features for the OpenMC code to enable the processing of large tally datasets to generate \ac{MGXS}. These contributions were motivated by the novel spatial homogenization technique presented in Chap.~\ref{chap:unsupervised} which requires the calculation of microscopic \ac{MGXS} for each nuclide in each spatial zone across a reactor core geometry. The tally datasets for this scheme are orders of magnitude larger than those generated by the multi-level approaches previously considered in the literature. In particular, the tally datasets are computed on a fine (\textit{e.g.}, pin-wise) spatial tally mesh for a fully-detailed heterogeneous whole-core geometry. This stands in contrast to multi-level approaches which compute \ac{MGXS} for each unique fuel pin or assembly with infinite lattice boundary conditions for use in a multi-group whole-core calculation. For example, the scheme introduced here would tally \ac{MGXS} for each of the 50,000+ fuel pins in a whole-core \ac{PWR} \ac{MC} simulation. In contrast, a multi-level approach would compute \ac{MGXS} for the 10s of unique fuel pins or assemblies in the model with pin-wise or assembly-wise \ac{MC} simulations.
 
-This thesis developed new features for the OpenMC code to enable the processing of large tally datasets to generate \ac{MGXS}. These contributions were motivated by the novel spatial homogenization technique presented in Chap.~\ref{chap:unsupervised} which requires the calculation of microscopic \ac{MGXS} for each nuclide, in each energy group, in each spatial zone across a reactor core geometry. The tally datasets for this scheme are orders of magnitude larger than those generated by the multi-level approaches previously considered in the literature. In particular, the tally datasets are computed on a fine (\textit{e.g.}, pin-wise) spatial tally mesh for a fully-detailed heterogeneous whole-core geometry. This stands in contrast to multi-level approaches which compute \ac{MGXS} for each unique fuel pin or assembly (\textit{i.e.}, with infinite lattice boundary conditions) for use in a multi-group whole-core calculation. For example, the scheme introduced here tallies \ac{MGXS} for each of the 50,000+ fuel pins in a 2D full core \ac{PWR} \ac{MC} simulation, while a typical approach computes \ac{MGXS} for the 10s of unique fuel pins or assemblies in the model with pin-wise or assembly-wise \ac{MC} simulations.
+This thesis' requirements for ``big data'' Monte Carlo calculations can be defined along two primary dimensions: scalable parallel algorithms for efficient \ac{MC} tracking, sampling and tallying, along with flexible and robust tools for downstream data processing. The first of these dimensions has been a focal point for OpenMC development since its inception. OpenMC includes distributed memory parallelism via the Message Passing Interface (MPI) and has been shown to scale with near perfect efficiency to 100,000s of processor cores~\cite{romano2013parallel}. In addition, shared memory parallelism is implemented with the OpenMP library~\cite{siegel2014multi} which reduces the simulation memory footprint by minimizing domain replication on multi-core processors. Furthermore, recent work has developed innovative schemes to manage tally datasets with memory footprints beyond that available on a single node in a typical \ac{HPC} machine (a few tens of gigabytes) with tally servers~\cite{romano2013servers} and spatial domain decomposition~\cite{horelik2014dd}. The efficient parallel algorithms already implemented in OpenMC were a key reason to use the code for this thesis work.
 
-This thesis' requirements for ``big data'' Monte Carlo calculations can be defined along two primary dimensions: scalable parallel algorithms for efficient \ac{MC} tracking, sampling and tallying, along with flexible and robust tools for downstream data processing. The first of these dimensions has been a focal point for OpenMC development since its inception. OpenMC is implemented with distributed memory parallelism via the Message Passing Interface (MPI), and has been shown to scale with near perfect efficiency to 100,00s of processor cores~\cite{romano2013parallel}. In addition, shared memory parallelism is implemented with the OpenMP library~\cite{siegel2014multi}, which reduces the simulation memory footprint by minimizing domain replication on multi-core processors. Furthermore, some recent work has developed innovative schemes to manage tally datasets with memory footprints beyond that available on a single node in a typical \ac{HPC} machine (a few tens of gigabytes) with tally servers~\cite{romano2013servers} and spatial domain decomposition~\cite{horelik2014dd}. The efficient parallel algorithms already provided by OpenMC was a key reason to use the code for this thesis work.
+However, this thesis did involve the development of software tools to address the data processing needs for ``big data'' \ac{MC} calculations. It is the author's opinion that these data processing tools address uniquely position OpenMC as the only \ac{MC} code presently capable of supporting the \ac{MGXS} generation scheme introduced in this thesis. For example, many commonly \ac{MC} codes store and retrieve tally data from \ac{ASCII} formatted files or flat binary files. Although these file formats may work well for small tally datasets, they do not scale well for the tally datasets used in this thesis. The data processing paradigm reinforced by many \ac{MC} codes places an large burden on the user to write convoluted parsers to extract tally data without a generic set of tools to guide the process. In addition, many tally data stores are organized in a way that necessarily serializes tally data access without the metadata needed to index data in an efficient and parallel manner. Furthermore, many data stores are highly tailored to tallies on Cartesian or hexagonal meshes rather than the more complex unstructured meshes needed to generate \ac{MGXS} for fine mesh transport codes. The software tools developed for this thesis attempt to mitigate these issues and formalize a flexible and scalable tally data model for OpenMC.
 
-However, this this did involve the development of a complementary system of software tools to address the data processing needs for ``big data'' \ac{MC} calculations. It is the author's opinion that the data processing tools developed for OpenMC attempts to address shortcomings in the tally data models in some other commonly used \ac{MC} codes and uniquely position OpenMC as the only \ac{MC} code presently capable of supporting the \ac{MGXS} generation scheme introduced in this thesis. The conventional methods used to store and retrieve tally data for post-processing in many codes are often based on the use of ASCII or flat binary files. Although these file formats may work well for small tally datasets, they do not scale well for the tally datasets used in this thesis. Many data-processing paradigms often place an undue burden on the user to write convoluted parsers to extract tally data without a generic set of tools to guide the process. In addition, many data stores are highly tailored to tallies on Cartesian or hexagonal meshes rather than the more complex unstructured meshes needed for detailed analyses. Furthermore, many tally data stores are organized in a way that necessarily serializes tally data access without the metadata needed to index data in an efficient and parallel manner. The software tools developed for OpenMC attempt to formalize a flexible and consistent tally data model.
+%The development of a next-generation data model for OpenMC took a user-centric approach with the following three focus areas:
 
-%second paragraph: motivation for big data MC
-%-condense paragraphs from PHYSOR paper intro
-%-parallelism is not enough (cite nick's papers)
-%-flat ASCII files suck
-%-generalized data model needed
+%\begin{itemize}[noitemsep]
+%\item \textbf{Expressive Input} -- intuitive and compact simulation model descriptions
+%\item \textbf{Managed Execution} -- automated optimization of simulation performance
+%\item \textbf{Seamless Processing} -- scalable tools to index and transform tally data
+%\end{itemize}
 
-%Although algorithms such as tally servers and spatial domain decomposition enable Monte Carlo calculations with an unprecedented amount of tally data, they do not provide the means to effectively utilize the tally data once the simulation has terminated.
-
--%cite papers with scalability - MPI~\cite{romano2013parallel} and OpenMP~\cite{siegel2014multi}
-%-then summarize DD and tally servers in single sentence
-%-add sentence saying that this work is done and awesome and is leveraged but isn't enough
-
-%The motivation for some recent work has been the need to manage tally datasets with memory footprints beyond that available on a single node in a typical \ac{HPC} machine (a few tens of gigabytes). The tally server algorithm~\cite{romano2013servers} provides this capability by segregating nodes into distinct roles for particle tracking and tally accumulation. An alternative algorithm is spatial domain decomposition in which each node performs particle tracking and tally accumulation for a small subset of the total simulation domain. Recent work has demonstrated excellent scalability for spatial domain decomposition for realistic \ac{PWR} models~\cite{horelik2014dd}. 
-
-%next paragraph
-%-big data stuff -> requires awesome internal parallel algorithms PLUS scalable data processing code
-%-then mention the cool parallel algorithms
-
-%second paragraph: big data -> perhaps this should be in the motivation above?
-%-explain/assume the need to tally across each spatial mesh zone
-%-need to process large amounts of tally data
-%-BEAVRS core figures for motivation
-%-bulletize requirements?
-%  -\# nuclides, \# tally regions, \# groups => data size
-
-The development of a next-generation data model for OpenMC took a user-centric approach. The following three pillars were focus areas for the new data model and its implied workflow:
-
-\begin{itemize}[nosep]
-\item \textbf{Expressive Input} -- intuitive and compact simulation model descriptions
-\item \textbf{Managed Execution} -- automated optimization of simulation performance
-\item \textbf{Seamless Processing} -- scalable tools to index and transform tally data
-\end{itemize}
-
-This section describes the features introduced in OpenMC to support the data model and the analyis in this thesis and follows a recent paper by this author~\cite{boyd2016bigdata}. As discussed in Sec.~\ref{sec:chap3-py-api}, a fully-featured Python application programming interface (API) for OpenMC formed the foundation for much of this work. An algorithm to simplify tally management on unstructured but repeated tally volumes is highlighted in Sec.~\ref{sec:chap3-distribcells}. Finally, a new module to generate \ac{MGXS} was implemented atop many of the newly introduced features in OpenMC as discussed in Sec.~\ref{sec:chap3-mgxs}.
-
-%third paragraph: pillars for approach
-%-re-use three pillars from OpenMC big data paper
-%  -expressive input
-%  -managed execution
-%  -seamless processing
-
-%fourth paragraph: outline
-%-python api
-%  -tally arithmetic, pandas
-%-distributed cell tallies
-%-openmc.mgxs module
-%-cite OpenMC BD paper for more details (or this section closely follows)
+This section describes the features introduced to develop the next-generation model in OpenMC and follows a recent paper by this author~\cite{boyd2016bigdata}. Sec.~\ref{sec:chap3-py-api} presents a fully-featured Python \ac{API} for OpenMC which formed the foundation for much of this work. An algorithm to simplify tally management on unstructured but repeated tally volumes is highlighted in Sec.~\ref{sec:chap3-distribcells}. Finally, a new module to generate \ac{MGXS} was implemented atop many of the newly introduced features in OpenMC as discussed in Sec.~\ref{sec:chap3-mgxs}. All of the feature implementations were peer reviewed and incorporated into the v0.7.1 release of OpenMC.
 
 %%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Python API}
 \label{sec:chap3-py-api}
 
-Big data OpenMC~\cite{boyd2016bigdata}
+A fully-featured Python \ac{API} was designed and implemented to facilitate input generation and downstream tally data processing for OpenMC~\cite{boyd2016bigdata}. The \ac{API} enables tight coupling of input generation, simulation execution, and tally data analysis within dynamic Python script ``input files.'' In addition, the \ac{API} makes it possible to leverage the extensive ecosystem of Python packages for scientific computing alongside OpenMC in a simulation workflow. The \ac{API} forms the basis of the software stack developed to support the \ac{MGXS} generation module created for OpenMC (see Sec.~\ref{sec:chap3-mgxs}).
 
-first paragraph: motivation (first paragraph in BD paper)
--facilitate input generation and downstream tally data processing
--tightly couple these processes
--important to have flexible handle on the geometry for high-fidelity spatial tallies
--expose OpenMC to extensive ecosystem of Python packages
+%-important to have flexible handle on the geometry for high-fidelity spatial tallies
 
-second paragraph: input generation (second paragraph in BD paper)
--XML is human and machine readable
--relate back to MGXS generation
--cumbersome
+The Python \ac{API} is a user-friendly, complementary (and optional) addition to the OpenMC codebase. OpenMC is written in Fortran 2008 and uses \ac{XML} input files to describe the simulation materials, geometry, tallies, and settings. Although \ac{XML} is often hailed as both human-readable and machine-readable, it is cumbersome to write by hand for large and complicated reactor models such as those modeled in this thesis. The Python \ac{API} mitigates this process by leveraging Python's internal \texttt{ElementTree} \ac{API} to generate the \ac{XML} files used by the OpenMC executable. Instead of writing \ac{XML} files by hand, dynamic Python scripts are used to describe one or more OpenMC simulations, including those used to generate \ac{MGXS} with OpenMC.
 
-third paragraph: data processing, OO (third paragraph in BD paper)
--OO with extensible class definitions
--flexible objects for data processing
--reconstruct geometry/materials objects from HDF5 statepoints
--allows for very flexible data processing
-  -don't spend 95+\% of time coming up with ways to parse ASCII text output files
+The OpenMC Python \ac{API} adheres to object-oriented software design principles with extensible class definitions. A user instantiates, manipulates, and connects objects representing items such as cells, materials, and tallies to construct an OpenMC simulation. This is a scalable alternative workflow to traditional ``decks'' of ``cards'' in which data characterizing a simulation is specified in opaque \ac{ASCII} files (\textit{e.g.}, integer identifiers for cells, materials, and tallies). The Python \ac{API} provides classes and routines to represent all features provided by OpenMC's \ac{XML} input specifications.
 
-
+In addition to its functionality for input generation, the Python \ac{API} also includes a rich framework of tally data processing utilities. The \ac{API} eliminates the time intensive and error prone process of writing code to parse results from OpenMC's output files. The \ac{API} is able to reconstruct the hierarchy of interconnected Python objects used to represent the materials, geometry and tallies from OpenMC's ``statepoint'' and ``summary'' \ac{HDF5} output files~\cite{koranne2011hdf5}. OpenMC's dynamic object-oriented data processing model -- fusing the geometry and materials configuration with tallied data -- enabled the rapid calculation, indexing and storage of \ac{MGXS} from tallies on unstructured meshes for this thesis.
+  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Tally Arithmetic}
 \label{sec:chap3-tally-arithmetic}
@@ -155,7 +88,7 @@ third paragraph: aggregation (slicing/merging)
 -mention overhead associated with lots of tallies
 -but nice for user to 1) create and 2) process lots of distinct tally objects
   -create lots of distinct tallies in Python input
-  -automatically merge them for OpenMC XML input and runtime efficiency
+  -automatically merge them for OpenMC \ac{XML} input and runtime efficiency
   -construct tally objects from HDF5 statepoints
   -slice tallies apart again for processing
 -operations use NumPy to efficiently create derived sliced/merged tallies
@@ -178,7 +111,7 @@ Pandas~\cite{mckinney2010pandas}
 -should there be a section outlining use for each Python module???
 
 first paragraph: opaque data structures
--Python (NumPy) data structures superior to flat ASCII files, but opaque
+-Python (NumPy) data structures superior to flat \ac{ASCII} files, but opaque
 -Pandas DF more accessible, richer, mixed type data
 -nice for both reporting, fancy indexing, storage
 
@@ -209,7 +142,7 @@ third paragraph: distribcell algorithm
 
 fourth paragraph:
 -advantages of algorithm
-  -single line of XML code
+  -single line of \ac{XML} code
   -no need to change the geometry
   -vectorized operations with Python API
 -potential disadvantages?

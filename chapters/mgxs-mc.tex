@@ -128,7 +128,7 @@ The following sections use angle bracket notation $\langle \cdot , \cdot \rangle
 \langle \sigma_{x,i}, \psi \rangle_{k,g} = \int_{\mathbf{r} \in V_{k}} \int_{4\pi} \int_{E_{g}}^{E_{g-1}} \sigma_{x,i}(\mathbf{r},E)\psi(\mathbf{r},E,\mathbf{\Omega}) \mathrm{d}E\mathrm{d}\mathbf{\Omega}\mathrm{d}\mathbf{r}
 \end{equation}
 
-\noindent The inner product of a function with unity, such as the spatially homogenized and energy-integrated flux is denoted by:
+\noindent The inner product of a function with unity, such as the spatially-homogenized and energy-integrated flux is denoted by:
 
 \begin{equation}
 \label{eqn:chap3-angle-flux}
@@ -141,7 +141,7 @@ Finally, the superscripts $a$ and $t\ell$ are given to those inner products comp
 \subsubsection{General Reaction Cross Section}
 \label{subsubsec:chap3-gen-xs}
 
-A general spatially homogenized and energy condensed macroscopic multi-group cross section for reaction $x$, spatial zone $k$, energy group $g$ can be computed with track-length tally estimators in OpenMC. The \ac{MGXS} is simply the ratio of the group-wise reaction rates $\langle \Sigma_{x}, \psi \rangle_{k,g}^{t\ell}$ and fluxes $\langle \Sigma_{x}, \psi \rangle_{k,g}^{t\ell}$:
+A general spatially-homogenized and energy condensed macroscopic multi-group cross section for reaction $x$, spatial zone $k$, energy group $g$ can be computed with track-length tally estimators in OpenMC. The \ac{MGXS} is simply the ratio of the group-wise reaction rates $\langle \Sigma_{x}, \psi \rangle_{k,g}^{t\ell}$ and fluxes $\langle \Sigma_{x}, \psi \rangle_{k,g}^{t\ell}$:
 
 \begin{equation}
 \label{eqn:chap3-general-macro}
@@ -175,7 +175,7 @@ As discussed in Sec.~\ref{subsec:chap2-transport-corr}, a transport correction i
 \langle \Sigma_{s1}, \psi \rangle_{k,g'\rightarrow g} = \int_{\mathbf{r} \in V_{k}} \int_{4\pi} \int_{E_{g}}^{E_{g-1}} \int_{E_{g'}}^{E_{g'-1}} \Sigma_{s1}(\mathbf{r},E'\rightarrow E)\psi(\mathbf{r},E',\mathbf{\Omega}) \mathrm{d}E'\mathrm{d}E\mathrm{d}\mathbf{\Omega}\mathrm{d}\mathbf{r}
 \end{equation}
 
-\noindent An analog estimator must be used in OpenMC since the tally includes an integral over the outgoing neutron energy. The spatially homogenized and energy condensed transport corrected total cross section given in Eqn.~\ref{eqn:chap2-transport-xs} is computed by summing over all incoming energy groups:
+\noindent An analog estimator must be used in OpenMC since the tally includes an integral over the outgoing neutron energy. The spatially-homogenized and energy condensed transport corrected total cross section given in Eqn.~\ref{eqn:chap2-transport-xs} is computed by summing over all incoming energy groups:
 
 \begin{equation}
 \label{eqn:chap3-transport-corr-macro}

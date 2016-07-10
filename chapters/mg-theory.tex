@@ -452,14 +452,14 @@ Up to this point the \ac{MGXS} have been defined as continuously varying in spac
 \nu\Sigma_{f,k,{g'\rightarrow g}} \equiv \frac{\int\displaylimits_{\mathbf{r} \in V_{k}}\left[\int\displaylimits_{E_{g}}^{E_{g-1}} \int\displaylimits_{E_{g'}}^{E_{g'-1}} \nu\Sigma_{f}(\mathbf{r},{E'\rightarrow E})\phi(\mathbf{r},E') \mathrm{d}E'\mathrm{d}E\right]\mathrm{d}\mathbf{r}}{\int\displaylimits_{\mathbf{r} \in V_{k}}\phi_{g'}(\mathbf{r})\mathrm{d}\mathbf{r}}
 \end{dmath}
 
-\noindent Spatial homogenization may be applied to compute the fission spectrum $\chi_{k,g}$ from the fission production cross section in Eqn.~\ref{eqn:chap2-nusigf-mg-scalar}. The spatially homogenized \ac{MGXS} must be appropriately defined to preserve reaction rates such that the following equation holds true for each spatial zone $k$ and energy group $g$:
+\noindent Spatial homogenization may be applied to compute the fission spectrum $\chi_{k,g}$ from the fission production cross section in Eqn.~\ref{eqn:chap2-nusigf-mg-scalar}. The spatially-homogenized \ac{MGXS} must be appropriately defined to preserve reaction rates such that the following equation holds true for each spatial zone $k$ and energy group $g$:
 
 \begin{dmath}
 \label{eqn:chap2-transport-mg-5}
 \mathbf{\Omega} \cdot \nabla \psi_{g}(\mathbf{r},\mathbf{\Omega}) + \hat{\Sigma}_{t,g}\psi_{g}(\mathbf{r},\mathbf{\Omega}) = \frac{1}{4\pi} \sum_{g'=1}^{G} \hat{\Sigma}_{s,k,g' \rightarrow g}\phi_{g'}(\mathbf{r}) + \frac{\chi_{k,g}}{4\pi k_{eff}}\sum_{g'=1}^{G} \nu\Sigma_{f,k,g'}\phi_{g'}(\mathbf{r})
 \end{dmath}
 
-%A variety of discretization schemes may be used to solve the following multi-group transport equation in Eqn.~\ref{eqn:chap2-transport-mg-3}, including the \ac{MOC} and discrete ordinates (S$_N$). For first order discretization schemes in space, the transport equation can be re-written in terms of the volume-averaged group-wise fluxes $\psi_{i,g}$ and the spatially homogenized \ac{MGXS} in each mesh cell and energy group:
+%A variety of discretization schemes may be used to solve the following multi-group transport equation in Eqn.~\ref{eqn:chap2-transport-mg-3}, including the \ac{MOC} and discrete ordinates (S$_N$). For first order discretization schemes in space, the transport equation can be re-written in terms of the volume-averaged group-wise fluxes $\psi_{i,g}$ and the spatially-homogenized \ac{MGXS} in each mesh cell and energy group:
 
 %\begin{dmath}
 %\label{eqn:chap2-transport-mg-4}
@@ -475,7 +475,7 @@ Up to this point the \ac{MGXS} have been defined as continuously varying in spac
 \section{MGXS Generation}
 \label{sec:chap2-mgxs-lib}
 
-The preceding sections described approximations to reduce the dimensionality of the transport equation to permit efficient computational simulation. The solution of the transport equation in Eqn.~\ref{eqn:chap2-transport-mg-5} requires knowledge of the energy condensed and spatially homogenized \ac{MGXS} in Eqns.~\Crefrange{eqn:chap2-sigt-mg-scalar}{eqn:chap2-nusigf-mg-scalar}. This section describes the challenges to computing \ac{MGXS} and outlines the standard multi-level approach for \ac{MGXS} generation. The chapter concludes with a brief introduction to the potential for Monte Carlo methods as an alternative pathway for accurate \ac{MGXS} generation.
+The preceding sections described approximations to reduce the dimensionality of the transport equation to permit efficient computational simulation. The solution of the transport equation in Eqn.~\ref{eqn:chap2-transport-mg-5} requires knowledge of the energy condensed and spatially-homogenized \ac{MGXS} in Eqns.~\Crefrange{eqn:chap2-sigt-mg-scalar}{eqn:chap2-nusigf-mg-scalar}. This section describes the challenges to computing \ac{MGXS} and outlines the standard multi-level approach for \ac{MGXS} generation. The chapter concludes with a brief introduction to the potential for Monte Carlo methods as an alternative pathway for accurate \ac{MGXS} generation.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%
