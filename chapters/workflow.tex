@@ -5,9 +5,30 @@
 \section{A Simulation Triad}
 \label{chap3:triad}
 
-This thesis investigates Monte Carlo as a means to generate multi-group cross sections for fine mesh transport codes. This work required the development of a ``simulation triad'' encompassing three primary codes. First, the OpenMC Monte Carlo code~\cite{romano2013openmc} was utilized to generate multi-gropu cross sections. Second, the \ac{MGXS} were used by the OpenMOC \ac{MOC} code~\cite{boyd2014openmoc} for deterministic multi-group transport calculations. Finally, the OpenCG library~\cite{boyd2015opencg} enabled the processing and transfer of tally data on combinatorial geometry (CG) meshes between OpenMC and OpenMOC. In addition, a significant amount of infrastructural code was developed to process the results produced by OpenMC and OpenMOC. 
+This thesis investigates Monte Carlo as a means to generate multi-group cross sections for fine mesh transport codes. This work required the development of a ``simulation triad'' encompassing three primary codes. First, the OpenMC Monte Carlo code~\cite{romano2013openmc} was utilized to generate multi-gropu cross sections. Second, the \ac{MGXS} were used by the OpenMOC \ac{MOC} code~\cite{boyd2014openmoc} for deterministic multi-group transport calculations. Finally, the OpenCG library~\cite{boyd2015opencg} enabled the processing and transfer of tally data on combinatorial geometry (CG) meshes between OpenMC and OpenMOC. In addition, a significant amount of infrastructural code was developed to process the results produced by OpenMC and OpenMOC. The results in this thesis may be most easily reproduced with versions of OpenMC, OpenMOC and OpenCG used as itemized in Tab.~\ref{table:chap4-git-shas}.
 
 This chapter describes the author's contributions to each component code in the simulation triad to support the objectives of this thesis -- namely, the evaluation of intrinsic bias in \ac{MGXS} for fine mesh transport, and the development of a novel metholodogy for spatial homgenization based on unsupervised clustering. An overview of the OpenMC, OpenMOC, and OpenCG codes, along with the features added to each code to support this thesis, are presented in Secs.~\ref{sec:chap3-openmc},~\ref{sec:chap3-openmoc}, and~\ref{sec:chap3-opencg}, respectively.
+
+\begin{table}[h!]
+  \centering
+  \caption[OpenMC, OpenMOC and OpenCG Git SHA-1 codes]{The Git SHA-1 commit hashes for each code used in this thesis.}
+  \small
+  \label{table:chap4-git-shas} 
+  \vspace{6pt}
+  \begin{tabular}{l c c}
+  \toprule
+  \rowcolor{lightgray}
+  {\bf Code} &
+  {\bf Date [MM-DD-YYYY]} &
+  {\bf Git Commit SHA-1} \\
+  \midrule
+  OpenMC & 05-30-2016 & 698c223482a7d5f5df4dc83eeed65d99a2e52fbf \\
+  OpenMOC & 05-29-2016 & b09e66be269703ca0a08d7a6afced1bc5984112a \\
+  OpenCG & 05-14-2016 & 2c5e8f92f501d076f4ed06b70b09684a411b06b9 \\
+  \bottomrule
+\end{tabular}
+\end{table}
+
 
 %The infrastructural code framework was developed using the Python programming language due to its flexibility and ease of use, as well as its extensive ecosystem of open source packages for high-performance data analysis.
 
@@ -57,7 +78,7 @@ This section describes the features introduced to develop the next-generation mo
 \subsection{Python API}
 \label{sec:chap3-py-api}
 
-A fully-featured Python \ac{API} was designed and implemented to enable programmatic pre- and post-processing for OpenMC~\cite{boyd2016bigdata}. The \ac{API} enables tight coupling of input generation, simulation execution, and tally data analysis within dynamic Python script ``input files.'' In addition, the \ac{API} makes it possible to leverage the extensive ecosystem of Python packages for scientific computing alongside OpenMC in a simulation workflow. The following sections describe the \ac{API} and some of the core features which form the basis of the software stack used by the \ac{MGXS} generation module created for OpenMC.
+A fully-featured Python \ac{API} was designed and implemented to enable programmatic pre- and post-processing for OpenMC~\cite{boyd2016bigdata}. The \ac{API} enables tight coupling of input generation, simulation execution, and tally data analysis within dynamic Python script ``input files.'' In addition, the \ac{API} makes it possible to leverage the extensive ecosystem of Python packages for scientific computing alongside OpenMC in a simulation workflow. The following sections describe the \ac{API} and some of the core features which form the basis of the software stack developed to support the \ac{MGXS} generation module created for OpenMC.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Overview}
@@ -99,7 +120,7 @@ Two useful and related features in the OpenMC Python \ac{API} for \ac{MGXS} gene
   \includegraphics[width=\linewidth]{figures/workflow/openmc/tally-slice}
   \caption{}
 \end{subfigure}
-\caption[Tally merging and slicing operations]{Two \texttt{Tally} objects for different spatial volumes are merged into a single \texttt{Tally} (a). A single \texttt{Tally} is sliced by tally volume into two distinct \texttt{Tally} objects (b).}
+\caption[Tally merging and slicing operations]{Two \texttt{Tally} objects for different spatial volumes are merged into a single \texttt{Tally} (a). A single \texttt{Tally} is sliced by spatial volume into two distinct \texttt{Tally} objects (b).}
 \label{fig:tally-merge-slice}
 \end{figure}
 
@@ -140,11 +161,11 @@ Many Monte Carlo codes, including OpenMC, use some variant of combinatorial geom
 
 The \textit{distributed cell tally} algorithm was implemented in OpenMC to permit simply defined spatial tally zones across repeated cell instances~\cite{lax2014distribcell}. The distributed cell algorithm classifies each unique cell instance using \textit{maps} and \textit{offsets} that consume orders of magnitude less memory than would be required by the ``brute force'' approach. Only a single transparent line of \ac{XML} input is necessary to define a distributed cell tally that may span across an arbitrary number of instances for a particular cell. Furthermore, the Python \ac{API} may be used to perform efficient vectorized transformations of distributed cell tally data stored as contiguous NumPy arrays. The distributed cell tally algorithm was extensively used to compute spatially-varying \ac{MGXS} across fuel pin cell instances for the \ac{MGXS} spatial homogenization methology introduced in this thesis.
 
-The distributed cell tally algorithm consists of pre-processing and indexing stages. The pre-processing phase builds a mapping to index unique regions based on the unique combination of cells, universes and lattices used to construct each region. This is done by storing offset numbers in the data structures for each fill cell\footnote{Any cell that is filled with a nested universe of cells.}. The offset maps are recursively constructed starting from the top-level universe and proceeding through each lower nested universe level in the combinatorial geometry. The pre-processing algorithm tabulates the total number of instances of each cell in the geometry in order to dynamically allocate memory for distributed cell tally arrays. At runtime, the on-the-fly indexing scheme efficiently computes cell instance IDs in order to index and score to the appropriate bins in distributed cell tallies. The cell instance IDs are simply found by summing the offsets at each nested universe level along the path to the cell instance in the combinatorial geometry as showin in Fig.~\ref{fig:indexing-scheme}. The interested reader is referred to~\cite{lax2014distribcell} for more details about the distributed cell tally algorithm.
+The distributed cell tally algorithm consists of pre-processing and indexing stages. The pre-processing phase builds a mapping to index unique regions based on the unique combination of cells, universes and lattices used to construct each region. This is done by storing offset numbers in the data structures for each fill cell\footnote{Any cell that is filled with a nested universe of cells.}. The offset maps are recursively constructed starting from the top-level universe and proceeding through each lower nested universe level in the combinatorial geometry. The pre-processing algorithm tabulates the total number of instances of each cell in the geometry in order to dynamically allocate memory for distributed cell tally arrays. At runtime, the on-the-fly indexing scheme efficiently computes cell instance IDs in order to index and score to the appropriate bins in distributed cell tallies. The cell instance IDs are simply found by summing the offsets at each nested universe level along the path to the cell instance in the combinatorial geometry as showin in Fig.~\ref{fig:indexing-scheme}. The interested reader is referred to~\cite{lax2014distribcell} for more details about the distributed cell tally algorithm, including pseudocode for both pre-processing and on-the-fly indexing as well as a performance model for the memory footprint consumed by the offsets and maps.
   
 \begin{figure}
   \centering
-  \includegraphics[width=4in]{figures/workflow/openmc/distribcells}
+  \includegraphics[width=\linewidth]{figures/workflow/openmc/distribcells}
 \caption[The distributed cell tally indexing algorithm]{An example of the distributed cell tally algorithm's on-the-fly indexing scheme~\cite{lax2014distribcell}. Material-filled cells are defined in pin cell universes $a$ and $b$, which are filled into the cells of lattice universes $B$ and $C$, which are filled into the cells of lattice universe $A$.  The colored numbers in each fill cell are the offsets for each base universe, which can be used to quickly compute a unique ID for each instance of a material cell.}
 \label{fig:indexing-scheme}
 \end{figure}
@@ -152,6 +173,15 @@ The distributed cell tally algorithm consists of pre-processing and indexing sta
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{MGXS Generation}
 \label{sec:chap3-mgxs}
+
+first paragraph:
+-
+
+second paragraph:
+-
+
+third paragraph:
+-
 
 \begin{itemize}[noitemsep]
   \item Python \ac{API} software stacks together in \texttt{openmc.mgxs}
