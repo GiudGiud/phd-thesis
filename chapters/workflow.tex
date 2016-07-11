@@ -265,13 +265,15 @@ The method of characteristics is a widely used technique for solving partial dif
 \label{fig:moc-model}
 \end{figure}
 
-The OpenMOC code is capable of performing 2D \ac{MOC} calculations for light water reactor core configurations. OpenMOC discretizes the 2D geometry into \ac{FSR}s which approximate the neutron source as constant across each spatial zone\footnote{The neutron source may include any combination of fission, scattering and fixed sources.}. Furthermore, OpenMOC approximates the scattering source as isotropic in the lab coordinate system and is not yet able to use higher order scattering moment matrices. OpenMOC uses a power iteration scheme to solve for the dominant eigenvalue and eigenvector in criticality calculations. As part of this thesis, a general purpose fixed source solver was implemented to enable the detailed investigation of approximation bias in \ac{MGXS} as discussed in Chap.~\ref{chap:sph}. The interested reader is referred online code manual~\cite{openmoc2016manual} for more information detailing the \ac{MOC} implementation in OpenMOC.
+The OpenMOC code is capable of performing 2D \ac{MOC} calculations for light water reactor core configurations. OpenMOC discretizes the 2D geometry into \ac{FSR}s which approximate the neutron source as constant across each spatial zone\footnote{The neutron source may include any combination of fission, scattering and fixed sources.}. Furthermore, OpenMOC approximates the scattering source as isotropic in the lab coordinate system and is not yet able to use higher order scattering moment matrices. OpenMOC uses a power iteration scheme to solve for the dominant eigenvalue and eigenvector in criticality calculations. As part of this thesis, a general purpose fixed source solver was implemented to enable the detailed investigation of approximation bias in \ac{MGXS} as discussed in Chap.~\ref{chap:sph}. The interested reader is referred to the online code manual~\cite{openmoc2016manual} for more information detailing the \ac{MOC} implementation in OpenMOC.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Python Interface}
 \label{subsubsec:chap4-openmoc-python}
 
-One of the key reasons that OpenMOC was used by this thesis was to leverage its flexible Python interface. The majorify of the source code is written in C++ using object-oriented software design principles. The widely adopted \ac{SWIG}~\cite{beazley2003swig} is deployed to expose the C++ classes and routines to the Python scripting language. The Python interface made it possible to tightly couple OpenMOC with the rich ecosystem of Python-based data processing and visualization tools for the spatial homogenization methodology developed in this thesis. As part of this work, a new scheme was implemented to efficiently link OpenMOC's Python and C++ combinatorial geometry data structures into a hierarchical tree-like data structure. In addition, a thread-safe memory management model was realized which unifies the dynamic deallocation of objects shared between Python and C++ code.
+One of the key reasons that OpenMOC was used by this thesis was to leverage its flexible Python interface. The majorify of the source code is written in C++ using object-oriented software design principles. The widely adopted \ac{SWIG}~\cite{beazley2003swig} is deployed to expose the C++ classes and routines to the Python scripting language. The Python interface made it possible to tightly couple OpenMOC with the rich ecosystem of Python-based data processing and visualization tools for the spatial homogenization methodology developed in this thesis.
+
+As part of this work, a new scheme was implemented to efficiently link OpenMOC's Python and C++ combinatorial geometry data structures into a hierarchical tree-like data structure. This made it possible to use the OpenCG region differentiation algorithm discussed in Sec.~\ref{sec:chap4-region-diff} to derive geometries for OpenMOC. In addition, a thread-safe memory management model was realized which unifies the dynamic deallocation of objects shared between Python and C++ code. The memory model enabled 100s of OpenMOC simulations to be systematically orchestrated by Python for the parametric studies considered in this thesis.
 
 %\begin{figure}[h!]
 %  \centering
@@ -284,13 +286,11 @@ One of the key reasons that OpenMOC was used by this thesis was to leverage its 
 \subsection{Multi-Group Cross Sections}
 \label{subsubsec:chap4-openmoc-mgxs}
 
-first paragraph: overview of \texttt{openmoc.materialize} module
--macros, nuclide-integrated
--types
--HDF5
--constant-in-angle 
--uses total/transport, nu-fission, (nu-)scattering matrix, chi
--tie back to this thesis work: used to automate piping of MGXS from \texttt{openmc.mgxs} 
+OpenMOC uses multi-group macroscopic nuclear cross sections specified in any arbitrary energy group structure. Isotropic concentrations are not used since OpenMOC does not perform self-shielding or depletion calculations. Multi-group cross sections may be specified for each material or cell in the combinatorial geometry used in a simulation. OpenMOC requires total, fission production and scattering matrix cross sections along with a fission emission spectrum\footnote{Transport-corrected total cross sections and scattering matrices may be used in OpenMOC.}. In addition, a fission cross section may be optionally supplied in order to compute spatially-varying fission reaction rates.
+
+Cross section data is encapsulated by the \texttt{Material} class. A \texttt{Material} object may be instantiated in Python and cross section data loaded into it from NumPy arrays. For simulations with many different materials (such as those in this thesis), defining the nuclear cross sections data by hand in a Python script is cumbersome and error-prone. In order to minimize this pain-staking process, the \texttt{openmoc.materialize} module was implemented to automate the loading \ac{MGXS} data into OpenMOC \texttt{Material} objects. This module can either import \ac{MGXS} data from HDF5 binary files~\cite{koranne2011hdf5} or extract \ac{MGXS} data from OpenMC \texttt{Library} Python objects. The \texttt{openmoc.materialize} module is designed to support large \ac{MGXS} libraries such as those produced from the spatial homogenization methodology introduced in this thesis.
+
+-mention SPH scheme??? \\
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Parallelism}
@@ -316,7 +316,7 @@ first paragraph: overview, objective
 
 \begin{figure}
   \centering
-  \includegraphics[width=0.7\linewidth]{figures/workflow/openmoc/centroid}
+  \includegraphics[width=0.5\linewidth]{figures/workflow/openmoc/centroid}
 \caption[$k$-nearest neighbor centroid scheme for CMFD]{The $k$-nearest neighbor centroid update scheme for \ac{CMFD}~\cite{shaner2015cmfd}.}
 \label{fig:knn-cmfd}
 \end{figure}
