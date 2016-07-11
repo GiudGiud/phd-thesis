@@ -32,7 +32,7 @@ The OpenMC code is a continuous energy Monte Carlo neutron transport code~\cite{
 
 \begin{figure}[h]
   \centering
-  \includegraphics[width=0.8\linewidth]{figures/workflow/simulation-triad}
+  \includegraphics[width=0.8\linewidth]{figures/workflow/triad/simulation-triad}
 \caption[A simulation triad of OpenMC, OpenMOC and OpenCG]{A simulation triad consisting of the OpenMC, OpenMOC and OpenCG codes ``glued'' together with Python formed the foundation for this thesis research.}
 \label{fig:chap4-simulation-triad}
 \end{figure}
@@ -91,12 +91,12 @@ Two useful and related features in the OpenMC Python \ac{API} for \ac{MGXS} gene
 \begin{figure}
 \begin{subfigure}{\textwidth}
   \centering
-  \includegraphics[width=\linewidth]{figures/workflow/tally-merge}
+  \includegraphics[width=\linewidth]{figures/workflow/openmc/tally-merge}
   \caption{}
 \end{subfigure}
 \begin{subfigure}{\textwidth}
   \centering
-  \includegraphics[width=\linewidth]{figures/workflow/tally-slice}
+  \includegraphics[width=\linewidth]{figures/workflow/openmc/tally-slice}
   \caption{}
 \end{subfigure}
 \caption[Tally merging and slicing operations]{Two \texttt{Tally} objects for different spatial volumes are merged into a single \texttt{Tally} (a). A single \texttt{Tally} is sliced by tally volume into two distinct \texttt{Tally} objects (b).}
@@ -128,45 +128,25 @@ It should be noted that the uncertainty propagation in tally arithmetic makes th
 \subsection{Distributed Cell Tallies}
 \label{sec:chap3-distribcells}
 
-first paragraph: motivation
--
+Many Monte Carlo codes, including OpenMC, use some variant of combinatorial geometry\footnote{This is also referred to as constructive solid geometry.} because it can represent arbitrary, repeating geometries such as fuel pins and assemblies. However, the combinatorial geometry approach is challenged by applications that require tallies in each instance of a repeated cell throughout a reactor geometry such as the \ac{BEAVRS} benchmark model depicted in Fig.~\ref{fig:beavrs}. The ``brute force'' solution is to instantiate a unique cell for every distinct tally zone. However, this defeats the purpose of using combinatorial geometry for its compact representation, and it is not scalable to problems with large tally datasets such as those considered in this thesis.
 
-second paragraph: combinatorial geometry
--pros vs. cons
-
-third paragraph: distribcell algorithm
--overview algorithm
--look at PHYSOR 2014 paper
--
-
-fourth paragraph:
--advantages of algorithm
-  -single line of \ac{XML} code
-  -no need to change the geometry
-  -vectorized operations with Python API
--potential disadvantages?
-  -quite complex to think through
-  -tough to debug
-
-fourth paragraph: tie back to MGXS
--need MGXS in each tally zone 
--
-
-\begin{itemize}
-  \item Capture \ac{MGXS} spatial variation~\cite{lax2014distribcell}
-\end{itemize}
-
-\begin{figure}
-    \centering
-    \includegraphics[width=6in]{figures/workflow/openmc/flow.pdf}
-    \caption{\label{fig:indexing_scheme} Example geometry with 3 universe levels.  Material cells are defined in pin-cell universes $a$ and $b$, which are filled into the cells of lattice universes $B$ and $C$, which are filled into the cells of lattice universe $A$.  The colored numbers in each fill cell are the offsets for each base universe, which can be used to quickly compute a unique ID for each instance of a material cell.}
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=2.5in]{figures/workflow/openmc/core}\hspace{1cm}
+  \includegraphics[width=2.5in]{figures/workflow/openmc/core_axial}
+\caption[Radial and axial views of the BEAVRS core]{The radial (a) and axial (b) views of the BEAVRS \ac{PWR} core geometry~\cite{horelik2013beavrs}. The distributed cell tally algorithm provides a simple and efficient interface to tally within each of the 50,000+ fuel, guide tube, and burnable poison pin cells in complex heterogeneous models like the \ac{BEAVRS} core.}
+\label{fig:beavrs}
 \end{figure}
 
-\begin{figure}[htb!]
-    \centering
-    \includegraphics[width=2in]{figures/workflow/openmc/core}\hspace{1cm}
-    \includegraphics[width=2in]{figures/workflow/openmc/core_axial}
-    \caption{\label{fig:beavrs} Geometry of the BEAVRS benchmark. \emph{Left:} Radial view, showing 193 fuel assemblies, colored by enrichment. \emph{Right:} Axial view, showing grid spacers and axial pin-cell features.}
+The \textit{distributed cell tally} algorithm was implemented in OpenMC to permit simply defined spatial tally zones across repeated cell instances~\cite{lax2014distribcell}. The distributed cell algorithm classifies each unique cell instance using \textit{maps} and \textit{offsets} that consume orders of magnitude less memory than would be required by the ``brute force'' approach. Only a single transparent line of \ac{XML} input is necessary to define a distributed cell tally that may span across an arbitrary number of instances for a particular cell. Furthermore, the Python \ac{API} may be used to perform efficient vectorized transformations of distributed cell tally data stored as contiguous NumPy arrays. The distributed cell tally algorithm was extensively used to compute spatially-varying \ac{MGXS} across fuel pin cell instances for the \ac{MGXS} spatial homogenization methology introduced in this thesis.
+
+The distributed cell tally algorithm consists of pre-processing and indexing stages. The pre-processing phase builds a mapping to index unique regions based on the unique combination of cells, universes and lattices used to construct each region. This is done by storing offset numbers in the data structures for each fill cell\footnote{Any cell that is filled with a nested universe of cells.}. The offset maps are recursively constructed starting from the top-level universe and proceeding through each lower nested universe level in the combinatorial geometry. The pre-processing algorithm tabulates the total number of instances of each cell in the geometry in order to dynamically allocate memory for distributed cell tally arrays. At runtime, the on-the-fly indexing scheme efficiently computes cell instance IDs in order to index and score to the appropriate bins in distributed cell tallies. The cell instance IDs are simply found by summing the offsets at each nested universe level along the path to the cell instance in the combinatorial geometry as showin in Fig.~\ref{fig:indexing-scheme}. The interested reader is referred to~\cite{lax2014distribcell} for more details about the distributed cell tally algorithm.
+  
+\begin{figure}
+  \centering
+  \includegraphics[width=4in]{figures/workflow/openmc/distribcells}
+\caption[The distributed cell tally indexing algorithm]{An example of the distributed cell tally algorithm's on-the-fly indexing scheme~\cite{lax2014distribcell}. Material-filled cells are defined in pin cell universes $a$ and $b$, which are filled into the cells of lattice universes $B$ and $C$, which are filled into the cells of lattice universe $A$.  The colored numbers in each fill cell are the offsets for each base universe, which can be used to quickly compute a unique ID for each instance of a material cell.}
+\label{fig:indexing-scheme}
 \end{figure}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -176,8 +156,6 @@ fourth paragraph: tie back to MGXS
 \begin{itemize}[noitemsep]
   \item Python \ac{API} software stacks together in \texttt{openmc.mgxs}
 \end{itemize}
-
--perhaps a figure with 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Isotropic-in-Lab Scattering}
