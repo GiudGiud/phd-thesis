@@ -3,13 +3,11 @@
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{A Simulation Triad}
-\label{chap3:triad}
+\label{chap4:triad}
 
-This thesis investigates Monte Carlo as a means to generate multi-group cross sections for fine mesh transport codes. This work required the development of a ``simulation triad'' encompassing three primary codes. First, the OpenMC Monte Carlo code~\cite{romano2013openmc} was utilized to generate multi-gropu cross sections. Second, the \ac{MGXS} were used by the OpenMOC \ac{MOC} code~\cite{boyd2014openmoc} for deterministic multi-group transport calculations. Finally, the OpenCG library~\cite{boyd2015opencg} enabled the processing and transfer of tally data on combinatorial geometry (CG) meshes between OpenMC and OpenMOC. In addition, a significant amount of infrastructural code was developed to process the results produced by OpenMC and OpenMOC. The results in this thesis may be most easily reproduced with versions of OpenMC, OpenMOC and OpenCG used as itemized in Tab.~\ref{table:chap4-git-shas}.
+This thesis investigates Monte Carlo as a means to generate multi-group cross sections for fine mesh transport codes. This work required the development of a ``simulation triad'' encompassing three primary codes as illustrated in Fig.~\ref{fig:chap4-simulation-triad}. First, the OpenMC Monte Carlo code~\cite{romano2013openmc} was utilized to generate multi-group cross sections. Second, the \ac{MGXS} were used by the OpenMOC \ac{MOC} code~\cite{boyd2014openmoc} for deterministic multi-group transport calculations. Finally, the OpenCG library~\cite{boyd2015opencg} enabled the processing and transfer of tally data on combinatorial geometry (CG) meshes between OpenMC and OpenMOC. In addition, a significant amount of infrastructural code was developed to process the results produced by OpenMC and OpenMOC. The results in this thesis may be most easily reproduced with versions of OpenMC, OpenMOC and OpenCG used as itemized in Tab.~\ref{table:chap4-git-shas}.
 
-This chapter describes the author's contributions to each component code in the simulation triad to support the objectives of this thesis -- namely, the evaluation of intrinsic bias in \ac{MGXS} for fine mesh transport, and the development of a novel metholodogy for spatial homgenization based on unsupervised clustering. An overview of the OpenMC, OpenMOC, and OpenCG codes, along with the features added to each code to support this thesis, are presented in Secs.~\ref{sec:chap3-openmc},~\ref{sec:chap3-openmoc}, and~\ref{sec:chap3-opencg}, respectively.
-
-\begin{table}[h!]
+\begin{table}[hb!]
   \centering
   \caption[OpenMC, OpenMOC and OpenCG Git SHA-1 hashes]{The Git SHA-1 commit hashes for each code used in this thesis.}
   \small
@@ -29,6 +27,15 @@ This chapter describes the author's contributions to each component code in the 
 \end{tabular}
 \end{table}
 
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=0.8\linewidth]{figures/workflow/triad/simulation-triad}
+\caption[A simulation triad of OpenMC, OpenMOC and OpenCG]{A simulation triad consisting of the OpenMC, OpenMOC and OpenCG codes ``glued'' together with Python formed the foundation for this thesis research.}
+\label{fig:chap4-simulation-triad}
+\end{figure}
+
+This chapter describes the author's contributions to each component code in the simulation triad to support the objectives of this thesis -- namely, the evaluation of intrinsic bias in \ac{MGXS} for fine mesh transport, and the development of a novel metholodogy for spatial homgenization based on unsupervised clustering. An overview of the OpenMC, OpenMOC, and OpenCG codes, along with the features added to each code to support this thesis, are presented in Secs.~\ref{sec:chap4-openmc},~\ref{sec:chap4-openmoc}, and~\ref{sec:chap4-opencg}, respectively.
+
 %The infrastructural code framework was developed using the Python programming language due to its flexibility and ease of use, as well as its extensive ecosystem of open source packages for high-performance data analysis.
 
 %second paragraph: big data -> perhaps this should be in the motivation above?
@@ -46,16 +53,9 @@ This chapter describes the author's contributions to each component code in the 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{OpenMC}
-\label{sec:chap3-openmc}
+\label{sec:chap4-openmc}
 
 The OpenMC code is a continuous energy Monte Carlo neutron transport code~\cite{romano2013openmc} with support for general constructive solid geometry models. OpenMC was initially created by Romano for his PhD thesis~\cite{romano2013parallel} to explore novel parallel algorithms for \ac{HPC} architectures. The code was released for public use with the MIT open source license, and has attracted growing interest as a platform for the development of new physics methods and computational algorithms. Although this thesis could have plausibly used any continuous energy \ac{MC} neutron transport code to generate \ac{MGXS}, this author chose OpenMC for its general and extensible implementation, excellent parallel scalability, and open source license agreement which permits the modification of its codebase. The general physics and computational methods used in OpenMC will not be detailed here since they are well documented in the literature. The interested reader is referred to the online code manual~\cite{openmc2016manual} for further information.
-
-\begin{figure}[h]
-  \centering
-  \includegraphics[width=0.8\linewidth]{figures/workflow/triad/simulation-triad}
-\caption[A simulation triad of OpenMC, OpenMOC and OpenCG]{A simulation triad consisting of the OpenMC, OpenMOC and OpenCG codes ``glued'' together with Python formed the foundation for this thesis research.}
-\label{fig:chap4-simulation-triad}
-\end{figure}
 
 This thesis developed new features for the OpenMC code to enable the processing of large tally datasets to generate \ac{MGXS}. These contributions were motivated by the novel spatial homogenization technique presented in Chap.~\ref{chap:unsupervised} which requires the calculation of microscopic \ac{MGXS} for each nuclide in each spatial zone across a reactor core geometry. The tally datasets for this scheme are orders of magnitude larger than those generated by the multi-level approaches previously considered in the literature. In particular, the tally datasets are computed on a fine (\textit{e.g.}, pin-wise) spatial tally mesh for a fully-detailed heterogeneous whole-core geometry. This stands in contrast to multi-level approaches which compute \ac{MGXS} for each unique fuel pin or assembly with infinite lattice boundary conditions for use in a multi-group whole-core calculation. For example, the scheme introduced here would tally \ac{MGXS} for each of the 50,000+ fuel pins in a whole-core \ac{PWR} \ac{MC} simulation. In contrast, a multi-level approach would compute \ac{MGXS} for the 10s of unique fuel pins or assemblies in the model with pin-wise or assembly-wise \ac{MC} simulations.
 
@@ -71,17 +71,17 @@ However, this thesis did involve the development of software tools to address th
 %\item \textbf{Seamless Processing} -- scalable tools to index and transform tally data
 %\end{itemize}
 
-This section describes the features introduced to develop the next-generation model in OpenMC and follows a recent paper by this author~\cite{boyd2016bigdata}. Sec.~\ref{subsec:chap3-py-api} presents a fully-featured Python \ac{API} for OpenMC which formed the foundation for much of this work. An algorithm to simplify tally management on unstructured but repeated tally volumes is highlighted in Sec.~\ref{subsec:chap3-distribcells}. Finally, a new module to generate \ac{MGXS} was implemented atop many of the newly introduced features in OpenMC as discussed in Sec.~\ref{subsec:chap3-mgxs}. All of the feature implementations were peer reviewed and incorporated into the v0.7.1 release of OpenMC.
+This section describes the features introduced to develop the next-generation model in OpenMC and follows a recent paper by this author~\cite{boyd2016bigdata}. Sec.~\ref{subsec:chap4-py-api} presents a fully-featured Python \ac{API} for OpenMC which formed the foundation for much of this work. An algorithm to simplify tally management on unstructured but repeated tally volumes is highlighted in Sec.~\ref{subsec:chap4-distribcells}. Finally, a new module to generate \ac{MGXS} was implemented atop many of the newly introduced features in OpenMC as discussed in Sec.~\ref{subsec:chap4-mgxs}. All of the feature implementations were peer reviewed and incorporated into the v0.7.1 release of OpenMC.
 
 %%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Python API}
-\label{subsec:chap3-py-api}
+\label{subsec:chap4-py-api}
 
 A fully-featured Python \ac{API} was designed and implemented to enable programmatic pre- and post-processing for OpenMC~\cite{boyd2016bigdata}. The \ac{API} enables tight coupling of input generation, simulation execution, and tally data analysis within dynamic Python script ``input files.'' In addition, the \ac{API} makes it possible to leverage the extensive ecosystem of Python packages for scientific computing alongside OpenMC in a simulation workflow. The following sections describe the \ac{API} and some of the core features which form the basis of the software stack developed to support the \ac{MGXS} generation module created for OpenMC.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Overview}
-\label{subsubsec:chap3-py-api-overview}
+\label{subsubsec:chap4-py-api-overview}
 
 %-important to have flexible handle on the geometry for high-fidelity spatial tallies
 
@@ -93,7 +93,7 @@ In addition to its functionality for input generation, the Python \ac{API} also 
   
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Pandas DataFrames}
-\label{subsubsec:chap3-pandas-df}
+\label{subsubsec:chap4-pandas-df}
 
 The Python API encapsulates numerical tally data using $N$-dimensional array objects from the NumPy package~\cite{walt2011numpy}. Although OpenMC's NumPy interface to tally data is more flexible than simply reporting the data in \ac{ASCII} files, NumPy arrays are relatively opaque containers for managing large tally datasets. A single OpenMC \texttt{Tally} object used for \ac{MGXS} generation may encompass many different energy groups, nuclides and reaction types, yet all of this data is tabulated in a single contiguous NumPy array. As a result, it is challenging to implement general algorithms to index, inspect and manipulate tally data in NumPy arrays for specific groups, nuclides or reactions.
 
@@ -104,7 +104,7 @@ Pandas' most advanced features are intended for scalable data manipulation opera
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Tally Slicing and Merging}
-\label{subsubsec:chap3-tally-slice-merge}
+\label{subsubsec:chap4-tally-slice-merge}
 
 Two useful and related features in the OpenMC Python \ac{API} for \ac{MGXS} generation are \textit{tally merging} and \textit{tally slicing} as depicted in Fig.~\ref{fig:tally-merge-slice}. Although it is useful to systematically create individual \texttt{Tally} objects for each spatial zone and reaction type when generating the OpenMC inputs necessary to compute \ac{MGXS}, which leads to a large number (10$^2$ -- 10$^3$) of tallies objects for large, complex geometries. The large number of distinct tallies poses a computational bottleneck since the overhead to tally in OpenMC scales as $\mathcal{O}(N)$ for $N$ tallies. To compensate for this, the Python \ac{API}'s \texttt{Tally} class allow for the automated merging of tallies for input generation. Similarly, the \ac{API} supports the slicing of tallies to simplify downstream data processing which may comprise energy-, nuclide-, and/or reaction-dependent transformations of the tally data. Tally merging and slicing are extensively used throughout the statistical data processing framework for the \ac{MGXS} spatial homogenization methology introduced in this thesis.
 
@@ -130,7 +130,7 @@ Two useful and related features in the OpenMC Python \ac{API} for \ac{MGXS} gene
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Tally Arithmetic}
-\label{subsubsec:chap3-tally-arithmetic}
+\label{subsubsec:chap4-tally-arithmetic}
 
 As discussed in Sec.~\ref{subsec:chap3-tally-types}, a variety of reaction rate and flux tallies must be arithmetically combined in order to compute \ac{MGXS} with Monte Carlo. At the most general level, a reaction rate tally must be divided by a flux tally for each energy group, nuclide and tally volume (see Eqn.~\ref{eqn:chap3-general-micro}). In addition, the transport correction must be subtracted from the total cross section and scattering matrix, and a summation must be performed over energy groups to compute the fission emission spectrum. Furthermore, it is desirable to compute an estimate of the uncertainty for each \ac{MGXS} by propagating uncertainties as described in Sec.~\ref{subsec:chap3-uncertainty-prop}. The Python \ac{API} provides a novel feature known as \textit{tally arithmetic} to enable arithmetic combinations of tallies with efficient vectorized numerical operations across energy groups, nuclides and spatial tally zones.
 
@@ -140,13 +140,13 @@ Multi-group cross sections are simply and efficiently computed with tally arithm
 
 \lstinputlisting[language=Python, basicstyle=\ttfamily\footnotesize, caption={\ac{MGXS} calculation with tally arithmetic.}, label={lst:python-input}]{listings/workflow/tally-arithmetic.py}
 
-\noindent The total \ac{MGXS} that is returned from the tally division operation is encapsulated within a \texttt{Tally} class. This is the approach used by the \ac{MGXS} generation module created for OpenMC in Sec.~\ref{subsec:chap3-mgxs}.
+\noindent The total \ac{MGXS} that is returned from the tally division operation is encapsulated within a \texttt{Tally} class. This is the approach used by the \ac{MGXS} generation module created for OpenMC in Sec.~\ref{subsec:chap4-mgxs}.
 
 It should be noted that the uncertainty propagation in tally arithmetic makes the assumption that tallies represent independent random variables (see Sec.~\ref{subsec:chap3-uncertainty-prop}). However, in many if not most cases this assumption is untrue as tallies may be highly correlated. For example, there is a strong correlation between the flux and reaction rate tallies across the same material or cell, but this is not accounted for when these tallies are combined to compute \ac{MGXS} with tally arithmetic. In the future it may be possible to improve this approximation with the inclusion of tally covariance matrices in tally arithmetic.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Distributed Cell Tallies}
-\label{subsec:chap3-distribcells}
+\label{subsec:chap4-distribcells}
 
 Many Monte Carlo codes, including OpenMC, use some variant of combinatorial geometry\footnote{This is also referred to as constructive solid geometry.} because it can represent arbitrary, repeating geometries such as fuel pins and assemblies. However, the combinatorial geometry approach is challenged by applications that require tallies in each instance of a repeated cell throughout a reactor geometry such as the \ac{BEAVRS} benchmark model depicted in Fig.~\ref{fig:beavrs}. The ``brute force'' solution is to instantiate a unique cell for every distinct tally zone. However, this defeats the purpose of using combinatorial geometry for its compact representation, and it is not scalable to problems with large tally datasets such as those considered in this thesis.
 
@@ -171,7 +171,7 @@ The distribcell tally algorithm consists of pre-processing and indexing stages. 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Isotropic-in-Lab Scattering}
-\label{subsec:chap3-iso-in-lab}
+\label{subsec:chap4-iso-in-lab}
 
 As part of this thesis, a unique option for isotropic-in-lab scattering was implemented in the OpenMC code. The isotropic-in-lab feature may be useful to quantify the ability of multi-group codes to capture anisotropic scattering effects with higher order scattering matrices or transport correction schemes (see Sec.~\ref{subsec:chap2-transport-corr}). The isotropic-in-lab scattering feature was implemented as a ``scattering'' attribute for each nuclide/element in a simulation. When isotropic-in-lab scattering is specified for a nuclide/element, the outgoing neutron energy is sampled from the scattering laws prescribed by the continuous energy cross section library, but the outgoing neutron direction of motion is sampled from an isotropic-in-lab distribution. 
 
@@ -179,13 +179,13 @@ Unless otherwise noted, isotropic-in-lab scattering was employed in OpenMC to ge
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{MGXS Generation}
-\label{subsec:chap3-mgxs}
+\label{subsec:chap4-mgxs}
 
 The OpenMC Python \ac{API}'s \texttt{openmc.mgxs} module was implemented to generate multi-group cross sections. The \texttt{openmc.mgxs} module is built atop the underlying core features in the rest of the \ac{API} to support a seamless interface for both input generation and downstream data processing of \ac{MGXS} from Python. In particular, one may specify the \ac{MGXS} to compute and the \texttt{openmc.mgxs} module will constructs the necessary \texttt{Tally} objects. The \texttt{Tally} objects may be easily exported to \ac{XML} input files for OpenMC, and used to containerize and process the tally data produced by an OpenMC simulation. The \texttt{openmc.mgxs} module thereby leverages the software stack of Pandas DataFrames, tally arithmetic, etc. provided by the OpenMC Python \ac{API}.
 
 The \texttt{openmc.mgxs} module can compute macroscopic or microscopic \ac{MGXS} for individual nuclides or elements as well as collections of nuclides and elements\footnote{A \ac{MGXS} computed for a collection of nuclides/elements is the sum of the individual contributions from each nuclide/element.}. \ac{MGXS} can be computed in one or more arbitrary energy group structures. The module supports energy condensation in downstream data processing which is useful for exploring approximation bias in various energy group structures. For example, \ac{MGXS} may be computed in a 16-group structure and the tally data subsequently condensed to 2-group, 8-group, 12-group, etc. structures for multi-group calculations. The analysis in this thesis computed \ac{MGXS} in the 70-group structure provided in Tab.~\ref{table:app-70-groups}, and condensed the \ac{MGXS} to the coarser group structures given in Appendix~\ref{app:energy-groups} as needed.
 
-The \texttt{openmc.mgxs} module is designed to perform spatial homogenization on heterogeneous tally meshes for fine mesh transport codes. In OpenMC parlance, \ac{MGXS} may be computed for material, cell or universe spatial domains. In addition, the module supports \ac{MGXS} calculations for repeated cell instances using distribcell spatial tally domains (see Sec.~\ref{subsec:chap3-distribcells}). The \texttt{openmc.mgxs} module may also perform spatial homogenization on structured Cartesian tally meshes for coarse mesh multi-gropu calculations. This thesis computed \ac{MGXS} using distribcell tallies (\textit{e.g.}, \ac{MGXS} for each fuel pin instance in a geometry) to support the novel \ac{MGXS} spatial homogenization introduced in this thesis.
+The \texttt{openmc.mgxs} module is designed to perform spatial homogenization on heterogeneous tally meshes for fine mesh transport codes. In OpenMC parlance, \ac{MGXS} may be computed for material, cell or universe spatial domains. In addition, the module supports \ac{MGXS} calculations for repeated cell instances using distribcell spatial tally domains (see Sec.~\ref{subsec:chap4-distribcells}). The \texttt{openmc.mgxs} module may also perform spatial homogenization on structured Cartesian tally meshes for coarse mesh multi-gropu calculations. This thesis computed \ac{MGXS} using distribcell tallies (\textit{e.g.}, \ac{MGXS} for each fuel pin instance in a geometry) to support the novel \ac{MGXS} spatial homogenization introduced in this thesis.
 
 The \texttt{openmc.mgxs} module uses an object-oriented design based on an abstract \texttt{MGXS} class with subclasses for different reaction types. The \texttt{MGXS} subclasses are itemized in Tab.~\ref{table:chap4-mgxs-types} and compute multi-group constants from \ac{MC} tallies using the methods detailed in Sec.~\ref{subsec:chap3-tally-types}. It should be noted that some reaction types include variants which do or do not account for scattering multiplicity reactions (see Sec.~\ref{sec:chap2-scatt-prod}). For example, the transport correction used by the \texttt{TransportXS} class does not include $(n,xn)$ reactions while that employed by the \texttt{NuTransportXS} does account for scattering multiplicity. The \texttt{openmc.mgxs} module also includes a \texttt{Library} class which automates the construction of \ac{MGXS} objects for different group structures, spatial domains, and reaction types.
 
@@ -224,22 +224,40 @@ The \texttt{openmc.mgxs} module was developed with general design principles to 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{OpenMOC}
-\label{sec:chap3-openmoc}
+\label{sec:chap4-openmoc}
 
-\begin{itemize}[noitemsep]
-  \item reference Annals paper~\cite{boyd2014openmoc}
-  \item multi-core CPUs~\cite{boyd2016parallel} and GPUs~\cite{boyd2013massively}
-  \item reference 3D \ac{MOC} papers
-  \item brief description of \ac{MOC} equations
-  \begin{itemize}[noitemsep]
-    \item flat/linear source approx.
-    \item isotropic approx.
-    \item constant-in-angle \ac{MGXS}
-    \item uses total/transport, nu-fission, (nu-)scattering matrix, chi
-  \end{itemize}
-\end{itemize}
+first paragraph: objective, history
+-MOC~\ref{askew1972moc}
+-reference Annals paper~\cite{boyd2014openmoc} \\
+-MG deterministic code
+-uses MOC
+-open source
+-could have used any MG code
+  -chose OpenMOC for familiarity, open source
+-reference need for MG code to evaluate MGXS for this thesis
 
-\begin{figure*}[ht!]
+second paragraph: new features, intro following sections
+-improvements to the Python API
+-coupling to \texttt{openmc.mgxs}
+-improvements to the parallelism, CMFD to enable ``multi-sim'' calculations
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Overview}
+\label{subsubsec:chap4-openmoc-overview}
+
+first paragraph: high-level overview
+-2D implementations
+  -reference 3D MOC papers
+-cyclic track wrapping
+
+second paragraph: more detailed eqns/approx
+-brief description of \ac{MOC} equations
+-flat/linear source approx.
+-isotropic approx.
+-power source iteration scheme, w/ CMFD
+-reference Annals paper~\cite{boyd2014openmoc} for more details \\
+
+\begin{figure}[h!]
   \begin{subfigure}[htb!]{0.32\textwidth}
     \centering
     \includegraphics[width=0.95\textwidth]{figures/workflow/openmoc/materials-border}
@@ -260,12 +278,74 @@ The \texttt{openmc.mgxs} module was developed with general design principles to 
   \end{subfigure}
 \caption{The coolant and fuel materials (a), method of characteristics flat source region spatial mesh (b), and cyclic characteristic laydown (c) for a 4 $\times$ 4 fuel pin lattice.}
 \label{fig:moc-model}
-\end{figure*}
+\end{figure}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Python Interface}
+\label{subsubsec:chap4-openmoc-python}
+
+first paragraph: software design
+-C/C++ with Python wrappers generated by SWIG (cite)
+  -NVIDIA CUDA~\cite{nvidia2012cuda} for NVIDIA \ac{GPUs}
+-object-oriented software design
+-simulation output as HDF5
+-see OpenMOC site, ANS paper
+-include figure of SWIG~\cite{beazley2003swig}, C++, Python
+-mention improvements to OO geometry to enable this thesis
+-tie back to this thesis: easy to couple to OpenMC, OpenCG, ML libraries
+
+\begin{figure}
+  \centering
+  \includegraphics[width=0.7\linewidth]{figures/workflow/openmoc/software-design}
+\caption[the $k$-Nearest Neighbor centroid scheme for CMFD]{The programming model used in OpenMOC to couple compiled C/C++/CUDA code to the Python using \ac{SWIG}~\cite{boyd2014openmoc}.}
+\label{fig:knn-cmfd}
+\end{figure}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Multi-Group Cross Sections}
+\label{subsubsec:chap4-openmoc-mgxs}
+
+first paragraph: overview of \texttt{openmoc.materialize} module
+-macros, nuclide-integrated
+-types
+-HDF5
+-constant-in-angle 
+-uses total/transport, nu-fission, (nu-)scattering matrix, chi
+-tie back to this thesis work: used to automate piping of MGXS from \texttt{openmc.mgxs} 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Parallelism}
+\label{subsubsec:chap4-openmoc-parallel}
+
+first paragraph: overview
+-shared memory parallelism
+-OpenMP~\cite{openmp2013}, CUDA
+-multi-core \ac{CPUs}~\cite{boyd2016parallel} and GPUs~\cite{boyd2013massively} \\
+-tie back to this thesis work: needed for high-performance simulation to run LOTS of studies
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{CMFD Accleration}
+\label{subsubsec:chap4-openmoc-cmfd}
+
+first paragraph: overview, objective
+-see section from Annals paper
+-see OpenMOC site, Annals paper
+-reduce power iterations 100-fold with minimal overhead
+-physics-based multi-grid non-linear diffusion acceleration
+-cite $k$-Nearest Neighbors paper~\cite{shaner2015cmfd}.
+-tie back to this thesis: used to speed up calculations with pin-wise diffusion 
+
+\begin{figure}
+  \centering
+  \includegraphics[width=0.7\linewidth]{figures/workflow/openmoc/centroid}
+\caption[$k$-nearest neighbor centroid scheme for CMFD]{The $k$-nearest neighbor centroid update scheme for \ac{CMFD}~\cite{shaner2015cmfd}.}
+\label{fig:knn-cmfd}
+\end{figure}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{OpenCG}
-\label{sec:chap3-opencg}
+\label{sec:chap4-opencg}
 
 \begin{itemize}[noitemsep]
   \item single physics-agnostic geometries~\cite{boyd2015opencg}
@@ -283,7 +363,7 @@ The \texttt{openmc.mgxs} module was developed with general design principles to 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Local Neighbor Symmetry}
-\label{sec:chap3-lns}
+\label{sec:chap4-lns}
 
 \begin{algorithm}[h!]
 \caption{Local Neighbor Symmetry Identification}
@@ -355,7 +435,7 @@ The \texttt{openmc.mgxs} module was developed with general design principles to 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Region Differentiation}
-\label{sec:chap3-region-diff}
+\label{sec:chap4-region-diff}
 
 \begin{itemize}[noitemsep]
   \item retain CSG's simplicity of repeated primitives for user input
