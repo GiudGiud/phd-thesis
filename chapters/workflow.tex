@@ -11,7 +11,7 @@ This chapter describes the author's contributions to each component code in the 
 
 \begin{table}[h!]
   \centering
-  \caption[OpenMC, OpenMOC and OpenCG Git SHA-1 codes]{The Git SHA-1 commit hashes for each code used in this thesis.}
+  \caption[OpenMC, OpenMOC and OpenCG Git SHA-1 hashes]{The Git SHA-1 commit hashes for each code used in this thesis.}
   \small
   \label{table:chap4-git-shas} 
   \vspace{6pt}
@@ -190,6 +190,10 @@ third paragraph:
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Isotropic-in-Lab Scattering}
 \label{sec:chap3-iso-in-lab}
+
+As part of this thesis, a unique option for isotropic-in-lab scattering was implemented in the OpenMC code. The isotropic-in-lab feature may be useful to quantify the ability of multi-group codes to capture anisotropic scattering effects with higher order scattering matrices or transport correction schemes (see Sec.~\ref{subsec:chap2-transport-corr}). The isotropic-in-lab scattering feature was implemented as a ``scattering'' attribute for each nuclide/element in a simulation. When isotropic-in-lab scattering is specified for a nuclide/element, the outgoing neutron energy is sampled from the scattering laws prescribed by the continuous energy cross section library, but the outgoing neutron direction of motion is sampled from an isotropic-in-lab distribution. 
+
+Unless otherwise noted, isotropic-in-lab scattering was employed in OpenMC to generate the \ac{MGXS} used in this thesis. The isotropic-in-lab scattering feature enabled ``apples-to-apples'' comparisons between the reference eigenvalues and reaction rate distributions produced by OpenMC and those computed from multi-group isotropic-in-lab calculations with OpenMOC.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

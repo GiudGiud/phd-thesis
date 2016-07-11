@@ -109,7 +109,7 @@ This section describes how multi-group cross sections may be computed using stoc
 \subsection{Tally Types Needed for \ac{MGXS} Libraries}
 \label{subsec:chap3-tally-types}
 
-The types of \ac{MGXS} needed to solve the neutron transport equation were outlined in Chap.~\ref{chap:mgxs}, including expressions for the transport corrected total cross section and scattering matrix, and the fission production cross section and emission spectrum. This section outlines the types of tallies needed to compute these \ac{MGXS}. It is important to note that the flux separability approximation (Sec.~\ref{subsec:chap2-angle}) is applied in the tally formulations for each of the group constants.
+The types of \ac{MGXS} needed to solve the neutron transport equation were outlined in Chap.~\ref{chap:mgxs}, including expressions for the transport-corrected total cross section and scattering matrix, and the fission production cross section and emission spectrum. This section outlines the types of tallies needed to compute these \ac{MGXS}. It is important to note that the flux separability approximation (Sec.~\ref{subsec:chap2-angle}) is applied in the tally formulations for each of the group constants.
 
 \subsubsection{Inner Product Notation}
 \label{subsec:chap3-tally-types-notation}
@@ -175,7 +175,7 @@ As discussed in Sec.~\ref{subsec:chap2-transport-corr}, a transport correction i
 \langle \Sigma_{s1}, \psi \rangle_{k,g'\rightarrow g} = \int_{\mathbf{r} \in V_{k}} \int_{4\pi} \int_{E_{g}}^{E_{g-1}} \int_{E_{g'}}^{E_{g'-1}} \Sigma_{s1}(\mathbf{r},E'\rightarrow E)\psi(\mathbf{r},E',\mathbf{\Omega}) \mathrm{d}E'\mathrm{d}E\mathrm{d}\mathbf{\Omega}\mathrm{d}\mathbf{r}
 \end{equation}
 
-\noindent An analog estimator must be used in OpenMC since the tally includes an integral over the outgoing neutron energy. The spatially-homogenized and energy condensed transport corrected total cross section given in Eqn.~\ref{eqn:chap2-transport-xs} is computed by summing over all incoming energy groups:
+\noindent An analog estimator must be used in OpenMC since the tally includes an integral over the outgoing neutron energy. The spatially-homogenized and energy condensed transport-corrected total cross section given in Eqn.~\ref{eqn:chap2-transport-xs} is computed by summing over all incoming energy groups:
 
 \begin{equation}
 \label{eqn:chap3-transport-corr-macro}
@@ -209,7 +209,7 @@ The isotropic scattering matrix is computed with an inner product of scattering 
 \hat{\Sigma}_{s,k,g} = \frac{\langle \Sigma_{s0}, \psi \rangle_{k,g'\rightarrow g}^{a}}{\langle \psi \rangle_{k,g'}^{a}}
 \end{equation}
 
-\noindent The transport correction in Eqn.~\ref{eqn:chap3-transport-corr-macro} can be applied by subtracting it from the diagonal elements in the matrix to compute the transport corrected scattering matrix:
+\noindent The transport correction in Eqn.~\ref{eqn:chap3-transport-corr-macro} can be applied by subtracting it from the diagonal elements in the matrix to compute the transport-corrected scattering matrix:
 
 \begin{equation}
 \label{eqn:chap3-scatter-trans-macro}
