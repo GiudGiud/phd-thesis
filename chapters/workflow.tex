@@ -335,21 +335,11 @@ The following sections outline the key features implemented in OpenCG for this t
 \subsection{Compatiblity Modules}
 \label{sec:chap4-opencg-compatibility}
 
-first paragraph: input generation
--see first paragraph in section 5 of OpenCG paper
--refer back to simulation triad figure - all in python
--rapidly convert an OpenMC or OpenMOC geometry into OpenCG and vice versa
--physics agnostic
-  -OpenCG's geometry does not know how to model physics
-  -OpenCG's geometry does not know how to discretize itself like OpenMOC
-  -OpenCG's geometry does not know how to export itself to XML like OpenMC
+The simulation triad of OpenCG, OpenMC and OpenMOC shown in Fig.~\ref{fig:chap4-simulation-triad} is made possible with compatibility modules. The compatibility modules allow the construction of a single geometry using OpenCG's Python combinatorial geometry primitives for surfaces, cells, universes and lattices. The OpenCG geometry may then be exported to OpenMC or OpenMOC using compatibility modules developed for each code.
 
-second paragraph: geometry parameter optimization
--Python software model is advantageous to traditional ASCII input files
--see page 3/14 from OpenCG paper
--refer to region differentiation algorithm to come
--facilitates dynamic workflow between codes (e.g., OpenCG and OpenMOC w/ region diff)
+For example, OpenMC includes a Python \ac{API} with object-oriented combinatorial geometry primitives. This \ac{API}'s primitives include routines to directly export themselves to the \ac{XML} input file format used by OpenMC. The OpenCG-OpenMC compatibility module allows OpenCG's primitives to be transformed into the corollaries within the OpenMC Python \ac{API}, and vice versa. Likewise, the OpenCG-OpenMOC compatibility module allows OpenCG's primitives to be transformed into the corollaries within the OpenMOC Python/C++ code. In summary, the compatibility modules enable the rapid, automated exportation of various OpenCG geometries directly to OpenMC and OpenMOC.
 
+OpenCG's object-oriented Python software model permits greater freedom for geometric parameter optimization than can be easily achieved with traditional \ac{ASCII} input files. In particular, the compatibility module framework enabled a dynamic workflow between OpenMC and OpenMOC for \ac{MGXS} generation and code verification in this thesis. For example, OpenCG's region differentiation algorithm (see Sec.~\ref{sec:chap4-region-diff}) was used to produce 100s of geometries composed with different \ac{MGXS} libraries to evaluate the spatial homogenization methodology introduced in this thesis.
 
 %\begin{figure}[h!]
 %  \centering
