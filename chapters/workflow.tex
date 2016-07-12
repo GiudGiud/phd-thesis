@@ -71,7 +71,7 @@ However, this thesis did involve the development of software tools to address th
 %\item \textbf{Seamless Processing} -- scalable tools to index and transform tally data
 %\end{itemize}
 
-This section describes the features introduced to develop the next-generation model in OpenMC and follows a recent paper by this author~\cite{boyd2016bigdata}. Sec.~\ref{subsec:chap4-py-api} presents a fully-featured Python \ac{API} for OpenMC which formed the foundation for much of this work. An algorithm to simplify tally management on unstructured but repeated tally volumes is highlighted in Sec.~\ref{subsec:chap4-distribcells}. Finally, a new module to generate \ac{MGXS} was implemented atop many of the newly introduced features in OpenMC as discussed in Sec.~\ref{subsec:chap4-mgxs}. All of the feature implementations were peer reviewed and incorporated into the v0.7.1 release of OpenMC.
+This section describes the features introduced to develop the next-generation tally data model in OpenMC and follows a recent paper by this author~\cite{boyd2016bigdata}. Sec.~\ref{subsec:chap4-py-api} presents a fully-featured Python \ac{API} for OpenMC which formed the foundation for much of this work. An algorithm to simplify tally management on unstructured but repeated tally volumes is highlighted in Sec.~\ref{subsec:chap4-distribcells}. Finally, a new module to generate \ac{MGXS} was implemented atop many of the newly introduced features in OpenMC as discussed in Sec.~\ref{subsec:chap4-mgxs}. All of the feature implementations were peer reviewed and incorporated into the v0.7.1 release of OpenMC.
 
 %%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Python API}
@@ -261,7 +261,7 @@ The method of characteristics is a widely used technique for solving partial dif
     \label{fig:moc-model-tracks}
     \caption{}
   \end{subfigure}
-\caption{The coolant and fuel materials (a), flat source region spatial mesh (b), and cyclic characteristic laydown (c) for a 4 $\times$ 4 fuel pin lattice taken from~\cite{boyd2016parallel}.}
+\caption[Example OpenMOC flat source region mesh and track laydown]{The coolant and fuel materials (a), flat source region spatial mesh (b), and cyclic characteristic laydown (c) for a 4 $\times$ 4 fuel pin lattice taken from~\cite{boyd2016parallel}.}
 \label{fig:moc-model}
 \end{figure}
 
@@ -316,34 +316,20 @@ OpenMOC uses the Coarse Mesh Finite Difference (CMFD) acceleration scheme to gre
 \section{OpenCG}
 \label{sec:chap4-opencg}
 
-first paragraph: need tool to tied together OpenMC/MOC
--first paragraph from OpenCG paper
-  -tailor to this purpose, use bullets
--both openmoc, openmc use combinatorial geometry
--enables one to build single geometry and export to OpenMC/MOC
--facilitates large scale data processing on a combinatorial geometry mesh
--simple Python interface
--thesis developed tool
--reference simulation triad figure
--OpenCG paper~\cite{boyd2015opencg}
+The OpenCG code~\cite{boyd2015opencg} was created to simplify the process of creating and transferring data mapped to combinatorial geometries for OpenMC and OpenMOC. Combinatorial geometry\footnote{Combinatorial geometry is often referred to as constructive solid geometry in the neutron transport literature.} is commonly used by neutron transport simulation codes since it:
 
-second paragraph: mesh transfer is key reason for code
--novel algorithms to support novel spatial homogenization methods
--``glue'' code to map OpenMC distribcells to OpenMOC spatial mesh
--need mesh transfer functionality:
-  -OpenMC is "mesh-less"
-  -OpenMOC requires mesh discretization
-  -MGXS data from OpenMC mesh to OpenMOC
-  -rxn rate comparisons between OpenMC and OpenMOC
-  -map OpenMC distribcells to OpenMOC FSRs
-    -OpenCG includes variant of distribcell algorithm in OpenMC
+\begin{itemize}[noitemsep]
+  \item Permits description of an \textit{arbitrarily accurate} unstructured geometric mesh
+  \item Provides a \textit{compact representation} with minimal input description
+  \item Represents $\mathcal{O}(n)$ components with $\mathcal{O}(\log{}n)$ memory requirements
+  \item Utilizes a hierarchical \textit{tree data structure} with scalable $\mathcal{O}(\log{}n)$ traversals
+\end{itemize}
 
-third paragraph: overview of sections
--thesis developed the tool
--compatibility modules
-  -single physics-agnostic geometries~\cite{boyd2015opencg}
--LNS scheme
--region differentiation scheme
+\noindent Although many codes utilize combinatorial geometry, it is overly burdensome to manually write geometric input files for multiple simulation tools for code verification of a single reactor model. In addition, the compact geometric representation is not well-suited for large scale analysis of spatially-varying data in nuclear reactor cores -- such as distributed cell tally data in OpenMC -- without new algorithms to guide and automate the process. This thesis developed a new combinatorial geometry modeling tool called OpenCG to accelerate the building of complicated reactor geometries, enable rapid cross-code verification and facilitate large scale data processing. 
+
+OpenCG is a simple-to-use Python library which may be used to construct a single geometry for use in both OpenMC and OpenMOC. In addition, OpenCG was created to transfer data between OpenMC and OpenMOC as illustrated in Fig.~\ref{fig:chap4-simulation-triad}. In particular, OpenCG facilitated the generation of \ac{MGXS} from distributed cell tallies on OpenMC's combinatorial geometry mesh and mapped them to the flat source region spatial mesh used by OpenMOC. A variant of OpenMC's distributed cell tally algorithm (see Sec.~\ref{subsec:chap4-distribcells}) was implemented in OpenCG to make this possible. In addition to transferring \ac{MGXS} data, OpenCG enabled the comparison of pin-wise reaction rate distributions computed from OpenMC distribcell tallies with those computed on OpenMOC's \ac{FSR} mesh.
+
+The following sections outline the key features implemented in OpenCG for this thesis. Sec.~\ref{sec:chap4-opencg-compatibility} discusses the compatibility modules which tie OpenCG, OpenMC and OpenMOC into a simulation triad. In addition, two novel algorithms known as \ac{LNS} and region differentiation were developed in OpenCG to enable the spatial homogenization methodology introduced in this thesis, and are presented in Secs.~\ref{sec:chap4-lns} and~\ref{sec:chap4-region-diff}, respectively.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Compatiblity Modules}
@@ -429,8 +415,8 @@ fourth paragraph: tie back to MGXS
 
 \begin{figure}[h!]
   \centering
-  \includegraphics[width=.8\linewidth]{figures/workflow/opencg/neighbors-k-partite-graph}
-  \caption{An example $k$-partite graph structure used to identify local neighbor symmetries. Red nodes correspond to the universes/cells encapsulating a region of interest, green nodes correspond to the neighbors of that region, and gray nodes correspond to universes/cells which are not neighbors. Red and green nodes at each level are combined into an argument for a hash function to generate a local neighbor symmetry identifier for the region of interest.}
+  \includegraphics[width=\linewidth]{figures/workflow/opencg/neighbors-k-partite-graph}
+  \caption[A $k$-partite graph created by the OpenCG LNS algorithm]{An example $k$-partite graph structure used to identify local neighbor symmetries. Red nodes correspond to the universes/cells encapsulating a region of interest, green nodes correspond to the neighbors of that region, and gray nodes correspond to universes/cells which are not neighbors. Red and green nodes at each level are combined into an argument for a hash function to generate a local neighbor symmetry identifier for the region of interest.}
   \label{fig:lns-k-partite-graph}
 \end{figure}
 
@@ -471,7 +457,7 @@ fourth paragraph: tie back to MGXS
   \caption{}
   \label{fig:colorset-neighbors}
 \end{subfigure}
-\caption{Two rectilinear lattice geometries are depicted to illustrate the use of local neighbor symmetry identification~\cite{boyd2015opencg}. The \textit{cells} are depicted for (a) a 17$\times$17 PWR lattice and (b) a 3$\times$3 colorset of two different 17 $\times$ 17 PWR assemblies each with burnable absorbers, guide tubes and instrument tubes. The \textit{unique neighbor} symmetry identifiers are color-coded in (c) and (d) for the assembly and colorset, respectively. Likewise, the \textit{general neighbor} symmetry identifiers are color-coded in (e) and (f).}
+\caption[Example OpenCG Local Neighbor Symmetry mappings]{Two rectilinear lattice geometries are depicted to illustrate the use of local neighbor symmetry identification~\cite{boyd2015opencg}. The \textit{cells} are depicted for (a) a 17$\times$17 PWR lattice and (b) a 3$\times$3 colorset of two different 17 $\times$ 17 PWR assemblies each with burnable absorbers, guide tubes and instrument tubes. The \textit{unique neighbor} symmetry identifiers are color-coded in (c) and (d) for the assembly and colorset, respectively. Likewise, the \textit{general neighbor} symmetry identifiers are color-coded in (e) and (f).}
 \label{fig:neighbor-cells}
 \end{figure}
 
@@ -549,14 +535,14 @@ sixth paragraph: tie back to MGXS
   \caption{}
   \label{fig:differentation-5}
 \end{subfigure}
-\caption{A few of the stages of the region differentiation algorithm~\cite{boyd2015opencg}. The regions (cell instances) to be differentiated are grouped and colored blue, orange, green and purple in (a). The first levels of cells and universes for each region group are differentiated in (b). The same is done for the lattices in (c). The algorithm continues to recursively differentiate cells, universes and lattices until no region groups collide at any level of the CG tree in (e).}
+\caption[A few stages of the OpenCG region differentiation algorithm]{A few of the stages of the region differentiation algorithm~\cite{boyd2015opencg}. The regions (cell instances) to be differentiated are grouped and colored blue, orange, green and purple in (a). The first levels of cells and universes for each region group are differentiated in (b). The same is done for the lattices in (c). The algorithm continues to recursively differentiate cells, universes and lattices until no region groups collide at any level of the CG tree in (e).}
 \label{fig:region-differentiation}
 \end{figure}
 
 
 \begin{figure}[h!]
   \centering
-  \includegraphics[width=.8\linewidth]{figures/workflow/opencg/region-diff-proc-diagram}
+  \includegraphics[width=\linewidth]{figures/workflow/opencg/region-diff-proc-diagram}
   \caption[OpenCG region differentiation process diagram]{The OpenCG \ac{LNS} algorithm may be used to to generate region groupings for the region differentiation algorithm to create an input geometry for OpenMC or OpenMOC.}
   \label{fig:region-diff-proc-diagram}
 \end{figure}
