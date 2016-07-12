@@ -316,23 +316,93 @@ OpenMOC uses the Coarse Mesh Finite Difference (CMFD) acceleration scheme to gre
 \section{OpenCG}
 \label{sec:chap4-opencg}
 
-\begin{itemize}[noitemsep]
-  \item single physics-agnostic geometries~\cite{boyd2015opencg}
-  \item compatibility modules with OpenMC, OpenMOC
-  \item ``glue'' code to map OpenMC distribcells to OpenMOC spatial mesh
-\end{itemize}
+first paragraph: need tool to tied together OpenMC/MOC
+-first paragraph from OpenCG paper
+  -tailor to this purpose, use bullets
+-both openmoc, openmc use combinatorial geometry
+-enables one to build single geometry and export to OpenMC/MOC
+-facilitates large scale data processing on a combinatorial geometry mesh
+-simple Python interface
+-thesis developed tool
+-reference simulation triad figure
+-OpenCG paper~\cite{boyd2015opencg}
 
-\begin{figure}[h!]
-  \centering
-  \includegraphics[width=.8\linewidth]{figures/workflow/opencg/compatibility-modules}
-  \caption{OpenCG compatibility modules for various neutron transport codes. The compatibility modules for OpenMC and OpenMOC will be released in future public distributions of each code, while modules for Serpent and MCNP are in progress at the time of this writing.}
-  \label{fig:compatibility-modules}
-\end{figure}
+second paragraph: mesh transfer is key reason for code
+-novel algorithms to support novel spatial homogenization methods
+-``glue'' code to map OpenMC distribcells to OpenMOC spatial mesh
+-need mesh transfer functionality:
+  -OpenMC is "mesh-less"
+  -OpenMOC requires mesh discretization
+  -MGXS data from OpenMC mesh to OpenMOC
+  -rxn rate comparisons between OpenMC and OpenMOC
+  -map OpenMC distribcells to OpenMOC FSRs
+    -OpenCG includes variant of distribcell algorithm in OpenMC
+
+third paragraph: overview of sections
+-thesis developed the tool
+-compatibility modules
+  -single physics-agnostic geometries~\cite{boyd2015opencg}
+-LNS scheme
+-region differentiation scheme
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Compatiblity Modules}
+\label{sec:chap4-opencg-compatibility}
+
+first paragraph: input generation
+-see first paragraph in section 5 of OpenCG paper
+-refer back to simulation triad figure - all in python
+-rapidly convert an OpenMC or OpenMOC geometry into OpenCG and vice versa
+-physics agnostic
+  -OpenCG's geometry does not know how to model physics
+  -OpenCG's geometry does not know how to discretize itself like OpenMOC
+  -OpenCG's geometry does not know how to export itself to XML like OpenMC
+
+second paragraph: geometry parameter optimization
+-Python software model is advantageous to traditional ASCII input files
+-see page 3/14 from OpenCG paper
+-refer to region differentiation algorithm to come
+-facilitates dynamic workflow between codes (e.g., OpenCG and OpenMOC w/ region diff)
+
+
+%\begin{figure}[h!]
+%  \centering
+%  \includegraphics[width=.8\linewidth]{figures/workflow/opencg/compatibility-modules}
+%  \caption{OpenCG compatibility modules for various neutron transport codes. The compatibility modules for OpenMC and OpenMOC will be released in future public distributions of each code, while modules for Serpent and MCNP are in progress at the time of this writing.}
+%  \label{fig:compatibility-modules}
+%\end{figure}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Local Neighbor Symmetry}
 \label{sec:chap4-lns}
+
+first paragraph: motivation
+-first paragraph in LNS section in OpenCG paper
+-can we identify symmetries in a reactor core geometry to predict regions with similar physics?
+-analogy to lattice physics geometric templates based on eng. approx.
+-identify/predict regions which may experience similar spectral self-shielding effects
+  -heuristic to identify fuel pins
+-development and implementation of LNS algorithm
+-this algorithm was explicitly developed for this thesis
+-no other implementation known to author
+
+second paragraph: algorithmic description
+-second paragraph in \ac{LNS} section in OpenCG paper
+Breadth First Search at k levels of CG tree to construct $k$-partite graph
+-$k$-partite graph, hash, etc.
+-reference algorithm
+-reference k-partite graph figure
+-more details about algorithm can be found in the paper
+
+third paragraph: general vs. unique neighbors
+-combine paragraphs 3-4 in LNS section in OpenCG paper
+-reference figure with fuel assemblies
+  -extract the caption from the figure?
+
+fourth paragraph: tie back to MGXS
+-mention that this is used as a deterministic ``clustering'' technique in spatial homogenization methodology
+-analogy to lattice physics geometric templates based on eng. approx.
 
 \begin{algorithm}[h!]
 \caption{Local Neighbor Symmetry Identification}
@@ -357,9 +427,12 @@ OpenMOC uses the Coarse Mesh Finite Difference (CMFD) acceleration scheme to gre
 \end{algorithmic}
 \end{algorithm}
 
-\begin{itemize}[noitemsep]
-  \item analogy to lattice physics geometric templates based on eng. approx.
-\end{itemize}
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=.8\linewidth]{figures/workflow/opencg/neighbors-k-partite-graph}
+  \caption{An example $k$-partite graph structure used to identify local neighbor symmetries. Red nodes correspond to the universes/cells encapsulating a region of interest, green nodes correspond to the neighbors of that region, and gray nodes correspond to universes/cells which are not neighbors. Red and green nodes at each level are combined into an argument for a hash function to generate a local neighbor symmetry identifier for the region of interest.}
+  \label{fig:lns-k-partite-graph}
+\end{figure}
 
 \begin{figure}
 \begin{subfigure}{.5\textwidth}
@@ -406,10 +479,42 @@ OpenMOC uses the Coarse Mesh Finite Difference (CMFD) acceleration scheme to gre
 \subsection{Region Differentiation}
 \label{sec:chap4-region-diff}
 
-\begin{itemize}[noitemsep]
-  \item retain CSG's simplicity of repeated primitives for user input
-  \item build combinatorial geometries based on arbitrary clustering of cell instances
-\end{itemize}
+first paragraph: motivation
+-see first paragraph in RD section in OpenCG paper
+  -perhaps take paragraph verbatim
+-retain CSG's simplicity of repeated primitives for user input
+-build combinatorial geometries based on arbitrary clustering of cell instances
+-motivate why this is useful for MGXS 
+  -How can we update a combinatorial geometry model to reflect local neighbor symmetries?
+
+second paragraph: region differentiation scheme as a soln
+-second paragraph in RD section in OpenCG paper
+-time consuming and error prone to build CG
+-systematic and automated construction with region differentiation
+-reference figure
+
+-SEE SLIDE 60
+-The OpenCG API takes region groupings as input (cell instances to treat as identical)
+-Dynamic programming algorithm climbs one level of the CG tree per iteration
+-At each level, the paths for each region in each grouping is hashed to find primitive collisions
+-All primitive collisions are resolved through primitive differentiation
+-Terminates when no two regions have an updated path which results in a primitive collision
+
+third paragraph: region groupings 
+-third paragraph in OpenCG paper
+-define region groupings: all regions that reference a particular cell in a geometry
+-tie back to figure
+
+fourth paragraph: dynamic programming to avoid factorial scaling
+-fourth paragraph in OpenCG paper
+
+fifth paragraph: intrinsic collisions
+-fifth paragraph in OpenCG paper
+
+sixth paragraph: tie back to MGXS
+-figure on slide 50
+
+-can any of these paragraphs be combined??
 
 
 \newpage
@@ -446,4 +551,12 @@ OpenMOC uses the Coarse Mesh Finite Difference (CMFD) acceleration scheme to gre
 \end{subfigure}
 \caption{A few of the stages of the region differentiation algorithm~\cite{boyd2015opencg}. The regions (cell instances) to be differentiated are grouped and colored blue, orange, green and purple in (a). The first levels of cells and universes for each region group are differentiated in (b). The same is done for the lattices in (c). The algorithm continues to recursively differentiate cells, universes and lattices until no region groups collide at any level of the CG tree in (e).}
 \label{fig:region-differentiation}
+\end{figure}
+
+
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=.8\linewidth]{figures/workflow/opencg/region-diff-proc-diagram}
+  \caption[OpenCG region differentiation process diagram]{The OpenCG \ac{LNS} algorithm may be used to to generate region groupings for the region differentiation algorithm to create an input geometry for OpenMC or OpenMOC.}
+  \label{fig:region-diff-proc-diagram}
 \end{figure}
