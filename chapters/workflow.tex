@@ -353,35 +353,12 @@ OpenCG's object-oriented Python software model permits greater freedom for geome
 \subsection{Local Neighbor Symmetry}
 \label{sec:chap4-lns}
 
-first paragraph: motivation
--first paragraph in LNS section in OpenCG paper
--can we identify symmetries in a reactor core geometry to predict regions with similar physics?
--analogy to lattice physics geometric templates based on eng. approx.
--identify/predict regions which may experience similar spectral self-shielding effects
-  -heuristic to identify fuel pins
--development and implementation of LNS algorithm
--this algorithm was explicitly developed for this thesis
--no other implementation known to author
+One of the unique algorithms implemented in OpenCG which was developed explicitly for this thesis is known as Local Neighbor Symmetry (LNS) identification~\cite{boyd2015opencg}. The LNS algorithm is motivated by the core question posed in this thesis: how can one predict spatial zones which will experience similar spectral self-shielding effects? The \ac{LNS} algorithm performs a systematic analysis of a combinatorial geometry tree data structure to identify neighbor cells, or pairs of cells which are adjacent to one another. The neighbor cells are assembled into a heuristic which groups like spatial zones with common \ac{LNS} identifiers. The \ac{LNS} algorithm is analogous to the geometric templates used in lattice physics codes such as CASMO~\cite{edenius1995casmo} to identify fuel pins which have similar \ac{MGXS} in a fuel assembly.
 
-second paragraph: algorithmic description
--second paragraph in \ac{LNS} section in OpenCG paper
-Breadth First Search at k levels of CG tree to construct $k$-partite graph
--$k$-partite graph, hash, etc.
--reference algorithm
--reference k-partite graph figure
--more details about algorithm can be found in the paper
-
-third paragraph: general vs. unique neighbors
--combine paragraphs 3-4 in LNS section in OpenCG paper
--reference figure with fuel assemblies
-  -extract the caption from the figure?
-
-fourth paragraph: tie back to MGXS
--mention that this is used as a deterministic ``clustering'' technique in spatial homogenization methodology
--analogy to lattice physics geometric templates based on eng. approx.
+The \ac{LNS} identification algorithm identifies the unique symmetry for the path to a region in a combinatorial geometry as described in Alg.~\ref{alg:local-neighbor-symmetry-cells}. \ac{LNS} performs a \ac{BFS} to find neighbors on each level of the combinatorial geometry tree. For example, \ac{BFS} is used to find neighbor cells for a particular cell within a universe. Similarly, \ac{BFS} is used to find neighbor universes adjacent to a particular lattice cell. The neighbor cells and universes on each of the $k$ levels of a combinatorial geometry tree are connected to form a $k$-partite graph\footnote{A $k$-partite graph is a graph whose graph vertices can be partitioned into $k$ disjoint sets so that no two vertices within the same set are adjacent~\cite{weisstein2012kpartite}.} as depicted in Fig.~\ref{fig:lns-k-partite-graph}. Finally, the $k$-partite graph is used as an argument to a hash function to compute the \ac{LNS} identifier (\textit{e.g}, a non-negative integer) for the particular region represented by the path. This algorithmic formulation is general to any arbitrary combinatorial geometry, including those commonly used to model \ac{LWRs} with nested rectilinear lattices.
 
 \begin{algorithm}[h!]
-\caption{Local Neighbor Symmetry Identification}
+\caption[OpenCG's Local Neighbor Symmetry Identification]{Local Neighbor Symmetry Identification}
 \label{alg:local-neighbor-symmetry-cells}
 \begin{algorithmic}[1]
 \Procedure{computeNeighborSymmetry}{$path$}
@@ -406,11 +383,13 @@ fourth paragraph: tie back to MGXS
 \begin{figure}[h!]
   \centering
   \includegraphics[width=\linewidth]{figures/workflow/opencg/neighbors-k-partite-graph}
-  \caption[A $k$-partite graph created by the OpenCG LNS algorithm]{An example $k$-partite graph structure used to identify local neighbor symmetries. Red nodes correspond to the universes/cells encapsulating a region of interest, green nodes correspond to the neighbors of that region, and gray nodes correspond to universes/cells which are not neighbors. Red and green nodes at each level are combined into an argument for a hash function to generate a local neighbor symmetry identifier for the region of interest.}
+  \caption[A $k$-partite graph created by the OpenCG LNS algorithm]{An example $k$-partite graph structure used to identify local neighbor symmetries. Red nodes correspond to the universes/cells encapsulating a region of interest, green nodes correspond to the neighbors of that region, and gray nodes correspond to universes/cells which are not neighbors. Red and green nodes at each level are combined into an argument for a hash function to generate a \ac{LNS} ID for the region of interest.}
   \label{fig:lns-k-partite-graph}
 \end{figure}
 
-\begin{figure}
+Several parameters are incorporated into OpenCG's \ac{LNS} \ac{API} to provide the user with various methods to adjust the number of symmetries discovered by the algorithm. For example, OpenCG includes \textit{general} and \textit{unique} neighbor identifiers. General neighbors includes all neighbor cells/universes found in \ac{BFS} -- including duplicates -- as separate nodes in the $k$-partite graph. For example, a single universe may be placed multiple times around a lattice cell, each of which will be independently discovered by \ac{BFS} and replicated as a distinct node within the graph. On the contrary, unique neighbors does not include duplicate cells/universes -- only unique cells/universes are represented by distinct nodes in each independent set in the $k$-partite graph. A few diagrams of general and unique \ac{LNS} applied to two geometries are depicted in Fig.~\ref{fig:neighbor-cells}.
+
+\begin{figure}[h!]
 \begin{subfigure}{.5\textwidth}
   \centering
   \includegraphics[width=.7\linewidth]{figures/workflow/opencg/cells-xy-24-16-assm}
@@ -447,9 +426,12 @@ fourth paragraph: tie back to MGXS
   \caption{}
   \label{fig:colorset-neighbors}
 \end{subfigure}
-\caption[Example OpenCG Local Neighbor Symmetry mappings]{Two rectilinear lattice geometries are depicted to illustrate the use of local neighbor symmetry identification~\cite{boyd2015opencg}. The \textit{cells} are depicted for (a) a 17$\times$17 PWR lattice and (b) a 3$\times$3 colorset of two different 17 $\times$ 17 PWR assemblies each with burnable absorbers, guide tubes and instrument tubes. The \textit{unique neighbor} symmetry identifiers are color-coded in (c) and (d) for the assembly and colorset, respectively. Likewise, the \textit{general neighbor} symmetry identifiers are color-coded in (e) and (f).}
+\caption[Example OpenCG Local Neighbor Symmetry mappings]{Two rectilinear lattice geometries are depicted to illustrate the use of local neighbor symmetry identification~\cite{boyd2015opencg}. The \textit{cells} are depicted for (a) a 17$\times$17 PWR lattice and (b) a 3$\times$3 colorset of two different 17 $\times$ 17 PWR assemblies each with burnable absorbers, guide tubes and instrument tubes. The \textit{unique neighbor} symmetry identifiers are color-coded in (b) and (c) for the assembly and colorset, respectively. Likewise, the \textit{general neighbor} symmetry identifiers are color-coded in (d) and (f).}
 \label{fig:neighbor-cells}
 \end{figure}
+
+To this author's knowledge there is no other implementation of \ac{LNS} aside from that in the OpenCG code. The \ac{LNS} algorithm was used extensively in this thesis as a deterministic ``clustering'' technique for the spatial homogenization methodology introduced in Chaps.~\Crefrange{chap:benchmarks}{chap:unsupervised}. In particular, \ac{LNS} was used to predict which fuel pins have similar \ac{MGXS} in \ac{LWRs} due to spatial self-shielding effects induced by neighboring fuel, guide tube and absorber pins. The \ac{LNS} scheme served as a proxy to the traditional geometric template approach used in lattice physics codes to group pins with like \ac{MGXS}. The following chapters develop schemes based on unsupervised clustering of \ac{MC} tally data in an attempt to outperform \ac{LNS}' analysis based solely on the geometry.
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Region Differentiation}
@@ -533,6 +515,6 @@ sixth paragraph: tie back to MGXS
 \begin{figure}[h!]
   \centering
   \includegraphics[width=\linewidth]{figures/workflow/opencg/region-diff-proc-diagram}
-  \caption[OpenCG region differentiation process diagram]{The OpenCG \ac{LNS} algorithm may be used to to generate region groupings for the region differentiation algorithm to create an input geometry for OpenMC or OpenMOC.}
+  \caption[OpenCG region differentiation process diagram]{The OpenCG \ac{LNS} algorithm may be used to generate region groupings for the region differentiation algorithm to create an geometry for OpenMC or OpenMOC.}
   \label{fig:region-diff-proc-diagram}
 \end{figure}
