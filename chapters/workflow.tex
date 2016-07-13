@@ -437,46 +437,19 @@ To this author's knowledge there is no other implementation of \ac{LNS} aside fr
 \subsection{Region Differentiation}
 \label{sec:chap4-region-diff}
 
-first paragraph: motivation
--see first paragraph in RD section in OpenCG paper
-  -perhaps take paragraph verbatim
--retain CSG's simplicity of repeated primitives for user input
--build combinatorial geometries based on arbitrary clustering of cell instances
--motivate why this is useful for MGXS 
-  -How can we update a combinatorial geometry model to reflect local neighbor symmetries?
+As previously noted, one of the advantages of combinatorial geometry is that it can take advantage of patterned structures with repeating primitives. In certain use cases, however, it may be necessary to replicate certain primitives which have the same geometric properties but experience very different radiation and/or thermal hydraulic conditions, and hence have different material properties in a transport simulation. For example, the \ac{LNS} algorithm is useful for identifying groups of fuel pin cell instances which may have similar \ac{MGXS}. However, in order for a transport code to make use of \ac{LNS}, a replica of each cell must be made to represent each of its different \ac{LNS} identifiers.
 
-second paragraph: region differentiation scheme as a soln
--second paragraph in RD section in OpenCG paper
--time consuming and error prone to build CG
--systematic and automated construction with region differentiation
--reference figure
+%first paragraph: motivation
+%-build combinatorial geometries based on arbitrary clustering of cell instances
 
--SEE SLIDE 60
--The OpenCG API takes region groupings as input (cell instances to treat as identical)
--Dynamic programming algorithm climbs one level of the CG tree per iteration
--At each level, the paths for each region in each grouping is hashed to find primitive collisions
--All primitive collisions are resolved through primitive differentiation
--Terminates when no two regions have an updated path which results in a primitive collision
+The process of manually constructing a combinatorial geometry with many replicated but geometrically identical cells is very time consuming and prone to errors. To address this issue, a novel algorithm termed \textit{region differentiation} was implemented in OpenCG to efficiently and systematically reconstruct a combinatorial geometry with replicated cells~\cite{boyd2015opencg}. A characterization of the region differentiation algorithm applied to a combinatorial geometry tree data structure is shown in Fig.~\ref{fig:region-differentiation}.
 
-third paragraph: region groupings 
--third paragraph in OpenCG paper
--define region groupings: all regions that reference a particular cell in a geometry
--tie back to figure
+The region differentiation algorithm is implemented in OpenCG and presents an interface which takes in a set of arbitrarily formed \textit{region groupings}. A region grouping is the set of all regions, that reference a particular cell in the geometry. Alternatively, a region grouping can be thought of a set of repeated instances of a cell throughout a combinatorial geometry. Two or more region groupings corresponding to the same cell designate specific cell instances that should be replicated. The region differentiation algorithm replicates cells, universes, and lattices for each region grouping.
 
-fourth paragraph: dynamic programming to avoid factorial scaling
--fourth paragraph in OpenCG paper
+A naive or brute-force implementation of the region differentiation algorithm would scale as $\mathcal{O}(kn!)$ in both memory and time for $k$ nested universe/cell levels and $n$ region groupings. The reason is that \textit{a priori}, the algorithm does not know from which region groupings various cell instances will combine with one another to form universes, lattices and/or cells, which must themselves be differentiated for each possible combination of region groupings. To avoid factorial scaling, OpenCG makes use of dynamic programming to efficiently differentiate primitives one level at a time within the geometry.
 
-fifth paragraph: intrinsic collisions
--fifth paragraph in OpenCG paper
-
-sixth paragraph: tie back to MGXS
--figure on slide 50
-
--can any of these paragraphs be combined??
-
-
-\newpage
-\begin{figure}[h!]
+\afterpage{\clearpage}
+\begin{figure}[p]
 \begin{subfigure}{\textwidth}
   \centering
   \includegraphics[width=0.82\linewidth]{figures/workflow/opencg/region-differentiation-1}
@@ -511,10 +484,13 @@ sixth paragraph: tie back to MGXS
 \label{fig:region-differentiation}
 \end{figure}
 
+The region differentiation algorithm iterates over each level of nested universes and cells. At each step, the paths for each region starting from the current level in the combinatorial geometry tree and ending with the root universe node are hashed and stored in a hash table linked to the region grouping. Next, the algorithm manages primitive collisions when two or more region groupings with the same path in the hash table point to the same primitive (cell, universe or lattice). To resolve primitive collisions, the algorithm differentiates the primitive for each region grouping involved in the collision. As primitive collisions are resolved, the algorithm merges any region groupings with paths that hash to same value in the hash table. The algorithm's termination condition is reached when the hash table only has one entry - \textit{i.e.}, paths for all regions hash to the same value.
+
+The region differentiation algorithm was an indispensable component of the simulation triad used to explore novel \ac{MGXS} generation techniques in this thesis. In particular, region differentiation made it possible to rapidly construct geometries to reflect the assignment of \ac{MGXS} to arbitrary collections of fuel pins for the spatial homogenization methodology introduced in Chaps.~\Crefrange{chap:benchmarks}{chap:unsupervised}. Fig.~\ref{fig:region-diff-proc-diagram} illustrates a flow diagram for this process when the \ac{LNS} algorithm is used to identify the region groupings to input to the region differentiation algorithm. The new geometry produced from region differentiation is then exported for use in either OpenMC or OpenMOC.
 
 \begin{figure}[h!]
   \centering
-  \includegraphics[width=\linewidth]{figures/workflow/opencg/region-diff-proc-diagram}
+  \includegraphics[width=0.8\linewidth]{figures/workflow/opencg/region-diff-proc-diagram}
   \caption[OpenCG region differentiation process diagram]{The OpenCG \ac{LNS} algorithm may be used to generate region groupings for the region differentiation algorithm to create an geometry for OpenMC or OpenMOC.}
   \label{fig:region-diff-proc-diagram}
 \end{figure}
