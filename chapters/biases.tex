@@ -24,6 +24,11 @@ This chapter investigates the loss in accuracy resulting from approximations mad
 
 In each case study, the role of angular discretization in \ac{MOC} is quantified through convergence studies of the number of azimuthal angles and the track spacing used in the deterministic calculations. The effects of energy discretization are analyzed for \ac{MGXS} tallied in the CASMO~\cite{rhodes2006casmo} energy group structures ranging from 1 -- 70 groups (see App.~\ref{app:energy-groups}). For each of the case studies with heterogeneous geometries, the spatial domain is discretized in OpenMOC's \ac{FSR} mesh with constant-by-material \ac{MGXS} to quantify the interaction between the energy and spatial approximations. Spatial discretization studies show the impact of tallying \ac{MGXS} in each of the \ac{FSR}s used in the discretized OpenMOC geometry. Finally, \ac{MGXS} libraries were tallied using OpenMC's iso-in-lab feature (see Sec.~\ref{subsec:chap5-iso-in-lab}) to quantify the impact of the isotropic in lab scattering approximation used in OpenMOC. Inter-pin spatial self-shielding effects are not treated here as they are studied in detail in Chaps.~\Crefrange{chap:benchmarks}{chap:unsupervised}. In each case study, OpenMOC was converged to a criterion of 1E-7 on the energy-integrated fission source.
 
+\vspace{0.5cm}
+\begin{emphbox}
+\textbf{Woot! My first summary box!}
+\end{emphbox}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Homogeneous Infinite Medium}
 \label{subsec:chap5-inf-medium}
@@ -749,3 +754,17 @@ As illustrated in the table, both U-238 capture and total absorption rate error 
 \end{table}}
 
 These results indicate that spatial self-shielding effects in resonance groups is not adequately captured by the \ac{MGXS} and/or the multi-group calculation. Furthermore, this analysis illustrates the counter intuitive result that the bias between continuous energy Monte Carlo and multi-group deterministic transport may in fact increase in magnitude with more energy groups. Although it is challenging to isolate the factors which convolve to bias the eigenvalue, the data presented here indicates that an over-prediction of U-238 capture in the resonance groups largely drives the error. These results will be discussed in greater depth in the context of angular-dependent \ac{MGXS} in Chapter~\ref{chap:sph}.
+
+\vfill
+\begin{highlightsbox}[frametitle=Highlights]
+      \begin{itemize}
+      \item At least 4 million neutrons should be simulated per \ac{FSG} to
+      avoid under-sampling in $2$-D BEAVRS model. This was determined from Shannon entropy
+      convergence studies. 
+      \item At least 4 million neutrons should be simulated per \ac{FSG} to
+      avoid under-sampling in $3$-D BEAVRS model.
+      \item Fission source convergence requires more \acp{FSG} for $3$-D BEAVRS
+      compared with $2$-D BEAVRS.
+      \end{itemize}
+\end{highlightsbox}
+\vfill

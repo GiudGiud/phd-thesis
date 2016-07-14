@@ -52,6 +52,14 @@
 % footnotes in tabular environment
 \usepackage{tablefootnote}
 
+% Highlights and emphasis boxes from Bryans thesis
+\usepackage[framemethod=tikz]{mdframed}
+\definecolor{mitred}{rgb}{0.698,0.0314,0.216}
+\definecolor{mitgray}{rgb}{0.690,0.694,0.710}
+\definecolor{canyellow}{rgb}{0.933, 0.965, 0.424}
+\newmdenv[nobreak=false, skipabove=2ex, skipbelow=2ex, innerlinewidth=3pt, innerlinecolor=black, backgroundcolor=mitgray!75, roundcorner=10pt, frametitlerule=true, frametitlerulewidth=2.5pt, frametitlefont=\color{white}\Large\bfseries, frametitlealignment=\centering, frametitlebackgroundcolor=mitred, frametitleaboveskip=2ex, frametitlebelowskip=2ex, innertopmargin=3ex, innerbottommargin=2ex]{highlightsbox}
+\newmdenv[nobreak=false, skipabove=2ex, skipbelow=2ex, innerlinewidth=2pt, innerlinecolor=black, backgroundcolor=white, roundcorner=10pt]{emphbox}
+
 \newcommand\numberthis{\addtocounter{equation}{1}\tag{\theequation}}
 
 % Define colors for table rows
