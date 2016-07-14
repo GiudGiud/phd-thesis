@@ -21,11 +21,13 @@ This thesis investigates Monte Carlo as a means to generate multi-group cross se
   {\bf Git Commit SHA-1} \\
   \midrule
   OpenMC & 05-30-2016 & 698c223482a7d5f5df4dc83eeed65d99a2e52fbf \\
-  OpenMOC & 05-29-2016 & b09e66be269703ca0a08d7a6afced1bc5984112a \\
+  OpenMOC\footnotemark & 05-29-2016 & b09e66be269703ca0a08d7a6afced1bc5984112a \\
   OpenCG & 05-14-2016 & 2c5e8f92f501d076f4ed06b70b09684a411b06b9 \\
   \bottomrule
 \end{tabular}
 \end{table}
+
+\footnotetext{OpenMOC was compiled with double precision floating point arithmetic.}
 
 \begin{figure}[h]
   \centering
@@ -176,9 +178,9 @@ The distribcell tally algorithm consists of pre-processing and indexing stages. 
 \subsection{Isotropic-in-Lab Scattering}
 \label{subsec:chap4-iso-in-lab}
 
-As part of this thesis, a unique option for isotropic-in-lab scattering was implemented in the OpenMC code. The isotropic-in-lab feature may be useful to quantify the ability of multi-group codes to capture anisotropic scattering effects with higher order scattering matrices or transport correction schemes (see Sec.~\ref{subsec:chap2-transport-corr}). The isotropic-in-lab scattering feature was implemented as a ``scattering'' attribute for each nuclide/element in a simulation. When isotropic-in-lab scattering is specified for a nuclide/element, the outgoing neutron energy is sampled from the scattering laws prescribed by the continuous energy cross section library, but the outgoing neutron direction of motion is sampled from an isotropic-in-lab distribution. 
+As part of this thesis, a unique option for isotropic-in-lab scattering was implemented in the OpenMC code. The isotropic-in-lab (abbreviated as iso-in-lab) feature may be useful to quantify the ability of multi-group codes to capture anisotropic scattering effects with higher order scattering matrices or transport correction schemes (see Sec.~\ref{subsec:chap2-transport-corr}). The iso-in-lab scattering feature was implemented as a ``scattering'' attribute for each nuclide/element in a simulation. When iso-in-lab scattering is specified for a nuclide/element, the outgoing neutron energy is sampled from the scattering laws prescribed by the continuous energy cross section library, but the outgoing neutron direction of motion is sampled from an isotropic-in-lab distribution. 
 
-Unless otherwise noted, isotropic-in-lab scattering was employed in OpenMC to generate the \ac{MGXS} used in this thesis. The isotropic-in-lab scattering feature enabled ``apples-to-apples'' comparisons between the reference eigenvalues and reaction rate distributions produced by OpenMC and those computed from isotropic multi-group calculations with OpenMOC.
+Unless otherwise noted, isotropic-in-lab scattering was employed in OpenMC to generate the \ac{MGXS} used in this thesis. The iso-in-lab scattering feature enabled ``apples-to-apples'' comparisons between the reference eigenvalues and reaction rate distributions produced by OpenMC and those computed from isotropic multi-group calculations with OpenMOC.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{MGXS Generation}
@@ -276,7 +278,7 @@ The OpenMOC code is capable of performing 2D \ac{MOC} calculations for light wat
 
 One of the key reasons that OpenMOC was used by this thesis was to leverage its flexible Python interface. The majority of the source code is written in C++ using object-oriented software design principles. The \ac{SWIG}~\cite{beazley2003swig} is deployed to expose the C++ classes and routines to the Python scripting language. The Python interface made it possible to tightly couple OpenMOC with the rich ecosystem of Python-based data processing and visualization tools for the spatial homogenization methodology developed in Chaps.~\Crefrange{chap:benchmarks}{chap:unsupervised}.
 
-As part of this work, a new scheme was implemented to efficiently link OpenMOC's Python and C++ \ac{CG} data structures into a hierarchical tree-like data structure. This made it possible to use the OpenCG region differentiation algorithm discussed in Sec.~\ref{sec:chap4-region-diff} to derive geometries for OpenMOC. In addition, a thread-safe memory management model was realized which unifies the dynamic deallocation of objects shared between Python and C++ code. The memory model enabled 100s of OpenMOC simulations to be systematically orchestrated by Python for the parametric studies considered in this thesis.
+As part of this work, a new scheme was implemented to efficiently link OpenMOC's Python and C++ \ac{CG} data structures into a hierarchical tree-like data structure. This made it possible to use the OpenCG region differentiation algorithm discussed in Sec.~\ref{sec:chap4-region-diff} to derive geometries for OpenMOC. In addition, a thread-safe memory management model was realized which unifies the dynamic deallocation of objects shared between Python and C++ code. The memory model enabled 100s of OpenMOC simulations to be orchestrated by Python for the parametric studies considered in this thesis.
 
 %\begin{figure}[h!]
 %  \centering
@@ -306,7 +308,7 @@ OpenMOC's high performance parallel solvers for both multi-core \ac{CPUs} and \a
 
 OpenMOC uses the Coarse Mesh Finite Difference (CMFD) acceleration scheme to greatly reduce the number of iterations required to converge criticality calculations~\cite{boyd2014openmoc}. \ac{CMFD} acceleration functions by using the solution of a coarse mesh diffusion problem to accelerate the convergence of the fine mesh \ac{MOC} transport problem. The details of the \ac{CMFD} implementation in OpenMOC are beyond the scope of this thesis, and the interested reader is referred to the online code manual~\cite{openmoc2016manual} for more information. 
 
-\ac{CMFD} acceleration was extensively used to accelerate the eigenvalue calculations in this thesis. All simulations which employed \ac{CMFD} used the novel $k$-Nearest Neighbors prolongation scheme created by Shaner~\cite{shaner2015cmfd} and implemented in OpenMOC to improve the convergence rate and stability of \ac{CMFD}. In particular, all simulations used three neighbors along with a successive over-relaxation (SOR) factor of unity. Along with OpenMOC's parallel solvers, \ac{CMFD} acceleration made it feasible to perform large parametric studies to generate the results presented in the following chapters of this thesis.
+\ac{CMFD} acceleration was extensively used to accelerate the eigenvalue calculations in this thesis. All simulations which employed \ac{CMFD} used the novel $k$-Nearest Neighbors prolongation scheme created by Shaner~\cite{shaner2015cmfd} and implemented in OpenMOC to improve the convergence rate and stability of \ac{CMFD}. In particular, all simulations used three neighbors along with a successive over-relaxation (SOR) factor of unity. Along with OpenMOC's parallel solvers, \ac{CMFD} acceleration made it feasible to perform large parametric studies to generate the results presented in this thesis.
 
 %\begin{figure}[h!]
 %  \centering
