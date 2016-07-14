@@ -622,10 +622,9 @@ The trends analyzed in Tab.~\ref{table:chap5-pin-energy} emerge in a similar man
 \section{Diagnosing the Error}
 \label{sec:chap5-diagnosis}
 
-The emergence of a negative systematic bias in the eigenvalue with fine energy and spatial discretization for the heterogeneous 1D slab and 2D fuel pin models led to an analysis of the flux spectra computed by OpenMC and OpenMOC. The 70-group volume-averaged flux in energy for both benchmarks is illustrated in Fig.~\ref{fig:chap5-flux}. Upon further inspection, it was noted that OpenMOC's flux exhibited large errors with respect to the reference OpenMC flux in those energy groups which isolate large U-238 capture resonances. The error in the 70-group flux is illustrated in Fig.~\ref{fig:chap5-rel-err-energy} for the \ac{FSR}s nearest and furthest from the moderator for the benchmark models with a 16$\times$ \ac{FSR} discretization. Fig.~\ref{fig:chap5-rel-err-space} highlights the spatial dependence of the error in group 27 across the fuel which isolates the largest U-238 capture resonance at 6.67 eV. For both the slab and the fuel pin the error monotonically decreases from a maximum of more than 2\% to a minimum of $\sim$-0.3\% in those \ac{FSR}s furthest and nearest the moderator, respectively. 
+The emergence of a negative systematic bias in the eigenvalue with fine energy and spatial discretization for the heterogeneous 1D slab and 2D fuel pin models led to an analysis of the flux spectra computed by OpenMC and OpenMOC. The 70-group volume-averaged energy-dependent flux in the fuel for both benchmarks is illustrated in Fig.~\ref{fig:chap5-flux}. Upon further inspection, it was noted that OpenMOC's flux exhibited large errors with respect to the reference OpenMC flux in those energy groups which isolate large U-238 capture resonances. The error in the 70-group flux is illustrated in Fig.~\ref{fig:chap5-rel-err-energy} for the \ac{FSR}s nearest and furthest from the moderator for the benchmark models with a 16$\times$ \ac{FSR} discretization. Fig.~\ref{fig:chap5-rel-err-space} highlights the spatial dependence of the error in group 27 across the fuel which isolates the largest U-238 capture resonance at 6.67 eV. For both the slab and the fuel pin the error monotonically decreases from a maximum of more than 2\% to a minimum of $\sim$-0.3\% in those \ac{FSR}s furthest and nearest the moderator, respectively. 
 
 \begin{itemize}[noitemsep]
-  \item Only plot the flux in the fuel
   \item Add footnote making mention of the closeness between OpenMC/MOC
 \end{itemize}
 
@@ -659,11 +658,6 @@ The emergence of a negative systematic bias in the eigenvalue with fine energy a
 \label{fig:chap5-rel-err-energy}
 \end{figure}
 
-\begin{itemize}[noitemsep]
-  \item Add group to the figure of spatially-varying error
-  \item Add spatially-varying error for Ranges A, B and C to each plot
-\end{itemize}
-
 \begin{figure}[H]
 \begin{subfigure}{.9\textwidth}
   \centering
@@ -675,7 +669,7 @@ The emergence of a negative systematic bias in the eigenvalue with fine energy a
   \includegraphics[width=\linewidth]{figures/biases/pin-cell/rel-err-fuel-fsrs}
   \caption{}
 \end{subfigure}
-\caption[Flux relative error by FSR]{The spatially-varying relative error of the OpenMOC scalar flux with respect to the reference OpenMC flux for a 1D slab (a) and 2D fuel pin (b). The results correspond Tables~\ref{table:chap5-slab-space} and~\ref{table:chap5-pin-space} for \ac{MGXS} tallied on a 16$\times$ \ac{FSR} mesh with iso-in-lab scattering. The errors are plotted for each of the 16 \ac{FSR}s in the fuel.}
+\caption[Flux relative error by FSR]{The spatially-varying relative error of the OpenMOC scalar flux with respect to the reference OpenMC flux for a 1D slab (a) and 2D fuel pin (b) in group 27. The results correspond to Tables~\ref{table:chap5-slab-space} and~\ref{table:chap5-pin-space} for \ac{MGXS} tallied on a 16$\times$ \ac{FSR} mesh with iso-in-lab scattering. The errors are plotted for each of the 16 \ac{FSR}s in the fuel.}
 \label{fig:chap5-rel-err-space}
 \end{figure}
 

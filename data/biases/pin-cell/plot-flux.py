@@ -316,3 +316,50 @@ plt.ylabel('Relative Error [%]', fontsize=12)
 plt.xlim((0, rel_err.shape[0]-1))
 plt.savefig('rel-err-fuel-fsrs.png', bbox_inches='tight')
 plt.close()
+
+
+###############################################################################
+#        Plot OpenMC-to-OpenMOC Flux Error Across Fuel FSRs in Ranges A, B, C
+###############################################################################
+
+# Find energy group which encompasses 6.67 eV resonance
+min_ind = mgxs_lib.energy_groups.get_group(6.67e-6) - 1
+
+# Find energy group which encompasses 200 kEV
+max_ind = mgxs_lib.energy_groups.get_group(2.e-2) - 1
+
+# Compute OpenMOC flux in ranges A, B, and C for each fuel FSR
+openmoc_flux_a = openmoc_fluxes[fuel_indices, group_index]
+openmoc_flux_b = np.sum(openmoc_fluxes[fuel_indices, max_ind:min_ind], axis=1)
+openmoc_flux_c = np.sum(openmoc_fluxes[fuel_indices, :], axis=1)
+
+# Compute OpenMC flux in ranges A, B, and C for each fuel FSR
+openmc_flux_a = openmc_fluxes[fuel_indices, group_index]
+openmc_flux_b = np.sum(openmc_fluxes[fuel_indices, max_ind:min_ind], axis=1)
+openmc_flux_c = np.sum(openmc_fluxes[fuel_indices, :], axis=1)
+
+# Compute flux rel. err. for ranges A, B, and C for each fuel FSR
+delta_flux_a = openmoc_flux_a - openmc_flux_a
+delta_flux_b = openmoc_flux_b - openmc_flux_b
+delta_flux_c = openmoc_flux_c - openmc_flux_c
+rel_err_a = delta_flux_a / openmc_flux_a * 100.
+rel_err_b = delta_flux_b / openmc_flux_b * 100.
+rel_err_c = delta_flux_c / openmc_flux_c * 100.
+
+# Extend the rel er array for matplotlib's step plot of fluxes
+fuel_indices = fuel_indices[::-1]
+rel_err_a = np.insert(rel_err_a, 0, rel_err_a[0], axis=0)
+rel_err_b = np.insert(rel_err_b, 0, rel_err_b[0], axis=0)
+rel_err_c = np.insert(rel_err_c, 0, rel_err_c[0], axis=0)
+
+# Plot the relative errors
+fig = plt.figure()
+plt.plot(np.arange(rel_err_a.shape[0]), rel_err_a, drawstyle='steps', color='r', linewidth=3)
+plt.plot(np.arange(rel_err_b.shape[0]), rel_err_b, drawstyle='steps', color='g', linewidth=3)
+plt.plot(np.arange(rel_err_c.shape[0]), rel_err_c, drawstyle='steps', color='b', linewidth=3)
+plt.legend(['Range A', 'Range B', 'Range C'])
+plt.xlabel('Fuel FSR', fontsize=12)
+plt.ylabel('Relative Error [%]', fontsize=12)
+plt.xlim((0, rel_err_a.shape[0]-1))
+plt.savefig('rel-err-fuel-fsrs-ranges.png', bbox_inches='tight')
+plt.close()
