@@ -206,7 +206,7 @@ The isotropic scattering matrix is computed with an inner product of scattering 
 
 \begin{equation}
 \label{eqn:chap3-scatter-macro}
-\hat{\Sigma}_{s,k,g} = \frac{\langle \Sigma_{s0}, \psi \rangle_{k,g'\rightarrow g}^{a}}{\langle \psi \rangle_{k,g'}^{a}}
+\hat{\Sigma}_{s,k,g'\rightarrow g} = \frac{\langle \Sigma_{s0}, \psi \rangle_{k,g'\rightarrow g}^{a}}{\langle \psi \rangle_{k,g'}^{a}}
 \end{equation}
 
 \noindent The transport correction in Eqn.~\ref{eqn:chap3-transport-corr-macro} can be applied by subtracting it from the diagonal elements in the matrix to compute the transport-corrected scattering matrix:
@@ -298,13 +298,13 @@ The energy group structure for energy condensation is specified by \texttt{energ
 
   \specialrule{.2em}{.1em}{.1em}
 
-  \multirow{2}{*}[-0.5em]{\parbox{1.5cm}{\bf Scattering Matrix}} & \multirow{2}{*}[-0.5em]{$\hat{\Sigma}_{s,k,g}$} & $\langle \Sigma_{s0}, \psi \rangle_{k,g'\rightarrow g}$ & \texttt{nu-scatter-0} & \parbox{2cm}{\texttt{material}/\texttt{cell} \texttt{energy} \texttt{energyout}} & \texttt{analog} \\
+  \multirow{2}{*}[-0.5em]{\parbox{1.5cm}{\bf Scattering Matrix}} & \multirow{2}{*}[-0.5em]{$\hat{\Sigma}_{s,k,g'\rightarrow g}$} & $\langle \Sigma_{s0}, \psi \rangle_{k,g'\rightarrow g}$ & \texttt{nu-scatter-0} & \parbox{2cm}{\texttt{material}/\texttt{cell} \texttt{energy} \texttt{energyout}} & \texttt{analog} \\
   \cline{3-6}
   & & $\langle \psi \rangle_{k,g}$ & \texttt{flux} & \parbox{2cm}{\texttt{material}/\texttt{cell} \texttt{energy}} & \texttt{analog} \\
 
   \specialrule{.2em}{.2em}{.2em}
 
-  \multirow{3}{*}[-1em]{\parbox{1.5cm}{\bf Transport-Corrected Scattering Matrix}} & \multirow{3}{*}[-1em]{$\hat{\Sigma}_{s,k,g}$} & $\langle \Sigma_{s0}, \psi \rangle_{k,g'\rightarrow g}$ & \texttt{nu-scatter-0} & \parbox{2cm}{\texttt{material}/\texttt{cell} \texttt{energy} \texttt{energyout}} & \texttt{analog} \\
+  \multirow{3}{*}[-1em]{\parbox{1.5cm}{\bf Transport-Corrected Scattering Matrix}} & \multirow{3}{*}[-1em]{$\hat{\tilde{\Sigma}}_{s,k,g'\rightarrow g}$} & $\langle \Sigma_{s0}, \psi \rangle_{k,g'\rightarrow g}$ & \texttt{nu-scatter-0} & \parbox{2cm}{\texttt{material}/\texttt{cell} \texttt{energy} \texttt{energyout}} & \texttt{analog} \\
   \cline{3-6}
   & & $\langle \Sigma_{s1}, \psi \rangle_{k,g'\rightarrow g}$ & \texttt{nu-scatter-1} & \parbox{2cm}{\texttt{material}/\texttt{cell} \texttt{energyout}} & \texttt{analog} \\
   \cline{3-6}
@@ -312,7 +312,7 @@ The energy group structure for energy condensation is specified by \texttt{energ
 
   \specialrule{.2em}{.1em}{.1em}
 
-  \multirow{2}{*}[-0.5em]{\parbox{1.5cm}{\bf Fission \hspace{1cm} Production}} & \multirow{2}{*}[-0.5em]{$\hat{\nu\Sigma}_{f,k,g}$} & $\langle \nu\Sigma_{f}, \psi \rangle_{k,g}$ & \texttt{nu-fission} & \parbox{2cm}{\texttt{material}/\texttt{cell} \texttt{energy}} & \texttt{track-length} \\
+  \multirow{2}{*}[-0.5em]{\parbox{1.5cm}{\bf Fission \hspace{1cm} Production}} & \multirow{2}{*}[-0.5em]{$\nu\hat{\Sigma}_{f,k,g}$} & $\langle \nu\Sigma_{f}, \psi \rangle_{k,g}$ & \texttt{nu-fission} & \parbox{2cm}{\texttt{material}/\texttt{cell} \texttt{energy}} & \texttt{track-length} \\
   \cline{3-6}
   & & $\langle \psi \rangle_{k,g}$ & \texttt{flux} & \parbox{2cm}{\texttt{material}/\texttt{cell} \texttt{energy}} & \texttt{track-length} \\
 
