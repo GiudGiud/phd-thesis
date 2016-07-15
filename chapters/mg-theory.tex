@@ -51,6 +51,11 @@ A solution for the neutron flux must computed from the transport equation in ord
 
 Instead, numerical simulation is used to solve the transport equation for the flux. Monte Carlo may be employed to exactly treat the energy dependence in Eqn.~\ref{eqn:chap2-transport-ce}\footnote{The treatment is only as exact as the uncertainties in measured nuclear cross section data will permit.}, but it is computationally burdensome and impractical for routine nuclear reactor analysis. Although space and angle may be discretized using standard techniques for the solution of partial differential equations, special treatment must be given to the energy variable. The following sections introduce approximations used to reduce the dimensionality of the equation to permit tractable multi-group calculations.
 
+\vspace{0.5cm}
+\begin{emphbox}
+\textbf{Nuclear reactor simulations calculate the neutron multiplication factor $k_{eff}$ and reaction rate distributions. Monte Carlo methods are the most accurate approach, but are not yet practical for whole-core analysis.}
+\end{emphbox}
+
 %The following sections present standard approximations made in multi-group theory to reduce the dimensionality of the angular, energy and spatial variables 
 
 
@@ -260,6 +265,11 @@ This definition of the transport correction is termed the \textit{in-scatter app
 %\end{dmath}
 
 
+\vspace{0.5cm}
+\begin{emphbox}
+\textbf{The neutron fission source is isotropic in reactors. The scattering source is simplified with a basis function expansion in angle. A transport correction is commonly used to account for anisotropic scattering in simulations that simplify the scattering source as isotropic.}
+\end{emphbox}
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Approximations in Energy}
@@ -420,6 +430,12 @@ The group-wise fission production cross section $\nu\Sigma_{f,g'}$ is defined as
 %to reduce the dimensionality of the fission production matrix $\nu\Sigma_{f,g'\rightarrow g}$. In thermal reactor spectra the energy distribution of neutrons produced in fission is nearly independent of the incoming neutron energy.
 
 
+\vspace{0.5cm}
+\begin{emphbox}
+\textbf{The multi-group transport equation is defined in terms of the group-wise fluxes and cross sections. \ac{MGXS} are the flux-weighted averages of the continuous energy cross sections that preserve reaction rates in each group. Flux separability uses the scalar instead of the angular flux to weight the total cross section. The fission matrix is condensed into 1D fission production cross section and the energy spectrum vectors.}
+\end{emphbox}
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Approximations in Space}
 \label{sec:chap2-approx-space}
@@ -469,6 +485,12 @@ Up to this point the \ac{MGXS} have been defined as continuously varying in spac
 %\end{dmath}
 
 \noindent This is the form of the multi-group transport equation solved by the deterministic OpenMOC code in this thesis. 
+
+
+\vspace{0.5cm}
+\begin{emphbox}
+\textbf{Spatially-homogenized \ac{MGXS} preserve reaction rates in discrete spatial zones.}
+\end{emphbox}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -547,3 +569,18 @@ cai2014condensation,nelson2014improved}. since it offers a potential pathway to 
 Continuous energy Monte Carlo is considered the ``gold standard'' for neutron transport calculations since it is reactor agnostic and samples over the entire phase space of angle, energy and position. \ac{MC} is not widely used in routine reactor analysis, however, since its computational expense renders it many orders of magnitude slower than deterministic multi-group methods. Some recent work in the community adopts a hybrid approach which combines the resonance self-shielding and lattice physics stages in a single \ac{MC} simulation. These schemes minimize the computational expense by modeling sub-components (\textit{e.g.}, fuel pins and assemblies) rather than a full reactor. Although the hybrid approach has the advantage of using the ``true'' flux sampled in \ac{MC} to generate \ac{MGXS}, special treatment must still be given to accommodate infinite boundary conditions and neutron leakage spectra.
 
 The following chapter introduces stochastic integration with \ac{MC} and its specific application to compute \ac{MGXS}. In addition, the chapter reviews past and present efforts to generate \ac{MGXS} with \ac{MC} for neutron diffusion and transport codes.
+
+
+\vfill
+\begin{highlightsbox}[frametitle=Highlights]
+\begin{itemize}
+%  \item Nuclear reactor analysis simulation methods present tradeoffs between accuracy and speed.
+%  \item Monte Carlo methods are ``truest'' to the physics, but too computationally expensive for practical whole-core simulation.
+  \item Numerical methods approximate the angular, energy and spatial variables in the neutron transport equation to make it computationally tractable.
+  \item Multi-group theory treats a neutron's energy with a finite set of discrete energy groups. Multi-group theory is valid if \ac{MGXS} are defined to preserve reaction rates in each energy group.
+  \item Energy condensation and spatial homogenization are used to compute \ac{MGXS} in each energy group and spatial zone. \ac{MGXS} generation requires the neutron flux in energy and space to average the continuous energy cross sections.
+  \item Standard \ac{MGXS} generation methods use a multi-level approach to approximate the neutron flux, accounting for self-shielding effects. Flux approximations are based on engineering prescriptions for specific reactor configurations and spectra and are not generalizable to new core designs.
+  \item Monte Carlo is a promising approach for \ac{MGXS} generation since it accurately produces an unbiased estimate of the flux without approximation.
+\end{itemize}
+\end{highlightsbox}
+\vfill
