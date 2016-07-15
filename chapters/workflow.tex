@@ -52,6 +52,10 @@ This chapter describes the author's contributions to each component code in the 
 %  -requires a robust and scalable framework to ``glue'' triad together
 %-requires extensions to each code
 
+\begin{emphbox}
+\textbf{A simulation triad consisting of OpenMC, OpenMOC and OpenCG was created to evaluate \ac{MGXS} generated from \ac{MC} within a Python-based framework.}
+\end{emphbox}
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{OpenMC}
@@ -143,7 +147,7 @@ Tally arithmetic is an object-oriented data processing feature which arithmetica
 
 Multi-group cross sections may be simply and efficiently computed with tally arithmetic. For example, the following code snippet illustrates how tally slicing and arithmetic are used to compute a total \ac{MGXS}:
 
-\lstinputlisting[language=Python, basicstyle=\ttfamily\footnotesize, caption={\ac{MGXS} calculation with tally arithmetic.}, label={lst:python-input}]{listings/workflow/tally-arithmetic.py}
+\lstinputlisting[language=Python, basicstyle=\ttfamily\scriptsize, caption={\ac{MGXS} calculation with tally arithmetic.}, label={lst:python-input}]{listings/workflow/tally-arithmetic.py}
 
 \noindent The total \ac{MGXS} that is returned from the tally division operation is encapsulated within a \texttt{Tally} class. This is the approach used by the \ac{MGXS} generation module created for OpenMC in Sec.~\ref{subsec:chap4-mgxs}.
 
@@ -165,8 +169,8 @@ Many Monte Carlo codes, including OpenMC, use some variant of combinatorial geom
 
 The \textit{distributed cell tally} algorithm was implemented in OpenMC to permit simply defined spatial tally zones across repeated cell instances~\cite{lax2014distribcell}. The distributed cell algorithm, commonly abbreviated as the \textit{distribcell} algorithm, classifies each unique cell instance using \textit{maps} and \textit{offsets} which consume orders of magnitude less memory than would be required by the ``brute force'' approach. Only a single transparent line of \ac{XML} input is necessary to define a distribcell tally which may span across an arbitrary number of instances for a particular cell. Furthermore, the Python \ac{API} may be used to perform efficient vectorized transformations of distribcell tally data stored as contiguous NumPy arrays. The distribcell tally algorithm was used to compute spatially-varying \ac{MGXS} across fuel pin cell instances for the spatial homogenization methology introduced in Chaps.~\Crefrange{chap:benchmarks}{chap:unsupervised}.
 
-The distribcell tally algorithm consists of pre-processing and indexing stages. The pre-processing phase builds a mapping to index unique regions based on the unique combination of cells, universes and lattices used to construct each region. This is done by storing offset numbers in the data structures for each fill cell\footnote{Any cell that is filled with a nested universe or lattice of cells.}. The offset maps are recursively constructed starting from the top-level universe and proceeding through each lower nested universe level in the combinatorial geometry. The pre-processing algorithm tabulates the total number of instances of each cell in the geometry in order to dynamically allocate memory for distribcell tally arrays. At runtime, the on-the-fly indexing scheme efficiently computes cell instance IDs in order to index and score to the appropriate bin(s) in distribcell tallies. The cell instance IDs are simply found by summing the offsets at each nested universe level along the path to the cell instance in the \ac{CG} as shown in Fig.~\ref{fig:indexing-scheme}. The interested reader is referred to~\cite{lax2014distribcell} for more details about the distribcell tally algorithm, including pseudocode for both pre-processing and indexing, as well as a performance model for the memory footprint consumed by the offsets and maps.
-  
+The distribcell tally algorithm consists of pre-processing and indexing stages. The pre-processing phase builds a mapping to index unique regions based on the unique combination of cells, universes and lattices used to construct each region. This is done by storing offset numbers in the data structures for each fill cell\footnote{Any cell that is filled with a nested universe or lattice of cells.}. The offset maps are recursively constructed starting from the top-level universe and proceeding through each lower nested universe level in the combinatorial geometry. The pre-processing algorithm tabulates the total number of instances of each cell in the geometry in order to dynamically allocate memory for distribcell tally arrays. At runtime, the on-the-fly indexing scheme efficiently computes cell instance IDs in order to index and score to the appropriate bin(s) in distribcell tallies. The cell instance IDs are simply found by summing the offsets at each nested universe level along the path to the cell instance in the \ac{CG} as shown in Fig.~\ref{fig:indexing-scheme}. The interested reader is referred to~\cite{lax2014distribcell} for details about the distribcell tally algorithm, including pseudocode for pre-processing and indexing and a performance model for the memory footprint consumed by offsets and maps.
+
 \begin{figure}
   \centering
   \includegraphics[width=\linewidth]{figures/workflow/openmc/distribcells}
@@ -180,7 +184,7 @@ The distribcell tally algorithm consists of pre-processing and indexing stages. 
 
 As part of this thesis, a unique option for isotropic in lab scattering was implemented in the OpenMC code. The isotropic in lab (abbreviated as iso-in-lab) feature may be useful to quantify the ability of multi-group codes to capture anisotropic scattering effects with higher order scattering matrices or transport correction schemes (see Sec.~\ref{subsec:chap2-transport-corr}). The iso-in-lab scattering feature was implemented as a ``scattering'' attribute for each nuclide/element in a simulation. When iso-in-lab scattering is specified for a nuclide/element, the outgoing neutron energy is sampled from the scattering laws prescribed by the continuous energy cross section library, but the outgoing neutron direction of motion is sampled from an isotropic in lab distribution. 
 
-Unless otherwise noted, isotropic in lab scattering was employed in OpenMC to generate the \ac{MGXS} used in this thesis. The iso-in-lab scattering feature enabled ``apples-to-apples'' comparisons between the reference eigenvalues and reaction rate distributions produced by OpenMC and those computed from isotropic multi-group calculations with OpenMOC.
+Unless otherwise noted, isotropic in lab scattering was employed in OpenMC to generate the \ac{MGXS} used in this thesis. The iso-in-lab scattering feature enabled ``apples-to-apples'' comparisons between the reference eigenvalues and reaction rates produced by OpenMC and those computed from isotropic multi-group calculations with OpenMOC.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{MGXS Generation}
@@ -225,6 +229,10 @@ The \texttt{openmc.mgxs} module uses an object-oriented design based on an abstr
 \end{table}
 
 The \texttt{openmc.mgxs} module was developed with general design principles to generate \ac{MGXS} for any multi-group neutron transport code. Although the module does not explicitly support any multi-group codes, it can export \ac{MGXS} data to a variety of data storage formats, including \ac{CSV} and \ac{HDF5}. The exported \ac{MGXS} files may be easily transformed into the database or input files required by a particular multi-group code. As discussed in the following section, this thesis developed a tightly integrated framework to pipeline \ac{MGXS} generated by \texttt{openmc.mgxs} into the multi-group OpenMOC code.
+
+\begin{emphbox}
+\textbf{The OpenMC code was used to generate \ac{MGXS}. A Python \ac{API} was implemented for input generation and data processing, along with features including distributed cell tallies and isotropic in lab scattering. The \texttt{openmc.mgxs} Python module was created to generate \ac{MGXS} from OpenMC tallies.}
+\end{emphbox}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -303,7 +311,7 @@ OpenMOC's high performance parallel solvers for both multi-core \ac{CPUs} and \a
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{CMFD Accleration}
+\subsection{CMFD Acecleration}
 \label{subsubsec:chap4-openmoc-cmfd}
 
 OpenMOC uses the Coarse Mesh Finite Difference (CMFD) acceleration scheme to greatly reduce the number of iterations required to converge criticality calculations~\cite{boyd2014openmoc}. \ac{CMFD} acceleration functions by using the solution of a coarse mesh diffusion problem to accelerate the convergence of the fine mesh \ac{MOC} transport problem. The details of the \ac{CMFD} implementation in OpenMOC are beyond the scope of this thesis, and the interested reader is referred to the online code manual~\cite{openmoc2016manual} for more information. 
@@ -316,6 +324,10 @@ OpenMOC uses the Coarse Mesh Finite Difference (CMFD) acceleration scheme to gre
 %\caption[$k$-nearest neighbor centroid scheme for CMFD]{The $k$-nearest neighbor centroid update scheme for \ac{CMFD}~\cite{shaner2015cmfd}.}
 %\label{fig:knn-cmfd}
 %\end{figure}
+
+\begin{emphbox}
+\textbf{The OpenMOC code was used to perform 2D deterministic multi-group \ac{MOC} calculations. The \texttt{openmoc.materialize} module was improved to support \ac{MGXS} generated from OpenMC. OpenMOC's parallel algorithms and \ac{CMFD} acceleration enabled parametric studies of 100s of OpenMOC simulations.}
+\end{emphbox}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -500,3 +512,21 @@ The region differentiation algorithm was an indispensable component of the simul
   \caption[OpenCG region differentiation process diagram]{The OpenCG \ac{LNS} algorithm may be used to generate region groupings for the region differentiation algorithm to create a geometry for OpenMC or OpenMOC.}
   \label{fig:region-diff-proc-diagram}
 \end{figure}
+
+\begin{emphbox}
+\textbf{The OpenCG code was implemented to facilitate data transfer between OpenMC and OpenMOC. The \ac{LNS} and region differentiation algorithms supported the novel spatial homogenization methodology developed in Chaps.~\Crefrange{chap:benchmarks}{chap:unsupervised}.}
+\end{emphbox}
+
+
+\vfill
+\begin{highlightsbox}[frametitle=Highlights]
+\begin{itemize}
+  \item A framework consisting of the OpenMC, OpenMOC and OpenCG codes comprise a ``simulation triad'' used to explore \ac{MC}-based \ac{MGXS} generation methods for fine mesh transport calculations.
+  \item A fully-featured Python \ac{API} was developed to support input generation and downstream processing of large tally datasets for OpenMC.
+  \item The \texttt{openmc.mgxs} Python module was created to generate \ac{MGXS} from OpenMC tallies. The distributed cell tally algorithm was implemented to generate pin-wise \ac{MGXS} in large, heterogeneous geometries.
+  \item New features were added to the deterministic multi-group OpenMOC code to enable it to use \ac{MGXS} generated by \texttt{openmc.mgxs} in 2D \ac{MOC} calculations.
+  \item The OpenCG code was created to facilitate data processing and transfer on the combinatorial geometry meshes used by OpenMC and OpenMOC.
+  \item OpenCG's \ac{LNS} and region differentiation algorithms were crucial components for the spatial homogenization methodology developed in Chaps.~\Crefrange{chap:benchmarks}{chap:unsupervised}.  
+\end{itemize}
+\end{highlightsbox}
+\vfill
