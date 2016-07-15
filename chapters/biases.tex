@@ -270,8 +270,10 @@ The first case study investigated the convergence of the OpenMOC eigenvalue with
 \end{tabular}
 \end{table}
 
+\newpage
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsubsection{Energy Condensation and \ac{FSR} Discretization}
+\subsubsection{Energy Condensation and FSR Discretization}
 \label{subsubsec:chap5-slab-energy}
 
 The second case study investigated the variation of the OpenMOC eigenvalue with the energy group structure used in the \ac{MOC} calculation. This case study simultaneously varied the \ac{FSR} discretization used in the OpenMOC simulation. Tab.~\ref{table:chap5-slab-energy} presents the bias $\Delta\rho$ between OpenMC and OpenMOC for a matrix of energy group structures and \ac{FSR} spatial discretizations. In each case, the \ac{MGXS} used in OpenMOC were tallied by material in OpenMC (\textit{i.e.}, the spatial tally mesh corresponded to Fig.~\ref{fig:chap5-slab-a}). The OpenMOC calculations each used 128 azimuthal angles and 0.05 cm track spacing. The slab was discretized into 1 -- 16 equal volume \ac{FSR}s in the fuel and moderator.
@@ -333,7 +335,7 @@ The results illustrate a strong interaction between the energy and spatial meshe
 \clearpage
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsubsection{Spatial Homogenization and \ac{FSR} Discretization}
+\subsubsection{Spatial Homogenization and FSR Discretization}
 \label{subsubsec:chap5-slab-space}
 
 Finally, a case study was performed to investigate the sensitivity of the OpenMOC eigenvalue to the spatial tally mesh used to compute \ac{MGXS}. This study was identical to that presented in Sec.~\ref{subsubsec:chap5-slab-energy}, but the \ac{MGXS} were computed using a tally mesh in OpenMC identical to the \ac{FSR} mesh used by OpenMOC. Tab.~\ref{table:chap5-slab-space} presents the bias $\Delta\rho$ for a matrix of energy group structures and \ac{MGXS} spatial tally zone meshes. In each case, the \ac{MGXS} were tallied on the \ac{FSR} mesh with 1 -- 16 equal volume subdivisions in the fuel and moderator (\textit{i.e.}, the spatial tally mesh corresponded to Fig.~\ref{fig:chap5-slab-b}). The OpenMOC calculations each used 128 azimuthal angles and 0.05 cm track spacing.
@@ -394,7 +396,7 @@ The trends analyzed in Tab.~\ref{table:chap5-slab-energy} emerge in a nearly ide
 
 \vspace{0.5cm}
 \begin{emphbox}
-\textbf{A systematic bias of 100--200 \ac{pcm} exists between OpenMC and OpenMOC for a 1D slab. The bias varies with the \ac{FSR} discretization and grows with more energy groups. The bias is partially eliminated with iso-in-lab scattering, and is invariant to the spatial mesh used to generate \ac{MGXS}.}
+\textbf{A systematic bias of -100--200 \ac{pcm} exists between OpenMC and OpenMOC for a 1D slab. The bias varies with the \ac{FSR} discretization and grows with more energy groups. The bias is partially eliminated with iso-in-lab scattering, and is invariant to the spatial mesh used to generate \ac{MGXS}.}
 \end{emphbox}
 
 \clearpage
@@ -504,8 +506,10 @@ The first case study investigated the convergence of the OpenMOC eigenvalue with
 \end{tabular}
 \end{table}
 
+\newpage
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsubsection{Energy Condensation and \ac{FSR} Discretization}
+\subsubsection{Energy Condensation and FSR Discretization}
 \label{subsubsec:chap5-pin-energy}
 
 The second case study investigated the variation of the OpenMOC eigenvalue with the energy group structure used in the \ac{MOC} calculation. This case study simultaneously varied the \ac{FSR} discretization used in the OpenMOC simulation. This case study also varied the \ac{FSR} discretization used in the OpenMOC simulation. Tab.~\ref{table:chap5-pin-energy} presents the bias $\Delta\rho$ between OpenMC and OpenMOC for a matrix of energy group structures and \ac{FSR} spatial discretizations. In each case, the \ac{MGXS} used in OpenMOC were tallied by material in OpenMC (\textit{i.e.}, the spatial tally mesh corresponded to Fig.~\ref{fig:chap5-pin-a}). The OpenMOC calculations used 128 azimuthal angles and 0.01 cm track spacing. Each of the materials in the fuel pin was discretized into 8 angular sectors. The fuel and moderator were each discretized into 1 -- 16 equal volume radial rings. 
@@ -566,7 +570,7 @@ As was demonstrated for the 1D slab, the results for the fuel pin indicate a str
 \clearpage
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsubsection{Spatial Homogenization and \ac{FSR} Discretization}
+\subsubsection{Spatial Homogenization and FSR Discretization}
 \label{subsubsec:chap5-pin-space}
 
 A final case study was performed to investigate the sensitivity of the OpenMOC eigenvalue to the spatial tally mesh used to compute \ac{MGXS}. This case study was identical to that presented in Sec.~\ref{subsubsec:chap5-pin-energy}, but in this case the \ac{MGXS} were computed using a tally mesh in OpenMC identical to the \ac{FSR} mesh used by OpenMOC. Tab.~\ref{table:chap5-pin-space} presents the bias for a matrix of energy group structures and \ac{MGXS} spatial tally zone meshes. In each case, the \ac{MGXS} were tallied on the \ac{FSR} mesh used in OpenMOC with 1 -- 16 equal volume rings per material (\textit{i.e.}, the spatial tally mesh corresponded to Fig.~\ref{fig:chap5-pin-b}). The OpenMOC calculations used 128 azimuthal angles and 0.01 cm track spacing.
@@ -628,7 +632,7 @@ The trends analyzed in Tab.~\ref{table:chap5-pin-energy} emerge in a similar man
 
 \vspace{0.5cm}
 \begin{emphbox}
-\textbf{A systematic bias of 200--300 \ac{pcm} exists between OpenMC and OpenMOC for a 2D fuel pin. The bias varies with the \ac{FSR} discretization and grows with more energy groups. The bias is partially eliminated with iso-in-lab scattering, and is invariant to the spatial mesh used to generate \ac{MGXS}.}
+\textbf{A systematic bias of -200--300 \ac{pcm} exists between OpenMC and OpenMOC for a 2D fuel pin. The bias varies with the \ac{FSR} discretization and grows with more energy groups. The bias is partially eliminated with iso-in-lab scattering, and is invariant to the spatial mesh used to generate \ac{MGXS}.}
 \end{emphbox}
 
 \clearpage
@@ -719,51 +723,49 @@ As illustrated in the table, both U-238 capture and total absorption rate error 
   \small
   \label{table:chap5-rxn-rate-errors} 
   \vspace{6pt}
-  \begin{tabular}{a S[table-format=6.1] S[table-format=6.1] S[table-format=6.1] c S[table-format=6.1] S[table-format=6.1] S[table-format=6.1]}
-  \toprule
-  \rowcolor{lightgray}
-  \multicolumn{1}{c}{\bf \# Groups} &
-  \multicolumn{3}{c}{\bf U-238 Capture} &
-  \multicolumn{1}{c}{} &
-  \multicolumn{3}{c}{\bf Total Absorption} \\
+  \begin{tabular}{| q | S[table-format=6.1] S[table-format=6.1] S[table-format=6.1] | S[table-format=6.1] S[table-format=6.1] S[table-format=6.1] |}
+  \hhline{~|------|}
+  \multicolumn{1}{c|}{\cellcolor{white}} &
+  \multicolumn{3}{c}{\cellcolor{lightgray} {\bf U-238 Capture}} &
+  \multicolumn{3}{c|}{\cellcolor{lightgray} {\bf Total Absorption}} \\
+  \multicolumn{1}{c|}{\cellcolor{white}} &
+  {\bf \cellcolor{lightgray} Range A} &
+  {\bf \cellcolor{lightgray} Range B} &
+  \multicolumn{1}{c}{\cellcolor{lightgray}{\bf Range C}} &
+  {\bf \cellcolor{lightgray} Range A} &
+  {\bf \cellcolor{lightgray} Range B} &
+  {\bf \cellcolor{lightgray} Range C} \\
   \midrule
-  \multicolumn{8}{c}{\cellcolor{carolinablue} \bf 1D Slab} \\
-  & {\bf \cellcolor{lightgray} Range A} &
-  {\bf \cellcolor{lightgray} Range B} &
-  {\bf \cellcolor{lightgray} Range C} &
-  &
-  {\bf \cellcolor{lightgray} Range A} &
-  {\bf \cellcolor{lightgray} Range B} &
-  {\bf \cellcolor{lightgray} Range C} \\
-1 & -0.02 & -0.02 & -0.02 & & -0.11 & -0.11 & -0.11 \\
-2 & 0.05 & 0.05 & 0.03 & & 0.05 & 0.05 & -0.07 \\
-4 & 0.11 & -0.08 & 0.06 & & 0.12 & -0.08 & -0.05 \\
-8 & 0.19 & -0.03 & 0.11 & & 0.22 & -0.03 & 0.00 \\
-16 & 0.21 & -0.02 & 0.12 & & 0.23 & -0.02 & 0.02 \\
-25 & 0.58 & 0.36 & 0.26 & & 0.61 & 0.37 & 0.06 \\
-40 & 0.58 & 0.43 & 0.30 & & 0.61 & 0.44 & 0.07 \\
-70 & {\cellcolor{darktangerine}} 0.59 & 0.46 & 0.30 & & 0.61 & 0.47 & 0.08 \\
-  \multicolumn{8}{c}{\cellcolor{lightgreen} \bf 2D Fuel Pin} \\
-  & {\bf \cellcolor{lightgray} Range A} &
-  {\bf \cellcolor{lightgray} Range B} &
-  {\bf \cellcolor{lightgray} Range C} &
-  &
-  {\bf \cellcolor{lightgray} Range A} &
-  {\bf \cellcolor{lightgray} Range B} &
-  {\bf \cellcolor{lightgray} Range C} \\
-1 & -0.02 & -0.02 & -0.02 & & -0.07 & -0.07 & -0.07 \\
-2 & 0.11 & 0.11 & 0.07 & & 0.11 & 0.11 & -0.03 \\
-4 & 0.55 & 0.07 & 0.32 & & 0.54 & 0.07 & 0.04 \\
-8 & 0.71 & 0.11 & 0.40 & & 0.72 & 0.11 & 0.08 \\
-16 & 0.72 & 0.12 & 0.41 & & 0.73 & 0.12 & 0.09 \\
-25 & 1.32 & 0.85 & 0.61 & & 1.34 & 0.85 & 0.15 \\
-40 & 1.33 & 0.93 & 0.64 & & 1.34 & 0.92 & 0.16 \\
-70 & {\cellcolor{darktangerine}} 1.33 & 0.99 & 0.65 & & 1.35 & 0.97 & 0.17 \\
+  \multicolumn{1}{|c|}{\cellcolor{lightgray} {\bf \# Groups}} &
+  \multicolumn{6}{c|}{\cellcolor{carolinablue} {\bf 1D Slab}} \\
+  \hhline{~|------|}
+1 & -0.02 & -0.02 & -0.02 & -0.11 & -0.11 & -0.11 \\
+2 & 0.05 & 0.05 & 0.03 & 0.05 & 0.05 & -0.07 \\
+4 & 0.11 & -0.08 & 0.06 & 0.12 & -0.08 & -0.05 \\
+8 & 0.19 & -0.03 & 0.11 & 0.22 & -0.03 & 0.00 \\
+16 & 0.21 & -0.02 & 0.12 & 0.23 & -0.02 & 0.02 \\
+25 & 0.58 & 0.36 & 0.26 & 0.61 & 0.37 & 0.06 \\
+40 & 0.58 & 0.43 & 0.30 & 0.61 & 0.44 & 0.07 \\
+70 & {\cellcolor{darktangerine}} 0.59 & 0.46 & 0.30 & 0.61 & 0.47 & 0.08 \\
+  \midrule
+  \multicolumn{1}{c|}{\cellcolor{white}} & 
+  \multicolumn{6}{c|}{\cellcolor{lightgreen} {\bf 2D Fuel Pin}} \\
+  \midrule
+1 & -0.02 & -0.02 & -0.02 & -0.07 & -0.07 & -0.07 \\
+2 & 0.11 & 0.11 & 0.07 & 0.11 & 0.11 & -0.03 \\
+4 & 0.55 & 0.07 & 0.32 & 0.54 & 0.07 & 0.04 \\
+8 & 0.71 & 0.11 & 0.40 & 0.72 & 0.11 & 0.08 \\
+16 & 0.72 & 0.12 & 0.41 & 0.73 & 0.12 & 0.09 \\
+25 & 1.32 & 0.85 & 0.61 & 1.34 & 0.85 & 0.15 \\
+40 & 1.33 & 0.93 & 0.64 & 1.34 & 0.92 & 0.16 \\
+70 & {\cellcolor{darktangerine}} 1.33 & 0.99 & 0.65 & 1.35 & 0.97 & 0.17 \\
   \bottomrule
 \end{tabular}
 \end{table}}
 
-These results indicate that spatial self-shielding effects in resonance groups is not adequately captured by the \ac{MGXS} and/or the multi-group calculation. Furthermore, this analysis illustrates the counter intuitive result that the bias between continuous energy Monte Carlo and multi-group deterministic transport may in fact increase in magnitude with more energy groups. Although it is challenging to isolate the factors which convolve to bias the eigenvalue, the data presented here indicates that an over-prediction of U-238 capture in the resonance groups largely drives the error. These results will be discussed in greater depth in the context of angular-dependent \ac{MGXS} in Chapter~\ref{chap:sph}.
+These results indicate that spatial self-shielding effects in resonance groups is not adequately captured by the \ac{MGXS} and/or the multi-group calculation. Furthermore, this analysis illustrates the counter-intuitive result that the bias between continuous energy Monte Carlo and multi-group deterministic transport may in fact increase in magnitude with more energy groups. Although it is challenging to isolate the factors which convolve to bias the eigenvalue, the data presented here indicates that an over-prediction of U-238 capture in the resonance groups largely drives the error. These results will be discussed in greater depth in the context of angular-dependent \ac{MGXS} in Chapter~\ref{chap:sph}.
+
+\clearpage
 
 \vfill
 \begin{highlightsbox}[frametitle=Highlights]
