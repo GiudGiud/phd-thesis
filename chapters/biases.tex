@@ -1,33 +1,23 @@
 \chapter{Quantifying MGXS Approximations}
 \label{chap:biases}
 
-\begin{itemize}[noitemsep]
-  \item stronger ending with summary
-  \item Add subsections/bold signposts to each case study
-\end{itemize}
-
 As discussed in Chapter~\ref{chap:mgxs}, a number of approximations are made in the multi-group formulation of the neutron transport equation and the \ac{MGXS} generation process. These approximations remain even if one uses the ``true'' scalar flux for energy condensation and spatial homogenization, as is the case with energy condensation and spatial homogenization in Monte Carlo\footnote{By the Law of Large Numbers, the \ac{MC} flux will be exactly correct in the limit of an infinite number of particle histories, though it is only a ``noisy'' proxy for a finite number of particles.}. The observed bias between a continuous energy \ac{MC} and a multi-group deterministic calculation reflects the convolution of these approximations, which may (or may not) lead to some degree of fortuitous cancellation of error. Although this thesis is motivated by the need for \ac{MGXS} for whole-core calculations, it is instructive to investigate the approximations inherent in multi-group theory and quantify their impact for simple benchmark models.
 
-In this chapter, a series of case studies is devised to systematically quantify biases inherent to the energy condensation and spatial homogenization process in multi-group transport theory. The results underline the complex interactions between discretizations in energy, space and angle. Various convergence studies with respect to each of these variables are presented to quantify the resulting magnitude of the bias induced between continuous energy Monte Carlo and multi-group deterministic calculations. The results in this chapter illustrate the loss in accuracy resulting from scalar flux-weighted \ac{MGXS} and highlight the need for models of the angular dependency in \ac{MGXS} for fine mesh deterministic neutron transport. Finally, this chapter verifies the data pipeline used to compute multi-group cross sections with OpenMC for use in OpenMOC (see Chap.~\ref{chap:workflow}).
+In this chapter, a series of case studies is devised to systematically quantify biases inherent to the energy condensation and spatial homogenization process in multi-group transport theory. The results underline the complex interactions between discretizations in energy, space and angle. Various convergence studies with respect to each of these variables are presented to quantify the resulting magnitude of the bias induced between continuous energy Monte Carlo and multi-group deterministic calculations. The results in this chapter illustrate the loss in accuracy resulting from scalar flux-weighted total \ac{MGXS} due to the flux separability approximation (see Sec.~\ref{subsec:chap2-angle}), and highlight the need for models of the angular dependency in \ac{MGXS} for fine mesh deterministic neutron transport. Finally, this chapter verifies the data pipeline used to compute multi-group cross sections with OpenMC for use in OpenMOC (see Chap.~\ref{chap:workflow}).
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Case Studies}
 \label{sec:chap5-case-studies}
 
-This chapter investigates the loss in accuracy resulting from approximations made in both the \ac{MOC} equations as well as the \ac{MGXS} generation scheme with OpenMC. The benchmarks are designed to illustrate the emergence of the approximation errors as increasing heterogeneity is introduced in the geometric models. The approximation errors are quantified for a variety of geometric and material configurations based on a standard \ac{PWR} . In each case, the bias $\Delta\rho$ compares the eigenvalue $k_{eff}^{OpenMOC}$ computed with \ac{MGXS} in OpenMOC to that of the reference eigenvalue $k_{eff}^{OpenMC}$ computed with continuous energy cross sections in OpenMC in units of \ac{pcm}:
+This chapter investigates the loss in accuracy resulting from approximations made in both the \ac{MOC} equations as well as the \ac{MGXS} generation scheme with OpenMC. The benchmarks are designed to illustrate the emergence of the approximation errors as spatial heterogeneity is introduced in the geometric models. The approximation errors are quantified for a variety of geometric and material configurations based on a standard \ac{PWR}. In each case, the bias $\Delta\rho$ compares the eigenvalue $k_{eff}^{OpenMOC}$ computed with \ac{MGXS} in OpenMOC to that of the reference eigenvalue $k_{eff}^{OpenMC}$ computed with continuous energy cross sections in OpenMC in units of \ac{pcm}:
 
 \begin{equation}
 \label{eqn:chap5-delta-rho}
 \Delta\rho = \left(k_{eff}^{OpenMOC} - k_{eff}^{OpenMC}\right) \times 1E5
 \end{equation}
 
-In each case study, the role of angular discretization in \ac{MOC} is quantified through convergence studies of the number of azimuthal angles and the track spacing used in the deterministic calculations. The effects of energy discretization are analyzed for \ac{MGXS} tallied in the CASMO~\cite{rhodes2006casmo} energy group structures ranging from 1 -- 70 groups (see App.~\ref{app:energy-groups}). For each of the case studies with heterogeneous geometries, the spatial domain is discretized in OpenMOC's \ac{FSR} mesh with constant-by-material \ac{MGXS} to quantify the interaction between the energy and spatial approximations. Spatial discretization studies show the impact of tallying \ac{MGXS} in each of the \ac{FSR}s used in the discretized OpenMOC geometry. Finally, \ac{MGXS} libraries were tallied using OpenMC's iso-in-lab feature (see Sec.~\ref{subsec:chap5-iso-in-lab}) to quantify the impact of the isotropic in lab scattering approximation used in OpenMOC. Inter-pin spatial self-shielding effects are not treated here as they are studied in detail in Chaps.~\Crefrange{chap:benchmarks}{chap:unsupervised}. In each case study, OpenMOC was converged to a criterion of 1E-7 on the energy-integrated fission source.
-
-\vspace{0.5cm}
-\begin{emphbox}
-\textbf{Woot! My first summary box!}
-\end{emphbox}
+In each case study, the role of angular discretization in \ac{MOC} is quantified through convergence studies of the number of azimuthal angles and the track spacing used in the deterministic \ac{MOC} calculations. The effects of energy discretization are analyzed for \ac{MGXS} tallied in the CASMO~\cite{rhodes2006casmo} energy group structures ranging from 1 -- 70 groups (see App.~\ref{app:energy-groups}). For each of the case studies with heterogeneous geometries, the spatial domain is discretized in OpenMOC's \ac{FSR} mesh with constant-by-material \ac{MGXS} to quantify the interaction between the energy and spatial approximations. Spatial discretization studies show the impact of tallying \ac{MGXS} in each of the \ac{FSR}s used in the discretized OpenMOC geometry. Finally, \ac{MGXS} libraries were tallied using OpenMC's iso-in-lab feature (see Sec.~\ref{subsec:chap4-iso-in-lab}) to quantify the impact of the isotropic in lab scattering approximation used in OpenMOC. Inter-pin spatial self-shielding effects are not treated here as they are studied in detail in Chaps.~\Crefrange{chap:benchmarks}{chap:unsupervised}. In each case study, OpenMOC was converged to a criterion of 1E-7 on the energy-integrated fission source.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Homogeneous Infinite Medium}
@@ -83,31 +73,27 @@ Tab.~\ref{table:chap5-inf-med-angle} presents the bias $\Delta\rho$ between Open
   \small
   \label{table:chap5-inf-med-angle}
   \vspace{6pt}
-  \begin{tabular}{a S[table-format=2.1] S[table-format=2.1] S[table-format=2.1] c S[table-format=2.1] S[table-format=2.1] S[table-format=2.1]} 
-  \toprule
-  \rowcolor{lightgray}
-  & \multicolumn{7}{c}{\boldmath $\Delta\rho$ {\bf [pcm]}} \\
+  \begin{tabular}{| q | S[table-format=2.1] S[table-format=2.1] S[table-format=2.1] | S[table-format=2.1] S[table-format=2.1] S[table-format=2.1] |} 
+   \cline{2-7}
+  \multicolumn{1}{c|}{} &
+  \multicolumn{6}{c|}{\cellcolor{lightgray} \bf Track Spacing [cm]} \\
+  \multicolumn{1}{c|}{} &
+  {\cellcolor{lightgray} \bf 0.1} &
+  {\cellcolor{lightgray} \bf 0.01} & 
+  \multicolumn{1}{S[table-format=2.1]}{\cellcolor{lightgray} {\bf 0.001}} &
+  \multicolumn{1}{S[table-format=2.1]}{\cellcolor{lightgray} {\bf 0.1}} & 
+  {\cellcolor{lightgray} \bf 0.01} & 
+  {\cellcolor{lightgray} \bf 0.001} \\
   \midrule
-  \rowcolor{lightgray}
-  {\bf \# Angles} &
-  {\bf 0.1 cm} & 
-  {\bf 0.01 cm} & 
-  {\bf 0.001 cm} &
-  &
-  {\bf 0.1 cm} & 
-  {\bf 0.01 cm} & 
-  {\bf 0.001 cm} \\
+  {\bf \# Angles} & \multicolumn{3}{c|}{\cellcolor{carolinablue} \bf Anisotropic} &
+  \multicolumn{3}{c|}{\cellcolor{lightgreen} \bf Isotropic in Lab} \\
   \midrule
-  & \multicolumn{3}{c}{\cellcolor{carolinablue} \bf Anisotropic} &
-  \multicolumn{1}{c}{} &
-  \multicolumn{3}{c}{\cellcolor{lightgreen} \bf Isotropic in Lab} \\
-  \cline{2-4} \cline{6-8}
-4 & 1.3 & 1.3 & 1.3 & & -0.1 & -0.1 & -0.1 \\
-8 & 1.3 & 1.3 & 1.3 & & -0.1 & -0.1 & -0.1 \\
-16 & 1.3 & 1.3 & 1.3 & & -0.1 & -0.1 & -0.1 \\
-32 & 1.3 & 1.3 & 1.3 & & -0.1 & -0.1 & -0.1 \\
-64 & 1.3 & 1.3 & 1.3 & & -0.1 & -0.1 & -0.1 \\
-128 & 1.3 & 1.3 & 1.3 & & -0.1 & -0.1 & -0.1 \\
+4 & 1.3 & 1.3 & 1.3 & -0.1 & -0.1 & -0.1 \\
+8 & 1.3 & 1.3 & 1.3 & -0.1 & -0.1 & -0.1 \\
+16 & 1.3 & 1.3 & 1.3 & -0.1 & -0.1 & -0.1 \\
+32 & 1.3 & 1.3 & 1.3 & -0.1 & -0.1 & -0.1 \\
+64 & 1.3 & 1.3 & 1.3 & -0.1 & -0.1 & -0.1 \\
+128 & 1.3 & 1.3 & 1.3 & -0.1 & -0.1 & -0.1 \\
   \bottomrule
 \end{tabular}
 \end{table}
@@ -141,6 +127,11 @@ Tab.~\ref{table:chap5-inf-med-energy} presents the bias $\Delta\rho$ between Ope
   \bottomrule
 \end{tabular}
 \end{table}
+
+\vspace{0.5cm}
+\begin{emphbox}
+\textbf{The eigenvalues from OpenMC and OpenMOC agree to within 10 \ac{pcm} for a homogeneous infinite medium for all \ac{MOC} angular discretizations and energy groups structures.}
+\end{emphbox}
 
 
 %%%%%%%%%%%%%%%%%%%%
@@ -394,6 +385,11 @@ Tab.~\ref{table:chap5-slab-space} presents the bias $\Delta\rho$ for a matrix of
 
 The trends analyzed in Tab.~\ref{table:chap5-slab-energy} emerge in a nearly identical manner with spatially-dependent\footnote{In this context, spatially-varying refers to \ac{MGXS} defined on the \ac{FSR} rather than material spatial mesh.} \ac{MGXS} in Tab.~\ref{table:chap5-slab-space}. In particular, the eigenvalue bias grows in magnitude with more energy groups, and is largely invariant to \ac{FSR} spatial discretization or the elimination of the isotropic scattering approximation with iso-in-lab scattering. Most importantly, the results in Tab.~\ref{table:chap5-slab-space} indicate that spatial self-shielding effects (\textit{e.g.}, variations in the flux energy spectrum across the fuel) captured with spatially-varying scalar flux-weighted \ac{MGXS} for each \ac{FSR} do not have a substantial impact on the systematic errors in the eigenvalue for this 1D slab problem.
 
+\vspace{0.5cm}
+\begin{emphbox}
+\textbf{Woot! My first summary box!}
+\end{emphbox}
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{2D Fuel Pin Cell}
@@ -617,6 +613,11 @@ Tab.~\ref{table:chap5-pin-space} presents the bias for a matrix of energy group 
 The trends analyzed in Tab.~\ref{table:chap5-pin-energy} emerge in a similar manner with spatially-dependent \ac{MGXS}. In particular, the eigenvalue bias grows in magnitude with more energy groups and \ac{FSR}s but is largely insensitive to the the elimination of the isotropic scattering approximation. As was observed for the 1D slab, the overall systematic error between OpenMC and OpenMOC is not resolved and in fact increases with greater spatial resolution of the \ac{MGXS}. The results in Tab.~\ref{table:chap5-pin-space} indicate that spatial self-shielding effects captured with spatially-varying scalar flux-weighted MGXS for each FSR do not have a substantial impact on the systematic errors in the eigenvalue.
 
 %The eigenvalues for the fine energy and spatial mesh are $\sim$60 \ac{pcm} less than those computed with \ac{MGXS} tallied by material, increasing the magnitude of the bias $\Delta\rho$ by the same amount. The results in Tab.~\ref{table:chap5-pin-space} demonstrate that spatial self-shielding effects captured with spatially-varying scalar flux-weighted \ac{MGXS} for each \ac{FSR} has a larger impact (60 pcm) than was the case for the 1D slab. However, the overall systematic error between OpenMC and OpenMOC is not resolved and in fact increases with greater spatial resolution of the \ac{MGXS}.
+
+\vspace{0.5cm}
+\begin{emphbox}
+\textbf{Woot! My first summary box!}
+\end{emphbox}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
