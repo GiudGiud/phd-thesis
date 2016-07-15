@@ -272,20 +272,18 @@ Tab.~\ref{table:chap5-slab-energy} presents the bias $\Delta\rho$ between OpenMC
   \small
   \label{table:chap5-slab-energy} 
   \vspace{6pt}
-  \begin{tabular}{a S[table-format=6.1] S[table-format=6.1] S[table-format=6.1] S[table-format=6.1] S[table-format=6.1]}
-  \toprule
-  \rowcolor{lightgray}
-  & \multicolumn{5}{c}{\boldmath $\Delta\rho$ {\bf [pcm]}} \\
+  \begin{tabular}{| q | S[table-format=6.1] S[table-format=6.1] S[table-format=6.1] S[table-format=6.1] S[table-format=6.1] |}
+  \hhline{~|-----|}
+  \multicolumn{1}{c|}{\cellcolor{white}} & \multicolumn{5}{c|}{\cellcolor{lightgray} {\bf \ac{FSR} Discretization}} \\
+  \multicolumn{1}{c|}{\cellcolor{white}} &
+  {\cellcolor{lightgray} {\bf 1$\times$}} &
+  {\cellcolor{lightgray} {\bf 2$\times$}} &
+  {\cellcolor{lightgray} {\bf 4$\times$}} &
+  {\cellcolor{lightgray} {\bf 8$\times$}} &
+  {\cellcolor{lightgray} {\bf 16$\times$}} \\
   \midrule
-  \rowcolor{lightgray}
-  {\textbf{\# Groups}} &
-  {\bf 1$\times$} &
-  {\bf 2$\times$} &
-  {\bf 4$\times$} &
-  {\bf 8$\times$} &
-  {\bf 16$\times$} \\
-  \midrule
-  \multicolumn{6}{c}{\cellcolor{carolinablue} \bf Anisotropic $\left(\hat{\Sigma}_{t,k,g}\right)$} \\
+  \multicolumn{1}{|c|}{\cellcolor{lightgray} {\bf \# Groups}} & \multicolumn{5}{c|}{\cellcolor{carolinablue} \bf Anisotropic w/o Transport Correction} \\
+  \hhline{~|-----|}
 1 & 70 & 71 & 72 & 72 & 71 \\
 2 & 106 & -16 & -80 & -101 & -85 \\
 4 & 112 & -2 & -63 & -90 & -87 \\
@@ -294,7 +292,9 @@ Tab.~\ref{table:chap5-slab-energy} presents the bias $\Delta\rho$ between OpenMC
 25 & 146 & -37 & -143 & -190 & -201 \\
 40 & 155 & -40 & -155 & -205 & -217 \\
 70 & 164 & -38 & -156 & -208 & {\cellcolor{darktangerine}} -221 \\
-  \multicolumn{6}{c}{\cellcolor{lightgreen} \bf Anisotropic $\left(\hat{\tilde{\Sigma}}_{t,k,g}\right)$} \\
+  \midrule
+  \multicolumn{1}{c|}{\cellcolor{white}} & \multicolumn{5}{c|}{\cellcolor{lightgreen} \bf Anisotropic w/ Transport Correction} \\
+  \midrule
 1 & 87 & 88 & 88 & 88 & 87 \\
 2 & 285 & 211 & 175 & 167 & 189 \\
 4 & 188 & 113 & 75 & 51 & 63 \\
@@ -303,7 +303,9 @@ Tab.~\ref{table:chap5-slab-energy} presents the bias $\Delta\rho$ between OpenMC
 25 & 148 & -1 & -89 & -123 & -128 \\
 40 & 148 & -14 & -111 & -149 & -156 \\
 70 & 153 & -16 & -118 & -158 & {\cellcolor{darktangerine}} -166 \\
-  \multicolumn{6}{c}{\cellcolor{lightsalmonpink} \bf Isotropic in Lab $\left(\hat{\Sigma}_{t,k,g}\right)$} \\
+  \midrule
+  \multicolumn{1}{c|}{\cellcolor{white}} & \multicolumn{5}{c|}{\cellcolor{lightsalmonpink} \bf Isotropic in Lab} \\
+  \midrule
 1 & 132 & 134 & 135 & 135 & 133 \\
 2 & 289 & 167 & 102 & 81 & 97 \\
 4 & 226 & 112 & 50 & 24 & 26 \\
