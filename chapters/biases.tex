@@ -46,7 +46,7 @@ An initial case study was performed for a homogeneous infinite medium problem. T
 \end{tabular}
 \end{table}
 
-The reference eigenvalues computed with continuous energy cross sections in OpenMC are shown in Tab.~\ref{table:chap5-inf-med-reference} for both normal anisotropic as well as iso-in-lab scattering. As one would expect for a homogeneous infinite medium, the eigenvalues for anisotropic and iso-in-lab scattering match within statistics.  The reference calculations were computed for 100 batches of 1E8 particles per batch. The \texttt{openmc.mgxs} module was used to compute 70-group libraries of $\hat{\Sigma}_{t,g}$, $\hat{\Sigma}_{s,k,g'\rightarrow g}$, $\nu\hat{\Sigma}_{f,g}$, and $\hat{\chi}_{g}$ from OpenMC tallies (see Tab.~\ref{table:chap3-tally-types}).
+The reference eigenvalues computed with continuous energy cross sections in OpenMC are shown in Tab.~\ref{table:chap5-inf-med-reference} for both normal anisotropic as well as iso-in-lab scattering. As one would expect for a homogeneous infinite medium, the eigenvalues for anisotropic and iso-in-lab scattering agree to within two standard deviations of the mean.  The reference calculations were computed for 100 batches of 1E8 particles per batch. The \texttt{openmc.mgxs} module was used to compute 70-group libraries of $\hat{\Sigma}_{t,g}$, $\hat{\Sigma}_{s,k,g'\rightarrow g}$, $\nu\hat{\Sigma}_{f,g}$, and $\hat{\chi}_{g}$ from OpenMC tallies (see Tab.~\ref{table:chap3-tally-types}).
 
 \begin{table}[h!]
   \centering
@@ -65,7 +65,7 @@ The reference eigenvalues computed with continuous energy cross sections in Open
 \end{tabular}
 \end{table}
 
-Tab.~\ref{table:chap5-inf-med-angle} presents the bias $\Delta\rho$ between OpenMC and OpenMOC for a matrix of azimuthal angles and track spacings. The results for both normal and iso-in-lab scattering indicate consistent agreement of the eigenvalues computed by OpenMOC with OpenMC irregardless of track discretization.
+Tab.~\ref{table:chap5-inf-med-angle} presents the bias $\Delta\rho$ between OpenMC and OpenMOC for a matrix of azimuthal angles and track spacings. The results for both normal and iso-in-lab scattering indicate consistent agreement of the eigenvalues computed by OpenMOC with OpenMC irregardless of track discretization. This result is expected since the neutron source is isotropic in homogeneous infinite media and does not depend on the angular discretization used to solve the eigenvalue problem.
 
 \begin{table}[h!]
   \centering
@@ -106,12 +106,12 @@ Tab.~\ref{table:chap5-inf-med-energy} presents the bias $\Delta\rho$ between Ope
   \small
   \label{table:chap5-inf-med-energy} 
   \vspace{6pt}
-  \begin{tabular}{q | S[table-format=2.1] S[table-format=2.1]}
+  \begin{tabular}{| q | S[table-format=2.1] | S[table-format=2.1] |}
   \toprule
   {\bf \# Groups} &
   {\cellcolor{carolinablue} {\bf \hspace{0.3cm}Anisotropic\hspace{0.3cm}}} &
   {\cellcolor{lightgreen} {\bf Isotropic in Lab}} \\
-  \midrule
+  \cline{2-3}
 1 & -11.1 & -10.5 \\
 2 & -9.5 & -7.1 \\
 4 & -0.1 & -0.5 \\
@@ -126,7 +126,7 @@ Tab.~\ref{table:chap5-inf-med-energy} presents the bias $\Delta\rho$ between Ope
 
 \vspace{0.5cm}
 \begin{emphbox}
-\textbf{The eigenvalues for a homogeneous infinite medium agree to within 10 \ac{pcm} for all \ac{MOC} angular discretizations and energy groups structures.}
+\textbf{The eigenvalues for a homogeneous infinite medium agree to within nearly 10 \ac{pcm} for all \ac{MOC} angular discretizations and energy group structures.}
 \end{emphbox}
 
 
