@@ -307,7 +307,7 @@ Cross section data is encapsulated by the \texttt{Material} class. A \texttt{Mat
 \subsection{Parallelism}
 \label{subsubsec:chap4-openmoc-parallel}
 
-OpenMOC's high performance parallel solvers for both multi-core \ac{CPUs} and \ac{GPUs} were extensively used for the analyses presented in this thesis. A shared memory parallel solver implemented in C++ using OpenMP~\cite{openmp2013} has demonstrated excellent scalability on a range of multi-core architectures\cite{boyd2016parallel}. In addition, OpenMOC includes a highly parallel implementation which uses the CUDA programming language~\cite{nvidia2012cuda} to run on NVIDIA \ac{GPUs} with 100s to 1000s of lightweight cores~\cite{boyd2013massively}. OpenMOC's parallel solvers made it possible to perform large parametric studies of 100s of \ac{MOC} simulations to evaluate the spatial homogenization methodology introduced in Chaps.~\Crefrange{chap:benchmarks}{chap:unsupervised}.
+OpenMOC's high performance parallel solvers for both multi-core \ac{CPU}s and \ac{GPU}s were extensively used for the analyses presented in this thesis. A shared memory parallel solver implemented in C++ using OpenMP~\cite{openmp2013} has demonstrated excellent scalability on a range of multi-core architectures\cite{boyd2016parallel}. In addition, OpenMOC includes a highly parallel implementation which uses the CUDA programming language~\cite{nvidia2012cuda} to run on NVIDIA \ac{GPU}s with 100s to 1000s of lightweight cores~\cite{boyd2013massively}. OpenMOC's parallel solvers made it possible to perform large parametric studies of 100s of \ac{MOC} simulations to evaluate the spatial homogenization methodology introduced in Chaps.~\Crefrange{chap:benchmarks}{chap:unsupervised}.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
