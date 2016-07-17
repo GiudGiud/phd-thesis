@@ -8,7 +8,7 @@ Although Chapter~\ref{chap:biases} quantified energy and spatial approximations 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Angular-Dependent MGXS}
-\label{sec:chap5-angular-mgxs}
+\label{sec:chap6-angular-mgxs}
 
 %Chapter~\ref{chap:mgxs} detailed the approximations made in the multi-group form of the transport equation. 
 
@@ -55,7 +55,7 @@ second paragraph: flux separability
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{SuPerHomog\'{e}n\'{e}isation Factors}
-\label{sec:chap5-sph}
+\label{sec:chap6-sph}
 
 first paragraph: motivate following section
 -alternative approach is SPH
@@ -65,7 +65,7 @@ first paragraph: motivate following section
 
 %%%%%%%%%%%%%%%%%%%%%
 \subsection{Overview}
-\label{subsec:chap5-sph-overview}
+\label{subsec:chap6-sph-overview}
 
 first paragraph: SPH factors
 -history w/ H\'{e}bert~\cite{hebert1993consistent}\cite{hebert2005ribon}
@@ -86,6 +86,8 @@ second paragraph: walk through eqns
 \mathbf{\Omega} \cdot \nabla \psi_{g}^{(n)}(\mathbf{r},\mathbf{\Omega}) + \mu_{k,g}\Sigma_{t,k,g}\psi_{g}^{(n)}(\mathbf{r},\mathbf{\Omega}) = Q_{g}(\mathbf{r},\mathbf{\Omega})
 \end{dmath}
 
+-this equation is solved for all groups simultaneously with fixed source solver in OpenMOC
+
 -should there be another section on SPH with Monte Carlo? This would highlight that the source is computed
 -note that the source is computed using the reference Monte Carlo flux:
 -the source is computed as a pre-processing step from the reference Monte Carlo flux
@@ -99,42 +101,43 @@ Q_{k,g}(\mathbf{\Omega}) = \frac{1}{4\pi} \sum_{g'=1}^{G} \Sigma_{s,k,g' \righta
 -the SPH factor is then necessarily defined as the ratio of computed to reference fluxes:
 
 \begin{dmath}
-\label{eqn:chap5-sph-initial}
+\label{eqn:chap6-sph-initial}
 \mu_{k,g}^{(0)} = 1
 \end{dmath}
 
 \begin{equation}
-\label{eqn:chap5-sph-update}
+\label{eqn:chap6-sph-update}
 \mu_{k,g}^{(n)} = \frac{\phi_{k,g}^{MC}}{\phi_{k,g}^{(n)}}
 \end{equation}
 
 
 -update the total MGXS
+-note that although sigs and nusigf are updated, this does not impact fixed source calculations for SPH iteration and only affects eigenvalue calculations with the SPH-corrected MGXS
 
 \begin{dmath}
-\label{eqn:chap5-sph-update-sigt}
+\label{eqn:chap6-sph-update-sigt}
 \Sigma_{t,k,g}^{(n)} = \mu_{k,g}^{(n-1)}\Sigma_{t,k,g}^{(0)}
 \end{dmath}
 
 \begin{dmath}
-\label{eqn:chap5-sph-update-sigs}
+\label{eqn:chap6-sph-update-sigs}
 \Sigma_{s,k,g'\rightarrow g}^{(n)} = \mu_{k,g}^{(n-1)}\Sigma_{s,k,g'\rightarrow g}^{(0)}
 \end{dmath}
 
 \begin{dmath}
-\label{eqn:chap5-sph-update-nusigf}
+\label{eqn:chap6-sph-update-nusigf}
 \nu\Sigma_{f,k,g}^{(n)} = \mu_{k,g}^{(n-1)}\nu\Sigma_{f,k,g}^{(0)}
 \end{dmath}
 
 -similarly, the flux can be recovered as:
 
 \begin{dmath}
-\label{eqn:chap5-sph-update-angular-flux}
+\label{eqn:chap6-sph-update-angular-flux}
 \psi_{k,g} = \mu_{k,g}^{(n-1)}\psi_{k,g}
 \end{dmath}
 
 \begin{dmath}
-\label{eqn:chap5-sph-update-scalar-flux}
+\label{eqn:chap6-sph-update-scalar-flux}
 \phi_{k,g} = \mu_{k,g}^{(n-1)}\phi_{k,g}
 \end{dmath}
 
@@ -142,6 +145,24 @@ third paragraph: intro algorithm
 -walk through the algorithm
 -mention that typically done on a group-wise basis
 -can be done with all group simultaneously
+
+\begin{algorithm}[h]
+\caption{SPH Factor Algorithm}
+\label{alg:chap6-sph}
+\begin{algorithmic}[1]
+  \State Initialize $\Sigma_{t,k,g}^{(0)}$, $\Sigma_{s,k,g'\rightarrow g}^{(0)}$, $\nu\Sigma_{f,k,g}^{(0)}$, and $\chi_{k,g}^{(0)}$ from MC tallies \Comment{Tab.~\ref{table:chap3-tally-types}}
+  \State Compute $Q_{k,g}$ from MC flux and \ac{MGXS} \Comment{Eqn.~\ref{eqn:chap6-sph-source}}
+  \State Initialize $\mu_{k,g}^{(0)}$ to unity
+  \While{SPH factors are not converged}
+    \State Update $\Sigma_{t,k,g}$ with \ac{SPH} factors $\mu_{k,g}^{(n)}$ \Comment{Eqn.~\ref{eqn:chap6-sph-update-sigt}}
+    \State Solve fixed source transport problem\footnotemark \Comment{Eqn.~\ref{eqn:chap6-sph-transport-eqn}}
+    \State Compute new \ac{SPH} factors $\mu_{k,g}^{(n)}$ \Comment{Eqn.~\ref{eqn:chap6-sph-update}}
+  \EndWhile
+  \State Compute final \ac{MGXS} with \ac{SPH} factors \Comment{Eqn.~\Crefrange{eqn:chap6-sph-update-sigt}{eqn:chap6-sph-update-nusigf}}
+\end{algorithmic}
+\end{algorithm}
+
+\footnotetext{A series of $G$ independent fixed source problems may be solved for each of the $G$ groups. Alternatively, a single fixed source problem may simultaneously solve for all $G$ groups, as is done in OpenMOC.}
 
 ALGORITHM HERE (GROUP-BY-GROUP)\\
 
@@ -151,7 +172,7 @@ fourth paragraph: summary
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Implementation in OpenMOC}
-\label{subsec:chap5-sph-openmoc}
+\label{subsec:chap6-sph-openmoc}
 
 first paragraph: in openmoc.materialize
 -implementation of SPH factors in openmoc
@@ -172,7 +193,7 @@ These results closely mirror observations by Gibson~\cite{gibson2016thesis} whic
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Case Studies}
-\label{sec:chap5-sph-case-studies}
+\label{sec:chap6-sph-case-studies}
 
 first paragraph: intro case studies
 -SPH applied to heterogeneous benchmarks from Chap. 5
@@ -185,7 +206,7 @@ first paragraph: intro case studies
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Improvement in Eigenvalue}
-\label{subsubsec:chap5-sph-eigenvalues}
+\label{subsubsec:chap6-sph-eigenvalues}
 
 first paragraph: intro case studies
 -varying energy group structures
@@ -200,7 +221,7 @@ second paragraph: synthesis
 \begin{table}[h!]
   \centering
   \caption{Spatial homogenization error with SPH for a 1D slab.}
-  \label{table:chap5-sph-slab-energy} 
+  \label{table:chap6-sph-slab-energy} 
   \vspace{14pt}
   \begin{tabular}{c S[table-format=6.1] S[table-format=6.1] S[table-format=6.1] S[table-format=6.1] S[table-format=6.1]}
   \toprule
@@ -241,7 +262,7 @@ second paragraph: synthesis
 \begin{table}[h!]
   \centering
   \caption{Spatial homogenization error with SPH for a 2D fuel pin.}
-  \label{table:chap5-sph-pin-energy} 
+  \label{table:chap6-sph-pin-energy} 
   \vspace{14pt}
   \begin{tabular}{c S[table-format=6.1] S[table-format=6.1] S[table-format=6.1] S[table-format=6.1] S[table-format=6.1]}
   \toprule
@@ -281,7 +302,7 @@ second paragraph: synthesis
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{SPH Factors in Energy}
-\label{subsubsec:chap5-sph-energy}
+\label{subsubsec:chap6-sph-energy}
 
 first paragraph: intro case studies
 -this will mirror Sec. 5.2.1
@@ -300,7 +321,7 @@ second paragraph: synthesis
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{SPH Factors in Space}
-\label{subsubsec:chap5-sph-space}
+\label{subsubsec:chap6-sph-space}
 
 first paragraph: intro case studies
 -this will mirror Sec. 5.2.2
@@ -326,7 +347,7 @@ second paragraph: synthesis
 %  \centering
 %  \caption[SPH factors for a 1D slab]{SPH factors in the energy group encompassing the U-238 capture resonance at 6.67 eV for different energy group structures. The SPH factors were computed for a 1D slab and 2D fuel pin without spatial discretization and with ``iso-in-lab'' scattering.}
 %  \small
-%  \label{table:chap5-sph-group-27}
+%  \label{table:chap6-sph-group-27}
 %  \vspace{6pt}
 %  \begin{tabular}{c c S[table-format=2.1] S[table-format=2.1]}
 %  \toprule
@@ -352,7 +373,7 @@ second paragraph: synthesis
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %\subsection{2D Heterogeneous Fuel Assembly}
-%\label{subsec:chap5-sph-hetero-lat}
+%\label{subsec:chap6-sph-hetero-lat}
 
 %\begin{itemize}[noitemsep]
 %  \begin{itemize}[noitemsep]
@@ -363,7 +384,7 @@ second paragraph: synthesis
 
 %%%%%%%%%%%%%%%%%%%%%%%
 \section{Shortcomings of SPH}
-\label{subsec:chap5-sph-shortcomings}
+\label{subsec:chap6-sph-shortcomings}
 
 first paragraph: shortcomings
 -specific to group structure, FSR mesh
