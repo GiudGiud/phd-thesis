@@ -1,16 +1,83 @@
-\chapter{Angular-Dependent MGXS}
+\chapter{SuPerHomogenisation Factors}
 \label{chap:sph}
 
 The results in Chapter~\ref{chap:biases} demonstrated that using the ``true'' flux spectrum from Monte Carlo to perform energy condensation and spatial homogenization will not necessarily result in accurate deterministic multi-group calculations. Large systematic biases in the eigenvalue were observed even for simple heterogeneous benchmark models, and these biases were highly dependent on the energy group structure and spatial discretization used in the multi-group deterministic calculation. In Section~\ref{sec:chap5-diagnosis} it was shown that the bias largely derives from errors in the multi-group reaction rates in the large thermal U-238 capture resonances, and that the errors systematically vary in space within the fuel. These results indicate that one or more of the approximations made in multi-group transport theory are invalidated in heterogeneous geometries and prevents spatial self-shielding at the fuel/moderator interface in \ac{PWR} geometries to be treated appropriately.
 
 Although Chapter~\ref{chap:biases} quantified energy and spatial approximations in multi-group theory, it did not consider the constant-in-angle approximation (see Section~\ref{subsubsec:chap2-angle}). This chapter reviews some recent work by by Gibson~\cite{gibson2016thesis} to quantify the approximation error resolved with angular dependent \ac{MGXS}, which closely mirrors the trends observed in Chapter~\ref{chap:biases}. The historical \ac{SPH} factor concept is introduced in the context of angular-dependent \ac{MGXS}, and \ac{SPH} factors are applied to simple heterogeneous benchmarks and the results analyzed. Finally, this chapter concludes with a summary of the shortcomings of the \ac{SPH} approach and the need for new methods to account for the angular dependence in \ac{MGXS}.
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Angular-Dependent MGXS}
+\label{sec:chap5-angular-mgxs}
+
 %Chapter~\ref{chap:mgxs} detailed the approximations made in the multi-group form of the transport equation. 
+
+first paragraph: motivate problem
+-review results from Chap. 5
+-mention bias from nelson/yoshikoka 
+-all approx. in Chap 2 were studied except for flux separability
+-anisotropic scattering not an issue with iso-in-lab scattering
+-segue into next paragraph w/ flux separability
+
+second paragraph: flux separability
+-recall scalar vs. angular flux weighting of the tot. mgxs
+-introduce nate's thesis~\cite{gibson2016thesis}
+  -reference Figures 7.2 and 7.3 from Nate's thesis
+-angular-dependent mgxs
+-walk through batman plot
+-mention SPH factors as one soln (segue)
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Background}
-\label{sec:chap5-background}
+\section{SuPerHomogenisation Factors}
+\label{sec:chap5-sph}
+
+first paragraph: motivate following section
+-alternative approach is SPH
+-forces neutron balance
+-recall nate's thesis
+-intro following sections
+
+%%%%%%%%%%%%%%%%%%%%%
+\subsection{Overview}
+\label{subsec:chap5-sph-overview}
+
+first paragraph: SPH factors
+-history w/ H\'{e}bert~\cite{hebert1993consistent}\cite{hebert2005ribon}
+-recall nate's thesis
+-high-level overview
+-traditionally used in diffusion applications
+-used to fix errors in energy condensation and spatial homogenization
+  -this could include all kinds of errors -- not really discussed in the literature
+
+second paragraph: walk through eqns
+-start w/ spatially-homogenized and energy condensed transport eqn in Eqn.~\ref{eqn:chap2-transport-mg-5}
+-walk through eqns to preserve neutron balance
+
+third paragraph: intro algorithm
+-walk through the algorithm
+-mention that typically done on a group-wise basis
+-can be done with all group simultaneously
+
+ALGORITHM HERE (GROUP-BY-GROUP)\\
+
+fourth paragraph: summary
+-fudge factors that attempt to preserve reaction rates
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Implementation in OpenMOC}
+\label{subsec:chap5-sph-openmoc}
+
+first paragraph: in openmoc.materialize
+-implementation of SPH factors in openmoc
+-custom for openmc.mgxs Library objects
+
+second paragraph: intro algorithm
+-walk through the algorithm
+
+ALGORITHM HERE (SIMULTANEOUS GROUPS)\\
+
 
 The results in Chapter~\ref{chap:biases} demonstrated systematic biases between continuous energy Monte Carlo and deterministic multi-group simulations of simple heterogeneous benchmark models. In Section~\ref{sec:chap5-diagnosis} it was shown that these biases largely derive from errors in the multi-group fluxes/reaction rates in the large thermal U-238 capture resonances. 
 
@@ -18,16 +85,7 @@ The results in Chapter~\ref{chap:biases} demonstrated systematic biases between 
 
 These results closely mirror observations by Gibson~\cite{gibson2016thesis} which quantified the errors fundamental to the total 
 
- illustrated 
-
-\begin{itemize}[noitemsep]
-  \item return to angular vs. flux weighting (Section~\ref{subsubsec:chap2-angle})
-  \item Gibson's ``batman'' plot and results
-  \item Nelson's 1D slab plot(s)?
-\end{itemize}
-
-\cite{gibson2016thesis}
-
+%-Nelson's 1D slab plot(s)?
 
 \begin{figure}[H]
 \begin{subfigure}{.5\textwidth}
@@ -44,42 +102,33 @@ These results closely mirror observations by Gibson~\cite{gibson2016thesis} whic
 \label{fig:chap4-rel-err-energy}
 \end{figure}
 
-\cite{hebert1993consistent}
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{SuPerHomogenisation Factors}
-\label{sec:chap5-sph}
-
-\begin{itemize}
-  \item diagnose issue w/ Figures 7.2 and 7.3 from Nate's thesis
-  \item introduce basic eqns, reference Hebert
-  \item overview algorithm
-\end{itemize}
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{SPH Implementation in OpenMOC}
-\label{sec:chap5-sph-openmoc}
-
-
-
-
-%%%%%%%%%%%%%%%%%%%%%%
 \section{Case Studies}
-\label{sec:chap5-sph-results}
+\label{sec:chap5-sph-case-studies}
 
-%%%%%%%%%%%%%%%%%%%%
-\subsection{1D Slab}
-\label{subsubsec:chap5-sph-slab}
+first paragraph: intro case studies
+-SPH applied to heterogeneous benchmarks from Chap. 5
+-itemize covergence criterion
+-fixed source criterion in openmoc
+-fission source criterion in openmoc
+-identify the metrics that will be presented in what follows:
+  -reduction in the eigenvalue bias
+  -SPH factors in energy and in space
 
-\begin{itemize}[noitemsep]
-  \item plot of fluxes w/ and w/o SPH
-  \item plot of Nelson's flux/angular-dependent MGXS???
-  \item table of SPH factors in group 27 by group structure
-  \item re-generate table of data for slab with bigger moderator
-  \item eigenvalues if SPH factors for only group 27 are applied
-\end{itemize}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Improvement in Eigenvalue}
+\label{subsubsec:chap5-sph-eigenvalues}
+
+first paragraph: intro case studies
+-varying energy group structures
+-varying \ac{FSR} discretizations
+-refer back to Tables in Chap. 5
+-iso-in-lab scattering
+
+second paragraph: synthesis
+-review consistency in eigenvalue
+-summarize percent improvement in the eigenvalue
 
 \begin{table}[h!]
   \centering
@@ -124,44 +173,6 @@ These results closely mirror observations by Gibson~\cite{gibson2016thesis} whic
 
 \begin{table}[h!]
   \centering
-  \caption[SPH factors for a 1D slab]{SPH factors in the energy group encompassing the U-238 capture resonance at 6.67 eV for different energy group structures. The SPH factors were computed for a 1D slab and 2D fuel pin without spatial discretization and with ``iso-in-lab'' scattering.}
-  \small
-  \label{table:chap5-sph-group-27}
-  \vspace{6pt}
-  \begin{tabular}{c c S[table-format=2.1] S[table-format=2.1]}
-  \toprule
-  \multicolumn{1}{c}{\textbf{\# Groups}} &
-  \multicolumn{1}{c}{\textbf{Group 27}} &
-  \multicolumn{2}{c}{\textbf{SPH Factor $\mu$}} \\
-  \midrule
-  & & \multicolumn{1}{c}{\bf 1D Slab} &
-  \multicolumn{1}{c}{\bf 2D Fuel Pin} \\
-  \midrule
-1 & & & \\
-2 & & & \\
-4 & & & \\
-8 & & & \\
-16 & & & \\
-25 & & & \\
-40 & & & \\
-70 & & & \\
-  \bottomrule
-\end{tabular}
-\end{table}
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{2D Fuel Pin Cell}
-\label{subsubsec:chap5-sph-pin}
-
-\begin{itemize}[noitemsep]
-  \item table of eigenvalues by energy group w/ and w/o SPH
-  \item plot of flux errors with U-238 capture XS w/ and w/o SPH
-  \item table of SPH factors in group 27 by energy group structure
-\end{itemize}
-
-\begin{table}[h!]
-  \centering
   \caption{Spatial homogenization error with SPH for a 2D fuel pin.}
   \label{table:chap5-sph-pin-energy} 
   \vspace{14pt}
@@ -201,13 +212,82 @@ These results closely mirror observations by Gibson~\cite{gibson2016thesis} whic
 \end{tabular}
 \end{table}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{SPH Factors in Energy}
+\label{subsubsec:chap5-sph-energy}
+
+first paragraph: intro case studies
+-this will mirror Sec. 5.2.1
+-inspected SPH factors by energy group
+-do SPH factors demonstrate similar profile to errors in Fig. 5.4?
+-looked at innermost and outermost FSRs
+
+FLUX PLOTS HERE [W/ AND W/O SPH]
+-red and blue, solid and dashed lines
+-both pin and slab
+
+second paragraph: synthesis
+-describe what you see
+-improvement in all energy groups
+-difference in profiles for innermost/outermost FSRs
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{SPH Factors in Space}
+\label{subsubsec:chap5-sph-space}
+
+first paragraph: intro case studies
+-this will mirror Sec. 5.2.2
+-inspected SPH factors by spatial location (fuel FSRs only)
+-do SPH factors demonstrate similar profile to errors in Fig. 5.5?
+-looked at group 27 only
+
+FLUX PLOTS HERE [W/ AND W/O SPH]
+-both pin and slab
+-red and blue, solid and dashed lines
+-groups 27, 29, and 30? and 28?
+
+second paragraph: synthesis
+-describe what you see
+-compare spatial variation of SPH across pin to the error profile plot
+-any differences b/w pin and slab
+
+
+%-plot of Nelson's flux/angular-dependent MGXS???
+%-eigenvalues if SPH factors for only group 27 are applied
+
+%\begin{table}[h!]
+%  \centering
+%  \caption[SPH factors for a 1D slab]{SPH factors in the energy group encompassing the U-238 capture resonance at 6.67 eV for different energy group structures. The SPH factors were computed for a 1D slab and 2D fuel pin without spatial discretization and with ``iso-in-lab'' scattering.}
+%  \small
+%  \label{table:chap5-sph-group-27}
+%  \vspace{6pt}
+%  \begin{tabular}{c c S[table-format=2.1] S[table-format=2.1]}
+%  \toprule
+%  \multicolumn{1}{c}{\textbf{\# Groups}} &
+%  \multicolumn{1}{c}{\textbf{Group 27}} &
+%  \multicolumn{2}{c}{\textbf{SPH Factor $\mu$}} \\
+%  \midrule
+%  & & \multicolumn{1}{c}{\bf 1D Slab} &
+%  \multicolumn{1}{c}{\bf 2D Fuel Pin} \\
+%  \midrule
+%1 & & & \\
+%2 & & & \\
+%4 & & & \\
+%8 & & & \\
+%16 & & & \\
+%25 & & & \\
+%40 & & & \\
+%70 & & & \\
+%  \bottomrule
+%\end{tabular}
+%\end{table}
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %\subsection{2D Heterogeneous Fuel Assembly}
 %\label{subsec:chap5-sph-hetero-lat}
 
 %\begin{itemize}[noitemsep]
-%  \item table of eigenvalues by energy group w/ and w/o SPH
 %  \begin{itemize}[noitemsep]
 %    \item cell-avg SPH, region-avg SPH, region-clustered (LNS?) SPH
 %  \end{itemize}
@@ -217,3 +297,15 @@ These results closely mirror observations by Gibson~\cite{gibson2016thesis} whic
 %%%%%%%%%%%%%%%%%%%%%%%
 \section{Shortcomings of SPH}
 \label{subsec:chap5-sph-shortcomings}
+
+first paragraph: shortcomings
+-specific to group structure, FSR mesh
+-requires MC source on the FSR mesh
+  -requires knowledge of the solution
+-computationally expensive
+-unclear if SPH factors can be tabulated once and broadly applied
+
+second paragraph: need for new method(s)
+-must account for flux separability
+-need to preserve reaction rates
+-generalizable approach to embed angular info in MGXS
