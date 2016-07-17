@@ -83,7 +83,7 @@ second paragraph: walk through eqns
 
 \begin{dmath}
 \label{eqn:chap6-sph-transport-eqn}
-\mathbf{\Omega} \cdot \nabla \psi_{g}^{(n)}(\mathbf{r},\mathbf{\Omega}) + \mu_{k,g}\Sigma_{t,k,g}\psi_{g}^{(n)}(\mathbf{r},\mathbf{\Omega}) = Q_{g}(\mathbf{r},\mathbf{\Omega})
+\mathbf{\Omega} \cdot \nabla \psi_{g}(\mathbf{r},\mathbf{\Omega}) + \mu_{k,g}\Sigma_{t,k,g}\psi_{g}(\mathbf{r},\mathbf{\Omega}) = Q_{k,g}(\mathbf{\Omega})
 \end{dmath}
 
 -this equation is solved for all groups simultaneously with fixed source solver in OpenMOC
@@ -95,19 +95,38 @@ second paragraph: walk through eqns
 
 \begin{dmath}
 \label{eqn:chap6-sph-source}
-Q_{k,g}(\mathbf{\Omega}) = \frac{1}{4\pi} \sum_{g'=1}^{G} \Sigma_{s,k,g' \rightarrow g}\phi_{k,g'}^{MC} + \frac{\chi_{k,g}}{4\pi k_{eff}}\sum_{g'=1}^{G} \nu\Sigma_{f,k,g'}\phi_{k,g'}^{MC}
+Q_{k,g}(\mathbf{\Omega}) = \frac{1}{4\pi} \sum_{g'=1}^{G} \Sigma_{s,k,g' \rightarrow g}\phi_{k,g'}^{MC} + \frac{\chi_{k,g}}{4\pi k_{eff}}\sum_{g'=1}^{G} \nu\Sigma_{f,k,g'}\phi_{k,g'}
 \end{dmath}
+
+-general SPH factor
+-make these equations independent of iteration number - i.e., these are the equations we want
+-use a hat above SPH factor below 
+-this section should just pose the problem - need to find the factors that preserve reaction rates
+
+%%%%%%%%%%%%%%%%%%%%%
+\subsection{Algorithm}
+\label{subsec:chap6-sph-overview}
+
+-mention that the MC source calculation is not trivial
+-tallies are volume-integrated in OpenMC, while values are volume-averaged in OpenMOC
+-must compute volume-averaged sources for OpenMOC
+  -must be averaged with the volume computed by OpenMOC from track lengths!!!
 
 -the SPH factor is then necessarily defined as the ratio of computed to reference fluxes:
 
 \begin{dmath}
+\label{eqn:chap6-sph-transport-eqn-iterate}
+\mathbf{\Omega} \cdot \nabla \psi_{g}^{(n)}(\mathbf{r},\mathbf{\Omega}) + \hat{\mu}_{k,g}\Sigma_{t,k,g}\psi_{g}^{(n)}(\mathbf{r},\mathbf{\Omega}) = Q_{k,g}(\mathbf{\Omega})
+\end{dmath}
+
+\begin{dmath}
 \label{eqn:chap6-sph-initial}
-\mu_{k,g}^{(0)} = 1
+\hat{\mu}_{k,g}^{(0)} = 1
 \end{dmath}
 
 \begin{equation}
 \label{eqn:chap6-sph-update}
-\mu_{k,g}^{(n)} = \frac{\phi_{k,g}^{MC}}{\phi_{k,g}^{(n)}}
+\hat{\mu}_{k,g}^{(n)} = \frac{\phi_{k,g}^{MC}}{\phi_{k,g}^{(n)}}
 \end{equation}
 
 
@@ -116,35 +135,44 @@ Q_{k,g}(\mathbf{\Omega}) = \frac{1}{4\pi} \sum_{g'=1}^{G} \Sigma_{s,k,g' \righta
 
 \begin{dmath}
 \label{eqn:chap6-sph-update-sigt}
-\Sigma_{t,k,g}^{(n)} = \mu_{k,g}^{(n-1)}\Sigma_{t,k,g}^{(0)}
+\Sigma_{t,k,g}^{(n)} = \hat{\mu}_{k,g}^{(n-1)}\Sigma_{t,k,g}^{(0)}
 \end{dmath}
 
 \begin{dmath}
 \label{eqn:chap6-sph-update-sigs}
-\Sigma_{s,k,g'\rightarrow g}^{(n)} = \mu_{k,g}^{(n-1)}\Sigma_{s,k,g'\rightarrow g}^{(0)}
+\Sigma_{s,k,g'\rightarrow g}^{(n)} = \hat{\mu}_{k,g}^{(n-1)}\Sigma_{s,k,g'\rightarrow g}^{(0)}
 \end{dmath}
 
 \begin{dmath}
 \label{eqn:chap6-sph-update-nusigf}
-\nu\Sigma_{f,k,g}^{(n)} = \mu_{k,g}^{(n-1)}\nu\Sigma_{f,k,g}^{(0)}
+\nu\Sigma_{f,k,g}^{(n)} = \hat{\mu}_{k,g}^{(n-1)}\nu\Sigma_{f,k,g}^{(0)}
 \end{dmath}
 
 -similarly, the flux can be recovered as:
 
 \begin{dmath}
 \label{eqn:chap6-sph-update-angular-flux}
-\psi_{k,g} = \mu_{k,g}^{(n-1)}\psi_{k,g}
+\psi_{k,g} = \hat{\mu}_{k,g}^{(n-1)}\psi_{k,g}
 \end{dmath}
 
 \begin{dmath}
 \label{eqn:chap6-sph-update-scalar-flux}
-\phi_{k,g} = \mu_{k,g}^{(n-1)}\phi_{k,g}
+\phi_{k,g} = \hat{\mu}_{k,g}^{(n-1)}\phi_{k,g}
+\end{dmath}
+
+-SPH factor residual used to determine convergence
+-a criterion of 1E-6 is typically used?
+
+\begin{dmath}
+\label{eqn:chap6-sph-residual}
+res = \max_{k,g} \left|\frac{\hat{\mu}_{k,g}^{(n)} - \hat{\mu}_{k,g}^{(n-1)}}{\hat{\mu}_{k,g}^{(n-1)}}\right|
 \end{dmath}
 
 third paragraph: intro algorithm
 -walk through the algorithm
 -mention that typically done on a group-wise basis
 -can be done with all group simultaneously
+-mention that this is not trivial to implement on an unstructured \ac{CG} mesh!!!
 
 \begin{algorithm}[h]
 \caption{SPH Factor Algorithm}
@@ -152,11 +180,11 @@ third paragraph: intro algorithm
 \begin{algorithmic}[1]
   \State Initialize $\Sigma_{t,k,g}^{(0)}$, $\Sigma_{s,k,g'\rightarrow g}^{(0)}$, $\nu\Sigma_{f,k,g}^{(0)}$, and $\chi_{k,g}^{(0)}$ from MC tallies \Comment{Tab.~\ref{table:chap3-tally-types}}
   \State Compute $Q_{k,g}$ from MC flux and \ac{MGXS} \Comment{Eqn.~\ref{eqn:chap6-sph-source}}
-  \State Initialize $\mu_{k,g}^{(0)}$ to unity
+  \State Initialize $\hat{\mu}_{k,g}^{(0)}$ to unity
   \While{SPH factors are not converged}
-    \State Update $\Sigma_{t,k,g}$ with \ac{SPH} factors $\mu_{k,g}^{(n)}$ \Comment{Eqn.~\ref{eqn:chap6-sph-update-sigt}}
+    \State Update $\Sigma_{t,k,g}$ with \ac{SPH} factors \Comment{Eqn.~\ref{eqn:chap6-sph-update-sigt}}
     \State Solve fixed source transport problem\footnotemark \Comment{Eqn.~\ref{eqn:chap6-sph-transport-eqn}}
-    \State Compute new \ac{SPH} factors $\mu_{k,g}^{(n)}$ \Comment{Eqn.~\ref{eqn:chap6-sph-update}}
+    \State Compute new \ac{SPH} factors \Comment{Eqn.~\ref{eqn:chap6-sph-update}}
   \EndWhile
   \State Compute final \ac{MGXS} with \ac{SPH} factors \Comment{Eqn.~\Crefrange{eqn:chap6-sph-update-sigt}{eqn:chap6-sph-update-nusigf}}
 \end{algorithmic}
