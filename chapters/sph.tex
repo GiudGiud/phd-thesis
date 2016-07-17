@@ -31,7 +31,7 @@ second paragraph: flux separability
 
 \begin{figure}[H]
   \centering
-  \includegraphics[width=\linewidth]{figures/sph/incoming-outgoing}
+  \includegraphics[width=0.8\linewidth]{figures/sph/incoming-outgoing}
   \caption{}
 \caption[Angular flux impinged on an FSR]{Angular flux impinged on an FSR. \textit{Image courtesy of N. Gibson~\cite{gibson2016thesis}.}}
 \label{fig:chap6-incoming-outgoing}
@@ -83,7 +83,7 @@ second paragraph: walk through eqns
 
 \begin{dmath}
 \label{eqn:chap6-sph-transport-eqn}
-\mathbf{\Omega} \cdot \nabla \psi_{g}^{(n)}(\mathbf{r},\mathbf{\Omega}) + \mu_{k,g}\hat{\Sigma}_{t,k,g}\psi_{g}^{(n)}(\mathbf{r},\mathbf{\Omega}) = Q_{g}(\mathbf{r},\mathbf{\Omega})
+\mathbf{\Omega} \cdot \nabla \psi_{g}^{(n)}(\mathbf{r},\mathbf{\Omega}) + \mu_{k,g}\Sigma_{t,k,g}\psi_{g}^{(n)}(\mathbf{r},\mathbf{\Omega}) = Q_{g}(\mathbf{r},\mathbf{\Omega})
 \end{dmath}
 
 -should there be another section on SPH with Monte Carlo? This would highlight that the source is computed
@@ -93,14 +93,27 @@ second paragraph: walk through eqns
 
 \begin{dmath}
 \label{eqn:chap6-sph-source}
-Q_{k,g}(\mathbf{\Omega}) = \frac{1}{4\pi} \sum_{g'=1}^{G} \hat{\Sigma}_{s,k,g' \rightarrow g}\phi_{k,g'}^{MC} + \frac{\chi_{k,g}}{4\pi k_{eff}}\sum_{g'=1}^{G} \nu\Sigma_{f,k,g'}\phi_{k,g'}^{MC}
+Q_{k,g}(\mathbf{\Omega}) = \frac{1}{4\pi} \sum_{g'=1}^{G} \Sigma_{s,k,g' \rightarrow g}\phi_{k,g'}^{MC} + \frac{\chi_{k,g}}{4\pi k_{eff}}\sum_{g'=1}^{G} \nu\Sigma_{f,k,g'}\phi_{k,g'}^{MC}
 \end{dmath}
+
+-the SPH factor is then necessarily defined as the ratio of computed to reference fluxes:
+
+\begin{dmath}
+\label{eqn:chap5-sph-initial}
+\mu_{k,g}^{(0)} = 1
+\end{dmath}
+
+\begin{equation}
+\label{eqn:chap5-sph-update}
+\mu_{k,g}^{(n)} = \frac{\phi_{k,g}^{MC}}{\phi_{k,g}^{(n)}}
+\end{equation}
+
 
 -update the total MGXS
 
 \begin{dmath}
 \label{eqn:chap5-sph-update-sigt}
-\hat{\Sigma}_{t,k,g}^{(n)} = \mu_{k,g}^{(n-1)}\hat{\Sigma}_{t,k,g}^{(0)}
+\Sigma_{t,k,g}^{(n)} = \mu_{k,g}^{(n-1)}\Sigma_{t,k,g}^{(0)}
 \end{dmath}
 
 \begin{dmath}
