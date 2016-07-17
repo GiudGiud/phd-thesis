@@ -1,9 +1,22 @@
 \chapter{SuPerHomog\'{e}n\'{e}isation Factors}
 \label{chap:sph}
 
-The results in Chapter~\ref{chap:biases} demonstrated that using the ``true'' flux spectrum from Monte Carlo to perform energy condensation and spatial homogenization will not necessarily result in accurate deterministic multi-group calculations. Large systematic biases in the eigenvalue were observed even for simple heterogeneous benchmark models, and these biases were highly dependent on the energy group structure and spatial discretization used in the multi-group deterministic calculation. In Section~\ref{sec:chap5-diagnosis} it was shown that the bias largely derives from errors in the multi-group reaction rates in the large thermal U-238 capture resonances, and that the errors systematically vary in space within the fuel. These results indicate that one or more of the approximations made in multi-group transport theory are invalidated in heterogeneous geometries and prevents spatial self-shielding at the fuel/moderator interface in \ac{PWR} geometries to be treated appropriately.
+The results in Chapter~\ref{chap:biases} demonstrated that using the ``true'' flux spectrum from Monte Carlo to perform energy condensation and spatial homogenization will not necessarily result in accurate deterministic multi-group calculations. Large systematic biases in the eigenvalue were observed even for heterogeneous benchmark models. In Section~\ref{sec:chap5-diagnosis} it was shown that the bias largely derives from errors in the multi-group reaction rates in the large thermal U-238 capture resonances. These results indicate that one or more of the approximations made in multi-group transport theory are invalidated in heterogeneous geometries and prevent an appropriate treatment of spatial self-shielding at the fuel/moderator interface in \ac{PWR} geometries.
 
-Although Chapter~\ref{chap:biases} quantified energy and spatial approximations in multi-group theory, it did not consider the constant-in-angle approximation (see Section~\ref{subsubsec:chap2-angle}). This chapter reviews some recent work by by Gibson~\cite{gibson2016thesis} to quantify the approximation error resolved with angular dependent \ac{MGXS}, which closely mirrors the trends observed in Chapter~\ref{chap:biases}. The historical \ac{SPH} factor concept is introduced in the context of angular-dependent \ac{MGXS}, and \ac{SPH} factors are applied to simple heterogeneous benchmarks and the results analyzed. Finally, this chapter concludes with a summary of the shortcomings of the \ac{SPH} approach and the need for new methods to account for the angular dependence in \ac{MGXS}.
+%, and that the errors systematically vary in space within the fuel.
+
+%, and these biases were highly dependent on the energy group structure and spatial discretization used in the multi-group deterministic calculation.
+
+Chap.~\ref{chap:mgxs} discussed approximations made in multi-group theory to simplify the neutron transport equation in angle, energy and space. Many of these approximations were quantitatively studied in Chap.~\ref{chap:biases} -- including energy group structure, spatial discretization mesh, and isotropic scattering -- yet it was demonstrated that none of these led to the eigenvalue bias. This chapter investigates the flux separability approximation as the dominant factor contributing to the eigenvalue bias.
+
+Sec~\ref{sec:chap6-angular-mgxs} reviews some recent work by by Gibson~\cite{gibson2016thesis} to quantify the approximation error resolved with angular-dependent \ac{MGXS}, which closely mirrors the trends observed in Chap.~\ref{chap:biases}. The historical \ac{SPH} factor concept is introduced in the context of angular-dependent \ac{MGXS} in Sec.~\ref{sec:chap6-sph}, and \ac{SPH} factors are applied to simple heterogeneous benchmarks and the results analyzed in Sec.~\ref{sec:chap6-sph}. Finally, this chapter concludes with a summary of the shortcomings of the \ac{SPH} approach and the need for new methods to account for the angular dependence in \ac{MGXS}.
+
+
+%This chapter reviews some recent work by Gibson~\cite{gibson2016thesis} to quantify the approximation error resolved with angular dependent \ac{MGXS}, which closely mirrors the trends observed in Chap.~\ref{chap:biases}. The historical \ac{SPH} factor concept is introduced in the context of angular-dependent \ac{MGXS} in Sec.~\ref{}, and \ac{SPH} factors are applied to simple heterogeneous benchmarks and the results analyzed in Sec.~\ref{}. Finally, this chapter concludes with a summary of the shortcomings of the \ac{SPH} approach and the need for new methods to account for the angular dependence in \ac{MGXS}.
+
+%In this chapter, the flux separability approximation is  he one approximation that was not considered in Chap.~\ref{chap:biases} -- the flux separability approximation (see Sec.~\ref{subsubsec:chap2-angle}) 
+
+%Chapter~\ref{chap:biases} quantified energy and spatial approximations in multi-group theory, and used iso-in-lab scattering in OpenMC to eliminate the isotropic scattering approximation made by OpenMOC. The flux separability approximation (see Section~\ref{subsubsec:chap2-angle}) is the one approximation that  was not considered 
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -128,7 +141,6 @@ Q_{k,g}(\mathbf{\Omega}) = \frac{1}{4\pi} \sum_{g'=1}^{G} \Sigma_{s,k,g' \righta
 \label{eqn:chap6-sph-update}
 \hat{\mu}_{k,g}^{(n)} = \frac{\phi_{k,g}^{MC}}{\phi_{k,g}^{(n)}}
 \end{equation}
-
 
 -update the total MGXS
 -note that although sigs and nusigf are updated, this does not impact fixed source calculations for SPH iteration and only affects eigenvalue calculations with the SPH-corrected MGXS
