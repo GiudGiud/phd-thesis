@@ -141,21 +141,21 @@ First, consider a truncated form of the Legendre polynomial expansion of the sca
 
 \begin{dmath}
 \label{eqn:chap2-scatt-expand-truncate}
-\Sigma_{s}(\mathbf{r},\mu,E'\rightarrow E) = \displaystyle\sum\limits_{\ell=0}^{\infty} \frac{2\ell+1}{2} \Sigma_{s,\ell}(\mathbf{r},{E'\rightarrow E})P_{\ell}(\mu) \approx \displaystyle\sum\limits_{\ell=0}^{L} \frac{2\ell+1}{2} \hat{\Sigma}_{s,\ell}(\mathbf{r},{E'\rightarrow E})P_{\ell}(\mu) + \Delta\Sigma_{tr}(\mathbf{r},{E'\rightarrow E})\delta(\mu-1)
+\Sigma_{s}(\mathbf{r},\mu,E'\rightarrow E) = \displaystyle\sum\limits_{\ell=0}^{\infty} \frac{2\ell+1}{2} \Sigma_{s,\ell}(\mathbf{r},{E'\rightarrow E})P_{\ell}(\mu) \approx \displaystyle\sum\limits_{\ell=0}^{L} \frac{2\ell+1}{2} \tilde{\Sigma}_{s,\ell}(\mathbf{r},{E'\rightarrow E})P_{\ell}(\mu) + \Delta\Sigma_{tr}(\mathbf{r},{E'\rightarrow E})\delta(\mu-1)
 \end{dmath}
 
-\noindent where $\hat{\Sigma}_{s,\ell}$ is a modified form of the scattering moment $\Sigma_{s,\ell}$ and $\Delta\Sigma_{tr}$ is a transport correction term. The Kronecker delta function $\delta(\mu-1)$ is used to make the correction term forward peaked in order to best capture the first order anisotropies in thermal reactors. The coefficients $\hat{\Sigma}_{s,\ell}$ and $\Delta\Sigma_{tr}$ are defined such that the Legendre moments of the scattering cross section in Eqn.~\ref{eqn:chap2-scatt-moment} are preserved for $0 \le \ell \le L+1$:
+\noindent where $\tilde{\Sigma}_{s,\ell}$ is a modified form of the scattering moment $\Sigma_{s,\ell}$ and $\Delta\Sigma_{tr}$ is a transport correction term. The Kronecker delta function $\delta(\mu-1)$ is used to make the correction term forward peaked in order to best capture the first order anisotropies in thermal reactors. The coefficients $\tilde{\Sigma}_{s,\ell}$ and $\Delta\Sigma_{tr}$ are defined such that the Legendre moments of the scattering cross section in Eqn.~\ref{eqn:chap2-scatt-moment} are preserved for $0 \le \ell \le L+1$:
 
 \begin{dmath}
 \label{eqn:chap2-scatt-moment-preserve}
-\Sigma_{s,\ell}(\mathbf{r},E'\rightarrow E) = \displaystyle\int\limits_{-1}^{1} \Sigma_{s}(\mathbf{r},\mu,{E\rightarrow E})P_{\ell}(\mu)\mathrm{d}\mu \approx \displaystyle\int\limits_{-1}^{1} \displaystyle\sum\limits_{\ell'=0}^{L} \frac{2\ell'+1}{2} \hat{\Sigma}_{s,\ell'}(\mathbf{r},{E'\rightarrow E})P_{\ell'}(\mu)P_{\ell}(\mu)\mathrm{d}\mu + \displaystyle\int\limits_{-1}^{1} \Delta\Sigma_{tr}(\mathbf{r},{E'\rightarrow E})\delta(\mu-1)P_{\ell}(\mu)\mathrm{d}\mu
+\Sigma_{s,\ell}(\mathbf{r},E'\rightarrow E) = \displaystyle\int\limits_{-1}^{1} \Sigma_{s}(\mathbf{r},\mu,{E\rightarrow E})P_{\ell}(\mu)\mathrm{d}\mu \approx \displaystyle\int\limits_{-1}^{1} \displaystyle\sum\limits_{\ell'=0}^{L} \frac{2\ell'+1}{2} \tilde{\Sigma}_{s,\ell'}(\mathbf{r},{E'\rightarrow E})P_{\ell'}(\mu)P_{\ell}(\mu)\mathrm{d}\mu + \displaystyle\int\limits_{-1}^{1} \Delta\Sigma_{tr}(\mathbf{r},{E'\rightarrow E})\delta(\mu-1)P_{\ell}(\mu)\mathrm{d}\mu
 \end{dmath}
 
 The following simultaneous system of equalities for $0 \le \ell \le L$ follows from the identity $P_{\ell}(1) = 1$ and the orthogonality relation of the Legendre polynomial basis set:
 
 \begin{dmath}
 \label{eqn:chap2-sigsl}
-\hat{\Sigma}_{s,\ell}(\mathbf{r},{E'\rightarrow E}) + \Delta\Sigma_{tr}(\mathbf{r},{E'\rightarrow E}) = \Sigma_{s,\ell}(\mathbf{r},{E'\rightarrow E})
+\tilde{\Sigma}_{s,\ell}(\mathbf{r},{E'\rightarrow E}) + \Delta\Sigma_{tr}(\mathbf{r},{E'\rightarrow E}) = \Sigma_{s,\ell}(\mathbf{r},{E'\rightarrow E})
 \end{dmath}
 
 \begin{dmath}
@@ -177,7 +177,7 @@ The following simultaneous system of equalities for $0 \le \ell \le L$ follows f
 \mathbf{\Omega} \cdot \nabla \psi(\mathbf{r},\mathbf{\Omega},E) + \Sigma_{t}(\mathbf{r},E)\psi(\mathbf{r},\mathbf{\Omega},E) - \int\displaylimits_{0}^{\infty} \Sigma_{s,1}(\mathbf{r},{E'\rightarrow E})\phi(\mathbf{r},E')\mathrm{d}E' = \frac{1}{4\pi} \int\displaylimits_{0}^{\infty} \left[\Sigma_{s,0}(\mathbf{r},{E'\rightarrow E}) - \Sigma_{s,1}(\mathbf{r},{E'\rightarrow E})\right] \phi(\mathbf{r},E')\mathrm{d}E' + \frac{1}{4\pi k_{eff}}\int\displaylimits_{0}^{\infty}\nu\Sigma_{f}(\mathbf{r},{E'\rightarrow E})\phi(\mathbf{r},E') \mathrm{d}E'
 \end{dmath}
 
-\noindent where the relation $\phi = \psi_{0}^{0}$ for the scalar flux has been used to completely remove the angular dependence from the isotropic scattering kernel. The transport correction term $\Delta\Sigma_{tr}(\mathbf{r},E)$ can be defined such that it can be lumped into new transport-corrected total and scattering cross sections $\hat{\Sigma}_{t}$ and $\hat{\Sigma}_{s}$ as follows:
+\noindent where the relation $\phi = \psi_{0}^{0}$ for the scalar flux has been used to completely remove the angular dependence from the isotropic scattering kernel. The transport correction term $\Delta\Sigma_{tr}(\mathbf{r},E)$ can be defined such that it can be lumped into new transport-corrected total and scattering cross sections $\tilde{\Sigma}_{t}$ and $\tilde{\Sigma}_{s}$ as follows:
 
 \begin{dmath}
 \label{eqn:chap2-transport-xs}
@@ -186,19 +186,19 @@ The following simultaneous system of equalities for $0 \le \ell \le L$ follows f
 
 \begin{dmath}
 \label{eqn:chap2-transpot-corr-tot-x}
-\hat{\Sigma}_{t}(\mathbf{r},E) = \Sigma_{t}(\mathbf{r},E) - \Delta\Sigma_{tr}(\mathbf{r},E)
+\tilde{\Sigma}_{t}(\mathbf{r},E) = \Sigma_{t}(\mathbf{r},E) - \Delta\Sigma_{tr}(\mathbf{r},E)
 \end{dmath}
 
 \begin{dmath}
 \label{eqn:chap2-transpot-corr-scatt-x}
-\hat{\Sigma}_{s}(\mathbf{r},{E'\rightarrow E}) = \Sigma_{s,0}(\mathbf{r},{E'\rightarrow E}) - \Delta\Sigma_{tr}(\mathbf{r},E)\delta(E'-E)
+\tilde{\Sigma}_{s}(\mathbf{r},{E'\rightarrow E}) = \Sigma_{s,0}(\mathbf{r},{E'\rightarrow E}) - \Delta\Sigma_{tr}(\mathbf{r},E)\delta(E'-E)
 \end{dmath}
 
 This definition of the transport correction is termed the \textit{in-scatter approximation} in the literature~\cite{yamamoto2008simplified}. Finally, the transport equation in Eqn.~\ref{eqn:chap2-transport-ce-3} can be simplified with the substitution of the corrected total and scattering cross sections:
 
 \begin{dmath}
 \label{eqn:chap2-transport-ce-4}
-\mathbf{\Omega} \cdot \nabla \psi(\mathbf{r},\mathbf{\Omega},E) + \hat{\Sigma}_{t}(\mathbf{r},E)\psi(\mathbf{r},\mathbf{\Omega},E) = \frac{1}{4\pi} \int\displaylimits_{0}^{\infty} \hat{\Sigma}_{s}(\mathbf{r},{E'\rightarrow E}) \phi(\mathbf{r},E') \mathrm{d}E' + \frac{1}{4\pi k_{eff}}\int\displaylimits_{0}^{\infty} \nu\Sigma_{f}(\mathbf{r},{E'\rightarrow E})\phi(\mathbf{r},E') \mathrm{d}E'
+\mathbf{\Omega} \cdot \nabla \psi(\mathbf{r},\mathbf{\Omega},E) + \tilde{\Sigma}_{t}(\mathbf{r},E)\psi(\mathbf{r},\mathbf{\Omega},E) = \frac{1}{4\pi} \int\displaylimits_{0}^{\infty} \tilde{\Sigma}_{s}(\mathbf{r},{E'\rightarrow E}) \phi(\mathbf{r},E') \mathrm{d}E' + \frac{1}{4\pi k_{eff}}\int\displaylimits_{0}^{\infty} \nu\Sigma_{f}(\mathbf{r},{E'\rightarrow E})\phi(\mathbf{r},E') \mathrm{d}E'
 \end{dmath}
 
 %This is the form of the transport equation that will be used throughout the remainder of this chapter. 
@@ -292,30 +292,30 @@ The multi-group approach used to solve the transport equation subdivides the neu
 
 \begin{dmath}
 \label{eqn:chap2-transport-mg-1}
-\mathbf{\Omega} \cdot \nabla \psi_{g}(\mathbf{r},\mathbf{\Omega}) + \int\displaylimits_{E_{g}}^{E_{g-1}} \Bigg[\hat{\Sigma}_{t}(\mathbf{r},E)\psi(\mathbf{r},\mathbf{\Omega},E)\Bigg]\mathrm{d}E = \;\;\; \int\displaylimits_{E_{g}}^{E_{g-1}} \Bigg[\frac{1}{4\pi} \sum_{g'=1}^{G} \int\displaylimits_{E_{g'}}^{E_{g'-1}} \hat{\Sigma}_{s}(\mathbf{r},{E'\rightarrow E}) \phi(\mathbf{r},E') \mathrm{d}E'\Bigg]\mathrm{d}E + \int\displaylimits_{E_{g}}^{E_{g-1}}\Bigg[\frac{1}{4\pi k_{eff}}\sum_{g'=1}^{G} \int\displaylimits_{E_{g'}}^{E_{g'-1}}\nu\Sigma_{f}(\mathbf{r},{E'\rightarrow E})\phi(\mathbf{r},E')\mathrm{d}E'\Bigg]\mathrm{d}E
+\mathbf{\Omega} \cdot \nabla \psi_{g}(\mathbf{r},\mathbf{\Omega}) + \int\displaylimits_{E_{g}}^{E_{g-1}} \Bigg[\tilde{\Sigma}_{t}(\mathbf{r},E)\psi(\mathbf{r},\mathbf{\Omega},E)\Bigg]\mathrm{d}E = \;\;\; \int\displaylimits_{E_{g}}^{E_{g-1}} \Bigg[\frac{1}{4\pi} \sum_{g'=1}^{G} \int\displaylimits_{E_{g'}}^{E_{g'-1}} \tilde{\Sigma}_{s}(\mathbf{r},{E'\rightarrow E}) \phi(\mathbf{r},E') \mathrm{d}E'\Bigg]\mathrm{d}E + \int\displaylimits_{E_{g}}^{E_{g-1}}\Bigg[\frac{1}{4\pi k_{eff}}\sum_{g'=1}^{G} \int\displaylimits_{E_{g'}}^{E_{g'-1}}\nu\Sigma_{f}(\mathbf{r},{E'\rightarrow E})\phi(\mathbf{r},E')\mathrm{d}E'\Bigg]\mathrm{d}E
 \end{dmath}
 
 \noindent The integrals over incoming neutron energy in the scattering kernel and fission source in Eqn.~\ref{eqn:chap2-transport-mg-1} are treated as summations of discrete integrals over each incoming energy group. Although the streaming term is easily expressed in terms of the multi-group flux $\psi_{g}$, the total collision, scattering and fission terms are defined as integral quantities in energy. These three terms can be simplified by multiplying each by unity in the form of $\nicefrac{\psi_{g}}{\psi_{g}}$ and $\nicefrac{\phi_{g}}{\phi_{g}}$:
 
 \begin{dmath}
 \label{eqn:chap2-transport-mg-2}
-\mathbf{\Omega} \cdot \nabla \psi_{g}(\mathbf{r},\mathbf{\Omega}) + \left[\frac{\int\displaylimits_{E_{g}}^{E_{g-1}} \hat{\Sigma}_{t}(\mathbf{r},E)\psi(\mathbf{r},\mathbf{\Omega},E)\mathrm{d}E}{\psi_{g}(\mathbf{r},\mathbf{\Omega})}\right]\psi_{g}(\mathbf{r},\mathbf{\Omega}) 
+\mathbf{\Omega} \cdot \nabla \psi_{g}(\mathbf{r},\mathbf{\Omega}) + \left[\frac{\int\displaylimits_{E_{g}}^{E_{g-1}} \tilde{\Sigma}_{t}(\mathbf{r},E)\psi(\mathbf{r},\mathbf{\Omega},E)\mathrm{d}E}{\psi_{g}(\mathbf{r},\mathbf{\Omega})}\right]\psi_{g}(\mathbf{r},\mathbf{\Omega}) 
 = \;\;\; 
-\frac{1}{4\pi} \sum_{g'=1}^{G} \left[\frac{\int\displaylimits_{E_{g}}^{E_{g-1}} \int\displaylimits_{E_{g'}}^{E_{g'-1}} \hat{\Sigma}_{s}(\mathbf{r},{E'\rightarrow E}) \phi(\mathbf{r},E')\mathrm{d}E'\mathrm{d}E}{\phi_{g'}(\mathbf{r})}\right]\phi_{g'}(\mathbf{r})
+\frac{1}{4\pi} \sum_{g'=1}^{G} \left[\frac{\int\displaylimits_{E_{g}}^{E_{g-1}} \int\displaylimits_{E_{g'}}^{E_{g'-1}} \tilde{\Sigma}_{s}(\mathbf{r},{E'\rightarrow E}) \phi(\mathbf{r},E')\mathrm{d}E'\mathrm{d}E}{\phi_{g'}(\mathbf{r})}\right]\phi_{g'}(\mathbf{r})
 + 
 \dfrac{1}{4\pi k_{eff}} \sum_{g'=1}^{G} \left[\frac{\int\displaylimits_{E_{g}}^{E_{g-1}} \int\displaylimits_{E_{g'}}^{E_{g'-1}} \nu\Sigma_{f}(\mathbf{r},{E'\rightarrow E})\phi(\mathbf{r},E') \mathrm{d}E'\mathrm{d}E}{\phi_{g'}(\mathbf{r})}\right]\phi_{g'}(\mathbf{r})
 \end{dmath}
 
-\noindent The bracketed terms in Eqn.~\ref{eqn:chap2-transport-mg-2} are defined as the \ac{MGXS} for total, scattering and fission production reactions. The \ac{MGXS} are the averages of the corresponding continuous energy cross sections weighted by the angular neutron flux $\psi$ in each energy group. The \ac{MGXS} $\hat{\Sigma}_{t,g}$, $\hat{\Sigma}_{s,g' \rightarrow g}$ and $\nu\Sigma_{f,g' \rightarrow g}$ are defined below for completeness:
+\noindent The bracketed terms in Eqn.~\ref{eqn:chap2-transport-mg-2} are defined as the \ac{MGXS} for total, scattering and fission production reactions. The \ac{MGXS} are the averages of the corresponding continuous energy cross sections weighted by the angular neutron flux $\psi$ in each energy group. The \ac{MGXS} $\tilde{\Sigma}_{t,g}$, $\tilde{\Sigma}_{s,g' \rightarrow g}$ and $\nu\Sigma_{f,g' \rightarrow g}$ are defined below for completeness:
 
 \begin{dmath}
 \label{eqn:chap2-sigt-mg}
-\hat{\Sigma}_{t,g}(\mathbf{r},\mathbf{\Omega}) \equiv \frac{\int\displaylimits_{E_{g}}^{E_{g-1}} \hat{\Sigma}_{t}(\mathbf{r},E)\psi(\mathbf{r},\mathbf{\Omega},E)\mathrm{d}E}{\psi_{g}(\mathbf{r},\mathbf{\Omega})}
+\tilde{\Sigma}_{t,g}(\mathbf{r},\mathbf{\Omega}) \equiv \frac{\int\displaylimits_{E_{g}}^{E_{g-1}} \tilde{\Sigma}_{t}(\mathbf{r},E)\psi(\mathbf{r},\mathbf{\Omega},E)\mathrm{d}E}{\psi_{g}(\mathbf{r},\mathbf{\Omega})}
 \end{dmath}
 
 \begin{dmath}
 \label{eqn:chap2-sigs-mg}
-\hat{\Sigma}_{s,g' \rightarrow g}(\mathbf{r}) \equiv \frac{\int\displaylimits_{E_{g}}^{E_{g-1}} \int\displaylimits_{E_{g'}}^{E_{g'-1}} \hat{\Sigma}_{s}(\mathbf{r},{E'\rightarrow E}) \phi(\mathbf{r},E') \mathrm{d}E' \mathrm{d}E} {\phi_{g'}(\mathbf{r})}
+\tilde{\Sigma}_{s,g' \rightarrow g}(\mathbf{r}) \equiv \frac{\int\displaylimits_{E_{g}}^{E_{g-1}} \int\displaylimits_{E_{g'}}^{E_{g'-1}} \tilde{\Sigma}_{s}(\mathbf{r},{E'\rightarrow E}) \phi(\mathbf{r},E') \mathrm{d}E' \mathrm{d}E} {\phi_{g'}(\mathbf{r})}
 \end{dmath}
 
 \begin{dmath}
@@ -327,17 +327,17 @@ With these definitions of the \ac{MGXS}, the multi-group form of the transport e
 
 \begin{dmath}
 \label{eqn:chap2-transport-mg-3}
-\mathbf{\Omega} \cdot \nabla \psi_{g}(\mathbf{r},\mathbf{\Omega}) + \hat{\Sigma}_{t,g}(\mathbf{r},\mathbf{\Omega})\psi_{g}(\mathbf{r},\mathbf{\Omega}) =
-\frac{1}{4\pi}\sum_{g'=1}^{G} \hat{\Sigma}_{s,g' \rightarrow g}(\mathbf{r}) \phi_{g'}(\mathbf{r}) + \frac{1}{4\pi k_{eff}}\sum_{g'=1}^{G} \nu\Sigma_{f,g' \rightarrow g}(\mathbf{r})\phi_{g'}(\mathbf{r})
+\mathbf{\Omega} \cdot \nabla \psi_{g}(\mathbf{r},\mathbf{\Omega}) + \tilde{\Sigma}_{t,g}(\mathbf{r},\mathbf{\Omega})\psi_{g}(\mathbf{r},\mathbf{\Omega}) =
+\frac{1}{4\pi}\sum_{g'=1}^{G} \tilde{\Sigma}_{s,g' \rightarrow g}(\mathbf{r}) \phi_{g'}(\mathbf{r}) + \frac{1}{4\pi k_{eff}}\sum_{g'=1}^{G} \nu\Sigma_{f,g' \rightarrow g}(\mathbf{r})\phi_{g'}(\mathbf{r})
 \end{dmath}
 
-Thus far, no approximations have been made in the energy discretization of multi-group transport equation given in Eqn.~\ref{eqn:chap2-transport-mg-3}. However, the expression for the total multi-group cross section $\hat{\Sigma}_{t,g}$ in Eqn.~\ref{eqn:chap2-sigt-mg} presents a complication since it is dependent on the unknown angular flux. One common approximation used to eliminate the angular dependence is presented in the following section.
+Thus far, no approximations have been made in the energy discretization of multi-group transport equation given in Eqn.~\ref{eqn:chap2-transport-mg-3}. However, the expression for the total multi-group cross section $\tilde{\Sigma}_{t,g}$ in Eqn.~\ref{eqn:chap2-sigt-mg} presents a complication since it is dependent on the unknown angular flux. One common approximation used to eliminate the angular dependence is presented in the following section.
 
 %The transport correction term introduced in Eqn.~\ref{eqn:chap2-transport-xs} may be similarly discretized for each energy group. However, the correction term $\Delta\Sigma_{tr}$ should be weighted with the first order Legendre moment of the flux, or the volumetric neutron current, rather than the scalar flux in order to preserve reaction rates:
 
 %\begin{dmath}
 %\label{eqn:chap2-sigtr-mg-1}
-%\Delta\Sigma_{tr,g}(\mathbf{r}) \equiv \frac{\int\displaylimits_{E_{g}}^{E_{g-1}} \hat{\Sigma}_{t}(\mathbf{r},E)\psi_{\ell=1}(\mathbf{r},\mathbf{\Omega},E)\mathrm{d}E}{\psi_{\ell=1,g}(\mathbf{r},\mathbf{\Omega})}
+%\Delta\Sigma_{tr,g}(\mathbf{r}) \equiv \frac{\int\displaylimits_{E_{g}}^{E_{g-1}} \tilde{\Sigma}_{t}(\mathbf{r},E)\psi_{\ell=1}(\mathbf{r},\mathbf{\Omega},E)\mathrm{d}E}{\psi_{\ell=1,g}(\mathbf{r},\mathbf{\Omega})}
 %\end{dmath}
 
 %In practice, the scalar neutron flux is often used instead to condense $\Delta\Sigma_{tr,g}(\mathbf{r})$ in energy since it is often more challenging to estimate the current than the flux:
@@ -356,23 +356,23 @@ The angular dependence of the total cross section is often treated with the flux
 \psi(\mathbf{r},\mathbf{\Omega},E) = \phi(\mathbf{r},E) W(\mathbf{r},\mathbf{\Omega})
 \end{dmath}
 
-\noindent The angular dependence of the $\hat{\Sigma}_{t,g}$ may then be eliminated by inserting Eqn.~\ref{eqn:chap2-flux-separate} into Eqn.~\ref{eqn:chap2-sigt-mg}, factoring out $W(\mathbf{r},\mathbf{\Omega})$ and writing $\hat{\Sigma}_{t}$ in terms of the scalar flux:
+\noindent The angular dependence of the $\tilde{\Sigma}_{t,g}$ may then be eliminated by inserting Eqn.~\ref{eqn:chap2-flux-separate} into Eqn.~\ref{eqn:chap2-sigt-mg}, factoring out $W(\mathbf{r},\mathbf{\Omega})$ and writing $\tilde{\Sigma}_{t}$ in terms of the scalar flux:
 
 \begin{dmath}
 \label{eqn:chap2-sigt-mg-scalar}
-\hat{\Sigma}_{t,g}(\mathbf{r}) \equiv \frac{\int\displaylimits_{E_{g}}^{E_{g-1}} \hat{\Sigma}_{t}(\mathbf{r},E)\phi(\mathbf{r},E)W(\mathbf{r},\mathbf{\Omega})\mathrm{d}E}{\phi_{g}(\mathbf{r})W(\mathbf{r},\mathbf{\Omega})} = \frac{\int\displaylimits_{E_{g}}^{E_{g-1}} \hat{\Sigma}_{t}(\mathbf{r},E)\phi(\mathbf{r},E)\mathrm{d}E}{\phi_{g}(\mathbf{r})}
+\tilde{\Sigma}_{t,g}(\mathbf{r}) \equiv \frac{\int\displaylimits_{E_{g}}^{E_{g-1}} \tilde{\Sigma}_{t}(\mathbf{r},E)\phi(\mathbf{r},E)W(\mathbf{r},\mathbf{\Omega})\mathrm{d}E}{\phi_{g}(\mathbf{r})W(\mathbf{r},\mathbf{\Omega})} = \frac{\int\displaylimits_{E_{g}}^{E_{g-1}} \tilde{\Sigma}_{t}(\mathbf{r},E)\phi(\mathbf{r},E)\mathrm{d}E}{\phi_{g}(\mathbf{r})}
 \end{dmath}
 
 Although flux separability is a simple and commonly used approach to reduce the complexity of the ``true'' multi-group total cross section, it is not always valid and may not preserve neutron balance. The impact of the flux separability approximation is systematically investigated and quantified in Secs.~\ref{chap:biases} and~\ref{chap:sph} for some simple \ac{PWR} benchmark models.
 
 %\begin{dmath}
 %\label{eqn:chap2-sigt-mg-scalar}
-%\hat{\Sigma}_{t,g}(\mathbf{r}) \equiv \frac{\int\displaylimits_{E_{g}}^{E_{g-1}} \hat{\Sigma}_{t}(\mathbf{r},E)\phi(\mathbf{r},E)\mathrm{d}E}{\phi_{g}(\mathbf{r})}
+%\tilde{\Sigma}_{t,g}(\mathbf{r}) \equiv \frac{\int\displaylimits_{E_{g}}^{E_{g-1}} \tilde{\Sigma}_{t}(\mathbf{r},E)\phi(\mathbf{r},E)\mathrm{d}E}{\phi_{g}(\mathbf{r})}
 %\end{dmath}
 
 %\begin{dmath}
 %\label{eqn:chap2-sigs-mg-scalar}
-%\hat{\Sigma}_{s,0,g' \rightarrow g}(\mathbf{r}) \equiv \frac{\int\displaylimits_{E_{g}}^{E_{g-1}} \int\displaylimits_{E_{g'}}^{E_{g'-1}} \hat{\Sigma}_{s,0}(\mathbf{r},{E'\rightarrow E}) \phi(\mathbf{r},E') \mathrm{d}E' \mathrm{d}E} {\phi_{g'}(\mathbf{r})}
+%\tilde{\Sigma}_{s,0,g' \rightarrow g}(\mathbf{r}) \equiv \frac{\int\displaylimits_{E_{g}}^{E_{g-1}} \int\displaylimits_{E_{g'}}^{E_{g'-1}} \tilde{\Sigma}_{s,0}(\mathbf{r},{E'\rightarrow E}) \phi(\mathbf{r},E') \mathrm{d}E' \mathrm{d}E} {\phi_{g'}(\mathbf{r})}
 %\end{dmath}
 
 %\begin{dmath}
@@ -419,7 +419,7 @@ The group-wise fission production cross section $\nu\Sigma_{f,g'}$ is defined as
 
 \begin{dmath}
 \label{eqn:chap2-transport-mg-4}
-\mathbf{\Omega} \cdot \nabla \psi_{g}(\mathbf{r},\mathbf{\Omega}) + \hat{\Sigma}_{t,g}(\mathbf{r})\psi_{g}(\mathbf{r},\mathbf{\Omega}) = \frac{1}{4\pi} \sum_{g'=1}^{G} \hat{\Sigma}_{s,g' \rightarrow g}(\mathbf{r}) \phi_{g}(\mathbf{r}) + \frac{\chi_{g}}{4\pi k_{eff}}\sum_{g'=1}^{G} \nu\Sigma_{f,g'}(\mathbf{r})\phi_{g'}(\mathbf{r})
+\mathbf{\Omega} \cdot \nabla \psi_{g}(\mathbf{r},\mathbf{\Omega}) + \tilde{\Sigma}_{t,g}(\mathbf{r})\psi_{g}(\mathbf{r},\mathbf{\Omega}) = \frac{1}{4\pi} \sum_{g'=1}^{G} \tilde{\Sigma}_{s,g' \rightarrow g}(\mathbf{r}) \phi_{g}(\mathbf{r}) + \frac{\chi_{g}}{4\pi k_{eff}}\sum_{g'=1}^{G} \nu\Sigma_{f,g'}(\mathbf{r})\phi_{g'}(\mathbf{r})
 \end{dmath}
 
 %frequently made in multi-group transport calculations thermal reactor spectra the energy distribution of neutrons produced in fission is nearly independent of the incoming neutron energy.
@@ -450,12 +450,12 @@ Up to this point the \ac{MGXS} have been defined as continuously varying in spac
 
 \begin{dmath}
 \label{eqn:chap2-sigt-mg-scalar}
-\hat{\Sigma}_{t,k,g} \equiv \frac{\int\displaylimits_{\mathbf{r} \in V_{k}}\left[\int\displaylimits_{E_{g}}^{E_{g-1}} \hat{\Sigma}_{t}(\mathbf{r},E)\phi(\mathbf{r},E)\mathrm{d}E\right]\mathrm{d}\mathbf{r}}{\int\displaylimits_{\mathbf{r} \in V_{k}}\phi_{g}(\mathbf{r})\mathrm{d}\mathbf{r}}
+\tilde{\Sigma}_{t,k,g} \equiv \frac{\int\displaylimits_{\mathbf{r} \in V_{k}}\left[\int\displaylimits_{E_{g}}^{E_{g-1}} \tilde{\Sigma}_{t}(\mathbf{r},E)\phi(\mathbf{r},E)\mathrm{d}E\right]\mathrm{d}\mathbf{r}}{\int\displaylimits_{\mathbf{r} \in V_{k}}\phi_{g}(\mathbf{r})\mathrm{d}\mathbf{r}}
 \end{dmath}
 
 \begin{dmath}
 \label{eqn:chap2-sigs-mg-scalar}
-\hat{\Sigma}_{s,k,g' \rightarrow g} \equiv \frac{\int\displaylimits_{\mathbf{r} \in V_{k}}\left[\int\displaylimits_{E_{g}}^{E_{g-1}} \int\displaylimits_{E_{g'}}^{E_{g'-1}} \hat{\Sigma}_{s}(\mathbf{r},{E'\rightarrow E}) \phi(\mathbf{r},E') \mathrm{d}E' \mathrm{d}E\right]\mathrm{d}\mathbf{r}}{\int\displaylimits_{\mathbf{r} \in V_{k}}\phi_{g'}(\mathbf{r})\mathrm{d}\mathbf{r}}
+\tilde{\Sigma}_{s,k,g' \rightarrow g} \equiv \frac{\int\displaylimits_{\mathbf{r} \in V_{k}}\left[\int\displaylimits_{E_{g}}^{E_{g-1}} \int\displaylimits_{E_{g'}}^{E_{g'-1}} \tilde{\Sigma}_{s}(\mathbf{r},{E'\rightarrow E}) \phi(\mathbf{r},E') \mathrm{d}E' \mathrm{d}E\right]\mathrm{d}\mathbf{r}}{\int\displaylimits_{\mathbf{r} \in V_{k}}\phi_{g'}(\mathbf{r})\mathrm{d}\mathbf{r}}
 \end{dmath}
 
 \begin{dmath}
@@ -467,7 +467,7 @@ Up to this point the \ac{MGXS} have been defined as continuously varying in spac
 
 \begin{dmath}
 \label{eqn:chap2-transport-mg-5}
-\mathbf{\Omega} \cdot \nabla \psi_{g}(\mathbf{r},\mathbf{\Omega}) + \hat{\Sigma}_{t,g}\psi_{g}(\mathbf{r},\mathbf{\Omega}) = \frac{1}{4\pi} \sum_{g'=1}^{G} \hat{\Sigma}_{s,k,g' \rightarrow g}\phi_{g'}(\mathbf{r}) + \frac{\chi_{k,g}}{4\pi k_{eff}}\sum_{g'=1}^{G} \nu\Sigma_{f,k,g'}\phi_{g'}(\mathbf{r})
+\mathbf{\Omega} \cdot \nabla \psi_{g}(\mathbf{r},\mathbf{\Omega}) + \tilde{\Sigma}_{t,g}\psi_{g}(\mathbf{r},\mathbf{\Omega}) = \frac{1}{4\pi} \sum_{g'=1}^{G} \tilde{\Sigma}_{s,k,g' \rightarrow g}\phi_{g'}(\mathbf{r}) + \frac{\chi_{k,g}}{4\pi k_{eff}}\sum_{g'=1}^{G} \nu\Sigma_{f,k,g'}\phi_{g'}(\mathbf{r})
 \end{dmath}
 
 %A variety of discretization schemes may be used to solve the following multi-group transport equation in Eqn.~\ref{eqn:chap2-transport-mg-3}, including the \ac{MOC} and discrete ordinates (S$_N$). For first order discretization schemes in space, the transport equation can be re-written in terms of the volume-averaged group-wise fluxes $\psi_{i,g}$ and the spatially-homogenized \ac{MGXS} in each mesh cell and energy group:

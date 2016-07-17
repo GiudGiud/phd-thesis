@@ -1,4 +1,4 @@
-\chapter{SuPerHomogenisation Factors}
+\chapter{SuPerHomog\'{e}n\'{e}isation Factors}
 \label{chap:sph}
 
 The results in Chapter~\ref{chap:biases} demonstrated that using the ``true'' flux spectrum from Monte Carlo to perform energy condensation and spatial homogenization will not necessarily result in accurate deterministic multi-group calculations. Large systematic biases in the eigenvalue were observed even for simple heterogeneous benchmark models, and these biases were highly dependent on the energy group structure and spatial discretization used in the multi-group deterministic calculation. In Section~\ref{sec:chap5-diagnosis} it was shown that the bias largely derives from errors in the multi-group reaction rates in the large thermal U-238 capture resonances, and that the errors systematically vary in space within the fuel. These results indicate that one or more of the approximations made in multi-group transport theory are invalidated in heterogeneous geometries and prevents spatial self-shielding at the fuel/moderator interface in \ac{PWR} geometries to be treated appropriately.
@@ -27,9 +27,34 @@ second paragraph: flux separability
 -walk through batman plot
 -mention SPH factors as one soln (segue)
 
+%-Nelson's 1D slab plot(s)?
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\linewidth]{figures/sph/incoming-outgoing}
+  \caption{}
+\caption[Angular flux impinged on an FSR]{Angular flux impinged on an FSR. \textit{Image courtesy of N. Gibson~\cite{gibson2016thesis}.}}
+\label{fig:chap6-incoming-outgoing}
+\end{figure}
+
+\begin{figure}[H]
+\begin{subfigure}{.5\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{figures/sph/batman-1}
+  \caption{}
+\end{subfigure}
+\begin{subfigure}{.5\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{figures/sph/batman-2}
+  \caption{}
+\end{subfigure}
+\caption[Batman plots]{Cool plots of angular-dependent \ac{MGXS}. \textit{Image courtesy of N. Gibson~\cite{gibson2016thesis}.}}
+\label{fig:chap6-batman-plots}
+\end{figure}
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{SuPerHomogenisation Factors}
+\section{SuPerHomog\'{e}n\'{e}isation Factors}
 \label{sec:chap5-sph}
 
 first paragraph: motivate following section
@@ -53,6 +78,52 @@ first paragraph: SPH factors
 second paragraph: walk through eqns
 -start w/ spatially-homogenized and energy condensed transport eqn in Eqn.~\ref{eqn:chap2-transport-mg-5}
 -walk through eqns to preserve neutron balance
+
+-transport eqn with arbitrary fixed source and 
+
+\begin{dmath}
+\label{eqn:chap6-sph-transport-eqn}
+\mathbf{\Omega} \cdot \nabla \psi_{g}^{(n)}(\mathbf{r},\mathbf{\Omega}) + \mu_{k,g}\hat{\Sigma}_{t,k,g}\psi_{g}^{(n)}(\mathbf{r},\mathbf{\Omega}) = Q_{g}(\mathbf{r},\mathbf{\Omega})
+\end{dmath}
+
+-should there be another section on SPH with Monte Carlo? This would highlight that the source is computed
+-note that the source is computed using the reference Monte Carlo flux:
+-the source is computed as a pre-processing step from the reference Monte Carlo flux
+-the source never changes during the iteration
+
+\begin{dmath}
+\label{eqn:chap6-sph-source}
+Q_{k,g}(\mathbf{\Omega}) = \frac{1}{4\pi} \sum_{g'=1}^{G} \hat{\Sigma}_{s,k,g' \rightarrow g}\phi_{k,g'}^{MC} + \frac{\chi_{k,g}}{4\pi k_{eff}}\sum_{g'=1}^{G} \nu\Sigma_{f,k,g'}\phi_{k,g'}^{MC}
+\end{dmath}
+
+-update the total MGXS
+
+\begin{dmath}
+\label{eqn:chap5-sph-update-sigt}
+\hat{\Sigma}_{t,k,g}^{(n)} = \mu_{k,g}^{(n-1)}\hat{\Sigma}_{t,k,g}^{(0)}
+\end{dmath}
+
+\begin{dmath}
+\label{eqn:chap5-sph-update-sigs}
+\Sigma_{s,k,g'\rightarrow g}^{(n)} = \mu_{k,g}^{(n-1)}\Sigma_{s,k,g'\rightarrow g}^{(0)}
+\end{dmath}
+
+\begin{dmath}
+\label{eqn:chap5-sph-update-nusigf}
+\nu\Sigma_{f,k,g}^{(n)} = \mu_{k,g}^{(n-1)}\nu\Sigma_{f,k,g}^{(0)}
+\end{dmath}
+
+-similarly, the flux can be recovered as:
+
+\begin{dmath}
+\label{eqn:chap5-sph-update-angular-flux}
+\psi_{k,g} = \mu_{k,g}^{(n-1)}\psi_{k,g}
+\end{dmath}
+
+\begin{dmath}
+\label{eqn:chap5-sph-update-scalar-flux}
+\phi_{k,g} = \mu_{k,g}^{(n-1)}\phi_{k,g}
+\end{dmath}
 
 third paragraph: intro algorithm
 -walk through the algorithm
@@ -84,23 +155,6 @@ The results in Chapter~\ref{chap:biases} demonstrated systematic biases between 
 -sentence wrapping this paragraph up - talk about spatial self-shielding and segue
 
 These results closely mirror observations by Gibson~\cite{gibson2016thesis} which quantified the errors fundamental to the total 
-
-%-Nelson's 1D slab plot(s)?
-
-\begin{figure}[H]
-\begin{subfigure}{.5\textwidth}
-  \centering
-  \includegraphics[width=\linewidth]{figures/sph/batman-1}
-  \caption{}
-\end{subfigure}
-\begin{subfigure}{.5\textwidth}
-  \centering
-  \includegraphics[width=\linewidth]{figures/sph/batman-2}
-  \caption{}
-\end{subfigure}
-\caption[Batman plots]{Cool plots of angular-dependent \ac{MGXS}.}
-\label{fig:chap4-rel-err-energy}
-\end{figure}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
