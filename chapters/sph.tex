@@ -120,7 +120,7 @@ The \ac{SPH} factors are used to find a total \ac{MGXS} which forces neutron bal
 \Sigma_{t,k,g}^{(n)} = \hat{\mu}_{k,g}^{(n-1)}\Sigma_{t,k,g}^{(0)}
 \end{dmath}
 
-The series of fixed source problems posed by Eqn.~\ref{eqn:chap6-sph-transport-eqn-iterate} are solved until the \ac{SPH} factors converge. A common convergence criterion is the maximum relative absolute deviation across energy groups and spatial zones:
+The series of fixed source problems defined by Eqn.~\ref{eqn:chap6-sph-transport-eqn-iterate} are solved until the \ac{SPH} factors converge. A common convergence criterion is the maximum relative absolute deviation across energy groups and spatial zones:
 
 \begin{dmath}
 \label{eqn:chap6-sph-residual}
@@ -141,7 +141,7 @@ The scattering matrix $\Sigma_{s,k,g'\rightarrow g}$ and fission production cros
 \nu\Sigma_{f,k,g}^{(n)} = \hat{\mu}_{k,g}^{(n-1)}\nu\Sigma_{f,k,g}^{(0)}
 \end{dmath}
 
-It should be noted that although the \ac{SPH}-corrected \ac{MGXS} are defined to preserve reaction rates, they will not preserve the group-wise scalar flux. However, the angular or scalar flux may be easily recovered from the fluxes $\tilde{\psi}_{k,g}$ and $\tilde{\phi}_{k,g}$ computed from the corrected \ac{MGXS} in an eigenvalue or fixed source calculation:
+It should be noted that although the \ac{SPH}-corrected \ac{MGXS} are defined to preserve reaction rates, they will not preserve the group-wise scalar flux. However, the angular or scalar flux may be easily recovered from the fluxes $\tilde{\psi}_{k,g}$ and $\tilde{\phi}_{k,g}$ computed with the corrected \ac{MGXS} in an eigenvalue or fixed source calculation:
 
 \begin{dmath}
 \label{eqn:chap6-sph-update-angular-flux}
@@ -153,12 +153,7 @@ It should be noted that although the \ac{SPH}-corrected \ac{MGXS} are defined to
 \phi_{k,g}^{(n)} = \hat{\mu}_{k,g}\tilde{\phi}_{k,g}
 \end{dmath}
 
-third paragraph: intro algorithm
--walk through the algorithm
--mention that typically done on a group-wise basis
--can be done with all group simultaneously
--mention that this is not trivial to implement on an unstructured \ac{CG} mesh!!!
--SPH factor only applied to resonant zones
+The \ac{SPH} iteration algorithm described here is summarized in Alg.~\ref{alg:chap6-sph}. It should be noted that as presently posed, there is no unique solution to the set of \ac{SPH} factors which preserve reaction rates. However, a unique solution may be found by forcing the factors to be unity in non-fissile zones (\textit{e.g.}, moderator, clad and gap). This approach is motivated by the fact that resonances which lead to self-shielding errors -- such as the U-238 capture resonances studied in Sec.~\ref{subsec:chap2-angle} -- are generally from isotopes in the fuel.
 
 \begin{algorithm}[h]
 \caption{SPH Factor Algorithm}
@@ -171,6 +166,7 @@ third paragraph: intro algorithm
     \State Update $\Sigma_{t,k,g}$ with \ac{SPH} factors \Comment{Eqn.~\ref{eqn:chap6-sph-update-sigt}}
     \State Solve fixed source transport problem\footnotemark \Comment{Eqn.~\ref{eqn:chap6-sph-transport-eqn-iterate}}
     \State Compute new \ac{SPH} factors \Comment{Eqn.~\ref{eqn:chap6-sph-update}}
+    \State Compute \ac{SPH} factor residuals \Comment{Eqn.~\ref{eqn:chap6-sph-residual}}
   \EndWhile
   \State Compute final \ac{MGXS} with \ac{SPH} factors \Comment{Eqn.~\Crefrange{eqn:chap6-sph-update-sigt}{eqn:chap6-sph-update-nusigf}}
 \end{algorithmic}
@@ -178,18 +174,18 @@ third paragraph: intro algorithm
 
 \footnotetext{A series of $G$ independent fixed source problems may be solved for each of the $G$ groups. Alternatively, a single fixed source problem may simultaneously solve for all $G$ groups, as is done in OpenMOC.}
 
-fourth paragraph: summary
--fudge factors that attempt to preserve reaction rates
-
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Implementation in OpenMOC}
 \label{subsec:chap6-sph-openmoc}
+
+%fourth paragraph: summary
+%-fudge factors that attempt to preserve reaction rates
 
 -mention that the MC source calculation is not trivial
 -tallies are volume-integrated in OpenMC, while values are volume-averaged in OpenMOC
 -must compute volume-averaged sources for OpenMOC
   -must be averaged with the volume computed by OpenMOC from track lengths!!!
+-mention that this is not trivial to implement on an unstructured \ac{CG} mesh!!!
 
 first paragraph: in openmoc.materialize
 -implementation of SPH factors in openmoc
