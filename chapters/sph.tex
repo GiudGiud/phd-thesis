@@ -11,44 +11,35 @@ Chap.~\ref{chap:mgxs} discussed approximations made in multi-group theory to sim
 
 Sec~\ref{sec:chap6-angular-mgxs} reviews some recent work by by Gibson~\cite{gibson2016thesis} to quantify the approximation error resolved with angular-dependent \ac{MGXS}, which closely mirrors the trends observed in Chap.~\ref{chap:biases}. The historical \ac{SPH} factor concept is introduced in the context of angular-dependent \ac{MGXS} in Sec.~\ref{sec:chap6-sph}, and \ac{SPH} factors are applied to simple heterogeneous benchmarks and the results analyzed in Sec.~\ref{sec:chap6-sph}. Finally, this chapter concludes with a summary of the shortcomings of the \ac{SPH} approach and the need for new methods to account for the angular dependence in \ac{MGXS}.
 
-
-%This chapter reviews some recent work by Gibson~\cite{gibson2016thesis} to quantify the approximation error resolved with angular dependent \ac{MGXS}, which closely mirrors the trends observed in Chap.~\ref{chap:biases}. The historical \ac{SPH} factor concept is introduced in the context of angular-dependent \ac{MGXS} in Sec.~\ref{}, and \ac{SPH} factors are applied to simple heterogeneous benchmarks and the results analyzed in Sec.~\ref{}. Finally, this chapter concludes with a summary of the shortcomings of the \ac{SPH} approach and the need for new methods to account for the angular dependence in \ac{MGXS}.
-
-%In this chapter, the flux separability approximation is  he one approximation that was not considered in Chap.~\ref{chap:biases} -- the flux separability approximation (see Sec.~\ref{subsubsec:chap2-angle}) 
-
-%Chapter~\ref{chap:biases} quantified energy and spatial approximations in multi-group theory, and used iso-in-lab scattering in OpenMC to eliminate the isotropic scattering approximation made by OpenMOC. The flux separability approximation (see Section~\ref{subsubsec:chap2-angle}) is the one approximation that  was not considered 
+%first paragraph: motivate problem
+%-mention bias from nelson/yoshikoka 
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Angular-Dependent MGXS}
 \label{sec:chap6-angular-mgxs}
 
-%Chapter~\ref{chap:mgxs} detailed the approximations made in the multi-group form of the transport equation. 
+The flux separability approximation introduced in Sec.~\ref{subsec:chap2-angle} led to the use of the scalar rather than the angular flux to condense the total cross section in energy. Flux separability is a commonly used approximation since it is simpler for conventional \ac{MGXS} generation schemes to approximate the flux in energy than in angle. In addition, the use of the angular flux for group condensation would necessarily result in angular-dependent total \ac{MGXS}, which would increase the memory footprint for \ac{MGXS} libraries and be complicated to accommodate in multi-group methods. Nevertheless, flux separability is an approximation which may lead to errors in downstream multi-group calculations such as the eigenvalue bias observed in Chap.~\ref{chap:biases}. 
 
-first paragraph: motivate problem
--review results from Chap. 5
--mention bias from nelson/yoshikoka 
--all approx. in Chap 2 were studied except for flux separability
--anisotropic scattering not an issue with iso-in-lab scattering
--segue into next paragraph w/ flux separability
+The flux separability approximation will necessarily hold in infinite homogeneous media -- such as that considered in Sec.~\ref{subsec:chap5-inf-medium} -- since the flux does not vary in angle or space. However, the flux may vary greatly by angle in a heterogeneous geometry with significant spatial self-shielding. For example, consider the flux from two different directions impinging on an \ac{FSR} for one radial ring and angular sector in a fuel pin as illustrated in Fig.~\ref{fig:chap6-incoming-outgoing}. The flux entering from the moderator will be unshielded and will likely be quite similar to the $\nicefrac{1}{E}$ asymptotic spectrum. In contrast, the flux which first traverses the fuel pin will be signficantly depressed in the resonant groups. As a result, the reaction rates for the incoming flux will be greater than that for the outgoing flux, which would be reflected in angular-dependent total \ac{MGXS}.
 
-second paragraph: flux separability
--recall scalar vs. angular flux weighting of the tot. mgxs
--introduce nate's thesis~\cite{gibson2016thesis}
-  -reference Figures 7.2 and 7.3 from Nate's thesis
--angular-dependent mgxs
--walk through batman plot
--mention SPH factors as one soln (segue)
-
-%-Nelson's 1D slab plot(s)?
-
-\begin{figure}[H]
+\begin{figure}[h]
   \centering
-  \includegraphics[width=0.8\linewidth]{figures/sph/incoming-outgoing}
+  \includegraphics[width=\linewidth]{figures/sph/incoming-outgoing}
   \caption{}
-\caption[Angular flux impinged on an FSR]{Angular flux impinged on an FSR. \textit{Image courtesy of N. Gibson~\cite{gibson2016thesis}.}}
+\caption[Angular flux impinged on an FSR]{Angular flux impinged on an FSR from the moderator (top) and after traversing the fuel (bottom). \textit{Image courtesy of N. Gibson~\cite{gibson2016thesis}.}}
 \label{fig:chap6-incoming-outgoing}
 \end{figure}
+
+A recent PhD thesis by Gibson~\cite{gibson2016thesis} studied the impact of using angular-dependent \ac{MGXS} on multi-group calculations to avoid the flux separability approximation. Gibson was motivated by his observation of reaction rate errors similar to those discovered in Sec.~\ref{sec:chap5-diagnosis}. In particular, Gibson solved for the reference ultra-fine flux for a simplified \ac{PWR} fuel pin given a fixed source. The reference scalar flux was used to condense the continuous energy cross sections to 69-group \ac{MGXS}, which were employed in a second 2D fixed source transport calculation. The reaction rates computed from the ultra-fine and 69-group scalar fluxes differed by up to 1\% for low energy groups with large U-238 capture resonances, with an error profile in energy similar to those presented in Sec.~\ref{sec:chap5-diagnosis}. Gibson's results indicated that an improper treatment of self-shielding effects in the resonant groups in heterogeneous geometries may lead to errors even when the exact scalar flux is used to collapse cross sections in energy and space.
+
+Gibson further investigated this issue by using the reference ultra-fine angular flux to compute angular-dependent \ac{MGXS}. Some examples of the angular-dependent \ac{MGXS} are given in Fig.~\ref{fig:chap6-batman-plots}.
+
+-this was highly dependent on FSR discretization
+
+second paragraph: flux separability
+-walk through batman plot
+-mention SPH factors as one soln (segue)
 
 \begin{figure}[H]
 \begin{subfigure}{.5\textwidth}
@@ -61,9 +52,11 @@ second paragraph: flux separability
   \includegraphics[width=\linewidth]{figures/sph/batman-2}
   \caption{}
 \end{subfigure}
-\caption[Batman plots]{Cool plots of angular-dependent \ac{MGXS}. \textit{Image courtesy of N. Gibson~\cite{gibson2016thesis}.}}
+\caption[Angular-dependent capture MGXS]{Angular-dependent \ac{MGXS} as a function of incoming azimuthal angle for two different \ac{FSR}s for the 6.67 eV resonance group. The radial axis is given in units of barns and the azimuthal axis in units of degrees. \textit{Image courtesy of N. Gibson~\cite{gibson2016thesis}.}}
 \label{fig:chap6-batman-plots}
 \end{figure}
+
+%-Nelson's 1D slab plot(s)?
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -430,7 +423,7 @@ first paragraph: shortcomings
 -specific to group structure, FSR mesh
 -requires MC source on the FSR mesh
   -requires knowledge of the solution
--computationally expensive
+-computationally expensive - slower convergence rate in MC
 -unclear if SPH factors can be tabulated once and broadly applied
 
 second paragraph: need for new method(s)
