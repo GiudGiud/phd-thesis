@@ -127,15 +127,15 @@ mgxs_lib = mgxs_lib.get_condensed_library(coarse_groups)
 # Compute SPH factors
 sph, sph_mgxs_lib, sph_indices = \
     openmoc.materialize.compute_sph_factors(
-        mgxs_lib, num_azim=128, azim_spacing=0.01, sph_tol=1E-7,
-        num_threads=opts.num_omp_threads, max_sph_iters=10)
+        mgxs_lib, num_azim=512, azim_spacing=0.01, sph_tol=1E-7,
+        num_threads=opts.num_omp_threads, max_sph_iters=30)
 
 openmoc_materials = \
     openmoc.materialize.load_openmc_mgxs_lib(mgxs_lib, openmoc_geometry)
 
 # Initialize an OpenMOC TrackGenerator and Solver
 #track_generator = openmoc.TrackGenerator(openmoc_geometry, 512, 0.001)
-track_generator = openmoc.TrackGenerator(openmoc_geometry, 128, 0.01)
+track_generator = openmoc.TrackGenerator(openmoc_geometry, 512, 0.01)
 track_generator.generateTracks(store=False)
 
 # Initialize an OpenMOC Solver
