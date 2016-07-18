@@ -62,15 +62,9 @@ Although angular-dependent total \ac{MGXS} is the most direct solution to elimin
 \section{SuPerHomog\'{e}n\'{e}isation Factors}
 \label{sec:chap6-sph}
 
-first paragraph: motivate following section
--alternative approach is SPH
--forces neutron balance
--recall nate's thesis
--intro following sections
+As discussed in Chap.~\ref{chap:mgxs}, multi-group theory is valid and consistent if and only if \ac{MGXS} are defined to preserve reaction rates. In Chap.~\ref{chap:biases} it was determined that reaction rate preservation is not possible in heterogeneous geometries, even if the exact flux from \ac{MC} is used to collapse the cross sections in energy and space. \ac{SPH} factors were first proposed by H\'{e}bert~\cite{hebert1993consistent} to preserve reaction rates during energy condensation and spatial homogenization. The \ac{SPH} factor algorithm requires knowledge of a reference source that is used in a multi-group fixed source solver to derive multiplicative factors that adjust the total \ac{MGXS} to force neutron balance. 
 
-% requires a fixed source solver and a reference source, both of which are known from \ac{MC} tallies with 
-
-%Although \ac{SPH} factors were introduced more than two decades ago, to this author's knowledge
+The literature provides little explanation of the type of approximation errors that \ac{SPH} factors is designed to mitigate. In theory, the \ac{SPH} scheme will adjust \ac{MGXS} to preserve reaction rates irregardless of the source of approximation error -- including errors which derive from a poor treatment of energy and spatial self-shielding, a coarse spatial discretization of the multi-group calculation method, and/or a truncated approximation to the anisotropic scattering kernel. In this section, \ac{SPH} factors are investigated as one approach to resolve the reaction rate errors observed in Chap.~\ref{chap:biases}. The mathematical formulation behind \ac{SPH} factors is described in Sec.~\ref{subsec:chap6-sph-overview}, the iterative algorithm used to compute the factors is summarized in Sec.~\ref{subsec:chap6-sph-algorithm}, and the implementation of \ac{SPH} factors in OpenMOC is highlighted in Sec.~\ref{subsec:chap6-sph-openmoc}.
 
 %%%%%%%%%%%%%%%%%%%%%
 \subsection{Overview}
@@ -89,6 +83,9 @@ second paragraph: walk through eqns
 -walk through eqns to preserve neutron balance
 
 -transport eqn with arbitrary fixed source and 
+
+% requires a fixed source solver and a reference source, both of which are known from \ac{MC} tallies with 
+% Although \ac{SPH} factors were introduced more than two decades ago, to this author's knowledge
 
 \begin{dmath}
 \label{eqn:chap6-sph-transport-eqn}
@@ -114,7 +111,7 @@ Q_{k,g}(\mathbf{\Omega}) = \frac{1}{4\pi} \sum_{g'=1}^{G} \Sigma_{s,k,g' \righta
 
 %%%%%%%%%%%%%%%%%%%%%
 \subsection{Algorithm}
-\label{subsec:chap6-sph-overview}
+\label{subsec:chap6-sph-algorithm}
 
 -mention that the MC source calculation is not trivial
 -tallies are volume-integrated in OpenMC, while values are volume-averaged in OpenMOC
