@@ -70,44 +70,23 @@ The literature provides little explanation of the type of approximation errors t
 \subsection{Overview}
 \label{subsec:chap6-sph-overview}
 
-first paragraph: SPH factors
--history w/ H\'{e}bert~\cite{hebert1993consistent}\cite{hebert2005ribon}
--recall nate's thesis
--high-level overview
--traditionally used in diffusion applications
--used to fix errors in energy condensation and spatial homogenization
-  -this could include all kinds of errors -- not really discussed in the literature
+The \ac{SPH} algorithm enforces reaction rate preservation between a reference fine mesh transport problem and a corresponding coarse mesh transport or diffusion problem in energy and space. \ac{SPH} factors have traditionally been applied to spatially-homognenized few-group \ac{MGXS} for coarse mesh diffusion applications. However, this section will introduce \ac{SPH} factors to enforce equivalence between continuous energy Monte Carlo and deterministic multi-group transport methods. 
 
-second paragraph: walk through eqns
--start w/ spatially-homogenized and energy condensed transport eqn in Eqn.~\ref{eqn:chap2-transport-mg-5}
--walk through eqns to preserve neutron balance
-
--transport eqn with arbitrary fixed source and 
-
-% requires a fixed source solver and a reference source, both of which are known from \ac{MC} tallies with 
-% Although \ac{SPH} factors were introduced more than two decades ago, to this author's knowledge
+The \ac{SPH} scheme postulates the existence of a set of factors $\mu_{k,g}$ for each spatial zone $k$ and energy group $g$ which force the streaming and collision terms in the transport equation to balance with a fixed source $Q_{k,g}$:
 
 \begin{dmath}
 \label{eqn:chap6-sph-transport-eqn}
 \mathbf{\Omega} \cdot \nabla \psi_{g}(\mathbf{r},\mathbf{\Omega}) + \mu_{k,g}\Sigma_{t,k,g}\psi_{g}(\mathbf{r},\mathbf{\Omega}) = Q_{k,g}(\mathbf{\Omega})
 \end{dmath}
 
--this equation is solved for all groups simultaneously with fixed source solver in OpenMOC
-
--should there be another section on SPH with Monte Carlo? This would highlight that the source is computed
--note that the source is computed using the reference Monte Carlo flux:
--the source is computed as a pre-processing step from the reference Monte Carlo flux
--the source never changes during the iteration
+\noindent In this equation, the \ac{SPH} factors are applied to correct the total \ac{MGXS} in each region and group. The fixed source $Q_{k,g}$ is computed from the reference fine mesh solution. In this case,  the fixed source is treated as the sum of scattering and fission production sources in each energy group and spatial zone. For example, continuous energy Monte Carlo can be used to compute reference multi-group fluxes and \ac{MGXS}, which are then combined to compute an isotropic source as follows:
 
 \begin{dmath}
 \label{eqn:chap6-sph-source}
-Q_{k,g}(\mathbf{\Omega}) = \frac{1}{4\pi} \sum_{g'=1}^{G} \Sigma_{s,k,g' \rightarrow g}\phi_{k,g'}^{MC} + \frac{\chi_{k,g}}{4\pi k_{eff}}\sum_{g'=1}^{G} \nu\Sigma_{f,k,g'}\phi_{k,g'}
+Q_{k,g}(\mathbf{\Omega}) = \frac{1}{4\pi} \sum_{g'=1}^{G} \Sigma_{s,k,g' \rightarrow g}\phi_{k,g'} + \frac{\chi_{k,g}}{4\pi k_{eff}}\sum_{g'=1}^{G} \nu\Sigma_{f,k,g'}\phi_{k,g'}
 \end{dmath}
 
--general SPH factor
--make these equations independent of iteration number - i.e., these are the equations we want
--use a hat above SPH factor below 
--this section should just pose the problem - need to find the factors that preserve reaction rates
+\noindent Given the fixed source and total \ac{MGXS} from \ac{MC}, Eqn.~\ref{eqn:chap6-sph-transport-eqn} may be solved using any multi-group transport method, such as \ac{MOC}. The challenge is to devise estimates $\hat{mu}_{k,g}$ to the true \ac{SPH} factors $\mu_{k,g}$ which adequately preserve reaction rates. The following section describes the iterative scheme used to estimate \ac{SPH} factors.
 
 %%%%%%%%%%%%%%%%%%%%%
 \subsection{Algorithm}
@@ -119,6 +98,16 @@ Q_{k,g}(\mathbf{\Omega}) = \frac{1}{4\pi} \sum_{g'=1}^{G} \Sigma_{s,k,g' \righta
   -must be averaged with the volume computed by OpenMOC from track lengths!!!
 
 -the SPH factor is then necessarily defined as the ratio of computed to reference fluxes:
+
+% requires a fixed source solver and a reference source, both of which are known from \ac{MC} tallies with 
+% Although \ac{SPH} factors were introduced more than two decades ago, to this author's knowledge
+
+%-this equation is solved for all groups simultaneously with fixed source solver in OpenMOC
+
+-should there be another section on SPH with Monte Carlo? This would highlight that the source is computed
+%-note that the source is computed using the reference Monte Carlo flux:
+%-the source is computed as a pre-processing step from the reference Monte Carlo flux
+-the source never changes during the iteration
 
 \begin{dmath}
 \label{eqn:chap6-sph-transport-eqn-iterate}
