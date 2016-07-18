@@ -42,10 +42,6 @@ for j, num_groups in enumerate(groups):
         cells = openmoc_geometry.getAllMaterialCells()
         for cell_id, cell in cells.items():
             cell.setNumSectors(8)
-            if cell.getName() == 'fuel':
-                cell.setNumRings(rings)
-            if cell.getName() == 'water':
-                cell.setNumRings(rings)
 
         # Generate tracks
         track_generator = openmoc.TrackGenerator(openmoc_geometry, 128, 0.01)
