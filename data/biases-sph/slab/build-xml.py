@@ -161,7 +161,7 @@ plots_file = openmc.Plots([plot])
 ######################   Move Files into Directories  #########################
 
 scattering = ['anisotropic', 'transport', 'iso-in-lab']
-mesh = [1, 2, 4, 8, 16, 32, 64]
+mesh = [1, 2, 4, 8, 16]
 
 for scatter in scattering:
     print(scatter)

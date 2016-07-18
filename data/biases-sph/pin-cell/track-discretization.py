@@ -1,3 +1,7 @@
+"""This script generates Table 5.13 - eigenvalue bias by the number of azimuthal
+angles and track spacing, and anisotropic vs. isotropic in lab scattering."""
+
+
 import numpy as np
 
 import openmc.mgxs
@@ -29,6 +33,13 @@ for i, scatter in enumerate(scattering):
             # Create an OpenMOC Geometry from the OpenCG Geometry
             openmoc_geometry = get_openmoc_geometry(mgxs_lib.opencg_geometry)
             openmoc.materialize.load_openmc_mgxs_lib(mgxs_lib, openmoc_geometry)
+
+            # Apply radial/angular discretization mesh
+            cells = openmoc_geometry.getAllMaterialCells()
+            for cell_id, cell in cells.items():
+                cell.setNumSectors(8)
+                if cell.getName() in ['fuel', 'water']:
+                    cell.setNumRings(5)
 
             # Generate tracks
             track_generator = openmoc.TrackGenerator(openmoc_geometry, int(angle), spacing)

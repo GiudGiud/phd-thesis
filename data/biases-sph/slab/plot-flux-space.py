@@ -1,3 +1,7 @@
+"""This script simply plots OpenMC and OpenMOC's neutron flux in space across
+each FSR in the slab for each energy group. This is not used in the thesis."""
+
+
 import numpy as np
 import matplotlib 
 
@@ -14,7 +18,6 @@ from infermc.energy_groups import group_structures
 
 # Force non-interactive mode for plotting on clusters
 pylab.ioff()
-
 sns.set_style('ticks')
 
 

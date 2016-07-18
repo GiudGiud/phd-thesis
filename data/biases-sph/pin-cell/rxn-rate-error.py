@@ -1,5 +1,9 @@
-import copy
-import shutil
+"""This script generates Table 5.16 and the related analysis. The script
+computes U-238 capture and nuclide-integrated absorption rates in energy
+ranges A, B and C for different energy group structures. This script is
+used to determine how much the U-238 capture resonances contribute to the
+negative eigenvalue bias."""
+
 
 import numpy as np
 
@@ -56,7 +60,6 @@ def get_fluxes(solver, mgxs_lib):
                 openmoc_cell_fluxes[i,:] += openmoc_fluxes[fsr,:] * fsr_volume
                 volumes[i] += fsr_volume
 
-                # FIXME
                 centroid = openmoc_geometry.getFSRCentroid(fsr)
                 x, y, z = centroid.getX(), centroid.getY(), centroid.getZ()
                 distances[i] = np.sqrt(x**2 + y**2 + z**2)
@@ -65,7 +68,6 @@ def get_fluxes(solver, mgxs_lib):
                     fuel_indices.append(i)
 
     # Divide the fluxes by the ancestor (non-discretized) cell volumes
-    print('openmc fiss', openmc_fiss)
     openmc_fluxes /= volumes[:,np.newaxis]
     openmc_fluxes /= openmc_fiss
 #    openmc_fluxes /= (openmc_fiss * volumes[:,np.newaxis])
@@ -114,8 +116,6 @@ for i, num_groups in enumerate(groups):
     track_generator = openmoc.TrackGenerator(openmoc_geometry, 512, 0.001)
     track_generator.setNumThreads(opts.num_omp_threads)
     track_generator.generateTracks(store=False)
-
-    shutil.rmtree('tracks')
 
     # Instantiate a Solver
     solver = openmoc.CPUSolver(track_generator)

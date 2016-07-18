@@ -1,3 +1,8 @@
+"""This script generates Table 6.1 - eigenvalue bias by energy group structure,
+FSR discretization, with and without SPH factors. The MGXS were generated with
+isotropic in lab scattering with MGXS and were tallied on the FSR mesh."""
+
+
 import numpy as np
 
 import openmc.mgxs
@@ -5,15 +10,13 @@ import openmoc
 from openmoc.opencg_compatible import get_openmoc_geometry
 from infermc.energy_groups import group_structures
 
-
-openmoc.log.set_log_level('RESULT')
 opts = openmoc.options.Options()
 
 groups = [1, 2, 4, 8, 16, 25, 40, 70]
 scatter = 'iso-in-lab'
-num_rings = [1, 2, 4, 8, 16]
-keffs = np.zeros((2, len(groups), len(num_rings)), dtype=np.float)
-biases = np.zeros((2, len(groups), len(num_rings)), dtype=np.float)
+mesh = [1, 2, 4, 8, 16]
+keffs = np.zeros((2, len(groups), len(mesh)), dtype=np.float)
+biases = np.zeros((2, len(groups), len(mesh)), dtype=np.float)
 
 
 ###############################################################################
@@ -22,11 +25,11 @@ biases = np.zeros((2, len(groups), len(num_rings)), dtype=np.float)
 
 print('Without SPH')
 for j, num_groups in enumerate(groups):
-    for k, rings in enumerate(num_rings):
-        print('# groups = {}, # rings = {}'.format(num_groups, rings))
+    for k, num_mesh in enumerate(mesh):
+        print('# groups = {}, # mesh = {}'.format(num_groups, num_mesh))
 
         # Initialize a fine (70-)group MGXS Library from OpenMC statepoint data
-        directory = '{}/{}x/'.format(scatter, rings)
+        directory = '{}/{}x/'.format(scatter, num_mesh)
         sp = openmc.StatePoint(directory + 'statepoint.100.h5')
         mgxs_lib = openmc.mgxs.Library.load_from_file(directory=directory)
 
@@ -37,11 +40,6 @@ for j, num_groups in enumerate(groups):
         # Create an OpenMOC Geometry from the OpenCG Geometry
         openmoc_geometry = get_openmoc_geometry(condense_lib.opencg_geometry)
         openmoc.materialize.load_openmc_mgxs_lib(condense_lib, openmoc_geometry)
-
-        # Discretize the geometry
-        cells = openmoc_geometry.getAllMaterialCells()
-        for cell_id, cell in cells.items():
-            cell.setNumSectors(8)
 
         # Generate tracks
         track_generator = openmoc.TrackGenerator(openmoc_geometry, 128, 0.01)
@@ -64,11 +62,11 @@ for j, num_groups in enumerate(groups):
 
 print('With SPH')
 for j, num_groups in enumerate(groups):
-    for k, rings in enumerate(num_rings):
-        print('# groups = {}, # rings = {}'.format(num_groups, rings))
+    for k, num_mesh in enumerate(mesh):
+        print('# groups = {}, # mesh = {}'.format(num_groups, num_mesh))
 
         # Initialize a fine (70-)group MGXS Library from OpenMC statepoint data
-        directory = '{}/{}x/'.format(scatter, rings)
+        directory = '{}/{}x/'.format(scatter, num_mesh)
         sp = openmc.StatePoint(directory + 'statepoint.100.h5')
         mgxs_lib = openmc.mgxs.Library.load_from_file(directory=directory)
 
@@ -104,7 +102,6 @@ for j, num_groups in enumerate(groups):
         solver.computeEigenvalue(opts.max_iters)
         keffs[1,j,k] = solver.getKeff()
 
-
 # Compute the bias with OpenMC in units of pcm for this scattering type
 biases = (keffs - sp.k_combined[0]) * 1e5
 
@@ -114,7 +111,7 @@ print(biases)
 print('Without SPH')
 for i, num_groups in enumerate(groups):
     row = '{} &'.format(num_groups)
-    for j, num_mesh in enumerate(num_rings):
+    for j, num_mesh in enumerate(mesh):
         row += ' {:1.0f} &'.format(biases[0,i,j])
     print(row[:-1] + '\\\\')
 
@@ -122,6 +119,6 @@ for i, num_groups in enumerate(groups):
 print('With SPH')
 for i, num_groups in enumerate(groups):
     row = '{} &'.format(num_groups)
-    for j,  rings in enumerate(num_rings):
+    for j, num_mesh in enumerate(mesh):
         row += ' {:1.0f} &'.format(biases[1,i,j])
     print(row[:-1] + '\\\\')

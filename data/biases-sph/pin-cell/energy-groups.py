@@ -1,3 +1,7 @@
+"""This script generates Table 5.14 - eigenvalue bias by energy group structure,
+FSR discretization, and anisotropic vs. isotropic in lab scattering with MGXS
+tallied by material."""
+
 import numpy as np
 
 import openmc.mgxs
@@ -11,22 +15,21 @@ opts = openmoc.options.Options()
 
 groups = [1, 2, 4, 8, 16, 25, 40, 70]
 scattering = ['anisotropic', 'transport', 'iso-in-lab']
-mesh = [1, 2, 4, 8, 16]
-#mesh = [1, 2, 4, 8, 16, 32, 64]
-keffs = np.zeros((len(scattering), len(groups), len(mesh)), dtype=np.float)
-biases = np.zeros((len(scattering), len(groups), len(mesh)), dtype=np.float)
+num_rings = [1, 2, 4, 8, 16]
+keffs = np.zeros((len(scattering), len(groups), len(num_rings)), dtype=np.float)
+biases = np.zeros((len(scattering), len(groups), len(num_rings)), dtype=np.float)
 
 for i, scatter in enumerate(scattering):
     print(scatter)
 
-    for j, num_groups in enumerate(groups):
-        for k, num_mesh in enumerate(mesh):
-            print('# groups = {}, # mesh = {}'.format(num_groups, num_mesh))
+    # Initialize a fine (70-)group MGXS Library from OpenMC statepoint data
+    directory = '{}/1x/'.format(scatter)
+    sp = openmc.StatePoint(directory + 'statepoint.100.h5')
+    mgxs_lib = openmc.mgxs.Library.load_from_file(directory=directory)
 
-            # Initialize a fine (70-)group MGXS Library from OpenMC statepoint data
-            directory = '{}/{}x/'.format(scatter, num_mesh)
-            sp = openmc.StatePoint(directory + 'statepoint.100.h5')
-            mgxs_lib = openmc.mgxs.Library.load_from_file(directory=directory)
+    for j, num_groups in enumerate(groups):
+        for k, rings in enumerate(num_rings):
+            print('# groups = {}, # rings = {}'.format(num_groups, rings))
 
             # Build a coarse group Library from the fine (70-)group Library
             coarse_groups = group_structures['CASMO']['{}-group'.format(num_groups)]
@@ -35,6 +38,15 @@ for i, scatter in enumerate(scattering):
             # Create an OpenMOC Geometry from the OpenCG Geometry
             openmoc_geometry = get_openmoc_geometry(condense_lib.opencg_geometry)
             openmoc.materialize.load_openmc_mgxs_lib(condense_lib, openmoc_geometry)
+
+            # Discretize the geometry
+            cells = openmoc_geometry.getAllMaterialCells()
+            for cell_id, cell in cells.items():
+                cell.setNumSectors(8)
+                if cell.getName() == 'fuel':
+                    cell.setNumRings(rings)
+                if cell.getName() == 'water':
+                    cell.setNumRings(rings)
 
             # Generate tracks
             track_generator = openmoc.TrackGenerator(openmoc_geometry, 128, 0.01)
@@ -59,7 +71,7 @@ print(biases)
 print('anisotropic')
 for i, num_groups in enumerate(groups):
     row = '{} &'.format(num_groups)
-    for j, num_mesh in enumerate(mesh):
+    for j, num_mesh in enumerate(num_rings):
         row += ' {:1.0f} &'.format(biases[0,i,j])
     print(row[:-1] + '\\\\')
 
@@ -67,7 +79,7 @@ for i, num_groups in enumerate(groups):
 print('transport')
 for i, num_groups in enumerate(groups):
     row = '{} &'.format(num_groups)
-    for j, num_mesh in enumerate(mesh):
+    for j, num_mesh in enumerate(num_rings):
         row += ' {:1.0f} &'.format(biases[1,i,j])
     print(row[:-1] + '\\\\')
 
@@ -75,6 +87,6 @@ for i, num_groups in enumerate(groups):
 print('iso-in-lab')
 for i, num_groups in enumerate(groups):
     row = '{} &'.format(num_groups)
-    for j, num_mesh in enumerate(mesh):
+    for j, num_mesh in enumerate(num_rings):
         row += ' {:1.0f} &'.format(biases[2,i,j])
     print(row[:-1] + '\\\\')

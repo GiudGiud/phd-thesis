@@ -1,3 +1,8 @@
+"""This script generates Table 5.10 - eigenvalue bias by energy group structure,
+FSR discretization, and anisotropic vs. isotropic in lab scattering with MGXS
+tallied by FSR."""
+
+
 import numpy as np
 
 import openmc.mgxs

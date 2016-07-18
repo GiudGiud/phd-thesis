@@ -1,5 +1,11 @@
+"""This script generates Table 5.16 and the related analysis. The script
+computes U-238 capture and nuclide-integrated absorption rates in energy
+ranges A, B and C for different energy group structures. This script is
+used to determine how much the U-238 capture resonances contribute to the
+negative eigenvalue bias."""
+
+
 import numpy as np
-import copy
 
 import openmc.mgxs
 import openmoc
