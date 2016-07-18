@@ -26,7 +26,7 @@ for j, num_groups in enumerate(groups):
         print('# groups = {}, # rings = {}'.format(num_groups, rings))
 
         # Initialize a fine (70-)group MGXS Library from OpenMC statepoint data
-        directory = '{}/1x/'.format(scatter)
+        directory = '{}/{}x/'.format(scatter, rings)
         sp = openmc.StatePoint(directory + 'statepoint.100.h5')
         mgxs_lib = openmc.mgxs.Library.load_from_file(directory=directory)
 
@@ -48,7 +48,7 @@ for j, num_groups in enumerate(groups):
                 cell.setNumRings(rings)
 
         # Generate tracks
-        track_generator = openmoc.TrackGenerator(openmoc_geometry, 128, 0.05)
+        track_generator = openmoc.TrackGenerator(openmoc_geometry, 128, 0.01)
         track_generator.setNumThreads(opts.num_omp_threads)
         track_generator.generateTracks()
 
@@ -72,7 +72,7 @@ for j, num_groups in enumerate(groups):
         print('# groups = {}, # rings = {}'.format(num_groups, rings))
 
         # Initialize a fine (70-)group MGXS Library from OpenMC statepoint data
-        directory = '{}/1x/'.format(scatter)
+        directory = '{}/{}x/'.format(scatter, rings)
         sp = openmc.StatePoint(directory + 'statepoint.100.h5')
         mgxs_lib = openmc.mgxs.Library.load_from_file(directory=directory)
 
@@ -87,7 +87,7 @@ for j, num_groups in enumerate(groups):
         # Compute SPH factors
         sph, sph_mgxs_lib, sph_indices = \
             openmoc.materialize.compute_sph_factors(
-                condense_lib, num_azim=128, azim_spacing=0.05, sph_tol=1E-7,
+                condense_lib, num_azim=128, azim_spacing=0.01, sph_tol=1E-7,
                 num_threads=opts.num_omp_threads, max_sph_iters=50)
 
         # Load the SPH-corrected MGXS library data
@@ -95,7 +95,7 @@ for j, num_groups in enumerate(groups):
             openmoc.materialize.load_openmc_mgxs_lib(sph_mgxs_lib, openmoc_geometry)
 
         # Generate tracks
-        track_generator = openmoc.TrackGenerator(openmoc_geometry, 128, 0.05)
+        track_generator = openmoc.TrackGenerator(openmoc_geometry, 128, 0.01)
         track_generator.setNumThreads(opts.num_omp_threads)
         track_generator.generateTracks()
 
