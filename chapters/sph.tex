@@ -178,30 +178,9 @@ The \ac{SPH} iteration algorithm described here is summarized in Alg.~\ref{alg:c
 \subsection{Implementation in OpenMOC}
 \label{subsec:chap6-sph-openmoc}
 
-%fourth paragraph: summary
-%-fudge factors that attempt to preserve reaction rates
+The \ac{SPH} scheme was implemented in the \texttt{openmoc.materialize} Python module of the OpenMOC code (see Sec.~\ref{subsubsec:chap4-openmoc-mgxs}). The \ac{SPH} algorithm was specifically implemented to work with the \texttt{Library} class included in the \texttt{openmc.mgxs} Python module for \ac{MGXS} generation with OpenMC (see Sec.~\ref{subsec:chap4-mgxs}). In particular, the fixed source in Eqn.~\ref{eqn:chap6-sph-source} is computed from the \ac{MC} tallies in the \texttt{Library} object and used to construct a fixed source simulation in OpenMOC. The \ac{MGXS} tabulated in the \texttt{Library} object are loaded into OpenMOC, and the series of fixed source calculations in Alg.~\ref{alg:chap6-sph} is managed from Python. The \ac{MGXS} data in the \texttt{Library} object is updated with the \ac{SPH} factors computed at each iteration. The final corrected \ac{MGXS} \texttt{Library} object, along with the \ac{SPH} factors, are returned to the user for use in subsequent OpenMOC eigenvalue calculations.
 
--mention that the MC source calculation is not trivial
--tallies are volume-integrated in OpenMC, while values are volume-averaged in OpenMOC
--must compute volume-averaged sources for OpenMOC
-  -must be averaged with the volume computed by OpenMOC from track lengths!!!
--mention that this is not trivial to implement on an unstructured \ac{CG} mesh!!!
-
-first paragraph: in openmoc.materialize
--implementation of SPH factors in openmoc
--custom for openmc.mgxs Library objects
-
-second paragraph: intro algorithm
--walk through the algorithm
-
-ALGORITHM HERE (SIMULTANEOUS GROUPS)\\
-
-
-The results in Chapter~\ref{chap:biases} demonstrated systematic biases between continuous energy Monte Carlo and deterministic multi-group simulations of simple heterogeneous benchmark models. In Section~\ref{sec:chap5-diagnosis} it was shown that these biases largely derive from errors in the multi-group fluxes/reaction rates in the large thermal U-238 capture resonances. 
-
--sentence wrapping this paragraph up - talk about spatial self-shielding and segue
-
-These results closely mirror observations by Gibson~\cite{gibson2016thesis} which quantified the errors fundamental to the total 
+Although the \ac{SPH} algorithm is relatively simple, a few subtle issues made the implementation in OpenMOC less than straightforward. First, it should be noted that OpenMC tallies are \textit{volume-integrated}, while reaction rates and fluxes in OpenMOC are \textit{volume-averaged}. As a result, the \ac{MC} tallies must be normalized to the volume used by OpenMOC for each \ac{FSR}\footnote{OpenMOC estimates spatial volumes by integrating the characteristic track lengths across each \ac{FSR}.} to calculate the volume-averaged fixed source in each \ac{FSR}. In addition, it was relatively complicated to map the \ac{MGXS} data and \ac{SPH} factors between the combinatorial geometry meshes used by OpenMC and OpenMOC. These challenges notwithstanding, \ac{SPH} factors were implemented in OpenMOC v0.2.1, and used to reduce reaction rate errors as discussed in the following section.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
