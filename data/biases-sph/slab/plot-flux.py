@@ -207,7 +207,7 @@ plt.xlabel('Energy [eV]', fontsize=12)
 plt.ylabel('Relative Error [%]', fontsize=12)
 plt.xlim((min(group_edges), max(group_edges)))
 plt.xscale('log')
-plt.legend(['Innermost', 'Outermost'], fontsize=12)
+plt.legend(['Inner', 'Outer'], fontsize=12)
 
 # Create loglog plot of U-238 continuous-energy capture cross section
 ax2 = ax1.twinx()
@@ -221,6 +221,13 @@ ax1.patch.set_visible(False) # hide the 'canvas'
 
 plt.savefig('rel-err-inner-outer.png', bbox_inches='tight')
 plt.close()
+
+
+###############################################################################
+# Store Data to NumPy ".npy" Files for Later Use
+###############################################################################
+
+np.save('rel-err-no-sph.npy', rel_err)
 
 
 ###############################################################################

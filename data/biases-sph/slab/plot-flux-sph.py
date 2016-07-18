@@ -1,3 +1,15 @@
+"""This script is used to generate Figs. 5.3a, 5.4a and 5.5a:
+
+  - the flux in the fuel vs. energy for OpenMC and OpenMOC
+  - the OpenMC-OpenMOC flux error vs. energy for innermost/outermost FSRs
+  - the OpenMC-OpenMOC flux error vs. FSR for energy ranges A, B and C
+
+The MGXS were generated with isotropic in lab scattering and tallied by FSR.
+"""
+
+# FIXME: Just store fluxes from "plot-flux.py" to ASCII file
+# and load them back in for the plots
+
 import os
 import re
 
@@ -26,7 +38,7 @@ opts = openmoc.options.Options()
 
 # Query the user for the number of energy groups
 scatter = 'iso-in-lab'
-mesh = 1
+mesh = 16
 num_groups = 70
 
 directory = '{}/{}x'.format(scatter, mesh)
@@ -39,7 +51,6 @@ openmoc_geometry = \
 coarse_groups = group_structures['CASMO']['{}-group'.format(num_groups)]
 mgxs_lib = mgxs_lib.get_condensed_library(coarse_groups)
 
-# FIXME
 # Compute SPH factors
 sph, sph_mgxs_lib, sph_indices = \
     openmoc.materialize.compute_sph_factors(
@@ -72,7 +83,7 @@ solver.printTimerReport()
 openmoc.log.py_printf('NORMAL', 'Plotting data...')
 
 # Extract the OpenMOC scalar fluxes
-openmoc_fluxes = openmoc.process.get_scalar_fluxes(solver) # * sph
+openmoc_fluxes = openmoc.process.get_scalar_fluxes(solver) * sph
 
 # Extract the OpenMC scalar fluxes
 num_fsrs = openmoc_geometry.getNumFSRs()
@@ -119,7 +130,7 @@ group_edges = mgxs_lib.energy_groups.group_edges
 group_edges *= 1e6      # Convert to units of eV
 group_edges[0] = 1e-5   # Adjust lower bound (for loglog scaling)
 
-# FIXME
+# Reverse from low to high energy for plotting
 openmc_fluxes = openmc_fluxes[:, ::-1]
 openmoc_fluxes = openmoc_fluxes[:, ::-1]
 
@@ -129,45 +140,7 @@ openmoc_fluxes = np.insert(openmoc_fluxes, 0, openmoc_fluxes[:,0], axis=1)
 
 
 ###############################################################################
-#                 Plot OpenMC-to-OpenMOC Scalar Flux Errors
-###############################################################################
-
-# Compute volume-weighted FSR fluxes across the geometry
-vol_avg_openmc_fluxes = np.nansum(openmc_fluxes[fuel_fsrs,:] *
-                                  fsr_volumes[fuel_fsrs, np.newaxis], axis=0)
-vol_avg_openmoc_fluxes = np.nansum(openmoc_fluxes[fuel_fsrs,:] *
-                                   fsr_volumes[fuel_fsrs, np.newaxis], axis=0)
-
-# Normalize the fluxes to the mean
-vol_avg_openmc_fluxes /= np.mean(vol_avg_openmc_fluxes)
-vol_avg_openmoc_fluxes /= np.mean(vol_avg_openmoc_fluxes)
-
-# Compute lethargy for each group
-lethargies = np.ediff1d(np.log(group_edges))
-
-# Normalize the fluxes to the mean
-vol_avg_openmc_fluxes[1:] /= lethargies
-vol_avg_openmoc_fluxes[1:] /= lethargies
-
-vol_avg_openmc_fluxes[0] = vol_avg_openmc_fluxes[1]
-vol_avg_openmoc_fluxes[0] = vol_avg_openmoc_fluxes[1]
-
-plt.plot(group_edges, vol_avg_openmc_fluxes,
-         drawstyle='steps', color='r', linewidth=2)
-plt.plot(group_edges, vol_avg_openmoc_fluxes,
-         drawstyle='steps', color='b', linewidth=2)
-
-plt.yscale('log')
-plt.xscale('log')
-plt.xlabel('Energy [eV]', fontsize=12)
-plt.ylabel('Flux / Lethargy', fontsize=12)
-plt.xlim((min(group_edges), max(group_edges)))
-plt.legend(['OpenMC', 'OpenMOC'], loc='best', fontsize=12)
-plt.savefig('vol-avg-flux-sph.png', bbox_inches='tight')
-plt.close()
-
-###############################################################################
-#                 Plot OpenMC-to-OpenMOC Scalar Flux Errors
+#              Compute OpenMC-to-OpenMOC Scalar Flux Errors
 ###############################################################################
 
 # Instantiate a PyNE ACE continuous-energy cross sections library
@@ -186,50 +159,16 @@ capture = u238.reactions[102]
 delta_flux = openmoc_fluxes - openmc_fluxes
 rel_err = delta_flux / openmc_fluxes * 100.
 
-'''
-# Compute the percent relative error in the flux
-rel_err = np.zeros(openmc_fluxes.shape)
-for fsr in range(num_fsrs):
-    delta_flux = openmoc_fluxes[fsr,:] - openmc_fluxes[fsr,:]
-    rel_err[fsr,:] = delta_flux / openmc_fluxes[fsr,:] * 100.
-'''
-
-'''
-# Plot OpenMOC relative flux errors in each FSR
-for fsr in range(num_fsrs):
-
-    # Get the OpenMOC cell and material for this FSR
-    cell = openmoc_geometry.findCellContainingFSR(fsr)
-
-    # Create a step plot for the MGXS
-    fig, ax1 = plt.subplots()
-
-    plt.plot(group_edges, rel_err[fsr,:],
-             drawstyle='steps', color='r', linewidth=2)
-
-    plt.xlabel('Energy [eV]', fontsize=12)
-    plt.ylabel('Relative Error [%]', fontsize=12)
-    plt.xlim((min(group_edges), max(group_edges)))
-    plt.xscale('log')
-
-    # Create loglog plot of U-238 continuous-energy capture cross section 
-    if 'fuel' in cell.getName():
-        ax2 = ax1.twinx()
-        ax2.loglog(u238.energy*1e6, capture.sigma, color='g', \
-                   linewidth=1, zorder=1)
-        ax2.set_ylabel('U-238 Capture XS [barns]', color='g', fontsize=12)
-        ax2.set_yscale('log')
-
-        ax1.set_zorder(ax2.get_zorder()+1) # put ax in front of ax2 
-        ax1.patch.set_visible(False) # hide the 'canvas' 
-
-    filename = 'rel-err-{0}.png'.format(fsr)
-    plt.savefig(filename, bbox_inches='tight')
-    plt.close()
-'''
 
 ###############################################################################
-#        Plot OpenMC-to-OpenMOC Innermost/Outermost Scalar Flux Error
+# Load Relative Errors w/o SPH From NumPy Data Store
+###############################################################################
+
+rel_err_no_sph = np.load('rel-err-no-sph.npy')
+
+
+###############################################################################
+#  Plot OpenMC-to-OpenMOC Innermost/Outermost Scalar Flux Error (Fig. 5.4a)
 ###############################################################################
 
 min_fsr = fuel_fsrs[np.argmin(fuel_centroids)]
@@ -239,15 +178,20 @@ max_fsr = fuel_fsrs[np.argmax(fuel_centroids)]
 fig, ax1 = plt.subplots()
 
 plt.plot(group_edges, rel_err[min_fsr,:],
-         drawstyle='steps', color='b', linewidth=2)
+         drawstyle='steps', color='r', linestyle='-', linewidth=2)
+plt.plot(group_edges, rel_err_no_sph[min_fsr,:], alpha=0.5,
+         drawstyle='steps', color='r', linestyle='--', linewidth=2)
 plt.plot(group_edges, rel_err[max_fsr,:],
-         drawstyle='steps', color='r', linewidth=2)
+         drawstyle='steps', color='b', linestyle='-', linewidth=2)
+plt.plot(group_edges, rel_err_no_sph[max_fsr,:], alpha=0.5,
+         drawstyle='steps', color='b', linestyle='--', linewidth=2)
 
 plt.xlabel('Energy [eV]', fontsize=12)
 plt.ylabel('Relative Error [%]', fontsize=12)
 plt.xlim((min(group_edges), max(group_edges)))
 plt.xscale('log')
-plt.legend(['Innermost', 'Outermost'], fontsize=12)
+plt.legend(['Inner (SPH)', 'Inner (No SPH)',
+            'Outer (SPH)', 'Outer (No SPH)'], fontsize=12)
 
 # Create loglog plot of U-238 continuous-energy capture cross section
 ax2 = ax1.twinx()
@@ -264,13 +208,78 @@ plt.close()
 
 
 ###############################################################################
-#        Plot OpenMC-to-OpenMOC Flux Error Across Fuel FSRs in Group 27
+#  Plot OpenMC-to-OpenMOC Innermost/Outermost SPH Factors
+###############################################################################
+
+# Reverse the SPH factors in energy for plotting
+new_sph = sph[:,::-1]
+
+# Extend the mgxs values array for matplotlib's step plot of fluxes
+new_sph = np.insert(sph, 0, sph[:,0], axis=1)
+
+min_fsr = fuel_fsrs[np.argmin(fuel_centroids)]
+max_fsr = fuel_fsrs[np.argmax(fuel_centroids)]
+
+# Plot the error for the innermost and outermost FSRS atop each other
+fig, ax1 = plt.subplots()
+
+plt.plot(group_edges, new_sph[min_fsr,::-1],
+         drawstyle='steps', color='b', linewidth=2)
+plt.plot(group_edges, new_sph[max_fsr,::-1],
+         drawstyle='steps', color='r', linewidth=2)
+
+plt.xlabel('Energy [eV]', fontsize=12)
+plt.ylabel('SPH Factor', fontsize=12)
+plt.xlim((min(group_edges), max(group_edges)))
+plt.xscale('log')
+plt.legend(['Inner', 'Outer'], fontsize=12, loc=2)
+
+# Create loglog plot of U-238 continuous-energy capture cross section
+ax2 = ax1.twinx()
+ax2.loglog(u238.energy*1e6, capture.sigma, color='g', \
+           linewidth=1, zorder=1)
+ax2.set_ylabel('U-238 Capture XS [barns]', color='g', fontsize=12)
+ax2.set_yscale('log')
+
+ax1.set_zorder(ax2.get_zorder()+1) # put ax in front of ax2
+ax1.patch.set_visible(False) # hide the 'canvas'
+ax1.get_yaxis().get_major_formatter().set_useOffset(False)
+
+plt.savefig('sph-inner-outer.png', bbox_inches='tight')
+plt.close()
+
+
+###############################################################################
+#                Plot SPH Factors vs Fuel FSRs in Group 27
 ###############################################################################
 
 # Plot the relative error for group 27
 fig = plt.figure()
 
-# FIXME
+# Array index for group 27 with the U-238 capture resonance at 6.67ev
+group_index = 70 - 27 + 1
+
+centroid_indices = np.argsort(fuel_centroids)
+fuel_indices = fuel_fsrs[centroid_indices]
+sph = sph[fuel_indices, group_index]
+sph = np.insert(sph, 0, sph[0], axis=0)
+
+plt.plot(np.arange(sph.shape[0]), sph, drawstyle='steps', color='b', linewidth=3)
+plt.xlabel('Fuel FSR', fontsize=12)
+plt.ylabel('SPH Factor (Group 27)', fontsize=12)
+plt.xlim((0, sph.shape[0]-1))
+plt.savefig('sph-fuel-fsrs.png', bbox_inches='tight')
+plt.close()
+
+
+###############################################################################
+#          Plot OpenMC-to-OpenMOC Flux Error vs Fuel FSRs in Group 27
+###############################################################################
+
+# Plot the relative error for group 27
+fig = plt.figure()
+
+# Array index for group 27 with the U-238 capture resonance at 6.67ev
 group_index = 70 - 27 + 1
 
 centroid_indices = np.argsort(fuel_centroids)
@@ -284,46 +293,3 @@ plt.ylabel('Relative Error [%]', fontsize=12)
 plt.xlim((0, rel_err.shape[0]-1))
 plt.savefig('rel-err-fuel-fsrs-sph.png', bbox_inches='tight')
 plt.close()
-
-
-'''
-###############################################################################
-#        Plot OpenMC-to-OpenMOC Flux Error Across Fuel FSRs in Ranges A, B, C
-###############################################################################
-
-# Find energy group which encompasses 6.67 eV resonance
-min_ind = mgxs_lib.energy_groups.get_group(6.67e-6) - 1
-
-# Find energy group which encompasses 200 kEV
-max_ind = mgxs_lib.energy_groups.get_group(2.e-2) - 1
-
-# Compute OpenMOC flux in ranges A, B, and C for each fuel FSR
-openmoc_flux_a = openmoc_fluxes[fuel_indices, group_index]
-openmoc_flux_b = np.sum(openmoc_fluxes[fuel_indices, max_ind:min_ind], axis=1)
-openmoc_flux_c = np.sum(openmoc_fluxes[fuel_indices, :], axis=1)
-
-# Compute OpenMC flux in ranges A, B, and C for each fuel FSR
-openmc_flux_a = openmc_fluxes[fuel_indices, group_index]
-openmc_flux_b = np.sum(openmc_fluxes[fuel_indices, max_ind:min_ind], axis=1)
-openmc_flux_c = np.sum(openmc_fluxes[fuel_indices, :], axis=1)
-
-# Compute flux rel. err. for ranges A, B, and C for each fuel FSR
-delta_flux_a = openmoc_flux_a - openmc_flux_a
-delta_flux_b = openmoc_flux_b - openmc_flux_b
-delta_flux_c = openmoc_flux_c - openmc_flux_c
-rel_err_a = delta_flux_a / openmc_flux_a * 100.
-rel_err_b = delta_flux_b / openmc_flux_b * 100.
-rel_err_c = delta_flux_c / openmc_flux_c * 100.
-
-# Plot the relative errors
-fig = plt.figure()
-plt.plot(np.arange(rel_err_a.shape[0]), rel_err_a, drawstyle='steps', color='r', linewidth=3)
-plt.plot(np.arange(rel_err_b.shape[0]), rel_err_b, drawstyle='steps', color='g', linewidth=3)
-plt.plot(np.arange(rel_err_c.shape[0]), rel_err_c, drawstyle='steps', color='b', linewidth=3)
-plt.legend(['Range A', 'Range B', 'Range C'])
-plt.xlabel('Fuel FSR', fontsize=12)
-plt.ylabel('Relative Error [%]', fontsize=12)
-plt.xlim((0, rel_err_a.shape[0]-1))
-plt.savefig('rel-err-fuel-fsrs-ranges-sph.png', bbox_inches='tight')
-plt.close()
-'''

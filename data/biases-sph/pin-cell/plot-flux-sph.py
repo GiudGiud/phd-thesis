@@ -122,19 +122,19 @@ openmoc_geometry = \
 coarse_groups = group_structures['CASMO']['{}-group'.format(num_groups)]
 mgxs_lib = mgxs_lib.get_condensed_library(coarse_groups)
 
-# FIXME
 # Compute SPH factors
 sph, sph_mgxs_lib, sph_indices = \
     openmoc.materialize.compute_sph_factors(
-        mgxs_lib, num_azim=128, azim_spacing=0.01, sph_tol=1E-7,
+        mgxs_lib, num_azim=512, azim_spacing=0.001, sph_tol=1E-7,
         num_threads=opts.num_omp_threads, max_sph_iters=30)
 
 openmoc_materials = \
     openmoc.materialize.load_openmc_mgxs_lib(sph_mgxs_lib, openmoc_geometry)
 
+np.save('sph.npy', sph)
+
 # Initialize an OpenMOC TrackGenerator and Solver
-#track_generator = openmoc.TrackGenerator(openmoc_geometry, 512, 0.001)
-track_generator = openmoc.TrackGenerator(openmoc_geometry, 128, 0.01)
+track_generator = openmoc.TrackGenerator(openmoc_geometry, 512, 0.001)
 track_generator.generateTracks(store=False)
 
 # Initialize an OpenMOC Solver
@@ -168,7 +168,7 @@ openmoc_fluxes = np.insert(openmoc_fluxes, 0, openmoc_fluxes[:,0], axis=1)
 
 
 ###############################################################################
-#                 Plot OpenMC-to-OpenMOC Scalar Flux Errors
+#              Compute OpenMC-to-OpenMOC Scalar Flux Errors
 ###############################################################################
 
 # Instantiate a PyNE ACE continuous-energy cross sections library
@@ -189,6 +189,13 @@ rel_err = delta_flux / openmc_fluxes * 100.
 
 
 ###############################################################################
+# Load Relative Errors w/o SPH From NumPy Data Store
+###############################################################################
+
+rel_err_no_sph = np.load('rel-err-no-sph.npy')
+
+
+###############################################################################
 #        Plot OpenMC-to-OpenMOC Innermost/Outermost Scalar Flux Error
 ###############################################################################
 
@@ -199,15 +206,20 @@ max_fsr = fuel_indices[0]
 fig, ax1 = plt.subplots()
 
 plt.plot(group_edges, rel_err[min_fsr,:],
-         drawstyle='steps', color='b', linewidth=2)
+         drawstyle='steps', color='r', linestyle='-', linewidth=2)
+plt.plot(group_edges, rel_err_no_sph[min_fsr,:], alpha=0.5,
+         drawstyle='steps', color='r', linestyle='--', linewidth=2)
 plt.plot(group_edges, rel_err[max_fsr,:],
-         drawstyle='steps', color='r', linewidth=2)
+         drawstyle='steps', color='b', linestyle='-', linewidth=2)
+plt.plot(group_edges, rel_err_no_sph[max_fsr,:], alpha=0.5,
+         drawstyle='steps', color='b', linestyle='--', linewidth=2)
 
 plt.xlabel('Energy [eV]', fontsize=12)
 plt.ylabel('Relative Error [%]', fontsize=12)
 plt.xlim((min(group_edges), max(group_edges)))
 plt.xscale('log')
-plt.legend(['Innermost', 'Outermost'], fontsize=12)
+plt.legend(['Inner (SPH)', 'Inner (No SPH)',
+            'Outer (SPH)', 'Outer (No SPH)'], fontsize=12)
 
 # Create loglog plot of U-238 continuous-energy capture cross section
 ax2 = ax1.twinx()
@@ -224,12 +236,52 @@ plt.close()
 
 
 ###############################################################################
-#              Plot SPH Factors Across Fuel FSRs in Group 27
+#  Plot OpenMC-to-OpenMOC Innermost/Outermost SPH Factors
+###############################################################################
+
+# Reverse the SPH factors in energy for plotting
+new_sph = new_sph[:,::-1]
+
+# Extend the mgxs values array for matplotlib's step plot of fluxes
+new_sph = np.insert(new_sph, 0, new_sph[:,0], axis=1)
+
+# Plot the error for the innermost and outermost FSRS atop each other
+fig, ax1 = plt.subplots()
+
+plt.plot(group_edges, new_sph[min_fsr,::-1],
+         drawstyle='steps', color='b', linewidth=2)
+plt.plot(group_edges, new_sph[max_fsr,::-1],
+         drawstyle='steps', color='r', linewidth=2)
+
+plt.xlabel('Energy [eV]', fontsize=12)
+plt.ylabel('SPH Factor', fontsize=12)
+plt.xlim((min(group_edges), max(group_edges)))
+plt.xscale('log')
+plt.legend(['Inner', 'Outer'], fontsize=12, loc=2)
+
+# Create loglog plot of U-238 continuous-energy capture cross section
+ax2 = ax1.twinx()
+ax2.loglog(u238.energy*1e6, capture.sigma, color='g', \
+           linewidth=1, zorder=1)
+ax2.set_ylabel('U-238 Capture XS [barns]', color='g', fontsize=12)
+ax2.set_yscale('log')
+
+ax1.set_zorder(ax2.get_zorder()+1) # put ax in front of ax2
+ax1.patch.set_visible(False) # hide the 'canvas'
+ax1.get_yaxis().get_major_formatter().set_useOffset(False)
+
+plt.savefig('sph-inner-outer.png', bbox_inches='tight')
+plt.close()
+
+
+###############################################################################
+#              Plot SPH Factors vs. Fuel FSRs in Group 27
 ###############################################################################
 
 # Plot the SPH factors for group 27
 fig = plt.figure()
 
+# Array index for group 27 with the U-238 capture resonance at 6.67ev
 group_index = 70 - 27 + 1
 
 print(new_sph[:, group_index])
@@ -258,6 +310,7 @@ plt.close()
 # Plot the relative error for group 27
 fig = plt.figure()
 
+# Array index for group 27 with the U-238 capture resonance at 6.67ev
 group_index = 70 - 27 + 1
 
 print(rel_err[:, group_index])
