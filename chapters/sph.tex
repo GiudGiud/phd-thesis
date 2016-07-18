@@ -52,10 +52,17 @@ Gibson further investigated this issue by using the reference ultra-fine angular
 \label{fig:chap6-batman-plots}
 \end{figure}
 
-Gibson proceeded to show that the angular-dependent \ac{MGXS} eliminated the reaction rate errors observed with scalar flux-weighted \ac{MGXS}. The analysis highlighted the tight coupling between angular-dependence and the spatial discretization. Notably, the reaction rate errors were reduced by an order of magnitude only when angular-dependent \ac{MGXS} were paired with a fine \ac{FSR} spatial discretization. This can be explained by the fact that the angular variation of the volume-integrated flux is moderated as the \ac{FSR} mesh is coarsened. Thus, the angular effects at the fuel/moderator interface cannot be captured by angular-dependent \ac{MGXS} if the \ac{FSR} discretization does distinguish between neutrons entering/leaving the fuel pin.
+Gibson proceeded to show that the angular-dependent \ac{MGXS} eliminated the reaction rate errors observed with scalar flux-weighted \ac{MGXS}. The analysis highlighted the tight coupling between angular-dependence and the spatial discretization. Notably, the reaction rate errors were reduced by an order of magnitude only when angular-dependent \ac{MGXS} were paired with a fine \ac{FSR} spatial discretization. This can be explained by the fact that the angular variation of the volume-integrated flux is moderated as the \ac{FSR} mesh is coarsened. Thus, the angular effects at the fuel/moderator interface cannot be captured by angular-dependent \ac{MGXS} if the \ac{FSR} discretization is unable to distinguish between neutrons entering/leaving the fuel pin.
+
+
+
+final paragraph: what to do?
+-BHS??
+-easy to imagine that angular effects could lead to errors
 
 second paragraph: flux separability
 -mention SPH factors as one soln (segue)
+
 %-Nelson's 1D slab plot(s)?
 
 
@@ -253,22 +260,21 @@ second paragraph: synthesis
 
 \begin{table}[h!]
   \centering
-  \caption{Spatial homogenization error with SPH for a 1D slab.}
+  \caption[Eigenvalues with SPH factors for a 1D slab]{The impact of SPH factors on the eigenvalue bias $\Delta\rho$ with varying energy group structures and \ac{FSR} spatial discretizations for a 1D slab.}  
   \label{table:chap6-sph-slab-energy} 
-  \vspace{14pt}
-  \begin{tabular}{c S[table-format=6.1] S[table-format=6.1] S[table-format=6.1] S[table-format=6.1] S[table-format=6.1]}
-  \toprule
-  & \multicolumn{5}{c}{\boldmath $\Delta\rho$ {\bf [pcm]}} \\
-  \midrule  
-  \multicolumn{1}{c}{\textbf{\# Groups}} &
-  \multicolumn{1}{c}{\bf 1$\times$} &
-  \multicolumn{1}{c}{\bf 2$\times$} &
-  \multicolumn{1}{c}{\bf 4$\times$} &
-  \multicolumn{1}{c}{\bf 8$\times$} &
-  \multicolumn{1}{c}{\bf 16$\times$} \\
+  \vspace{6pt}
+  \begin{tabular}{| q | S[table-format=6.1] S[table-format=6.1] S[table-format=6.1] S[table-format=6.1] S[table-format=6.1] |}
+  \hhline{~|-----|}
+  \multicolumn{1}{c|}{\cellcolor{white}} & \multicolumn{5}{c|}{\cellcolor{lightgray} {\bf \ac{FSR} Discretization}} \\
+  \multicolumn{1}{c|}{\cellcolor{white}} &
+  {\cellcolor{lightgray} {\bf 1$\times$}} &
+  {\cellcolor{lightgray} {\bf 2$\times$}} &
+  {\cellcolor{lightgray} {\bf 4$\times$}} &
+  {\cellcolor{lightgray} {\bf 8$\times$}} &
+  {\cellcolor{lightgray} {\bf 16$\times$}} \\
   \midrule
-  & \multicolumn{5}{c}{\bf Without SPH} \\
-  \cline{2-6}
+  \multicolumn{1}{|c|}{\cellcolor{lightgray} {\bf \# Groups}} & \multicolumn{5}{c|}{\cellcolor{carolinablue} \bf Without SPH} \\
+  \hhline{~|-----|}
 1 & 134 & 92 & 121 & 156 & 134 \\
 2 & 384 & 228 & 179 & 168 & 165 \\
 4 & 236 & 125 & 74 & 57 & 47 \\
@@ -277,9 +283,9 @@ second paragraph: synthesis
 25 & 247 & 61 & -37 & -81 & -97 \\
 40 & 249 & 51 & -56 & -102 & -118 \\
 70 & 258 & 51 & -61 & -111 & -123 \\
-  \cline{2-6}
-  & \multicolumn{5}{c}{\bf With SPH} \\
-  \cline{2-6}
+  \midrule
+  \multicolumn{1}{c|}{\cellcolor{white}} & \multicolumn{5}{c|}{\cellcolor{lightgreen} \bf With SPH} \\
+  \midrule
 1 & 33 & -10 & 18 & 52 & 31 \\
 2 & 37 & 13 & 25 & 31 & 13 \\
 4 & 16 & 23 & 24 & 28 & 12 \\
@@ -294,22 +300,21 @@ second paragraph: synthesis
 
 \begin{table}[h!]
   \centering
-  \caption{Spatial homogenization error with SPH for a 2D fuel pin.}
+  \caption[Eigenvalues with SPH factors for a 2D fuel pin]{The impact of SPH factors on the eigenvalue bias $\Delta\rho$ with varying energy group structures and \ac{FSR} spatial discretizations for a 2D fuel pin.}
   \label{table:chap6-sph-pin-energy} 
-  \vspace{14pt}
-  \begin{tabular}{c S[table-format=6.1] S[table-format=6.1] S[table-format=6.1] S[table-format=6.1] S[table-format=6.1]}
-  \toprule
-  & \multicolumn{5}{c}{\boldmath $\Delta\rho$ {\bf [pcm]}} \\
-  \midrule  
-  \multicolumn{1}{c}{\textbf{\# Groups}} &
-  \multicolumn{1}{c}{\bf 1$\times$} &
-  \multicolumn{1}{c}{\bf 2$\times$} &
-  \multicolumn{1}{c}{\bf 4$\times$} &
-  \multicolumn{1}{c}{\bf 8$\times$} &
-  \multicolumn{1}{c}{\bf 16$\times$} \\
+  \vspace{6pt}
+  \begin{tabular}{| q | S[table-format=6.1] S[table-format=6.1] S[table-format=6.1] S[table-format=6.1] S[table-format=6.1] |}
+  \hhline{~|-----|}
+  \multicolumn{1}{c|}{\cellcolor{white}} & \multicolumn{5}{c|}{\cellcolor{lightgray} {\bf \ac{FSR} Discretization}} \\
+  \multicolumn{1}{c|}{\cellcolor{white}} &
+  {\cellcolor{lightgray} {\bf 1$\times$}} &
+  {\cellcolor{lightgray} {\bf 2$\times$}} &
+  {\cellcolor{lightgray} {\bf 4$\times$}} &
+  {\cellcolor{lightgray} {\bf 8$\times$}} &
+  {\cellcolor{lightgray} {\bf 16$\times$}} \\
   \midrule
-  & \multicolumn{5}{c}{\bf Without SPH} \\
-  \cline{2-6}
+  \multicolumn{1}{|c|}{\cellcolor{lightgray} {\bf \# Groups}} & \multicolumn{5}{c|}{\cellcolor{carolinablue} \bf Without SPH} \\
+  \hhline{~|-----|}
 1 & 91 & 92 & 92 & 92 & 92 \\
 2 & 153 & 109 & 78 & 67 & 68 \\
 4 & 31 & -9 & -38 & -51 & -59 \\
@@ -318,9 +323,9 @@ second paragraph: synthesis
 25 & -27 & -91 & -142 & -169 & -177 \\
 40 & -34 & -103 & -159 & -187 & -196 \\
 70 & -35 & -106 & -165 & -195 & -204 \\
-  \cline{2-6}
-  & \multicolumn{5}{c}{\bf With SPH} \\
-  \cline{2-6}
+  \midrule
+  \multicolumn{1}{c|}{\cellcolor{white}} & \multicolumn{5}{c|}{\cellcolor{lightgreen} \bf With SPH} \\
+  \midrule
 1 & 6 & 6 & 6 & 6 & 6 \\
 2 & 32 & 32 & 32 & 32 & 32 \\
 4 & 7 & 7 & 7 & 7 & 7 \\
