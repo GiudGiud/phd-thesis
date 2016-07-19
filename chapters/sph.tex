@@ -322,6 +322,38 @@ second paragraph: synthesis
 \end{tabular}
 \end{table}
 
+\begin{figure}[H]
+\begin{subfigure}{.9\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{figures/sph/slab/rel-err-fuel-fsrs}
+  \caption{}
+\end{subfigure}
+\begin{subfigure}{.9\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{figures/sph/slab/rel-err-fuel-fsrs}
+  \caption{}
+\end{subfigure}
+\caption[Flux relative error by FSR w/ SPH]{The spatially-varying relative error of the OpenMOC scalar flux with respect to the reference OpenMC flux for a 1D slab (a) and 2D fuel pin (b) in group 27. The results correspond to Tables~\ref{table:chap5-slab-space} and~\ref{table:chap5-pin-space}.}
+\label{fig:chap6-rel-err-space}
+\end{figure}
+
+
+\begin{figure}[h!]
+\begin{subfigure}{.9\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{figures/sph/slab/rel-err-inner-outer}
+  \caption{}
+\end{subfigure}
+\begin{subfigure}{.9\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{figures/sph/slab/rel-err-inner-outer}
+  \caption{}
+\end{subfigure}
+\caption[Flux relative error by energy group w/ SPH]{The energy-dependent relative error of the OpenMOC scalar flux with respect to the reference OpenMC flux in a 1D slab (a) and 2D fuel pin (b). The results correspond to the case studies presented in Tables~\ref{table:chap5-slab-space} and~\ref{table:chap5-pin-space}.}
+\label{fig:chap6-rel-err-energy}
+\end{figure}
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{SPH Factors in Energy}
 \label{subsubsec:chap6-sph-energy}
@@ -335,6 +367,21 @@ first paragraph: intro case studies
 FLUX PLOTS HERE [W/ AND W/O SPH]
 -red and blue, solid and dashed lines
 -both pin and slab
+
+\begin{figure}[h!]
+\begin{subfigure}{.9\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{figures/sph/slab/sph-inner-outer}
+  \caption{}
+\end{subfigure}
+\begin{subfigure}{.9\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{figures/sph/slab/sph-inner-outer}
+  \caption{}
+\end{subfigure}
+\caption[SPH factors by energy group]{The energy-dependent relative error of the OpenMOC scalar flux with respect to the reference OpenMC flux in a 1D slab (a) and 2D fuel pin (b). The results correspond to the case studies presented in Tables~\ref{table:chap5-slab-space} and~\ref{table:chap5-pin-space}.}
+\label{fig:chap6-sph-energy}
+\end{figure}
 
 second paragraph: synthesis
 -describe what you see
@@ -355,6 +402,21 @@ FLUX PLOTS HERE [W/ AND W/O SPH]
 -both pin and slab
 -red and blue, solid and dashed lines
 -groups 27, 29, and 30? and 28?
+
+\begin{figure}[H]
+\begin{subfigure}{.9\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{figures/sph/slab/sph-fuel-fsrs}
+  \caption{}
+\end{subfigure}
+\begin{subfigure}{.9\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{figures/sph/slab/sph-fuel-fsrs}
+  \caption{}
+\end{subfigure}
+\caption[SPH factors by FSR]{The spatially-varying relative error of the OpenMOC scalar flux with respect to the reference OpenMC flux for a 1D slab (a) and 2D fuel pin (b) in group 27. The results correspond to Tables~\ref{table:chap5-slab-space} and~\ref{table:chap5-pin-space}.}
+\label{fig:chap6-sph-space}
+\end{figure}
 
 second paragraph: synthesis
 -describe what you see
