@@ -57,6 +57,8 @@ sph, sph_mgxs_lib, sph_indices = \
         mgxs_lib, num_azim=128, azim_spacing=0.01, sph_tol=1E-7,
         num_threads=opts.num_omp_threads, max_sph_iters=20)
 
+print(np.argmin(sph, axis=1))
+
 # Load the SPH-corrected MGXS library data
 materials = \
     openmoc.materialize.load_openmc_mgxs_lib(sph_mgxs_lib, openmoc_geometry)
@@ -178,13 +180,13 @@ max_fsr = fuel_fsrs[np.argmax(fuel_centroids)]
 fig, ax1 = plt.subplots()
 
 plt.plot(group_edges, rel_err[min_fsr,:],
-         drawstyle='steps', color='r', linestyle='-', linewidth=2)
-plt.plot(group_edges, rel_err_no_sph[min_fsr,:], alpha=0.5,
-         drawstyle='steps', color='r', linestyle='--', linewidth=2)
-plt.plot(group_edges, rel_err[max_fsr,:],
          drawstyle='steps', color='b', linestyle='-', linewidth=2)
-plt.plot(group_edges, rel_err_no_sph[max_fsr,:], alpha=0.5,
+plt.plot(group_edges, rel_err_no_sph[min_fsr,:], alpha=0.5,
          drawstyle='steps', color='b', linestyle='--', linewidth=2)
+plt.plot(group_edges, rel_err[max_fsr,:],
+         drawstyle='steps', color='r', linestyle='-', linewidth=2)
+plt.plot(group_edges, rel_err_no_sph[max_fsr,:], alpha=0.5,
+         drawstyle='steps', color='r', linestyle='--', linewidth=2)
 
 plt.xlabel('Energy [eV]', fontsize=12)
 plt.ylabel('Relative Error [%]', fontsize=12)
@@ -212,7 +214,7 @@ plt.close()
 ###############################################################################
 
 # Reverse the SPH factors in energy for plotting
-new_sph = sph[:,::-1]
+sph = sph[:,::-1]
 
 # Extend the mgxs values array for matplotlib's step plot of fluxes
 new_sph = np.insert(sph, 0, sph[:,0], axis=1)
@@ -223,9 +225,9 @@ max_fsr = fuel_fsrs[np.argmax(fuel_centroids)]
 # Plot the error for the innermost and outermost FSRS atop each other
 fig, ax1 = plt.subplots()
 
-plt.plot(group_edges, new_sph[min_fsr,::-1],
+plt.plot(group_edges, new_sph[min_fsr,:],
          drawstyle='steps', color='b', linewidth=2)
-plt.plot(group_edges, new_sph[max_fsr,::-1],
+plt.plot(group_edges, new_sph[max_fsr,:],
          drawstyle='steps', color='r', linewidth=2)
 
 plt.xlabel('Energy [eV]', fontsize=12)
@@ -257,7 +259,7 @@ plt.close()
 fig = plt.figure()
 
 # Array index for group 27 with the U-238 capture resonance at 6.67ev
-group_index = 70 - 27 + 1
+group_index = 70 - 27 # + 1
 
 centroid_indices = np.argsort(fuel_centroids)
 fuel_indices = fuel_fsrs[centroid_indices]
