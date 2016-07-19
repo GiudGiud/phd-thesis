@@ -206,13 +206,13 @@ max_fsr = fuel_indices[0]
 fig, ax1 = plt.subplots()
 
 plt.plot(group_edges, rel_err[min_fsr,:],
-         drawstyle='steps', color='r', linestyle='-', linewidth=2)
-plt.plot(group_edges, rel_err_no_sph[min_fsr,:], alpha=0.5,
-         drawstyle='steps', color='r', linestyle='--', linewidth=2)
-plt.plot(group_edges, rel_err[max_fsr,:],
          drawstyle='steps', color='b', linestyle='-', linewidth=2)
-plt.plot(group_edges, rel_err_no_sph[max_fsr,:], alpha=0.5,
+plt.plot(group_edges, rel_err_no_sph[min_fsr,:], alpha=0.5,
          drawstyle='steps', color='b', linestyle='--', linewidth=2)
+plt.plot(group_edges, rel_err[max_fsr,:],
+         drawstyle='steps', color='r', linestyle='-', linewidth=2)
+plt.plot(group_edges, rel_err_no_sph[max_fsr,:], alpha=0.5,
+         drawstyle='steps', color='r', linestyle='--', linewidth=2)
 
 plt.xlabel('Energy [eV]', fontsize=12)
 plt.ylabel('Relative Error [%]', fontsize=12)
@@ -248,9 +248,9 @@ new_sph = np.insert(new_sph, 0, new_sph[:,0], axis=1)
 # Plot the error for the innermost and outermost FSRS atop each other
 fig, ax1 = plt.subplots()
 
-plt.plot(group_edges, new_sph[min_fsr,::-1],
+plt.plot(group_edges, new_sph[min_fsr,:],
          drawstyle='steps', color='b', linewidth=2)
-plt.plot(group_edges, new_sph[max_fsr,::-1],
+plt.plot(group_edges, new_sph[max_fsr,:],
          drawstyle='steps', color='r', linewidth=2)
 
 plt.xlabel('Energy [eV]', fontsize=12)
