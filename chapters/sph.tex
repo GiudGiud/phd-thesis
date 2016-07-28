@@ -9,7 +9,7 @@ The results in Chapter~\ref{chap:biases} demonstrated that using the ``true'' fl
 
 Chap.~\ref{chap:mgxs} discussed approximations made in multi-group theory to simplify the neutron transport equation in angle, energy and space. Many of these approximations were quantitatively studied in Chap.~\ref{chap:biases} -- including energy group structure, spatial discretization mesh, and isotropic scattering -- yet it was demonstrated that none of these led to the eigenvalue bias. This chapter investigates the flux separability approximation as the dominant factor contributing to the eigenvalue bias.
 
-Sec~\ref{sec:chap6-angular-mgxs} reviews some recent work by by Gibson~\cite{gibson2016thesis} to quantify the approximation error resolved with angular-dependent \ac{MGXS}, which closely mirrors the trends observed in Chap.~\ref{chap:biases}. The historical \ac{SPH} factor concept is introduced in the context of angular-dependent \ac{MGXS} in Sec.~\ref{sec:chap6-sph}, and \ac{SPH} factors are applied to simple heterogeneous benchmarks and the results analyzed in Sec.~\ref{sec:chap6-case-studies}. Finally, this chapter concludes with a summary of the shortcomings of the \ac{SPH} approach and the need for new methods to account for the angular dependence in \ac{MGXS}.
+Sec~\ref{sec:chap6-angular-mgxs} reviews some recent work by by Gibson~\cite{gibson2016thesis} to quantify the approximation error resolved with angular-dependent \ac{MGXS}, which closely mirrors the trends observed in Chap.~\ref{chap:biases}. The historical \ac{SPH} factor concept is introduced in the context of angular-dependent \ac{MGXS} in Sec.~\ref{sec:chap6-sph}, and \ac{SPH} factors are applied to simple heterogeneous benchmarks and the results analyzed in Sec.~\ref{sec:chap6-case-studies}. Finally, this chapter concludes with a summary of the shortcomings of the \ac{SPH} approach in Sec.~\ref{sec:chap6-sph-shortcomings} and the need for new methods to account for the angular dependence in \ac{MGXS} in Sec.~\ref{sec:chap6-sph-future}.
 
 %first paragraph: motivate problem
 %-mention bias from nelson/yoshikoka 
@@ -57,6 +57,9 @@ Although angular-dependent total \ac{MGXS} is the most direct solution to elimin
 
 %-Nelson's 1D slab plot(s)?
 
+\begin{emphbox}
+\textbf{Multi-group reaction rates are not preserved in heterogeneous geometries due to the flux separability approximation. Angular-dependent total \ac{MGXS} or an equivalence scheme such as \ac{SPH} factors are needed to resolve the bias between OpenMC and OpenMOC.}
+\end{emphbox}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{SuPerHomog\'{e}n\'{e}isation Factors}
@@ -182,6 +185,9 @@ The \ac{SPH} scheme was implemented in the \texttt{openmoc.materialize} Python m
 
 Although the \ac{SPH} algorithm is relatively simple, a few subtle issues made the implementation in OpenMOC less than straightforward. First, it should be noted that OpenMC tallies are \textit{volume-integrated}, while reaction rates and fluxes in OpenMOC are \textit{volume-averaged}. As a result, the \ac{MC} tallies must be normalized to the volume used by OpenMOC for each \ac{FSR}\footnote{OpenMOC estimates spatial volumes by integrating the characteristic track lengths across each \ac{FSR}.} to calculate the volume-averaged fixed source in each \ac{FSR}. In addition, it was relatively complicated to map the \ac{MGXS} data and \ac{SPH} factors between the combinatorial geometry meshes used by OpenMC and OpenMOC. These challenges notwithstanding, \ac{SPH} factors were implemented in OpenMOC v0.2.1, and used to reduce reaction rate errors as discussed in the following section.
 
+\begin{emphbox}
+\textbf{The \ac{SPH} factor approach uses a reference fixed source to correct the total \ac{MGXS} to preserve reaction rates between fine and coarse mesh methods.}
+\end{emphbox}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Case Studies}
@@ -300,7 +306,7 @@ A second case study investigated the impact of \ac{SPH} factors on the energy-de
   \includegraphics[width=\linewidth]{figures/sph/pin-cell/rel-err-inner-outer}
   \caption{}
 \end{subfigure}
-\caption[Flux relative error by energy group w/ SPH]{The energy-dependent relative error of the 70-group OpenMOC scalar flux with respect to the reference OpenMC flux in a 1D slab (a) and 2D fuel pin (b). The results correspond to the case studies presented in Tables~\ref{table:chap6-sph-slab-energy} and~\ref{table:chap6-sph-pin-energy}.}
+\caption[Flux relative error by energy group w/ SPH]{The energy-dependent relative error of the 70-group OpenMOC scalar flux with respect to the reference OpenMC flux in a 1D slab (a) and 2D fuel pin (b). The results correspond to Tables~\ref{table:chap6-sph-slab-energy} and~\ref{table:chap6-sph-pin-energy}.}
 \label{fig:chap6-rel-err-energy}
 \end{figure}
 
@@ -315,7 +321,7 @@ A second case study investigated the impact of \ac{SPH} factors on the energy-de
   \includegraphics[width=\linewidth]{figures/sph/pin-cell/sph-inner-outer}
   \caption{}
 \end{subfigure}
-\caption[SPH factors by energy group]{The energy-dependent \ac{SPH} factors for a 70-group calculation in a 1D slab (a) and 2D fuel pin (b). The results correspond to the case studies presented in Tables~\ref{table:chap6-sph-slab-energy} and~\ref{table:chap6-sph-pin-energy}.}
+\caption[SPH factors by energy group]{The energy-dependent \ac{SPH} factors for a 70-group calculation in a 1D slab (a) and 2D fuel pin (b). The results correspond to Tables~\ref{table:chap6-sph-slab-energy} and~\ref{table:chap6-sph-pin-energy}.}
 \label{fig:chap6-sph-energy}
 \end{figure}
 
@@ -334,30 +340,30 @@ A final case study investigated the impact of \ac{SPH} factors on the spatially-
 \begin{figure}[h!]
 \begin{subfigure}{.9\textwidth}
   \centering
-  \includegraphics[width=\linewidth]{figures/sph/slab/rel-err-fuel-fsrs}
+  \includegraphics[width=0.9\linewidth]{figures/sph/slab/rel-err-fuel-fsrs}
   \caption{}
 \end{subfigure}
 \begin{subfigure}{.9\textwidth}
   \centering
-  \includegraphics[width=\linewidth]{figures/sph/pin-cell/rel-err-fuel-fsrs}
+  \includegraphics[width=0.9\linewidth]{figures/sph/pin-cell/rel-err-fuel-fsrs}
   \caption{}
 \end{subfigure}
-\caption[Flux relative error by FSR w/ SPH]{The spatially-varying relative error of the OpenMOC scalar flux with respect to the reference OpenMC flux for a 1D slab (a) and 2D fuel pin (b) in group 27. The results correspond to Tables~\ref{table:chap5-slab-space} and~\ref{table:chap5-pin-space}.}
+\caption[Flux relative error by FSR w/ SPH]{The spatially-varying relative error of the OpenMOC scalar flux with respect to the reference OpenMC flux for a 1D slab (a) and 2D fuel pin (b) in group 27. The results correspond to Tables~\ref{table:chap6-sph-slab-energy} and~\ref{table:chap6-sph-pin-energy}.}
 \label{fig:chap6-rel-err-space}
 \end{figure}
 
 \begin{figure}[h!]
 \begin{subfigure}{.9\textwidth}
   \centering
-  \includegraphics[width=\linewidth]{figures/sph/slab/sph-fuel-fsrs}
+  \includegraphics[width=0.9\linewidth]{figures/sph/slab/sph-fuel-fsrs}
   \caption{}
 \end{subfigure}
 \begin{subfigure}{.9\textwidth}
   \centering
-  \includegraphics[width=\linewidth]{figures/sph/pin-cell/sph-fuel-fsrs}
+  \includegraphics[width=0.9\linewidth]{figures/sph/pin-cell/sph-fuel-fsrs}
   \caption{}
 \end{subfigure}
-\caption[SPH factors by FSR]{The spatially-varying \ac{SPH} factors for a 1D slab (a) and 2D fuel pin (b) in group 27. The results correspond to Tables~\ref{table:chap5-slab-space} and~\ref{table:chap5-pin-space}.}
+\caption[SPH factors by FSR]{The spatially-varying \ac{SPH} factors for a 1D slab (a) and 2D fuel pin (b) in group 27. The results correspond to Tables~\ref{table:chap6-sph-slab-energy} and~\ref{table:chap6-sph-pin-energy}.}
 \label{fig:chap6-sph-space}
 \end{figure}
 
@@ -365,35 +371,9 @@ As expected, the flux error in all of the fuel \ac{FSR}s is greatly reduced with
 
 The group 27 \ac{SPH} factors in each of the \ac{FSR}s in the fuel is illustrated in Fig.~\ref{fig:chap6-sph-space}. The \ac{SPH} factors show nearly the opposite spatially-dependent behavior of the flux errors without \ac{SPH} factors. As discussed in Sec.~\ref{subsec:chap6-sph-flux-energy}, the factors are less than unity in those \ac{FSR}s with positive flux errors, while the factors are greater than unity in groups with negative errors (\textit{e.g.}, the outermost ring in the fuel pin). This behavior is expected since an \ac{SPH} factor greater than unity will magnify the total cross section (see Eqn.~\ref{eqn:chap6-sph-update-sigt}) which will reduce the scalar flux, and vice versa. Furthermore, the deviation of the \ac{SPH} factors from unity is roughly the same as the error in each respective group. For example, the flux in the innermost \ac{FSR} exhibits an error of nearly 1.5\% and 2.5\% for the slab and pin, respectively. Similarly, the \ac{SPH} factors in the innermost \ac{FSR}s are approximately 0.984 and 0.970, or 1.6\% and 3\% reduced from unity, for the slab and pin.
 
-%-eigenvalues if SPH factors for only group 27 are applied
-
-%\begin{table}[h!]
-%  \centering
-%  \caption[SPH factors for a 1D slab]{SPH factors in the energy group encompassing the U-238 capture resonance at 6.67 eV for different energy group structures. The SPH factors were computed for a 1D slab and 2D fuel pin without spatial discretization and with ``iso-in-lab'' scattering.}
-%  \small
-%  \label{table:chap6-sph-group-27}
-%  \vspace{6pt}
-%  \begin{tabular}{c c S[table-format=2.1] S[table-format=2.1]}
-%  \toprule
-%  \multicolumn{1}{c}{\textbf{\# Groups}} &
-%  \multicolumn{1}{c}{\textbf{Group 27}} &
-%  \multicolumn{2}{c}{\textbf{SPH Factor $\mu$}} \\
-%  \midrule
-%  & & \multicolumn{1}{c}{\bf 1D Slab} &
-%  \multicolumn{1}{c}{\bf 2D Fuel Pin} \\
-%  \midrule
-%1 & & & \\
-%2 & & & \\
-%4 & & & \\
-%8 & & & \\
-%16 & & & \\
-%25 & & & \\
-%40 & & & \\
-%70 & & & \\
-%  \bottomrule
-%\end{tabular}
-%\end{table}
-
+\begin{emphbox}
+\textbf{The flux errors in the resonance groups, and the resulting eigenvalue bias between OpenMC and OpenMOC, is largely resolved with \ac{SPH} factors.}
+\end{emphbox}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %\subsection{2D Heterogeneous Fuel Assembly}
@@ -406,24 +386,44 @@ The group 27 \ac{SPH} factors in each of the \ac{FSR}s in the fuel is illustrate
 %  \item bar chart / rug plot of SPH factors in resonance group(s)
 %\end{itemize}
 
-%%%%%%%%%%%%%%%%%%%%%%%
-\section{Shortcomings of SPH}
-\label{subsec:chap6-sph-shortcomings}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Shortcomings of SPH Factors}
+\label{sec:chap6-sph-shortcomings}
 
-This chapter identified the flux separability approximation as the culprit in the bias observed between OpenMC and OpenMOC for simple heterogeneous benchmarks in Chap.~\ref{chap:biases}. The \ac{SPH} factor approach was introduced as one method to force reaction rate conservation in multi-group methods with \ac{MGXS} generated from Monte Carlo. Although the use of \ac{SPH} factors was demonstrated to greatly improve the agreement between OpenMC and OpenMOC in Sec.~\ref{sec:chap6-sph-case-studies}, th \ac{SPH} approach suffers from a number of shortcomings which may preclude it from further use in this setting in the future. In particular, the \ac{SPH} scheme requires knowledge of the reference source distribution, is dependent on the spatial discretization mesh, and is indiscriminate between various sources of approximation error.
+This chapter identified the flux separability approximation as the culprit in the bias observed between OpenMC and OpenMOC for simple heterogeneous benchmarks in Chap.~\ref{chap:biases}. The \ac{SPH} factor approach was introduced as one method to force reaction rate preservation in multi-group methods with \ac{MGXS} generated from Monte Carlo. Although the use of \ac{SPH} factors was demonstrated to greatly improve the agreement between OpenMC and OpenMOC in Sec.~\ref{sec:chap6-sph-case-studies}, the \ac{SPH} approach suffers from a number of shortcomings which may preclude it from further use in this setting in the future. In particular, the \ac{SPH} scheme requires knowledge of the reference source distribution, is dependent on the spatial discretization mesh, and is indiscriminate between various sources of approximation error.
 
-Perhaps the most significant weakness of the \ac{SPH} approach in the context of \ac{MC}-generated \ac{MGXS} is that it requires knowledge of the true eigenvalue source distribution. The goal of generating \ac{MGXS} with \ac{MC} is to enable multi-group methods to accurately solve eigenvalue problems for the source and flux distributions. If a reference source must first computed with \ac{MC} in order to compute accurate \ac{SPH}-corrected \ac{MGXS}, then there arguably may be no reason to perform a subsequent multi-group calculation since the solution is already known from \ac{MC}.
+Perhaps the most significant weakness of the \ac{SPH} approach in the context of \ac{MC}-generated \ac{MGXS} is that it requires knowledge of the true eigenvalue source distribution. The goal of generating \ac{MGXS} with \ac{MC} is to enable multi-group methods to accurately solve eigenvalue problems for the source and flux distributions. If a reference source must first be computed with \ac{MC} in order to compute accurate \ac{SPH}-corrected \ac{MGXS}, then there arguably may be no reason to perform a subsequent multi-group calculation since the solution is already known from \ac{MC}.
 
 Furthermore, the \ac{SPH} scheme is wholly dependent on the spatial discretization used by downstream deterministic multi-group methods. In particular, the reference source in Eqn.~\ref{eqn:chap6-sph-source} must be calculated from \ac{MC} tallies in each of the spatial mesh cells for use in the \ac{SPH} iteration scheme. In the implementation presented here, the reference source must be computed from OpenMC tallies for each of the \ac{FSR}s in the OpenMOC eigenvalue calculation. This is problematic since a finer \ac{FSR} discretization will potentially require more particle histories to converge the tallies needed to compute the reference source on the finer spatial tally mesh.
 
-Finally, the \ac{SPH} scheme attempts to preserve reaction rates between OpenMC and OpenMOC with irregardless of the types of approximation errors which may lead to bias between the two codes. This chapter attempted to use \ac{SPH} factors to mitigate the errors due to the flux separability approximation. However, the \ac{SPH} scheme simultaneously attempts to ``correct'' the \ac{MGXS} to account for spatial, angular and energy discretization errors, approximation error due to the treatment of the scattering kernel, and/or any other approximation error inherent in multi-group methods. For example, the results presented in Sec.~\ref{subsubsec:chap6-sph-eigenvalues} illustrated a broadly consistent agreement between OpenMC and OpenMOC eigenvalues for all energy group structures and \ac{FSR} discretizations, even though systematic trends in the bias were observed in both energy and space without \ac{SPH} factors. This highlights the fact that \ac{SPH} ``corrected'' for not only the lack of angular dependence in the total \ac{MGXS}, but also errors inherent to the energy group structures and \ac{FSR} discretizations. As a result, the same discretization parameters must be used in both the fixed source calculations in the \ac{SPH} iteration scheme, as well as subsequent eigenvalue calculations with \ac{SPH}-corrected \ac{MGXS}\footnote{For OpenMOC, the same number of azimuthal angles, track spacing and \ac{FSR} discretization must be used in both the \ac{SPH} factor and eigenvalue calculations.}.
+Finally, the \ac{SPH} scheme attempts to preserve reaction rates between OpenMC and OpenMOC irregardless of the types of approximation errors which may lead to bias between the two codes. This chapter used \ac{SPH} factors to mitigate the errors due to the flux separability approximation. However, the \ac{SPH} scheme simultaneously attempts to also ``correct'' the \ac{MGXS} to account for spatial, angular and energy discretization errors, approximation error due to the treatment of the scattering kernel, and/or any other approximation error inherent in multi-group methods. For example, the results presented in Sec.~\ref{subsubsec:chap6-sph-eigenvalues} illustrated a broadly consistent agreement between OpenMC and OpenMOC eigenvalues for all energy group structures and \ac{FSR} discretizations, even though systematic trends in the bias were observed in both energy and space without \ac{SPH} factors. This highlights the fact that \ac{SPH} ``corrected'' for not only the lack of angular dependence in the total \ac{MGXS}, but also errors inherent to the energy group structures and \ac{FSR} discretizations. As a result, the same discretization parameters must be used in both the fixed source calculations in the \ac{SPH} iteration scheme, as well as subsequent eigenvalue calculations with \ac{SPH}-corrected \ac{MGXS}\footnote{For OpenMOC, the same number of azimuthal angles, track spacing and \ac{FSR} discretization must be used in both the \ac{SPH} factor and eigenvalue calculations.}.
 
-first paragraph: shortcomings
--unclear if SPH factors can be tabulated once and broadly applied
+\clearpage
 
-second paragraph: need for new method(s)
--must account for flux separability
--need to preserve reaction rates
--generalizable approach to embed angular info in MGXS
+\begin{emphbox}
+\textbf{The \ac{SPH} factor approach is complicated by the need to compute a reference fixed source with \ac{MC} for the spatial discretization mesh used in multi-group methods. In addition, \ac{SPH} factors do not simply correct for the error due to the flux separability approximation, but instead indiscriminately correct for all sources of approximation error between \ac{MC} and multi-group methods.}
+\end{emphbox}
 
-SUMMARY BOXES
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Future Work}
+\label{sec:chap6-sph-future}
+
+As a result of the shortcomings to the \ac{SPH} approach, it is unclear whether the \ac{SPH} approach may broadly applied to correct for the flux separability approximation in \ac{MGXS} generated from \ac{MC}. Future work should investigate whether a universal set of \ac{SPH} factors may be tabulated for known geometries (\textit{e.g.}, \ac{PWR} fuel pins). For example, if the \ac{SPH} factors in the resonance groups are relatively invariant to the fuel enrichment, moderator density, burnup, neighboring pin types, etc. then a single set of \ac{SPH} factors may be computed for an infinite pin cell and applied to each fuel pin in heterogeneous lattice and whole-core calculations. 
+
+Although it may be possible to universally apply pre-tabulated \ac{SPH} factors to fixed geometric configurations, it may be necessary to investigate more advanced methods to more generally account for the angular dependence of the total \ac{MGXS}. For example, the angular dependence of the total \ac{MGXS} may be adequately embedded into the scattering kernel using the Consistent-P approximation~\cite{bell1967transport}. Alternatively, a coarse set of angular-dependent \ac{MGXS} may mitigate most of the bias observed between OpenMC and OpenMOC. For example, a simple approximation might model two different total \ac{MGXS} for neutrons leaving/entering a fuel pin. Although a coarse angular scheme would not capture the high degree of angular variation illutrated in Fig.~\ref{fig:chap6-batman-plots}, it may be enough to adequately resolve the bias. One challenge to this approach would be to define a general way to accommodate different \ac{FSR} discretizations within each fuel pin cell.
+
+\clearpage
+
+\vfill
+\begin{highlightsbox}[frametitle=Highlights]
+\begin{itemize}
+  \item The bias between OpenMC and OpenMOC is the result of the flux separability approximation which uses the scalar rather than the angular flux to collapse the total \ac{MGXS} in energy and space.
+  \item The most rigorous solution would require the use of angular-dependent total \ac{MGXS}. However, most deterministic multi-group methods, including OpenMOC, are not equipped to use angular-dependent \ac{MGXS}.
+  \item \ac{SPH} factors are introduced here as one approach to force reaction rate preservation in multi-group methods which use \ac{MC}-generated \ac{MGXS}.
+  \item The \ac{SPH} factor scheme corrects the total \ac{MGXS} to enforce neutron rate balance with a reference fixed source computed from \ac{MC} tallies.
+  \item The flux errors and eigenvalue bias between OpenMC and OpenMOC was largely resolved with \ac{SPH} factors for a 1D slab and 2D fuel pin.
+  \item It is unclear if a generalizable scheme based upon \ac{SPH} factors may be used to correct for the flux separability approximation.
+  \item Future work should investigate methods to account for the angular dependence of total \ac{MGXS} in order to adequately preserve reaction rates in fine mesh transport methods with \ac{MC}-generated \ac{MGXS}.
+\end{itemize}
+\end{highlightsbox}
+\vfill
