@@ -187,41 +187,24 @@ Although the \ac{SPH} algorithm is relatively simple, a few subtle issues made t
 \section{Case Studies}
 \label{sec:chap6-sph-case-studies}
 
-first paragraph: intro case studies
--SPH applied to heterogeneous benchmarks from Chap. 5
--itemize covergence criterion
--fixed source criterion in openmoc
--fission source criterion in openmoc
+A number of case studies were performed to evaluate the effectiveness of \ac{SPH} factors in eliminating the bias observed between OpenMC and OpenMOC in Chap.~\ref{chap:biases}. The 1D slab and 2D fuel pin benchmarks described in Secs.~\ref{subsec:chap5-slab} and~\ref{subsec:chap5-pin}, respectively, were modeled with \ac{SPH}-corrected \ac{MGXS} and compared to original the results. The \ac{MGXS} were computed using isotropic in lab scattering and a spatial tally mesh corresponding to the \ac{FSR} mesh (see Tabs.~\ref{table:chap5-slab-space} and~\ref{table:chap5-pin-space}). The OpenMOC fixed source and eigenvalue calculations were performed with 128 azimuthal angles and 0.01 cm track spacing. The OpenMOC fixed source calculations were converged to 1E-5 on the average \ac{FSR} scalar flux. A convergence criterion of 1E-7 was used to converge the \ac{SPH} factors in Eqn.~\ref{eqn:chap6-sph-residual}. Finally, the energy-integrated \ac{FSR} fission source was converged to 1E-7 in the eigenvalue calculations with \ac{SPH}-corrected \ac{MGXS}.
 
-second paragraph: identify the metrics, outine what follows
--reduction in the eigenvalue bias
--reduction in the flux errors in energy and space
--SPH factors in energy and in space
+The eigenvalue bias for the 1D slab and 2D fuel pin with \ac{SPH}-corrected \ac{MGXS} are presented in Sec.~\ref{subsubsec:chap6-sph-eigenvalues}. The error profiles of the energy-dependent and spatially-varying fluxes within the fuel \ac{FSR}s, as well as the \ac{SPH} factors in energy and space, are analyzed in Secs.~\ref{subsec:chap6-sph-flux-energy} and~\ref{subsec:chap6-sph-flux-space}, respectively.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Impact of SPH on Eigenvalues}
 \label{subsubsec:chap6-sph-eigenvalues}
 
-first paragraph: intro case study
--varying energy group structures
--varying \ac{FSR} discretizations
--refer back to Tables in Chap. 5
--iso-in-lab scattering
+The first series of case studies compared the eigenvalues computed with and without \ac{SPH} factors. The eigenvalue bias $\Delta\rho$ between OpenMC and OpenMOC is presented for a matrix of energy group structures and \ac{FSR} discretization in Tabs.~\ref{table:chap6-sph-slab-energy} and~\ref{table:chap6-sph-pin-energy} for a 1D slab and 2D fuel pin, respectively. The bias without \ac{SPH} factors are reproduced from Tabs.~\ref{table:chap5-slab-space} and~\ref{table:chap5-pin-space} for comparison purposes.
 
-second paragraph: details on bias, synthesis
--slab
-  -all biases consistently positive b/w 10 and 40 \ac{pcm} (with few exceptions)
-  -magnitude of bias is reduced by nearly 10x
--pin
-  -all biases consistently positive b/w 10 and 25 \ac{pcm} (with few exceptions)
-  -smaller biases than for slab
-  -generally biases were smaller with 4 or more groups
--bias minimized irregardless of energy group structure
+The data in the tables illustrate a large reduction in the eigenvalue bias with \ac{SPH}-corrected \ac{MGXS}. With only a few exceptions, the bias is consistently positive and ranges between 10 -- 40 \ac{pcm} for both geometries. In the case of the slab, the bias of -100 \ac{pcm} with the finest energy group structure and \ac{FSR} discretization was reduced by a factor of 7$\times$ to only 13 \ac{pcm} with \ac{SPH}-corrected \ac{MGXS}. The use of \ac{SPH} factors had an even greater impact on the bias for the fuel pin, where the bias of over -200 \ac{pcm} was reduced by 70$\times$ to just -3 \ac{pcm} for the finest energy and spatial discretization. 
+
+Although these results illustrate much better agreement between OpenMC and OpenMOC, it is interesting to note that a non-neglible bias remains in most cases. This is likely due to the fact that the reaction rate balance enforced with \ac{SPH} factors assumes that the eigenvalue calculation with a multi-group method will produce the same neutron source distribution as \ac{MC}. However, the eigenvalue source is not necessarily conserved since approximation errors from spatial and angular discretization will impact the multi-group method's solution. In conclusion, the eigenvalues between OpenMC and OpenMOC will identically match if and only if OpenMOC computes precisely the same eigenvalue source with \ac{SPH}-corrected \ac{MGXS} as that found by OpenMC.
 
 \begin{table}[h!]
   \centering
   \caption[Eigenvalues with SPH factors for a 1D slab]{The impact of SPH factors on the eigenvalue bias $\Delta\rho$ with varying energy group structures and \ac{FSR} spatial discretizations for a 1D slab.}  
-  \label{table:chap6-sph-slab-energy} 
+  \label{table:chap6-sph-slab-energy}
   \vspace{6pt}
   \begin{tabular}{| q | S[table-format=6.1] S[table-format=6.1] S[table-format=6.1] S[table-format=6.1] S[table-format=6.1] |}
   \hhline{~|-----|}
@@ -243,14 +226,6 @@ second paragraph: details on bias, synthesis
 25 & 266 & 83 & -11 & -54 & -70 \\
 40 & 270 & 75 & -29 & -73 & -89 \\
 70 & 280 & 76 & -33 & -81 & {\cellcolor{darktangerine}} -93 \\
-%1 & 134 & 92 & 121 & 156 & 134 \\
-%2 & 384 & 228 & 179 & 168 & 165 \\
-%4 & 236 & 125 & 74 & 57 & 47 \\
-%8 & 304 & 132 & 39 & -1 & -17 \\
-%16 & 329 & 136 & 31 & -15 & -32 \\
-%25 & 247 & 61 & -37 & -81 & -97 \\
-%40 & 249 & 51 & -56 & -102 & -118 \\
-%70 & 258 & 51 & -61 & -111 & -123 \\
   \midrule
   \multicolumn{1}{c|}{\cellcolor{white}} & \multicolumn{5}{c|}{\cellcolor{lightgreen} \bf With SPH} \\
   \midrule
@@ -262,14 +237,6 @@ second paragraph: details on bias, synthesis
 25 & 28 & 39 & 34 & 25 & 12 \\
 40 & 28 & 39 & 31 & 23 & 12 \\
 70 & 31 & 41 & 31 & 20 & {\cellcolor{darktangerine}} 13 \\
-%1 & 33 & -10 & 18 & 52 & 31 \\
-%2 & 37 & 13 & 25 & 31 & 13 \\
-%4 & 16 & 23 & 24 & 28 & 12 \\
-%8 & 25 & 34 & 24 & 16 & 6 \\
-%16 & 25 & 35 & 25 & 14 & 3 \\
-%25 & 26 & 36 & 29 & 20 & 7 \\
-%40 & 26 & 36 & 27 & 17 & 6 \\
-%70 & 30 & 38 & 27 & 15 & 7 \\
   \bottomrule
 \end{tabular}
 \end{table}
@@ -299,14 +266,6 @@ second paragraph: details on bias, synthesis
 25 & -31 & -105 & -158 & -170 & -182 \\
 40 & -38 & -114 & -174 & -189 & -202 \\
 70 & -39 & -117 & -182 & -196 & {\cellcolor{darktangerine}} -211 \\
-%1 & 91 & 92 & 92 & 92 & 92 \\
-%2 & 153 & 109 & 78 & 67 & 68 \\
-%4 & 31 & -9 & -38 & -51 & -59 \\
-%8 & 31 & -29 & -75 & -95 & -106 \\
-%16 & 41 & -26 & -79 & -103 & -114 \\
-%25 & -27 & -91 & -142 & -169 & -177 \\
-%40 & -34 & -103 & -159 & -187 & -196 \\
-%70 & -35 & -106 & -165 & -195 & -204 \\
   \midrule
   \multicolumn{1}{c|}{\cellcolor{white}} & \multicolumn{5}{c|}{\cellcolor{lightgreen} \bf With SPH} \\
   \midrule
@@ -318,14 +277,6 @@ second paragraph: details on bias, synthesis
 25 & 5 & 13 & 2 & 12 & -1 \\
 40 & 4 & 16 & 3 & 11 & -2 \\
 70 & 4 & 17 & 2 & 12 & {\cellcolor{darktangerine}} -3 \\
-%1 & 6 & 6 & 6 & 6 & 6 \\
-%2 & 32 & 32 & 32 & 32 & 32 \\
-%4 & 7 & 7 & 7 & 7 & 7 \\
-%8 & 5 & 5 & 5 & 5 & 5 \\
-%16 & 6 & 6 & 6 & 6 & 6 \\
-%25 & 8 & 8 & 8 & 8 & 8 \\
-%40 & 7 & 7 & 7 & 7 & 7 \\
-%70 & 8 & 8 & 8 & 8 & 8 \\
   \bottomrule
 \end{tabular}
 \end{table}
@@ -504,3 +455,5 @@ second paragraph: need for new method(s)
 -must account for flux separability
 -need to preserve reaction rates
 -generalizable approach to embed angular info in MGXS
+
+SUMMARY BOXES
