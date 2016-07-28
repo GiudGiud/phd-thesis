@@ -195,7 +195,7 @@ The eigenvalue bias for the 1D slab and 2D fuel pin with \ac{SPH}-corrected \ac{
 \subsection{Impact of SPH on Eigenvalues}
 \label{subsubsec:chap6-sph-eigenvalues}
 
-The first series of case studies compared the eigenvalues computed with and without \ac{SPH} factors. The eigenvalue bias $\Delta\rho$ between OpenMC and OpenMOC is presented for a matrix of energy group structures and \ac{FSR} discretization in Tabs.~\ref{table:chap6-sph-slab-energy} and~\ref{table:chap6-sph-pin-energy} for a 1D slab and 2D fuel pin, respectively. The bias without \ac{SPH} factors are reproduced from Tabs.~\ref{table:chap5-slab-space} and~\ref{table:chap5-pin-space} for comparison purposes.
+The first series of case studies compared the eigenvalues computed with and without \ac{SPH} factors. The eigenvalue bias $\Delta\rho$ between OpenMC and OpenMOC is presented for a matrix of energy group structures and \ac{FSR} discretization in Tabs.~\ref{table:chap6-sph-slab-energy} and~\ref{table:chap6-sph-pin-energy} for a 1D slab and 2D fuel pin, respectively. The bias without \ac{SPH} factors is reproduced from Tabs.~\ref{table:chap5-slab-space} and~\ref{table:chap5-pin-space} for comparison purposes.
 
 The data in the tables illustrate a large reduction in the eigenvalue bias with \ac{SPH}-corrected \ac{MGXS}. With only a few exceptions, the bias is consistently positive and ranges between 10 -- 40 \ac{pcm} for both geometries. In the case of the slab, the bias of -100 \ac{pcm} with the finest energy group structure and \ac{FSR} discretization was reduced by a factor of 7$\times$ to only 13 \ac{pcm} with \ac{SPH}-corrected \ac{MGXS}. The use of \ac{SPH} factors had an even greater impact on the bias for the fuel pin, where the bias of over -200 \ac{pcm} was reduced by 70$\times$ to just -3 \ac{pcm} for the finest energy and spatial discretization. 
 
@@ -287,26 +287,9 @@ Although these results illustrate much better agreement between OpenMC and OpenM
 %\subsection{SPH Factors in Energy}
 %\label{subsubsec:chap6-sph-energy}
 
-first paragraph: intro case studies
--this will mirror Sec. 5.2.1
--inspected energy-dependent flux errors
--inspected SPH factors by energy group
--do SPH factors demonstrate similar profile to errors in Fig. 5.4?
--looked at innermost and outermost FSRs
+A second series of case studies investigated the impact of \ac{SPH} factors on the energy-dependent flux errors identified in Sec.~\ref{subsubsec:chap5-pin-energy}. The error of OpenMOC's 70-group flux with respect to the reference OpenMC flux is displayed in Fig.~\ref{fig:chap6-rel-err-energy} for the slab and pin. The errors are shown for the innermost and outermost \ac{FSR}s in the fuel. The flux errors without \ac{SPH}-corrected \ac{MGXS} are reproduced from Fig.~\ref{fig:chap5-rel-err-energy} and are illustrated with dashed lines for comparison purposes. 
 
-second paragraph: observations from flux errors
--nearly flat error profile near zero for all groups
--refer back to Fig. 5.4 for dotted red/blue lines
--no discernible difference in error profiles b/w inner/outer FSRs
-
-third paragraph: observations from SPH factors
--SPH factors show nearly the expected behavior
-  -opposite from the errors - a higher sigt effectively drives flux down, and vice versa
-  -factors >1 in groups with a negative error
-  -factors <1 in groups with a positive error
-  -factors deviate from 1 by roughly the same amount as the error 
-    -an error 2.5\% in group 27 for a pin led to an SPH factor of 0.97, or roughly 3\% less than 1.0
-    -likewise for other groups
+As expected, the flux error is greatly reduced with \ac{SPH}-corrected \ac{MGXS}. The flux error profile is nearly flat in energy for both innermost and outermost \ac{FSR}s, unlike the highly energy-dependent profiles observed without \ac{SPH}. Furthermore, no systematic difference between the error profiles for the innermost and outermost \ac{FSR}s can be discerned from the plots. The improvement in the OpenMOC's flux -- especially in those energy groups with large U-238 capture resonances -- is responsible for the reduction in the eigenvalue bias with \ac{SPH}-corrected \ac{MGXS} presented in the Sec.~\ref{subsubsec:chap6-sph-eigenvalues}.
 
 \begin{figure}[h!]
 \begin{subfigure}{.9\textwidth}
@@ -319,9 +302,11 @@ third paragraph: observations from SPH factors
   \includegraphics[width=\linewidth]{figures/sph/pin-cell/rel-err-inner-outer}
   \caption{}
 \end{subfigure}
-\caption[Flux relative error by energy group w/ SPH]{The energy-dependent relative error of the OpenMOC scalar flux with respect to the reference OpenMC flux in a 1D slab (a) and 2D fuel pin (b). The results correspond to the case studies presented in Tables~\ref{table:chap5-slab-space} and~\ref{table:chap5-pin-space}.}
+\caption[Flux relative error by energy group w/ SPH]{The energy-dependent relative error of the 70-group OpenMOC scalar flux with respect to the reference OpenMC flux in a 1D slab (a) and 2D fuel pin (b). The results correspond to the case studies presented in Tables~\ref{table:chap6-sph-slab-energy} and~\ref{table:chap6-sph-pin-energy}.}
 \label{fig:chap6-rel-err-energy}
 \end{figure}
+
+The \ac{SPH} factors in each energy group is illustrated for the innermost and outermost \ac{FSR}s in the slab and pin in Fig.~\ref{fig:chap6-sph-energy}. The \ac{SPH} factors show nearly the opposite energy-dependent behavior of the flux errors without \ac{SPH} factors. In general, the factors are less than unity in those groups with positive flux errors (\textit{e.g.}, the fast groups), while the factors are greater than unity in groups with negative errors (\textit{e.g.}, resonance groups in the innermost \ac{FSR}). This behavior is expected since an \ac{SPH} greater than unity will magnify the total cross section (see Eqn.~\ref{eqn:chap6-sph-update-sigt}) which will reduce the scalar flux, and vice versa. Furthermore, the deviation of the \ac{SPH} factors from unity is roughly the same as the error in each respective group. For example, the flux in group 27 with the U-238 capture resonance at 6.67 eV exhibits an error of nearly 1.5\% and 2.5\% for the slab and pin, respectively. Similarly, the \ac{SPH} factors in group 27 are approximately 0.985 and 0.970, or 1.5\% and 3\% reduced from unity, for the slab and pin.
 
 \begin{figure}[h!]
 \begin{subfigure}{.9\textwidth}
@@ -334,7 +319,7 @@ third paragraph: observations from SPH factors
   \includegraphics[width=\linewidth]{figures/sph/pin-cell/sph-inner-outer}
   \caption{}
 \end{subfigure}
-\caption[SPH factors by energy group]{The energy-dependent relative error of the OpenMOC scalar flux with respect to the reference OpenMC flux in a 1D slab (a) and 2D fuel pin (b). The results correspond to the case studies presented in Tables~\ref{table:chap5-slab-space} and~\ref{table:chap5-pin-space}.}
+\caption[SPH factors by energy group]{The energy-dependent \ac{SPH} factors for a 70-group calculation in a 1D slab (a) and 2D fuel pin (b). The results correspond to the case studies presented in Tables~\ref{table:chap6-sph-slab-energy} and~\ref{table:chap6-sph-pin-energy}.}
 \label{fig:chap6-sph-energy}
 \end{figure}
 
