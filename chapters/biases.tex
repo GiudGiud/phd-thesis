@@ -35,7 +35,7 @@ An initial series of case studies were performed for a homogeneous infinite medi
   \toprule
   \rowcolor{lightgray}
   {\bf Nuclide} &
-  {\bf Density [at/b-cm]} \\
+  {\bf Density [atom \%]} \\
   \midrule
   H-1 &   4.12377E-2 \\
   O-16 &  2.06218E-2 \\
@@ -194,7 +194,7 @@ A simple slab model was constructed to quantify approximation errors in a 1D het
   \rowcolor{lightgray}
   {\bf Material} &
   {\bf Nuclide} &
-  {\bf Density [at/b-cm]} \\
+  {\bf Density [atom \%]} \\
   \midrule
   \multirow{3}{*}{\bf UO$_2$} & O-16 &  4.58508E-2 \\
   & U-235 & 5.58415E-4 \\
@@ -340,7 +340,7 @@ The results illustrate a strong interaction between the energy and spatial meshe
 \subsubsection{Spatial Homogenization and FSR Discretization}
 \label{subsubsec:chap5-slab-space}
 
-Finally, a case study was performed to investigate the sensitivity of the OpenMOC eigenvalue to the spatial tally mesh used to compute \ac{MGXS}. This study was identical to that presented in Sec.~\ref{subsubsec:chap5-slab-energy}, but the \ac{MGXS} were computed using a tally mesh in OpenMC identical to the \ac{FSR} mesh used by OpenMOC. Tab.~\ref{table:chap5-slab-space} presents the bias $\Delta\rho$ for a matrix of energy group structures and \ac{MGXS} spatial tally zone meshes. In each case, the \ac{MGXS} were tallied on the \ac{FSR} mesh with 1 -- 16 equal volume subdivisions in the fuel and moderator (\textit{i.e.}, the spatial tally mesh corresponded to Fig.~\ref{fig:chap5-slab-b}). The OpenMOC calculations each used 128 azimuthal angles and 0.01 cm track spacing.
+Finally, a case study was performed to investigate the sensitivity of the OpenMOC eigenvalue to the spatial tally mesh used to compute \ac{MGXS}. This study was identical to that presented in Sec.~\ref{subsubsec:chap5-slab-energy}, but the \textbf{\ac{MGXS} were computed using a tally mesh in OpenMC identical to the \ac{FSR} mesh used by OpenMOC}. Tab.~\ref{table:chap5-slab-space} presents the bias $\Delta\rho$ for a matrix of energy group structures and \ac{MGXS} spatial tally zone meshes. In each case, the \ac{MGXS} were tallied on the \ac{FSR} mesh with 1 -- 16 equal volume subdivisions in the fuel and moderator (\textit{i.e.}, the spatial tally mesh corresponded to Fig.~\ref{fig:chap5-slab-b}). The OpenMOC calculations each used 128 azimuthal angles and 0.01 cm track spacing.
 
 \begin{table}[h!]
   \centering
@@ -408,7 +408,7 @@ The trends analyzed in Tab.~\ref{table:chap5-slab-energy} emerge in a nearly ide
 \subsection{2D Fuel Pin Cell}
 \label{subsec:chap5-pin}
 
-A \ac{PWR} fuel pin cell model was constructed to quantify approximation errors in a 2D heterogeneous geometry with spatial self-shielding. The pin cell is identical to the 1.6\% enriched UO$_2$ \ac{PWR} fuel pin in the \ac{BEAVRS} \ac{PWR} model~\cite{horelik2013beavrs}. The geometric configuration of UO$_2$ fuel, helium gap, zirconium clad and water moderator is illustrated in Fig.~\ref{fig:chap5-pin-cell} and the dimensions for each material zone are shown in Tab.~\ref{table:chap5-pin-dimensions}. Reflective boundary conditions were applied to all boundaries in the geometry. The isotopic compositions of each material in the fuel pin were identical to those used in the 1D slab (see Tab.~\ref{table:chap5-slab-isotopes}). 
+A \ac{PWR} fuel pin cell model was constructed to quantify approximation errors in a 2D heterogeneous geometry with spatial self-shielding. The pin cell is identical to the 2.4\% enriched UO$_2$ \ac{PWR} fuel pin in the \ac{BEAVRS} \ac{PWR} model~\cite{horelik2013beavrs}. The geometric configuration of UO$_2$ fuel, helium gap, zirconium clad and water moderator is illustrated in Fig.~\ref{fig:chap5-pin-cell} and the dimensions for each material zone are shown in Tab.~\ref{table:chap5-pin-dimensions}. Reflective boundary conditions were applied to all boundaries in the geometry. The isotopic compositions of each material in the fuel pin were identical to those used in the 1D slab (see Tab.~\ref{table:chap5-slab-isotopes}). 
 
 \begin{table}[H]
   \centering
@@ -575,7 +575,7 @@ As was demonstrated for the 1D slab, the results for the fuel pin indicate a str
 \subsubsection{Spatial Homogenization and FSR Discretization}
 \label{subsubsec:chap5-pin-space}
 
-A final case study was performed to investigate the sensitivity of the OpenMOC eigenvalue to the spatial tally mesh used to compute \ac{MGXS}. This case study was identical to that presented in Sec.~\ref{subsubsec:chap5-pin-energy}, but in this case the \ac{MGXS} were computed using a tally mesh in OpenMC identical to the \ac{FSR} mesh used by OpenMOC. Tab.~\ref{table:chap5-pin-space} presents the bias for a matrix of energy group structures and \ac{MGXS} spatial tally zone meshes. In each case, the \ac{MGXS} were tallied on the \ac{FSR} mesh used in OpenMOC with 1 -- 16 equal volume rings per material (\textit{i.e.}, the spatial tally mesh corresponded to Fig.~\ref{fig:chap5-pin-b}). The OpenMOC calculations used 128 azimuthal angles and 0.01 cm track spacing.
+A final case study was performed to investigate the sensitivity of the OpenMOC eigenvalue to the spatial tally mesh used to compute \ac{MGXS}. This case study was identical to that presented in Sec.~\ref{subsubsec:chap5-pin-energy}, but in this case the \textbf{\ac{MGXS} were computed using a tally mesh in OpenMC identical to the \ac{FSR} mesh used by OpenMOC}. Tab.~\ref{table:chap5-pin-space} presents the bias for a matrix of energy group structures and \ac{MGXS} spatial tally zone meshes. In each case, the \ac{MGXS} were tallied on the \ac{FSR} mesh used in OpenMOC with 1 -- 16 equal volume rings per material (\textit{i.e.}, the spatial tally mesh corresponded to Fig.~\ref{fig:chap5-pin-b}). The OpenMOC calculations used 128 azimuthal angles and 0.01 cm track spacing.
 
 \begin{table}[h!]
   \centering
@@ -685,7 +685,7 @@ Upon further inspection, it was noted that OpenMOC's flux exhibited large errors
 \label{fig:chap5-rel-err-energy}
 \end{figure}
 
-As illustrated in the figures, there is a striking error of up to 1.5\% for the fluxes in the slab and up to 2.5\% for the fuel pin in the innermost \ac{FSR} in groups 24, 25 and 27. In addition, the flux errors appear to ``build up'' as the energy decreases through the resonance range, and the magnitude of the capture resonances increase. The one notable exception to this is group 26 which does not include a U-238 capture resonance. These observations stand in contrast to the flux errors in the outermost \ac{FSR} for which no remarkable trend can be discerned. The positive error in the flux in groups with large capture resonances indicates that capture reaction rates are over-predicted in those groups by OpenMOC, contributing to the negative bias in the eigenvalue. Furthermore, these results indicate a strong relationship between the energy and spatial distribution of the flux errors, as is explored in the following section.
+As illustrated in the figures, there is a striking error of up to 1.5\% for the fluxes in the slab and up to 2.5\% for the fuel pin in the innermost \ac{FSR} in groups 24, 25 and 27. In addition, the flux errors appear to ``build up'' as the energy decreases through the resonance range, and the magnitude of the capture resonances increase. The one notable exception to this is group 26 (4 -- 9.877 eV) which does not include a U-238 capture resonance. These observations stand in contrast to the flux errors in the outermost \ac{FSR} for which no remarkable trend can be discerned. The positive error in the flux in groups with large capture resonances indicates that capture reaction rates are over-predicted in those groups by OpenMOC, contributing to the negative bias in the eigenvalue. Furthermore, these results indicate a strong relationship between the energy and spatial distribution of the flux errors, as is explored in the following section.
 
 %\begin{emphbox}
 %\textbf{The OpenMOC flux exhibits a few percent error in groups with large U-238 capture resonances.}
@@ -707,7 +707,7 @@ The results presented in Fig.~\ref{fig:chap5-rel-err-energy} indicate significan
 
 Fig.~\ref{fig:chap5-rel-err-space} highlights the spatial dependence of the error across the fuel for each energy range. These plots were generated for the benchmark models with a 16$\times$ \ac{FSR} discretization with \ac{MGXS} tallied on the \ac{FSR} mesh. The plots correspond to the case studies in Tables~\ref{table:chap5-slab-space} and~\ref{table:chap5-pin-space} with iso-in-lab scattering.
 
-The range A error in the slab monotonically decreases from a maximum of nearly 1.5\% to a minimum of $\sim$-0.5\% in those \ac{FSR}s furthest and nearest the moderator, with a similar trend observed for the fuel pin. Furthermore,  the trend accelerates in outermost 3--4 \ac{FSR}s nearest the moderator, where the error drops by nearly half of its value at the center of the slab and pin. The error profiles for energy ranges B and C exhibit the same decreasing trend from the inside to the oustide of the slab and pin, but the error magnitude never exceeds 0.5\% in magnitude. The secular error trends in energy and space imply that the negative eigenvalue bias is driven by a poor prediction of the reaction rates in resonance groups, as investigated in the following section.
+The range A error in the slab monotonically decreases from a maximum of nearly 1.5\% to a minimum of $\sim$-0.5\% in those \ac{FSR}s furthest and nearest the moderator, with a similar trend observed for the fuel pin. Furthermore,  the trend accelerates in outermost 3--4 \ac{FSR}s nearest the moderator, where the error drops by nearly half of its value at the center of the slab and pin. The error profiles for energy ranges B and C exhibit the same decreasing trend from the inside to the oustide of the slab and pin, but the error magnitude never exceeds 0.5\% in magnitude. The systematic error trends in energy and space imply that the negative eigenvalue bias is driven by a poor prediction of the reaction rates in resonance groups, as investigated in the following section.
 
 \begin{figure}[H]
 \begin{subfigure}{.9\textwidth}
