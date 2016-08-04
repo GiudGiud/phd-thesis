@@ -22,16 +22,16 @@ infermc.beavrs.make_iso_in_lab()
 infermc.beavrs.write_materials_file()
 
 # Extract reflected geometry from InferMC's pre-built assembly Geometries
-two_by_two = infermc.beavrs.build_two_by_two('Fuel 1.6% enr instr no BAs',
-                                             'Fuel 3.1% enr instr 20')
-openmc_geometry = opencg_compatible.get_openmc_geometry(two_by_two)
+reflector = infermc.beavrs.build_reflector('Fuel 1.6% enr instr no BAs',
+                                           'Fuel 3.1% enr instr 20')
+openmc_geometry = opencg_compatible.get_openmc_geometry(reflector)
 openmc_geometry.export_to_xml()
 
 ##################   Exporting to OpenMC settings.xml File  ###################
 
 # Construct uniform initial source distribution over fissionable zones
-lower_left = two_by_two.bounds[:3]
-upper_right = two_by_two.bounds[3:]
+lower_left = reflector.bounds[:3]
+upper_right = reflector.bounds[3:]
 source = openmc.source.Source(space=openmc.stats.Box(lower_left, upper_right))
 source.space.only_fissionable = True
 
@@ -60,14 +60,14 @@ b.write_openmc_plots()
 
 # Complete assembly
 plot = openmc.Plot(plot_id=1)
-bounds = two_by_two.bounds
-plot.width = [two_by_two.max_x-two_by_two.min_x,
-              two_by_two.max_y-two_by_two.min_y]
+bounds = reflector.bounds
+plot.width = [reflector.max_x-reflector.min_x,
+              reflector.max_y-reflector.min_y]
 plot.origin = [bounds[0] + (bounds[3] - bounds[0]) / 2.,
                 bounds[1] + (bounds[4] - bounds[1]) / 2.,
                 bounds[2] + (bounds[5] - bounds[2]) / 2.]
 plot.color = 'mat'
-plot.filename = '2x2'
+plot.filename = 'reflector'
 plot.col_spec = b.plots.colspec_mat
 plot.pixels = [2000, 2000]
 
@@ -77,13 +77,16 @@ plot_file.export_to_xml()
 
 ###################  Create Mesh Tallies for Verification  ####################
 
+lat_width = (np.array(upper_right) - np.array(lower_left))
+lat_width[:2] /= 3.
+
 # Instantiate a tally Mesh
 mesh = openmc.Mesh(name='assembly mesh')
 mesh.type = 'regular'
 mesh.dimension = [34, 34, 1]
-mesh.lower_left = lower_left
-mesh.width = (np.array(upper_right) - np.array(lower_left))
-mesh.width[:2] /= 34
+mesh.lower_left = [lower_left[0], lower_left[1] + lat_width[1], lower_left[2]]
+mesh.width = np.array(lat_width)
+mesh.width[:2] /= 17.
 
 # Instantiate tally Filter
 mesh_filter = openmc.Filter()
