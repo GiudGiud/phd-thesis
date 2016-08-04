@@ -22,7 +22,7 @@ infermc.beavrs.make_iso_in_lab()
 infermc.beavrs.write_materials_file()
 
 # Extract fuel assembly of interest from BEAVRS model
-fuel_assembly = infermc.beavrs.find_assembly('Fuel 3.1% enr no instr 16')
+fuel_assembly = infermc.beavrs.find_assembly('Fuel 3.1% enr instr 20')
 openmc_geometry = opencg_compatible.get_openmc_geometry(fuel_assembly)
 openmc_geometry.export_to_xml()
 
@@ -95,7 +95,7 @@ plot3.color = 'mat'
 plot3.filename = 'instr-tube'
 plot3.col_spec = b.plots.colspec_mat
 
-# Zoom in of guide tube
+# Zoom in of burnable absorber
 plot4 = openmc.Plot(plot_id=4)
 bounds = fuel_assembly.bounds
 plot4.width = [(fuel_assembly.max_x-fuel_assembly.min_x) / 17.,
@@ -104,7 +104,7 @@ plot4.origin = [bounds[0] + (bounds[3] - bounds[0]) / 2. + (bounds[3] - bounds[0
                 bounds[1] + (bounds[4] - bounds[1]) / 2. + (bounds[4] - bounds[1]) / 17. * 5.,
                 bounds[2] + (bounds[5] - bounds[2]) / 2.]
 plot4.color = 'mat'
-plot4.filename = 'guide-tube'
+plot4.filename = 'burn-abs'
 plot4.col_spec = b.plots.colspec_mat
 
 plot_file = openmc.Plots([plot1, plot2, plot3, plot4])
