@@ -68,8 +68,8 @@ for i, directory in enumerate(directories):
         curr_rel_err = curr_capt_std_dev / curr_capt_mean * 100.
 
         # Store this batch's relative error
-        mean[i, batch-1, :] = curr_capt_mean.flat
-        rel_err[i, batch-1, :] = curr_rel_err.flat
+        mean[i, batch-101, :] = curr_capt_mean.flat
+        rel_err[i, batch-101, :] = curr_rel_err.flat
 
 # Create a matplotlib figure for the max relative error convergence curves
 fig = plt.figure()
