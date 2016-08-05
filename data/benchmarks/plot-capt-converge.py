@@ -30,8 +30,8 @@ directories['reflector'] = 'reflector'
 #directories['full-core'] = 'full core'
 
 batches = np.linspace(101, 1000, 1001-101, dtype=np.int)
-rel_err_max = np.zeros((3, len(batches)), dtype=np.float)
-rel_err_mean = np.zeros((3, len(batches)), dtype=np.float)
+rel_err_max = np.zeros((len(directories), len(batches)), dtype=np.float)
+rel_err_mean = np.zeros((len(directories), len(batches)), dtype=np.float)
 
 for i, directory in enumerate(directories):
     print(directory)
