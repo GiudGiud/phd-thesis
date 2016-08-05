@@ -27,7 +27,7 @@ directories = OrderedDict({'fuel-1.6': '1.6% Enr. (no BPs)',
 
 mean = np.zeros((3, 1000, 17*17), dtype=np.float)
 rel_err = np.zeros((3, 1000, 17*17), dtype=np.float)
-batches = np.linspace(101, 201, 900, dtype=np.int)
+batches = np.linspace(101, 201, 201-101, dtype=np.int)
 
 for i, directory in enumerate(directories):
     print(directory)
