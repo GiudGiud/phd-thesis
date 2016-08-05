@@ -21,9 +21,10 @@ plt.ioff()
 # SINGLE FUEL ASSEMBLIES
 ###############################################################################
 
-directories = OrderedDict({'fuel-1.6': '1.6% Enr. (no BPs)',
-                           'fuel-3.1':'3.1% Enr. (no BPs)',
-                           'fuel-3.1-20BAs': '3.1% Enr. (20 BPs)'})
+directories = OrderedDict()
+directories['fuel-1.6'] = '1.6% Enr. (no BPs)'
+directories['fuel-3.1'] = '3.1% Enr. (no BPs)'
+directories['fuel-3.1-20BAs'] = '3.1% Enr. (20 BPs)'
 
 batches = np.linspace(101, 1000, 1001-101, dtype=np.int)
 mean = np.zeros((3, len(batches), 17*17), dtype=np.float)

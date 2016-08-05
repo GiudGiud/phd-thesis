@@ -11,7 +11,10 @@ from _collections import OrderedDict
 
 directories = OrderedDict({'fuel-1.6': '1.6% Enr. (no BPs)',
                            'fuel-3.1':'3.1% Enr. (no BPs)',
-                           'fuel-3.1-20BAs': '3.1% Enr. (20 BPs)'})
+                           'fuel-3.1-20BAs': '3.1% Enr. (20 BPs)',
+                           '2x2': '2x2 Colorset',
+                           'reflector': '2x2 Colorset w/ Reflector',
+                           'full-core': 'Full Core'})
 
 for directory in directories:
     sp = openmc.StatePoint(os.path.join(directory, 'statepoint.1000.h5'))
