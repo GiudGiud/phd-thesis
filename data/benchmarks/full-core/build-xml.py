@@ -46,8 +46,8 @@ settings_file.source = source
 settings_file.sourcepoint_write = False
 
 settings_file.entropy_dimension = [15*17, 15*17, 1]
-settings_file.entropy_upper_right = [+15*17*1.25984/2., +15*17*1.25984/2., 208.]
-settings_file.entropy_lower_left = [-15*17*1.25984/2., -15*17*1.25984/2., 203.]
+settings_file.entropy_upper_right = [+15*17*1.26492/2., +15*17*1.26492/2., 208.]
+settings_file.entropy_lower_left = [-15*17*1.26492/2., -15*17*1.26492/2., 203.]
 
 settings_file.export_to_xml()
 
@@ -81,8 +81,8 @@ plot_file.export_to_xml()
 mesh = openmc.Mesh(name='assembly mesh')
 mesh.type = 'regular'
 mesh.dimension = [15*17, 15*17, 1]
-mesh.lower_left = [-15*17*1.25984/2., -15*17*1.25984/2., 203.]
-mesh.width = (1.25984, 1.25984, 10)
+mesh.lower_left = [-15*17*1.26492/2., -15*17*1.26492/2., 203.]
+mesh.width = (1.26492, 1.26492, 10)
 
 # Instantiate tally Filter
 mesh_filter = openmc.Filter()

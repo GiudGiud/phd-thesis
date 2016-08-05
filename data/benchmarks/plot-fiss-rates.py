@@ -11,7 +11,10 @@ from _collections import OrderedDict
 
 directories = OrderedDict({'fuel-1.6': '1.6% Enr. (no BPs)',
                            'fuel-3.1':'3.1% Enr. (no BPs)',
-                           'fuel-3.1-20BAs': '3.1% Enr. (20 BPs)'})
+                           'fuel-3.1-20BAs': '3.1% Enr. (20 BPs)',
+                           '2x2': '2x2 Colorset',
+                           'reflector': '2x2 Colorset w/ Reflector',
+                           'full-core': 'Full Core'})
 
 for directory in directories:
     sp = openmc.StatePoint(os.path.join(directory, 'statepoint.1000.h5'))
@@ -39,7 +42,7 @@ for directory in directories:
     fiss_mean /= np.mean(fiss_mean.flat)
 
     # Set zero fission rates to NaN for transparency in plots
-    zero_indices = np.where(fiss_mean < 1E-5)
+    zero_indices = np.where(fiss_mean < 1E-3)
     fiss_mean[zero_indices] = np.nan
     fiss_std_dev[zero_indices] = np.nan
 
