@@ -50,8 +50,6 @@ settings_file.source = source
 settings_file.sourcepoint_write = False
 
 settings_file.entropy_dimension = [34,34,1]
-print(upper_right)
-print(lower_left)
 settings_file.entropy_upper_right = [upper_right[0] - lat_width[0], upper_right[1], upper_right[2]]
 settings_file.entropy_lower_left = [lower_left[0], lower_left[1] + lat_width[1], lower_left[2]]
 
