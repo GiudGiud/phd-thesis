@@ -22,10 +22,10 @@ plt.ioff()
 ###############################################################################
 
 directories = OrderedDict({'fuel-1.6': '1.6% Enr. (no BPs)',
-                           'fuel-3.1':'3.1% Enr. (no BPs)',
+                           'fuel-3.1': '3.1% Enr. (no BPs)',
                            'fuel-3.1-20BAs': '3.1% Enr. (20 BPs)'})
 
-batches = np.linspace(101, 200, 201-101, dtype=np.int)
+batches = np.linspace(101, 1000, 1001-101, dtype=np.int)
 mean = np.zeros((3, len(batches), 17*17), dtype=np.float)
 rel_err = np.zeros((3, len(batches), 17*17), dtype=np.float)
 
@@ -78,14 +78,12 @@ fig = plt.figure()
 for i, directory in enumerate(directories):
     who = np.nanmax(rel_err[i, :, :], axis=1)
     print(who)
-    plt.loglog(batches, np.nanmax(rel_err[i, :, :], axis=1), linewidth=1.5)
+    plt.loglog(batches, np.nanmax(rel_err[i, :, :], axis=1), linewidth=2)
 
 plt.title('Max. Fission Rate Error')
 plt.xlabel('Batch')
 plt.ylabel('Relative Error [%]')
 plt.legend(list(directories.values()), loc='center right')
-#ax = plt.gca()
-#ax.get_yaxis().get_major_formatter().set_useOffset(False)
 plt.savefig('fiss-conv-max-assms.png', bbox_inches='tight')
 plt.close()
 
@@ -100,7 +98,5 @@ plt.title('Mean Fission Rate Error')
 plt.xlabel('Batch')
 plt.ylabel('Relative Error [%]')
 plt.legend(list(directories.values()), loc='center right')
-#ax = plt.gca()
-#ax.get_yaxis().get_major_formatter().set_useOffset(False)
-plt.savefig('fiss-conv-mean-assms.png', bbox_inches='tight', linewidth=1.5)
+plt.savefig('fiss-conv-mean-assms.png', bbox_inches='tight', linewidth=2)
 plt.close()
