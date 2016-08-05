@@ -86,7 +86,7 @@ for i, directory in enumerate(directories):
 plt.title('Max. U-238 Capture Rate Error')
 plt.xlabel('Batch')
 plt.ylabel('Relative Error [%]')
-plt.legend(list(directories.values()), loc='center right')
+plt.legend(list(directories.values()), loc='upper right')
 plt.savefig('capt-conv-max-assms.png', bbox_inches='tight')
 plt.close()
 
@@ -100,6 +100,6 @@ for i, directory in enumerate(directories):
 plt.title('Mean U-238 Capture Rate Error')
 plt.xlabel('Batch')
 plt.ylabel('Relative Error [%]')
-plt.legend(list(directories.values()), loc='center right')
+plt.legend(list(directories.values()), loc='upper right')
 plt.savefig('capt-conv-mean-assms.png', bbox_inches='tight')
 plt.close()
