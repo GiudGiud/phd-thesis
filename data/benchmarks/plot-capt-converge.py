@@ -85,6 +85,7 @@ for i, directory in enumerate(directories):
     plt.loglog(batches, np.nanmax(rel_err[i, :, :], axis=1), linewidth=2)
 
 plt.title('Max. U-238 Capture Rate Error')
+plt.grid(True,which="majorminor",ls="-", color='0.65')
 plt.xlabel('Batch')
 plt.ylabel('Relative Error [%]')
 plt.legend(list(directories.values()), loc='upper right')
@@ -99,6 +100,7 @@ for i, directory in enumerate(directories):
     plt.loglog(batches, np.nanmean(rel_err[i, :, :], axis=1), linewidth=2)
 
 plt.title('Mean U-238 Capture Rate Error')
+plt.grid(True,which="majorminor",ls="-", color='0.65')
 plt.xlabel('Batch')
 plt.ylabel('Relative Error [%]')
 plt.legend(list(directories.values()), loc='upper right')
@@ -174,6 +176,7 @@ for i, directory in enumerate(directories):
     plt.loglog(batches, np.nanmax(rel_err[i, :, :], axis=1), linewidth=2)
 
 plt.title('Max. U-238 Capture Rate Error')
+plt.grid(True,which="majorminor",ls="-", color='0.65')
 plt.xlabel('Batch')
 plt.ylabel('Relative Error [%]')
 plt.legend(list(directories.values()), loc='upper right')
@@ -188,6 +191,7 @@ for i, directory in enumerate(directories):
     plt.loglog(batches, np.nanmean(rel_err[i, :, :], axis=1), linewidth=2)
 
 plt.title('Mean U-238 Capture Rate Error')
+plt.grid(True,which="majorminor",ls="-", color='0.65')
 plt.xlabel('Batch')
 plt.ylabel('Relative Error [%]')
 plt.legend(list(directories.values()), loc='upper right')
