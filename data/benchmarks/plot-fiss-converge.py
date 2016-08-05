@@ -38,37 +38,34 @@ for i, directory in enumerate(directories):
         # Extract mesh for mesh tallies from OpenMC StatePoint
         openmc_mesh = sp.meshes[10000]
 
-        # Extract OpenMC capture rate mesh tally from StatePoint
-        curr_capt = sp.get_tally(name='u-238 capture')
-        absorb = curr_capt.get_slice(scores=['absorption'])
-        fission = curr_capt.get_slice(scores=['fission'])
-        curr_capt = absorb - fission
+        # Extract OpenMC fission rate mesh tally from StatePoint
+        curr_fiss = sp.get_tally(name='fission rates')
 
         # Copy and reshape the NumPy array of mean values
-        curr_capt_mean = copy.deepcopy(curr_capt.mean)
-        curr_capt_mean.shape = tuple(openmc_mesh.dimension)
-        curr_capt_mean = np.squeeze(curr_capt_mean)
-        curr_capt_mean = np.fliplr(curr_capt_mean)
+        curr_fiss_mean = copy.deepcopy(curr_fiss.mean)
+        curr_fiss_mean.shape = tuple(openmc_mesh.dimension)
+        curr_fiss_mean = np.squeeze(curr_fiss_mean)
+        curr_fiss_mean = np.fliplr(curr_fiss_mean)
 
         # Copy and reshape the NumPy array of standard deviation values
-        curr_capt_std_dev = copy.deepcopy(curr_capt.std_dev)
-        curr_capt_std_dev.shape = tuple(openmc_mesh.dimension)
-        curr_capt_std_dev = np.squeeze(curr_capt_std_dev)
-        curr_capt_std_dev = np.fliplr(curr_capt_std_dev)
+        curr_fiss_std_dev = copy.deepcopy(curr_fiss.std_dev)
+        curr_fiss_std_dev.shape = tuple(openmc_mesh.dimension)
+        curr_fiss_std_dev = np.squeeze(curr_fiss_std_dev)
+        curr_fiss_std_dev = np.fliplr(curr_fiss_std_dev)
 
         # Normalize the capture rates to sum to unity
-        curr_capt_mean /= np.mean(curr_capt_mean.flat)
+        curr_fiss_mean /= np.mean(curr_fiss_mean.flat)
 
         # Set zero capture rates to NaN for transparency in plots
-        zero_indices = np.where(curr_capt_mean < 1E-5)
-        curr_capt_mean[zero_indices] = np.nan
-        curr_capt_std_dev[zero_indices] = np.nan
+        zero_indices = np.where(curr_fiss_mean < 1E-5)
+        curr_fiss_mean[zero_indices] = np.nan
+        curr_fiss_std_dev[zero_indices] = np.nan
 
         # Compute the OpenMC relative error from the non-normalized mean
-        curr_rel_err = curr_capt_std_dev / curr_capt_mean * 100.
+        curr_rel_err = curr_fiss_std_dev / curr_fiss_mean * 100.
 
         # Store this batch's relative error
-        mean[i, batch-101, :] = curr_capt_mean.flat
+        mean[i, batch-101, :] = curr_fiss_mean.flat
         rel_err[i, batch-101, :] = curr_rel_err.flat
 
 # Create a matplotlib figure for the max relative error convergence curves
@@ -80,13 +77,13 @@ for i, directory in enumerate(directories):
     print(who)
     plt.semilogx(batches, np.nanmax(rel_err[i, :, :], axis=1), linewidth=1.5)
 
-plt.title('Max. U-238 Capture Rate Error')
+plt.title('Max. Fission Rate Error')
 plt.xlabel('Batch')
 plt.ylabel('Relative Error [%]')
 plt.legend(list(directories.values()), loc='center right')
 ax = plt.gca()
 ax.get_yaxis().get_major_formatter().set_useOffset(False)
-plt.savefig('capt-conv-max-assms.png', bbox_inches='tight')
+plt.savefig('fiss-conv-max-assms.png', bbox_inches='tight')
 plt.close()
 
 # Create a matplotlib figure for the mean relative error convergence curves
@@ -96,11 +93,11 @@ fig = plt.figure()
 for i, directory in enumerate(directories):
     plt.semilogx(batches, np.nanmean(rel_err[i, :, :], axis=1))
 
-plt.title('Mean U-238 Capture Rate Error')
+plt.title('Mean Fission Rate Error')
 plt.xlabel('Batch')
 plt.ylabel('Relative Error [%]')
 plt.legend(list(directories.values()), loc='center right')
 ax = plt.gca()
 ax.get_yaxis().get_major_formatter().set_useOffset(False)
-plt.savefig('capt-conv-mean-assms.png', bbox_inches='tight', linewidth=1.5)
+plt.savefig('fiss-conv-mean-assms.png', bbox_inches='tight', linewidth=1.5)
 plt.close()
