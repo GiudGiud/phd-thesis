@@ -18,10 +18,12 @@
 
 See the isotopic compositions tabulated in App.~\ref{app:beavrs-isotopes}. The \ac{BEAVRS} model~\cite{horelik2013beavrs}.
 
--add in pitch
--add in mass of grid spacers
+geometric specifications
+-pitch
+-\ac{BP}s above dashpot
+-thickness of grid spacers
+-mass of grid spacers
 -add in axial level
-
 
 \begin{table}[h!]
   \centering
@@ -136,49 +138,27 @@ See the isotopic compositions tabulated in App.~\ref{app:beavrs-isotopes}. The \
 \label{fig:chap7-reflector}
 \end{figure}
 
-\begin{itemize}[noitemsep]
-  \item geometric configuration
-  \item isotopics
-\end{itemize}
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=0.9\linewidth]{figures/benchmarks/full-core}
+\caption[The \ac{BEAVRS} core at the axial mid-plane.]{A radial view of the \ac{BEAVRS} core at the axial mid-plane.}
+\label{fig:chap7-full-core}
+\end{figure}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Fuel Assemblies}
 \label{subsec:chap7-fuel-assms}
 
--figures of each type of sub-component in the geometry
--take from BEAVRS benchmark?
-
-geometric specifications
--fuel pin, radii, clad, gap
--burnable poisons geometry above dashpot
--instrument tube
--\ac{BP}s
-
-isotopics - take table format from Chap. 5 and specs from BEAVRS docs
--fuel
--water
--clad
--gap
--burnable absorber
-
 \subsubsection{1.6\% Enriched Fuel}
 
--picture of geometry
+\subsubsection{3.1\% Enriched Fuel}
 
-\subsubsection{2.4\% Enriched Fuel}
-
--picture of geometry
-
-\subsubsection{2.4\% Enriched Fuel with Burnable Absorbers}
-
--picture of geometry
+\subsubsection{3.1\% Enriched Fuel with Burnable Poisons}
 
 \subsection{2$\times$2 Assembly Colorset}
-
 -periodic BCs
 
-\subsection{Reflector Geometry}
-
+\subsection{2$\times$2 Assembly Colorset with a Reflector}
 -add baffle to benchmark
 
 \subsection{BEAVRS Full Core}
@@ -224,11 +204,6 @@ isotopics - take table format from Chap. 5 and specs from BEAVRS docs
 \subsection{Eigenvalues}
 \label{subsec:chap7-eigenvalues}
 
-\begin{itemize}[noitemsep]
-  \item converged values
-  \item convergence by batch
-\end{itemize}
-
 \begin{table}[h!]
   \centering
   \caption[Reference $k^{OpenMC}_{eff}$ for heterogeneous benchmarks]{Reference $k^{OpenMC}_{eff}$ for heterogeneous benchmarks.}
@@ -252,11 +227,6 @@ isotopics - take table format from Chap. 5 and specs from BEAVRS docs
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Pin Power Distributions}
 \label{subsec:chap7-pin-powers}
-
-\begin{itemize}[noitemsep]
-  \item converged values
-  \item convergence by batch
-\end{itemize}
 
 \begin{figure}[h!]
 \centering
@@ -389,11 +359,6 @@ isotopics - take table format from Chap. 5 and specs from BEAVRS docs
 \subsection{U-238 Capture Rate Distributions}
 \label{subsec:chap7-capture-rates}
 
-\begin{itemize}[noitemsep]
-  \item converged values
-  \item convergence by batch
-\end{itemize}
-
 \begin{figure}[h!]
 \centering
 \begin{subfigure}{0.5\textwidth}
@@ -519,12 +484,3 @@ isotopics - take table format from Chap. 5 and specs from BEAVRS docs
 \caption[U-238 capture rate error convergence for 2$\times$2 colorsets]{U-238 capture rate relative error convergence for 2$\times$2 colorsets with and without a reflector.}
 \label{fig:chap7-capt-rates-conv-assm}
 \end{figure}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Convergence Rates}
-\label{subsec:chap7-convergence}
-
-\begin{itemize}[noitemsep]
-  \item quantify \# histories to $\pm$1 \ac{PCM}
-  \item quantify \# histories to $\pm$1\% rel. err.
-\end{itemize}

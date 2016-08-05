@@ -69,7 +69,7 @@ plot.origin = [bounds[0] + (bounds[3] - bounds[0]) / 2.,
 plot.color = 'mat'
 plot.filename = 'full-core'
 plot.col_spec = b.plots.colspec_mat
-plot.pixels = [2000, 2000]
+plot.pixels = [5000, 5000]
 
 plot_file = openmc.Plots([plot])
 plot_file.export_to_xml()

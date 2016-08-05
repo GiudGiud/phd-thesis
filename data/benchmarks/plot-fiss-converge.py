@@ -27,7 +27,7 @@ directories['fuel-3.1'] = '3.1% Enr. (no BPs)'
 directories['fuel-3.1-20BAs'] = '3.1% Enr. (20 BPs)'
 directories['2x2'] = '2x2'
 directories['reflector'] = 'reflector'
-#directories['full-core'] = 'full core'
+directories['full-core'] = 'full core'
 
 batches = np.linspace(101, 1000, 1001-101, dtype=np.int)
 rel_err_max = np.zeros((len(directories), len(batches)), dtype=np.float)
@@ -81,7 +81,7 @@ fig = plt.figure()
 
 # Customize and save plot
 for i, directory in enumerate(directories):
-    plt.loglog(batches, np.nanmax(rel_err_max[i, :, :], axis=1), linewidth=2)
+    plt.loglog(batches, np.nanmax(rel_err_max[i, :], axis=1), linewidth=2)
 
 plt.title('Max. Fission Rate Error', fontsize=20)
 plt.grid(True, which="both")
@@ -96,7 +96,7 @@ fig = plt.figure()
 
 # Customize and save plot
 for i, directory in enumerate(directories):
-    plt.loglog(batches, np.nanmean(rel_err_mean[i, :, :], axis=1), linewidth=2)
+    plt.loglog(batches, np.nanmean(rel_err_mean[i, :], axis=1), linewidth=2)
 
 plt.title('Mean Fission Rate Error', fontsize=20)
 plt.grid(True, which="both")
