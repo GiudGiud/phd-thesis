@@ -27,7 +27,7 @@ directories = OrderedDict({'fuel-1.6': '1.6% Enr. (no BPs)',
 
 mean = np.zeros((3, 1000, 17*17), dtype=np.float)
 rel_err = np.zeros((3, 1000, 17*17), dtype=np.float)
-batches = np.linspace(101, 201, 201-101, dtype=np.int)
+batches = np.linspace(101, 151, 151-101, dtype=np.int)
 
 for i, directory in enumerate(directories):
     print(directory)
@@ -71,12 +71,30 @@ for i, directory in enumerate(directories):
         mean[i, batch-1, :] = curr_capt_mean.flat
         rel_err[i, batch-1, :] = curr_rel_err.flat
 
-# Create a matplotlib figure for all entropy convergence curves
+# Create a matplotlib figure for the max relative error convergence curves
 fig = plt.figure()
 
 # Customize and save plot
 for i, directory in enumerate(directories):
-    plt.semilogx(batches, np.max(rel_err[i, :, ...], axis=1))
+    who = np.max(rel_err[i, :, :], axis=1)
+    print(who.shape)
+    plt.semilogx(batches, np.max(rel_err[i, :, :], axis=1))
+
+plt.title('Max. U-238 Capture Rate Error')
+plt.xlabel('Batch')
+plt.ylabel('Relative Error [%]')
+plt.legend(list(directories.values()), loc='center right')
+ax = plt.gca()
+ax.get_yaxis().get_major_formatter().set_useOffset(False)
+plt.savefig('capt-rate-conv-assms.png', bbox_inches='tight')
+plt.close()
+
+# Create a matplotlib figure for the mean relative error convergence curves
+fig = plt.figure()
+
+# Customize and save plot
+for i, directory in enumerate(directories):
+    plt.semilogx(batches, np.mean(rel_err[i, :, :], axis=1))
 
 plt.title('Max. U-238 Capture Rate Error')
 plt.xlabel('Batch')
