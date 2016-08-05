@@ -31,7 +31,7 @@ rel_err = np.zeros((3, 1000, 17*17), dtype=np.float)
 for i, directory in enumerate(directories):
     print(directory)
     for batch in np.linspace(1, 1000, 1000):
-        sp = openmc.StatePoint(os.path.join(directory, 'statepoint.{0:04d}.h5'.format(batch)))
+        sp = openmc.StatePoint(os.path.join(directory, 'statepoint.{0:04}.h5'.format(batch)))
 
         # Extract mesh for mesh tallies from OpenMC StatePoint
         openmc_mesh = sp.meshes[10000]
