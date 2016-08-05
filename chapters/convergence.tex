@@ -97,7 +97,7 @@ See the isotopic compositions tabulated in App.~\ref{app:beavrs-isotopes}. The \
   \caption{}
   \label{fig:chap7-instr-tube}
 \end{subfigure}%
-\caption[BEAVRS pin cell geometries]{1.6\% enriched fuel pin (a), control rod guide tube (b), instrument tube (c) and burnable absorber (d). Blue -- borated water, red -- UO$_2$ fuel, gray -- zircaloy, brown -- helium, white -- air, green -- borosolicate glass; black -- stainless steel.}
+\caption[BEAVRS pin cell geometries]{1.6\% enriched fuel pin (a), control rod guide tube (b), instrument tube (c) and burnable poison (d). Blue -- borated water, red -- UO$_2$ fuel, gray -- zircaloy, brown -- helium, white -- air, green -- borosolicate glass; black -- stainless steel.}
 \label{fig:chap7-pin-cells}
 \end{figure}
 
@@ -118,7 +118,7 @@ See the isotopic compositions tabulated in App.~\ref{app:beavrs-isotopes}. The \
 \begin{figure}[h!]
   \centering
   \includegraphics[width=0.65\linewidth]{figures/benchmarks/assembly-31-20BAs}
-\caption[BEAVRS 3.1\% enriched assembly with burnable absorbers]{Whoa}
+\caption[BEAVRS 3.1\% enriched assembly with 20 \ac{BP}s]{Whoa}
 \label{fig:chap7-assm-31-20BAs}
 \end{figure}
 
@@ -141,7 +141,9 @@ See the isotopic compositions tabulated in App.~\ref{app:beavrs-isotopes}. The \
   \item isotopics
 \end{itemize}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Fuel Assemblies}
+\label{subsec:chap7-fuel-assms}
 
 -figures of each type of sub-component in the geometry
 -take from BEAVRS benchmark?
@@ -150,6 +152,7 @@ geometric specifications
 -fuel pin, radii, clad, gap
 -burnable poisons geometry above dashpot
 -instrument tube
+-\ac{BP}s
 
 isotopics - take table format from Chap. 5 and specs from BEAVRS docs
 -fuel
@@ -183,14 +186,38 @@ isotopics - take table format from Chap. 5 and specs from BEAVRS docs
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Reference Results}
+\label{sec:chap7-ref-results}
 
 -mention iso-in-lab
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Source Convergence}
+\label{subsec:chap7-src-converge}
 
 -single plot of shannon entropy convergence by batch for each geometry
 
+\begin{figure}[h!]
+\centering
+\begin{subfigure}{\textwidth}
+  \centering
+  \includegraphics[width=0.9\linewidth]{figures/benchmarks/entropy/entropy-assms}
+  \caption{}
+  \label{fig:chap7-entropy-assms}
+\end{subfigure}
+\begin{subfigure}{\textwidth}
+  \centering
+  \includegraphics[width=0.9\linewidth]{figures/benchmarks/entropy/entropy-multi-assms}
+  \caption{}
+  \label{fig:chap7-entropy-multi-assms}
+\end{subfigure}%
+\caption[Shannon entropy source convergence for BEAVRS geometries]{Shannon entropy source convergence for BEAVRS geometries.}
+\label{fig:chap7-entropy}
+\end{figure}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Eigenvalues}
+\label{subsec:chap7-eigenvalues}
 
 \begin{itemize}[noitemsep]
   \item converged values
@@ -199,15 +226,17 @@ isotopics - take table format from Chap. 5 and specs from BEAVRS docs
 
 \begin{table}[h!]
   \centering
-  \caption[Reference $k^{OpenMC}_{\infty}$ for heterogeneous benchmarks]{Reference $k^{OpenMC}_{\infty}$ for heterogeneous benchmarks.}
+  \caption[Reference $k^{OpenMC}_{eff}$ for heterogeneous benchmarks]{Reference $k^{OpenMC}_{eff}$ for heterogeneous benchmarks.}
   \small
   \label{table:chap7-ref-eigenvalues}
   \vspace{6pt}
-  \begin{tabular}{c c}
+  \begin{tabular}{l c}
   \toprule
-  1.6\% Enriched Assembly (no BPs) & 1.00987 $\pm$ 0.00003 \\
-  3.1\% Enriched Assembly (no BPs) & 1.22344 $\pm$ 0.00003 \\
-  3.1\% Enriched Assembly (20 BPs) & 1.04530 $\pm$ 0.00003 \\
+  \textbf{Benchmark} & \textbf{$k^{OpenMC}_{eff}$} \\
+  \midrule
+  1.6\% Enriched Assembly (no \ac{BP}s) & 1.00987 $\pm$ 0.00003 \\
+  3.1\% Enriched Assembly (no \ac{BP}s) & 1.22344 $\pm$ 0.00003 \\
+  3.1\% Enriched Assembly (20 \ac{BP}s) & 1.04530 $\pm$ 0.00003 \\
   2$\times$2 Colorset & 1.03196 $\pm$ 0.00003 \\
   2$\times$2 Colorset w/ Reflector & 0.95462 $\pm$ 0.00003 \\
   Full Core & 1.02497 $\pm$ 0.00003 \\
@@ -215,23 +244,136 @@ isotopics - take table format from Chap. 5 and specs from BEAVRS docs
 \end{tabular}
 \end{table}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Pin Power Distributions}
+\label{subsec:chap7-pin-powers}
 
 \begin{itemize}[noitemsep]
   \item converged values
   \item convergence by batch
 \end{itemize}
 
+\begin{figure}[h!]
+\centering
+\begin{subfigure}{0.5\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{figures/benchmarks/fission-rates/fiss-mean-fuel-16}
+  \caption{}
+  \label{fig:chap7-fiss-rate-mean-1.6-assm}
+\end{subfigure}%
+\begin{subfigure}{0.5\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{figures/benchmarks/fission-rates/fiss-rel-err-fuel-16}
+  \caption{}
+  \label{fig:chap7-fiss-rate-rel-err-1.6-assm}
+\end{subfigure}%
+\caption[Fission rates for 1.6\% enriched assembly]{Fission rates for 1.6\% enriched assembly.}
+\label{fig:chap7-fiss-rates-1.6-assm}
+\end{figure}
+
+\begin{figure}[h!]
+\centering
+\begin{subfigure}{0.5\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{figures/benchmarks/fission-rates/fiss-mean-fuel-31}
+  \caption{}
+  \label{fig:chap7-fiss-rate-mean-3.1-assm}
+\end{subfigure}%
+\begin{subfigure}{0.5\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{figures/benchmarks/fission-rates/fiss-rel-err-fuel-31}
+  \caption{}
+  \label{fig:chap7-fiss-rate-rel-err-3.1-assm}
+\end{subfigure}%
+\caption[Fission rates for 3.1\% enriched assembly]{Fission rates for 3.1\% enriched assembly.}
+\label{fig:chap7-fiss-rates-3.1-assm}
+\end{figure}
+
+\begin{figure}[h!]
+\centering
+\begin{subfigure}{0.5\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{figures/benchmarks/fission-rates/fiss-mean-fuel-31-20BAs}
+  \caption{}
+  \label{fig:chap7-fiss-rate-mean-3.1-20BAs-assm}
+\end{subfigure}%
+\begin{subfigure}{0.5\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{figures/benchmarks/fission-rates/fiss-rel-err-fuel-31-20BAs}
+  \caption{}
+  \label{fig:chap7-fiss-rate-rel-err-3.1-20BAs-assm}
+\end{subfigure}%
+\caption[Fission rates for 3.1\% enriched assembly with 20 BPs]{Fission rates for 3.1\% enriched assembly with 20 \ac{BP}s.}
+\label{fig:chap7-fiss-rates-3.1-assm-20BAs}
+\end{figure}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{U-238 Capture Rate Distributions}
+\label{subsec:chap7-capture-rates}
 
 \begin{itemize}[noitemsep]
   \item converged values
   \item convergence by batch
 \end{itemize}
+
+\begin{figure}[h!]
+\centering
+\begin{subfigure}{0.5\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{figures/benchmarks/capture-rates/capt-mean-fuel-16}
+  \caption{}
+  \label{fig:chap7-capt-rate-mean-1.6-assm}
+\end{subfigure}%
+\begin{subfigure}{0.5\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{figures/benchmarks/capture-rates/capt-rel-err-fuel-16}
+  \caption{}
+  \label{fig:chap7-capt-rate-rel-err-1.6-assm}
+\end{subfigure}%
+\caption[U-238 capture rates for 1.6\% enriched assembly]{U-238 capture rates for 1.6\% enriched assembly.}
+\label{fig:chap7-capt-rates-1.6-assm}
+\end{figure}
+
+\begin{figure}[h!]
+\centering
+\begin{subfigure}{0.5\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{figures/benchmarks/capture-rates/capt-mean-fuel-31}
+  \caption{}
+  \label{fig:chap7-capt-rate-mean-3.1-assm}
+\end{subfigure}%
+\begin{subfigure}{0.5\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{figures/benchmarks/capture-rates/capt-rel-err-fuel-31}
+  \caption{}
+  \label{fig:chap7-capt-rate-rel-err-3.1-assm}
+\end{subfigure}%
+\caption[U-238 capture rates for 3.1\% enriched assembly]{U-238 capture rates for 3.1\% enriched assembly.}
+\label{fig:chap7-capt-rates-3.1-assm}
+\end{figure}
+
+\begin{figure}[h!]
+\centering
+\begin{subfigure}{0.5\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{figures/benchmarks/capture-rates/capt-mean-fuel-31-20BAs}
+  \caption{}
+  \label{fig:chap7-capt-rate-mean-3.1-20BAs-assm}
+\end{subfigure}%
+\begin{subfigure}{0.5\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{figures/benchmarks/capture-rates/capt-rel-err-fuel-31-20BAs}
+  \caption{}
+  \label{fig:chap7-capt-rate-rel-err-3.1-20BAs-assm}
+\end{subfigure}%
+\caption[U-238 capture rates for 3.1\% enriched assembly with 20 BPs]{U-238 capture rates for 3.1\% enriched assembly with 20 \ac{BP}s.}
+\label{fig:chap7-capt-rates-3.1-assm-20BAs}
+\end{figure}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Convergence Rates}
+\label{subsec:chap7-convergence}
 
 \begin{itemize}[noitemsep]
   \item quantify \# histories to $\pm$1 \ac{PCM}
