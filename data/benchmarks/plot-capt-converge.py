@@ -77,6 +77,7 @@ fig = plt.figure()
 # Customize and save plot
 for i, directory in enumerate(directories):
     who = np.max(rel_err[i, :, :], axis=1)
+    print(who)
     print(who.shape)
     plt.semilogx(batches, np.max(rel_err[i, :, :], axis=1))
 
