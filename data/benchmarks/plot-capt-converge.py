@@ -27,10 +27,11 @@ directories = OrderedDict({'fuel-1.6': '1.6% Enr. (no BPs)',
 
 mean = np.zeros((3, 1000, 17*17), dtype=np.float)
 rel_err = np.zeros((3, 1000, 17*17), dtype=np.float)
+batches = np.linspace(101, 201, 900, dtype=np.int)
 
 for i, directory in enumerate(directories):
     print(directory)
-    for batch in np.linspace(101, 1001, 900, dtype=np.int):
+    for batch in batches:
         print(batch)
         sp = openmc.StatePoint(os.path.join(directory, 'statepoint.{0:04}.h5'.format(batch)))
 
@@ -74,6 +75,9 @@ for i, directory in enumerate(directories):
 fig = plt.figure()
 
 # Customize and save plot
+for i, directory in enumerate(directories):
+    plt.semilogx(batches, np.max(rel_err[i, :, ...], axis=1))
+
 plt.title('Max. U-238 Capture Rate Error')
 plt.xlabel('Batch')
 plt.ylabel('Relative Error [%]')
