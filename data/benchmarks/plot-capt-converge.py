@@ -10,12 +10,12 @@ import matplotlib
 # in your ~/.matplotlib/matplotlibrc
 matplotlib.use('Agg')
 
+import matplotlib.pyplot as plt
+
 # Force non-interactive mode, or set 'interactive' to False
 # in your ~/.matplotlib/matplotlibrc
 plt.ioff()
 
-
-import matplotlib.pyplot as plt
 
 ###############################################################################
 # SINGLE FUEL ASSEMBLIES
