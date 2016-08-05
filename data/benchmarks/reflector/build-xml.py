@@ -32,6 +32,10 @@ openmc_geometry.export_to_xml()
 # Construct uniform initial source distribution over fissionable zones
 lower_left = reflector.bounds[:3]
 upper_right = reflector.bounds[3:]
+
+lat_width = (np.array(upper_right) - np.array(lower_left))
+lat_width[:2] /= 3.
+
 source = openmc.source.Source(space=openmc.stats.Box(lower_left, upper_right))
 source.space.only_fissionable = True
 
@@ -46,8 +50,10 @@ settings_file.source = source
 settings_file.sourcepoint_write = False
 
 settings_file.entropy_dimension = [34,34,1]
-settings_file.entropy_upper_right = upper_right
-settings_file.entropy_lower_left = lower_left
+print(upper_right)
+print(lower_left)
+settings_file.entropy_upper_right = [upper_right[0] - lat_width[0], upper_right[1], upper_right[2]]
+settings_file.entropy_lower_left = [lower_left[0], lower_left[1] + lat_width[1], lower_left[2]]
 
 settings_file.export_to_xml()
 
@@ -76,9 +82,6 @@ plot_file.export_to_xml()
 
 
 ###################  Create Mesh Tallies for Verification  ####################
-
-lat_width = (np.array(upper_right) - np.array(lower_left))
-lat_width[:2] /= 3.
 
 # Instantiate a tally Mesh
 mesh = openmc.Mesh(name='assembly mesh')

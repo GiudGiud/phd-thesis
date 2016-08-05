@@ -45,9 +45,9 @@ settings_file.output = {'tallies': False}
 settings_file.source = source
 settings_file.sourcepoint_write = False
 
-settings_file.entropy_dimension = [34,34,1]
-settings_file.entropy_upper_right = upper_right
-settings_file.entropy_lower_left = lower_left
+settings_file.entropy_dimension = [15*17, 15*17, 1]
+settings_file.entropy_upper_right = [+15*17*1.25984/2., +15*17*1.25984/2., 208.]
+settings_file.entropy_lower_left = [-15*17*1.25984/2., -15*17*1.25984/2., 203.]
 
 settings_file.export_to_xml()
 
