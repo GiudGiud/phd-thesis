@@ -82,7 +82,7 @@ for i, directory in enumerate(directories):
     plt.loglog(batches, np.nanmax(rel_err[i, :, :], axis=1), linewidth=2)
 
 plt.title('Max. Fission Rate Error', fontsize=20)
-plt.grid(True,which="majorminor",ls="-", color='0.65')
+plt.grid(True, which="both")
 plt.xlabel('Batch', fontsize=16)
 plt.ylabel('Relative Error [%]', fontsize=16)
 plt.legend(list(directories.values()), loc='upper right')
@@ -97,7 +97,7 @@ for i, directory in enumerate(directories):
     plt.loglog(batches, np.nanmean(rel_err[i, :, :], axis=1), linewidth=2)
 
 plt.title('Mean Fission Rate Error', fontsize=20)
-plt.grid(True,which="majorminor",ls="-", color='0.65')
+plt.grid(True, which="both")
 plt.xlabel('Batch', fontsize=16)
 plt.ylabel('Relative Error [%]', fontsize=16)
 plt.legend(list(directories.values()), loc='upper right')
@@ -170,6 +170,7 @@ for i, directory in enumerate(directories):
     plt.loglog(batches, np.nanmax(rel_err[i, :, :], axis=1), linewidth=2)
 
 plt.title('Max. Fission Rate Error', fontsize=20)
+plt.grid(True, which="both")
 plt.xlabel('Batch', fontsize=16)
 plt.ylabel('Relative Error [%]', fontsize=16)
 plt.legend(list(directories.values()), loc='upper right')
@@ -184,7 +185,7 @@ for i, directory in enumerate(directories):
     plt.loglog(batches, np.nanmean(rel_err[i, :, :], axis=1), linewidth=2)
 
 plt.title('Mean Fission Rate Error', fontsize=20)
-plt.grid(True,which="majorminor",ls="-", color='0.65')
+plt.grid(True, which="both")
 plt.xlabel('Batch', fontsize=16)
 plt.ylabel('Relative Error [%]', fontsize=16)
 plt.legend(list(directories.values()), loc='upper right')
