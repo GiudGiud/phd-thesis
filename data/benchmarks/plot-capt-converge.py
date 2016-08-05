@@ -71,6 +71,9 @@ for i, directory in enumerate(directories):
         mean[i, batch-101, :] = curr_capt_mean.flat
         rel_err[i, batch-101, :] = curr_rel_err.flat
 
+# Set the first active batch's uncertainties to NaN
+rel_err[:, 0, :] = np.nan
+
 # Create a matplotlib figure for the max relative error convergence curves
 fig = plt.figure()
 
@@ -78,7 +81,7 @@ fig = plt.figure()
 for i, directory in enumerate(directories):
     who = np.nanmax(rel_err[i, :, :], axis=1)
     print(who)
-    plt.semilogx(batches, np.nanmax(rel_err[i, :, :], axis=1), linewidth=1.5)
+    plt.loglog(batches, np.nanmax(rel_err[i, :, :], axis=1), linewidth=1.5)
 
 plt.title('Max. U-238 Capture Rate Error')
 plt.xlabel('Batch')
@@ -94,7 +97,7 @@ fig = plt.figure()
 
 # Customize and save plot
 for i, directory in enumerate(directories):
-    plt.semilogx(batches, np.nanmean(rel_err[i, :, :], axis=1))
+    plt.loglog(batches, np.nanmean(rel_err[i, :, :], axis=1))
 
 plt.title('Mean U-238 Capture Rate Error')
 plt.xlabel('Batch')
