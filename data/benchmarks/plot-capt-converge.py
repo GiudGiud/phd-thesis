@@ -95,11 +95,11 @@ fig = plt.figure()
 
 # Customize and save plot
 for i, directory in enumerate(directories):
-    plt.loglog(batches, np.nanmean(rel_err[i, :, :], axis=1))
+    plt.loglog(batches, np.nanmean(rel_err[i, :, :], axis=1), linewidth=2)
 
 plt.title('Mean U-238 Capture Rate Error')
 plt.xlabel('Batch')
 plt.ylabel('Relative Error [%]')
 plt.legend(list(directories.values()), loc='center right')
-plt.savefig('capt-conv-mean-assms.png', bbox_inches='tight', linewidth=2)
+plt.savefig('capt-conv-mean-assms.png', bbox_inches='tight')
 plt.close()
