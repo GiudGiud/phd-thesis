@@ -76,10 +76,10 @@ fig = plt.figure()
 
 # Customize and save plot
 for i, directory in enumerate(directories):
-    who = np.max(rel_err[i, :, :], axis=1)
+    who = np.nanmax(rel_err[i, :, :], axis=1)
     print(who)
     print(who.shape)
-    plt.semilogx(batches, np.max(rel_err[i, :, :], axis=1))
+    plt.semilogx(batches, np.nanmax(rel_err[i, :, :], axis=1))
 
 plt.title('Max. U-238 Capture Rate Error')
 plt.xlabel('Batch')
@@ -95,7 +95,7 @@ fig = plt.figure()
 
 # Customize and save plot
 for i, directory in enumerate(directories):
-    plt.semilogx(batches, np.mean(rel_err[i, :, :], axis=1))
+    plt.semilogx(batches, np.nanmean(rel_err[i, :, :], axis=1))
 
 plt.title('Max. U-238 Capture Rate Error')
 plt.xlabel('Batch')
