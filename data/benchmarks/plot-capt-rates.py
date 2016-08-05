@@ -65,7 +65,7 @@ for directory in directories:
     plt.title('Normalized U-238 Capture Rates', fontsize=20)
     plt.grid(False)
     plt.axis('off')
-    plt.savefig('capt-mean-' + directory + '.png', bbox_inches='tight')
+    plt.savefig('capt-mean-' + directory.replace('.', '') + '.png', bbox_inches='tight')
 
     # Create a matplotlib figure for rel. err. fission rates
     fig = plt.figure()
@@ -76,4 +76,4 @@ for directory in directories:
     plt.title('U-238 Capture Rate Relative Error [%]', fontsize=20)
     plt.grid(False)
     plt.axis('off')
-    plt.savefig('capt-rel-err-' + directory + '.png', bbox_inches='tight')
+    plt.savefig('capt-rel-err-' + directory.replace('.', '') + '.png', bbox_inches='tight')

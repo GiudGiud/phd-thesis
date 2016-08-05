@@ -62,7 +62,7 @@ for directory in directories:
     plt.title('Normalized Fission Rates', fontsize=20)
     plt.grid(False)
     plt.axis('off')
-    plt.savefig('fiss-mean-' + directory + '.png', bbox_inches='tight')
+    plt.savefig('fiss-mean-' + directory.replace('.', '') + '.png', bbox_inches='tight')
 
     # Create a matplotlib figure for rel. err. fission rates
     fig = plt.figure()
@@ -73,4 +73,4 @@ for directory in directories:
     plt.title('Fission Rate Relative Error [%]', fontsize=20)
     plt.grid(False)
     plt.axis('off')
-    plt.savefig('fiss-rel-err-' + directory + '.png', bbox_inches='tight')
+    plt.savefig('fiss-rel-err-' + directory.replace('.', '') + '.png', bbox_inches='tight')
