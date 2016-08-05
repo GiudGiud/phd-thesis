@@ -2,9 +2,20 @@ import os
 import copy
 import openmc
 import numpy as np
-import matplotlib.pyplot as plt
-import matplotlib
 from _collections import OrderedDict
+
+import matplotlib
+
+# force headless backend, or set 'backend' to 'Agg'
+# in your ~/.matplotlib/matplotlibrc
+matplotlib.use('Agg')
+
+# Force non-interactive mode, or set 'interactive' to False
+# in your ~/.matplotlib/matplotlibrc
+plt.ioff()
+
+
+import matplotlib.pyplot as plt
 
 ###############################################################################
 # SINGLE FUEL ASSEMBLIES
