@@ -113,7 +113,7 @@ plt.close()
 directories = OrderedDict()
 directories['2x2'] = '2x2'
 directories['reflector'] = 'reflector'
-directories['full-core'] = 'full core'
+#directories['full-core'] = 'full core'
 
 batches = np.linspace(101, 1000, 1001-101, dtype=np.int)
 mean = np.zeros((3, len(batches), 17*17), dtype=np.float)
