@@ -187,6 +187,12 @@ capture = u238.reactions[102]
 delta_flux = openmoc_fluxes - openmc_fluxes
 rel_err = delta_flux / openmc_fluxes * 100.
 
+# FIXME
+openmoc_fluxes_mean = np.nanmean(openmoc_fluxes, axis=0)
+openmc_fluxes_mean = np.nanmean(openmc_fluxes, axis=0)
+delta_flux_mean = openmoc_fluxes_mean - openmc_fluxes_mean
+rel_err_mean = delta_flux_mean / openmc_fluxes_mean * 100.
+
 
 ###############################################################################
 #  Plot OpenMC-to-OpenMOC Innermost/Outermost Scalar Flux Error (Fig. 5.4a)
@@ -202,7 +208,9 @@ plt.plot(group_edges, rel_err[min_fsr,:],
          drawstyle='steps', color='b', linewidth=2)
 plt.plot(group_edges, rel_err[max_fsr,:],
          drawstyle='steps', color='r', linewidth=2)
-plt.plot(group_edges, np.nanmean(rel_err, axis=0),
+#plt.plot(group_edges, np.nanmean(rel_err, axis=0),
+#         drawstyle='steps', color='orange', linewidth=2)
+plt.plot(group_edges, rel_err_mean,
          drawstyle='steps', color='orange', linewidth=2)
 
 plt.xlabel('Energy [eV]', fontsize=12)
