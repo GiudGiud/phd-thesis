@@ -73,7 +73,7 @@ capt_rates = get_capture_rates(mgxs_lib)
 fig = plt.figure()
 
 # Extend the rel er array for matplotlib's step plot of fluxes
-capt_rates = capt_rates[::-1, 70-27]
+capt_rates = sorted(capt_rates[:, 70-27])
 capt_rates /= max(capt_rates)
 capt_rates = np.insert(capt_rates, 0, capt_rates[0], axis=0)
 
