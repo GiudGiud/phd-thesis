@@ -707,21 +707,31 @@ The results presented in Fig.~\ref{fig:chap5-rel-err-energy} indicate significan
 
 Fig.~\ref{fig:chap5-rel-err-space} highlights the spatial dependence of the error across the fuel for each energy range. These plots were generated for the benchmark models with a 16$\times$ \ac{FSR} discretization with \ac{MGXS} tallied on the \ac{FSR} mesh. The plots correspond to the case studies in Tables~\ref{table:chap5-slab-space} and~\ref{table:chap5-pin-space} with iso-in-lab scattering.
 
-The range A error in the slab monotonically decreases from a maximum of nearly 1.5\% to a minimum of $\sim$-0.5\% in those \ac{FSR}s furthest and nearest the moderator, with a similar trend observed for the fuel pin. Furthermore,  the trend accelerates in outermost 3--4 \ac{FSR}s nearest the moderator, where the error drops by nearly half of its value at the center of the slab and pin. The error profiles for energy ranges B and C exhibit the same decreasing trend from the inside to the oustide of the slab and pin, but the error magnitude never exceeds 0.5\% in magnitude. The systematic error trends in energy and space imply that the negative eigenvalue bias is driven by a poor prediction of the reaction rates in resonance groups, as investigated in the following section.
+The range A error in the slab monotonically decreases from a maximum of nearly 1.5\% to a minimum of $\sim$-0.5\% in those \ac{FSR}s furthest and nearest the moderator, with a similar trend observed for the fuel pin. Furthermore,  the trend accelerates in outermost 3 -- 4 \ac{FSR}s nearest the moderator, where the error drops by nearly half of its value at the center of the slab and pin. The error profiles for energy ranges B and C exhibit the same decreasing trend from the inside to the oustide of the slab and pin, but the error magnitude never exceeds 0.5\% in magnitude. The systematic error trends in energy and space imply that the negative eigenvalue bias is driven by a poor prediction of the reaction rates in resonance groups, as investigated in the following section.
 
 \begin{figure}[H]
-\begin{subfigure}{.9\textwidth}
+\begin{subfigure}{\textwidth}
   \centering
-  \includegraphics[width=\linewidth]{figures/biases/slab/rel-err-fuel-fsrs}
+  \includegraphics[width=0.8\linewidth]{figures/biases/slab/rel-err-fuel-fsrs}
   \caption{}
 \end{subfigure}
-\begin{subfigure}{.9\textwidth}
+\begin{subfigure}{\textwidth}
   \centering
-  \includegraphics[width=\linewidth]{figures/biases/pin-cell/rel-err-fuel-fsrs}
+  \includegraphics[width=0.8\linewidth]{figures/biases/pin-cell/rel-err-fuel-fsrs}
   \caption{}
 \end{subfigure}
-\caption[Flux relative error by FSR]{The spatially-varying relative error of the OpenMOC scalar flux with respect to the reference OpenMC flux for a 1D slab (a) and 2D fuel pin (b) in group 27. The results correspond to Tables~\ref{table:chap5-slab-space} and~\ref{table:chap5-pin-space}.}
+\caption[Flux relative error by FSR]{The spatially-varying relative error of the OpenMOC scalar flux with respect to the reference OpenMC flux for a 1D slab (a) and 2D fuel pin (b) in energy Ranges A, B, and C. The results correspond to Tables~\ref{table:chap5-slab-space} and~\ref{table:chap5-pin-space}.}
 \label{fig:chap5-rel-err-space}
+\end{figure}
+
+Fig.~\ref{fig:chap5-u238-capture-space} illustrates the spatial dependence of the normalized U-238 capture reaction rates in Range A across the fuel for the slab and pin cell. The ``rim effect'' of U-238 capture (and subsequent production of Pu-239) in the outermost ring nearest the moderator is easily seen for both geometries. The capture rates are 5$\times$ greater in the outermost slab/ring than in the innermost slabs/rings. The interior zones experience a highly self-shielded flux since neutrons at energies coinciding with the U-238 capture resonance at 6.67 eV are absorbed in the outermost ring before they can further penetrate the fuel. Although the Range A capture rates in the interior regions are relatively small, the largest errors appear in those zones as shown in Fig.~\ref{fig:chap5-rel-err-space}. Taken together, the reaction rates and flux errors convolve to produce a non-negligible error in the volume-integrated U-238 capture rate across the slab/pin as shown in next section.
+
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=0.8\linewidth]{figures/biases/u238-capt-rates-fuel-fsrs}
+  \caption{}
+\caption[U-238 capture rates by FSR]{The normalized spatially-varying U-238 capture rates tallied by OpenMC for a 1D slab 2D fuel pin in Range A. The results correspond to Tables~\ref{table:chap5-slab-space} and~\ref{table:chap5-pin-space}.}
+\label{fig:chap5-u238-capture-space}
 \end{figure}
 
 %\begin{emphbox}
