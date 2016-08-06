@@ -239,6 +239,12 @@ max_fsr = fuel_indices[0]
 # Plot the error for the innermost and outermost FSRS atop each other
 fig, ax1 = plt.subplots()
 
+# FIXME
+mean_rel_err = np.mean(rel_err, axis=0)
+print(mean_rel_err)
+print(rel_err[max_fsr, :])
+print(mean_rel_err.shape)
+
 plt.plot(group_edges, rel_err[min_fsr,:],
          drawstyle='steps', color='b', linewidth=2)
 plt.plot(group_edges, rel_err[max_fsr,:],
