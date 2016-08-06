@@ -244,7 +244,7 @@ plt.plot(group_edges, rel_err[min_fsr,:],
 plt.plot(group_edges, rel_err[max_fsr,:],
          drawstyle='steps', color='r', linewidth=2)
 plt.plot(group_edges, np.nanmean(rel_err[min(min_fsr, max_fsr):max(min_fsr, max_fsr)+1,:], axis=0),
-         drawstyle='steps', color='orange', linewidth=2)
+         drawstyle='steps', color='darkorange', linewidth=2)
 
 plt.xlabel('Energy [eV]', fontsize=12)
 plt.ylabel('Relative Error [%]', fontsize=12)
