@@ -187,9 +187,11 @@ plt.plot(group_edges, rel_err[max_fsr,:],
          drawstyle='steps', color='r', linestyle='-', linewidth=2)
 plt.plot(group_edges, rel_err_no_sph[max_fsr,:], alpha=0.5,
          drawstyle='steps', color='r', linestyle='--', linewidth=2)
-plt.plot(group_edges, np.nanmean(rel_err[min_fsr:max_fsr,:], axis=0),
+
+
+plt.plot(group_edges, np.nanmean(rel_err[min(min_fsr, max_fsr):max(min_fsr, max_fsr)+1,:], axis=0),
          drawstyle='steps', color='orange', linestyle='-', linewidth=2)
-plt.plot(group_edges, np.nanmean(rel_err_no_sph[min_fsr:max_fsr,:], axis=0), alpha=0.5,
+plt.plot(group_edges, np.nanmean(rel_err_no_sph[min(min_fsr, max_fsr):max(min_fsr, max_fsr)+1,:], axis=0), alpha=0.5,
          drawstyle='steps', color='orange', linestyle='--', linewidth=2)
 
 plt.xlabel('Energy [eV]', fontsize=12)
