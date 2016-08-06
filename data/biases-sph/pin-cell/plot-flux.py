@@ -135,7 +135,7 @@ for cell_id, cell in cells.items():
     cell.setNumSectors(8)
 
 # Initialize an OpenMOC TrackGenerator and Solver
-track_generator = openmoc.TrackGenerator(openmoc_geometry, 512, 0.001)
+track_generator = openmoc.TrackGenerator(openmoc_geometry, 128, 0.1)
 track_generator.setNumThreads(opts.num_omp_threads)
 track_generator.generateTracks(store=False)
 
