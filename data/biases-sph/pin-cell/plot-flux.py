@@ -249,7 +249,7 @@ plt.plot(group_edges, rel_err[min_fsr,:],
          drawstyle='steps', color='b', linewidth=2)
 plt.plot(group_edges, rel_err[max_fsr,:],
          drawstyle='steps', color='r', linewidth=2)
-plt.plot(group_edges, np.mean(rel_err, axis=0),
+plt.plot(group_edges, np.nanmean(rel_err, axis=0),
          drawstyle='steps', color='orange', linewidth=2)
 
 plt.xlabel('Energy [eV]', fontsize=12)

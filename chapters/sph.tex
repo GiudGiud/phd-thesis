@@ -95,14 +95,14 @@ Q_{k,g}(\mathbf{\Omega}) = \frac{1}{4\pi} \sum_{g'=1}^{G} \Sigma_{s,k,g' \righta
 \subsection{Algorithm}
 \label{subsec:chap6-sph-algorithm}
 
-An iterative algorithm is used to estimate \ac{SPH} factors from a series of multi-group fixed source calculations. First, the estimates $\mu_{k,g}^{(n)}$ at iteration $n$ to the true \ac{SPH} factors $\mu_{k,g}$ are introduced into Eqn.~\ref{eqn:chap6-sph-transport-eqn}:
+An iterative algorithm is used to estimate \ac{SPH} factors from a series of multi-group fixed source calculations. First, the estimates $\mu_{k,g}^{(n)}$ at iteration $n$ to the true \ac{SPH} factors $\mu_{k,g}$ are introduced as a correction factor for the total cross section in Eqn.~\ref{eqn:chap6-sph-transport-eqn}:
 
 \begin{dmath}
 \label{eqn:chap6-sph-transport-eqn-iterate}
 \mathbf{\Omega} \cdot \nabla \psi_{g}^{(n)}(\mathbf{r},\mathbf{\Omega}) + \mu_{k,g}^{(n-1)}\Sigma_{t,k,g}\psi_{g}^{(n)}(\mathbf{r},\mathbf{\Omega}) = Q_{k,g}(\mathbf{\Omega})
 \end{dmath}
 
-\noindent A solution to the multi-group flux distribution is computed for each iteration. The \ac{SPH} factor estimates $\mu_{k,g}^{(n)}$ are found from the ratio of the reference Monte Carlo scalar flux $\phi_{k,g}^{MC}$ to the flux $\phi_{k,g}^{(n)}$ computed from the fixed source calculation at iteration $n$,
+\noindent This form of the transport equation with a fixed source is solved using a multi-group transport code (such as OpenMOC) for the flux distribution at each iteration. The \ac{SPH} factor estimates $\mu_{k,g}^{(n)}$ are found from the ratio of the reference Monte Carlo scalar flux $\phi_{k,g}^{MC}$ to the flux $\phi_{k,g}^{(n)}$ computed from the fixed source calculation at iteration $n$,
 
 \begin{equation}
 \label{eqn:chap6-sph-update}
