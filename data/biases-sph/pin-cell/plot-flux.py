@@ -135,7 +135,7 @@ for cell_id, cell in cells.items():
     cell.setNumSectors(8)
 
 # Initialize an OpenMOC TrackGenerator and Solver
-track_generator = openmoc.TrackGenerator(openmoc_geometry, 128, 0.1)
+track_generator = openmoc.TrackGenerator(openmoc_geometry, 512, 0.001)
 track_generator.setNumThreads(opts.num_omp_threads)
 track_generator.generateTracks(store=False)
 
@@ -239,12 +239,6 @@ max_fsr = fuel_indices[0]
 # Plot the error for the innermost and outermost FSRS atop each other
 fig, ax1 = plt.subplots()
 
-# FIXME
-mean_rel_err = np.mean(rel_err, axis=0)
-print(mean_rel_err)
-print(rel_err[max_fsr, :])
-print(mean_rel_err.shape)
-
 plt.plot(group_edges, rel_err[min_fsr,:],
          drawstyle='steps', color='b', linewidth=2)
 plt.plot(group_edges, rel_err[max_fsr,:],
@@ -256,7 +250,7 @@ plt.xlabel('Energy [eV]', fontsize=12)
 plt.ylabel('Relative Error [%]', fontsize=12)
 plt.xlim((min(group_edges), max(group_edges)))
 plt.xscale('log')
-plt.legend(['Inner', 'Outer', 'Complete'], fontsize=12)
+plt.legend(['Inner', 'Outer', 'All'], fontsize=12)
 
 # Create loglog plot of U-238 continuous-energy capture cross section
 ax2 = ax1.twinx()
