@@ -52,7 +52,7 @@ A solution for the neutron flux must computed from the transport equation in ord
 Instead, numerical simulation is used to solve the transport equation for the flux. Monte Carlo may be employed to exactly treat the energy dependence in Eqn.~\ref{eqn:chap2-transport-ce}\footnote{The treatment is only as exact as the uncertainties in measured nuclear cross section data will permit.}, but it is computationally burdensome and impractical for routine nuclear reactor analysis. Although space and angle may be discretized using standard techniques for the solution of partial differential equations, special treatment must be given to the energy variable. The following sections introduce approximations used to reduce the dimensionality of the equation to permit tractable multi-group calculations.
 
 \begin{emphbox}
-\textbf{Nuclear reactor simulations calculate the neutron multiplication factor $k_{eff}$ and reaction rate distributions. Monte Carlo methods are the most accurate approach, but are not yet practical for whole-core analysis.}
+\textbf{Nuclear reactor simulations calculate the neutron multiplication factor $k_{eff}$ and reaction rate spatial distributions. Monte Carlo methods are the most accurate approach, but are not yet practical for whole-core analysis.}
 \end{emphbox}
 
 %The following sections present standard approximations made in multi-group theory to reduce the dimensionality of the angular, energy and spatial variables 
@@ -92,7 +92,7 @@ Q(\mathbf{r},\mathbf{\Omega},E) = \frac{1}{4\pi k_{eff}} \int\displaylimits_{0}^
 \subsection{Angular Expansion of the Scattering Kernel}
 \label{subsec:chap2-scatt-src}
 
-Unlike the fission source, the scattering source cannot be treated as isotropic since it is strongly dependent on the relationship between the incoming and outgoing directions of motion. The dimensionality of the scattering source term in the transport equation -- known as the double differential scattering kernel -- is commonly reduced with basis function expansions in angle~\cite{hebert2009applied, cacuci2010handbook}. The angular flux is first expanded as an infinite sum of spherical harmonic functions $Y_{\ell}^{m}(\mathbf{\Omega})$ and angular flux moments $\psi_{\ell}^{m}(\mathbf{r},E)$:
+Unlike the fission source, the source of neutrons from scattering cannot be treated as isotropic since it is strongly dependent on the relationship between the incoming and outgoing directions of motion. The dimensionality of the scattering source term in the transport equation -- known as the double differential scattering kernel -- is commonly reduced with basis function expansions in angle~\cite{hebert2009applied, cacuci2010handbook}. The angular flux is first expanded as an infinite sum of spherical harmonic functions $Y_{\ell}^{m}(\mathbf{\Omega})$ and angular flux moments $\psi_{\ell}^{m}(\mathbf{r},E)$:
 
 \begin{dmath}
 \label{eqn:chap2-flux-expand}

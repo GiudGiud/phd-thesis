@@ -17,7 +17,7 @@ This chapter investigates the loss in accuracy resulting from approximations mad
 \Delta\rho = \left(k_{eff}^{OpenMOC} - k_{eff}^{OpenMC}\right) \times 10_{5}
 \end{equation}
 
-In each case study, the role of angular discretization in \ac{MOC} is quantified through convergence studies of the number of azimuthal angles and the track spacing used in the deterministic \ac{MOC} calculations. The effects of energy discretization are analyzed for \ac{MGXS} tallied in the CASMO~\cite{rhodes2006casmo} energy group structures ranging from 1 -- 70 groups (see App.~\ref{app:energy-groups}). For each of the case studies with heterogeneous geometries, the spatial domain is discretized in OpenMOC's \ac{FSR} mesh with constant-by-material \ac{MGXS} to quantify the interaction between the energy and spatial approximations. Spatial discretization studies show the impact of tallying \ac{MGXS} in each of the \ac{FSR}s used in the discretized OpenMOC geometry. Finally, \ac{MGXS} libraries were tallied using OpenMC's iso-in-lab feature (see Sec.~\ref{subsec:chap4-iso-in-lab}) to quantify the impact of the isotropic in lab scattering approximation used in OpenMOC. Inter-pin spatial self-shielding effects are not treated here as they are studied in detail in Chaps.~\Crefrange{chap:benchmarks}{chap:unsupervised}. In each case study, OpenMOC was converged to a criterion of 10$_{-7}$ on the energy-integrated fission source in each \ac{FSR}.
+In each case study, the role of angular discretization in \ac{MOC} is quantified through convergence studies of the number of azimuthal angles and the track spacing used in the deterministic \ac{MOC} calculations. The effects of energy discretization are analyzed for \ac{MGXS} tallied in the CASMO~\cite{rhodes2006casmo} energy group structures ranging from 1 -- 70 groups (see App.~\ref{app:energy-groups}). For each of the case studies with heterogeneous geometries, the spatial domain is discretized in OpenMOC's \ac{FSR} mesh with constant-by-material \ac{MGXS} to quantify the interaction between the energy and spatial approximations. Spatial discretization studies show the impact of tallying \ac{MGXS} in each of the \ac{FSR}s used in the discretized OpenMOC geometry. Finally, \ac{MGXS} libraries were tallied using OpenMC's iso-in-lab feature (see Sec.~\ref{subsec:chap4-iso-in-lab}) to quantify the impact of the isotropic in lab scattering approximation used in OpenMOC. Inter-pin spatial self-shielding effects are not treated here as they are studied in detail in Chaps.~\Crefrange{chap:benchmarks}{chap:unsupervised}. In each case study, OpenMOC was converged to a criterion of 10$^{-7}$ on the energy-integrated fission source in each \ac{FSR}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Homogeneous Infinite Medium}
@@ -35,7 +35,7 @@ An initial series of case studies were performed for a homogeneous infinite medi
   \toprule
   \rowcolor{lightgray}
   {\bf Nuclide} &
-  {\bf Density [atom / b-cm]} \\
+  {\bf Density [atoms / b-cm]} \\
   \midrule
   H-1 &   4.12377E-2 \\
   O-16 &  2.06218E-2 \\
@@ -46,7 +46,7 @@ An initial series of case studies were performed for a homogeneous infinite medi
 \end{tabular}
 \end{table}
 
-The reference eigenvalues computed with continuous energy cross sections in OpenMC are shown in Tab.~\ref{table:chap5-inf-med-reference} for both normal anisotropic as well as iso-in-lab scattering. As one would expect for a homogeneous infinite medium, the eigenvalues for anisotropic and iso-in-lab scattering agree to within one standard deviation of the mean. The reference calculations were computed for 100 batches of 10$_{8}$ particles per batch. The \texttt{openmc.mgxs} module was used to compute 70-group libraries of $\hat{\Sigma}_{t,g}$, $\hat{\Sigma}_{s,k,g'\rightarrow g}$, $\nu\hat{\Sigma}_{f,g}$, and $\hat{\chi}_{g}$ from OpenMC tallies (see Tab.~\ref{table:chap3-tally-types}).
+The reference eigenvalues computed with continuous energy cross sections in OpenMC are shown in Tab.~\ref{table:chap5-inf-med-reference} for both normal anisotropic as well as iso-in-lab scattering. As one would expect for a homogeneous infinite medium, the eigenvalues for anisotropic and iso-in-lab scattering agree to within one standard deviation of the mean. The reference calculations were computed for 100 batches of 10$^{8}$ particles per batch. The \texttt{openmc.mgxs} module was used to compute 70-group libraries of $\hat{\Sigma}_{t,g}$, $\hat{\Sigma}_{s,k,g'\rightarrow g}$, $\nu\hat{\Sigma}_{f,g}$, and $\hat{\chi}_{g}$ from OpenMC tallies (see Tab.~\ref{table:chap3-tally-types}).
 
 \begin{table}[h!]
   \centering
@@ -194,7 +194,7 @@ A simple slab model was constructed to quantify approximation errors in a 1D het
   \rowcolor{lightgray}
   {\bf Material} &
   {\bf Nuclide} &
-  {\bf Density [atom / b-cm]} \\
+  {\bf Density [atoms / b-cm]} \\
   \midrule
   \multirow{3}{*}{\bf UO$_2$} & O-16 &  4.58508E-2 \\
   & U-235 & 5.58415E-4 \\
@@ -214,7 +214,7 @@ A simple slab model was constructed to quantify approximation errors in a 1D het
 \end{tabular}
 \end{table}
 
-The reference eigenvalues computed with continuous energy cross sections in OpenMC are shown in Tab.~\ref{table:chap5-slab-reference} for both normal anisotropic as well as iso-in-lab scattering. The reference calculations were computed for 100 batches of 10$_{7}$ particles per batch. The reference eigenvalues for the two cases vary by nearly 75 \ac{pcm} due to anisotropies resulting from thermal scattering in the moderator. The \texttt{openmc.mgxs} module was used to compute 70-group libraries of $\hat{\Sigma}_{t,k,g}$, $\hat{\tilde{\Sigma}}_{t,k,g}$, $\hat{\Sigma}_{s,k,g'\rightarrow g}$, $\hat{\tilde{\Sigma}}_{s,k,g'\rightarrow g}$, $\nu\hat{\Sigma}_{f,g}$, and $\hat{\chi}_{g}$ from OpenMC tallies (see Tab.~\ref{table:chap3-tally-types}).
+The reference eigenvalues computed with continuous energy cross sections in OpenMC are shown in Tab.~\ref{table:chap5-slab-reference} for both normal anisotropic as well as iso-in-lab scattering. The reference calculations were computed for 100 batches of 10$^{7}$ particles per batch. The reference eigenvalues for the two cases vary by nearly 75 \ac{pcm} due to anisotropies resulting from thermal scattering in the moderator. The \texttt{openmc.mgxs} module was used to compute 70-group libraries of $\hat{\Sigma}_{t,k,g}$, $\hat{\tilde{\Sigma}}_{t,k,g}$, $\hat{\Sigma}_{s,k,g'\rightarrow g}$, $\hat{\tilde{\Sigma}}_{s,k,g'\rightarrow g}$, $\nu\hat{\Sigma}_{f,g}$, and $\hat{\chi}_{g}$ from OpenMC tallies (see Tab.~\ref{table:chap3-tally-types}).
 
 \begin{table}[h!]
   \centering
@@ -278,7 +278,7 @@ The first case study investigated the convergence of the OpenMOC eigenvalue with
 \subsubsection{Energy Condensation and FSR Discretization}
 \label{subsubsec:chap5-slab-energy}
 
-The second case study investigated the variation of the OpenMOC eigenvalue with the energy group structure used in the \ac{MOC} calculation. This case study simultaneously varied the \ac{FSR} discretization used in the OpenMOC simulation. Tab.~\ref{table:chap5-slab-energy} presents the bias $\Delta\rho$ between OpenMC and OpenMOC for a matrix of energy group structures and \ac{FSR} spatial discretizations. In each case, the \ac{MGXS} used in OpenMOC were tallied by material in OpenMC (\textit{i.e.}, the spatial tally mesh corresponded to Fig.~\ref{fig:chap5-slab-a}). The OpenMOC calculations each used 128 azimuthal angles and 0.01 cm track spacing. The slab was discretized into 1 -- 16 equal volume \ac{FSR}s in the fuel and moderator.
+The second case study investigated the variation of the OpenMOC eigenvalue with the energy group structure used in the \ac{MOC} calculation. This case study simultaneously varied the \ac{FSR} discretization used in the OpenMOC simulation. Tab.~\ref{table:chap5-slab-energy} presents the bias $\Delta\rho$ between OpenMC and OpenMOC for a matrix of energy group structures and \ac{FSR} spatial discretizations. In each case, the \ac{MGXS} used in OpenMOC were tallied by material rather than \ac{FSR} in OpenMC (\textit{i.e.}, the spatial tally mesh corresponded to Fig.~\ref{fig:chap5-slab-a}). The OpenMOC calculations each used 128 azimuthal angles and 0.01 cm track spacing. The slab was discretized into 1 -- 16 equal volume \ac{FSR}s in the fuel and moderator.
 
 \begin{table}[h!]
   \centering
@@ -452,7 +452,7 @@ A \ac{PWR} fuel pin cell model was constructed to quantify approximation errors 
 \label{fig:chap5-pin-cell}
 \end{figure}
 
-The reference eigenvalues computed with continuous energy cross sections in OpenMC are shown in Tab.~\ref{table:chap5-pin-reference} for both normal anisotropic and iso-in-lab scattering. The reference calculations were computed for 100 batches of 10$_{7}$ particles per batch. The reference eigenvalues for the two cases vary by 65 \ac{pcm} due to anisotropic thermal scattering in the moderator, roughly the same as that for the 1D slab geometry. The \texttt{openmc.mgxs} module was used to compute 70-group libraries of $\hat{\Sigma}_{t,k,g}$, $\hat{\tilde{\Sigma}}_{t,k,g}$, $\hat{\Sigma}_{s,k,g'\rightarrow g}$, $\hat{\tilde{\Sigma}}_{s,k,g'\rightarrow g}$, $\nu\hat{\Sigma}_{f,g}$, and $\hat{\chi}_{g}$ from OpenMC tallies (see Tab.~\ref{table:chap3-tally-types}). 
+The reference eigenvalues computed with continuous energy cross sections in OpenMC are shown in Tab.~\ref{table:chap5-pin-reference} for both normal anisotropic and iso-in-lab scattering. The reference calculations were computed for 100 batches of 10$^{7}$ particles per batch. The reference eigenvalues for the two cases vary by 65 \ac{pcm} due to anisotropic thermal scattering in the moderator, roughly the same as that for the 1D slab geometry. The \texttt{openmc.mgxs} module was used to compute 70-group libraries of $\hat{\Sigma}_{t,k,g}$, $\hat{\tilde{\Sigma}}_{t,k,g}$, $\hat{\Sigma}_{s,k,g'\rightarrow g}$, $\hat{\tilde{\Sigma}}_{s,k,g'\rightarrow g}$, $\nu\hat{\Sigma}_{f,g}$, and $\hat{\chi}_{g}$ from OpenMC tallies (see Tab.~\ref{table:chap3-tally-types}). 
 
 \begin{table}[h!]
   \centering
@@ -514,7 +514,7 @@ The first case study investigated the convergence of the OpenMOC eigenvalue with
 \subsubsection{Energy Condensation and FSR Discretization}
 \label{subsubsec:chap5-pin-energy}
 
-The second case study investigated the variation of the OpenMOC eigenvalue with the energy group structure used in the \ac{MOC} calculation. This case study simultaneously varied the \ac{FSR} discretization used in the OpenMOC simulation. This case study also varied the \ac{FSR} discretization used in the OpenMOC simulation. Tab.~\ref{table:chap5-pin-energy} presents the bias $\Delta\rho$ between OpenMC and OpenMOC for a matrix of energy group structures and \ac{FSR} spatial discretizations. In each case, the \ac{MGXS} used in OpenMOC were tallied by material in OpenMC (\textit{i.e.}, the spatial tally mesh corresponded to Fig.~\ref{fig:chap5-pin-a}). The OpenMOC calculations used 128 azimuthal angles and 0.01 cm track spacing. Each of the materials in the fuel pin was discretized into 8 angular sectors. The fuel and moderator were each discretized into 1 -- 16 equal volume radial rings. 
+The second case study investigated the variation of the OpenMOC eigenvalue with the energy group structure used in the \ac{MOC} calculation. This case study simultaneously varied the \ac{FSR} discretization used in the OpenMOC simulation. This case study also varied the \ac{FSR} discretization used in the OpenMOC simulation. Tab.~\ref{table:chap5-pin-energy} presents the bias $\Delta\rho$ between OpenMC and OpenMOC for a matrix of energy group structures and \ac{FSR} spatial discretizations. In each case, the \ac{MGXS} used in OpenMOC were tallied by material rather than \ac{FSR} in OpenMC (\textit{i.e.}, the spatial tally mesh corresponded to Fig.~\ref{fig:chap5-pin-a}). The OpenMOC calculations used 128 azimuthal angles and 0.01 cm track spacing. Each of the materials in the fuel pin was discretized into 8 angular sectors. The fuel and moderator were each discretized into 1 -- 16 equal volume radial rings. 
 
 \begin{table}[h!]
   \centering

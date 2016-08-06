@@ -243,12 +243,14 @@ plt.plot(group_edges, rel_err[min_fsr,:],
          drawstyle='steps', color='b', linewidth=2)
 plt.plot(group_edges, rel_err[max_fsr,:],
          drawstyle='steps', color='r', linewidth=2)
+plt.plot(group_edges, np.mean(rel_err, axis=0),
+         drawstyle='steps', color='r', linewidth=2)
 
 plt.xlabel('Energy [eV]', fontsize=12)
 plt.ylabel('Relative Error [%]', fontsize=12)
 plt.xlim((min(group_edges), max(group_edges)))
 plt.xscale('log')
-plt.legend(['Inner', 'Outer'], fontsize=12)
+plt.legend(['Inner', 'Outer', 'Complete'], fontsize=12)
 
 # Create loglog plot of U-238 continuous-energy capture cross section
 ax2 = ax1.twinx()
