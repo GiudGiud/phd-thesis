@@ -5,25 +5,127 @@
 \section{Motivation}
 \label{sec:chap7-motivate}
 
-\begin{itemize}[noitemsep]
-  \item identify metrics of interest - eigenvalue, fission, capture rates
-  \item match CE MC as closely as possible with deterministic MG theory
-  \item understand spatial self-shielding effects in pin-wise MGXS
-\end{itemize}
+first paragraph: part iv -- clustering of mgxs
+-tie back to part iii where we looked at intra-pin effects
+  -want to match CE MC as closely as possible with deterministic MG theory
+  -but in this part we are looking at larger geometries
+  -spatial self-shielding effects on a macro scale (e.g., inter-pin, inter-assm)
+-heterogeneous geometries needed to explore this
+  -this chapter presents heterogeneous geoetry benchmark specs and reference results
+  -benchmarks and reference results used throughout the subsequent chapters in part iv
+
+second paragraph: heterogeneous benchmarks
+-constructed different benchmarks from \ac{BEAVRS}
+-each was intended to change one major variable to explore spatial self-shielding effects
+  -understand spatial self-shielding effects in pin-wise MGXS
+-single assembly
+  -fuel enrichment, \ac{BP}s, 
+-multiple assembly colorsets
+  -inter-assembly effects 
+  -water reflector
+-full \ac{BEAVRS} core
+  -baffle, barrel, vessel
+
+third paragraph: metrics of interest
+-source convergence with shannon entropy
+  -used to determine t
+-converged eigenvalues
+-Pin-wise fission rates
+-Pin-wise U-238 capture rates
+
+fourth paragraph: outline chapter
+-Sec.~\ref{sec:chap7-benchmarks} - outlines benchmark specifications
+  -taken from \ac{BEAVRS}
+  -geometric parameters
+  -isotopics
+-Sec.~\ref{sec:chap7-ref-results}
+  -details reference results computed with OpenMC
+  -source convergence with shannon entropy
+  -converged eigenvalues
+  -Pin-wise fission rates
+  -Pin-wise U-238 capture rates
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Benchmark Configurations}
 \label{sec:chap7-benchmarks}
 
-See the isotopic compositions tabulated in App.~\ref{app:beavrs-isotopes}. The \ac{BEAVRS} model~\cite{horelik2013beavrs}.
+first paragraph: refer to the \ac{BEAVRS} model~\cite{horelik2013beavrs}
+-all heterogeneous geometries were subsets of the \ac{BEAVRS} geometry
+-\ac{BEAVRS} consists of fuel assemblies with four different enrichments and various
+-sliced at core mid-plane (axial level)
+-2D rather than 3D
+  -used reflective z-planes in openmc model
+  -sliced to encompass the spacer grid
+    -designed model to stress the geometric modeling capabilities of OpenMC/MOC/CG
+    -grid spacers main axial heterogeneities that induce spatial self-shielding in \ac{LWR}s
+    -stress geometric modeling capabilities since framework developed to eventually support 3D \ac{MOC}
+-HZP
 
-geometric specifications
--pitch
--\ac{BP}s above dashpot
--thickness of grid spacers
--mass of grid spacers
--add in axial level
+second paragraph: outline section
+-Sec.~\ref{subsec:chap7-materials} materials and isotopic compositions
+-Sec.~\ref{subsec:chap7-pin-cells} pin cell types (fuel pins, instr tubes, \ac{CRGT}s, \ac{BP}s
+-Sec.~\ref{subsec:chap7-fuel-assms} fuel assembly types (varying enrichments, with and without \ac{BP}s)
+-Sec.~\ref{subsec:chap7-2x2-colorsets} mixtures of assemblies (with and without water reflector)
+-Sec.~\ref{subsec:chap7-full-core} full \ac{BEAVRS} core
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Materials}
+\label{subsec:chap7-materials}
+
+first paragraph: types of materials
+-see Table 1 in BEAVRS specifications
+-isotopic compositions tabulated in App.~\ref{app:beavrs-isotopes}.
+-1.6\% and 3.1\% enriched UO$_2$ fuel
+-borated water (975 ppm boron)
+-stainless steel (SS304)
+-borosilicate glass
+-zircaloy 4
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Pin Cells}
+\label{subsec:chap7-pin-cells}
+
+first paragraph: pin cell figures
+-walk through Fig.~\ref{fig:chap7-pin-cells}
+-fuel pin, \ac{CRGT}, instrument tube, \ac{BP} above dashpot
+-grid spacer thickness
+-pin pitch
+-blue for 3.1\% enriched pins
+
+\begin{figure}[h!]
+\centering
+\begin{subfigure}{.5\textwidth}
+  \centering
+  \includegraphics[width=0.9\linewidth]{figures/benchmarks/fuel-pin-16}
+  \caption{}
+  \label{fig:chap7-pin-1.6}
+\end{subfigure}%
+\begin{subfigure}{.5\textwidth}
+  \centering
+  \includegraphics[width=0.9\linewidth]{figures/benchmarks/guide-tube}
+  \caption{}
+  \label{fig:chap7-pin-3.1}
+\end{subfigure}
+\begin{subfigure}{.5\textwidth}
+  \centering
+  \includegraphics[width=0.9\linewidth]{figures/benchmarks/instr-tube}
+  \caption{}
+  \label{fig:chap7-guide-tube}
+\end{subfigure}%
+\begin{subfigure}{.5\textwidth}
+  \centering
+  \includegraphics[width=0.9\linewidth]{figures/benchmarks/burn-abs}
+  \caption{}
+  \label{fig:chap7-instr-tube}
+\end{subfigure}%
+\caption[BEAVRS pin cell geometries]{1.6\% enriched fuel pin (a), control rod guide tube (b), instrument tube (c) and burnable poison (d). Light blue is borated water, red is UO$_2$ fuel, gray is zircaloy, brown is helium, white is air, green is borosolicate glass, and black is stainless steel.}
+\label{fig:chap7-pin-cells}
+\end{figure}
+
+second paragraph: geometric specifications
+-walk through Tab.~\ref{table:chap7-pin-cell-radii} of pin cell radii
+-pin cell pitch - everything beyond the outermost radius in Tab.~\ref{table:chap7-pin-cell-radii} is borated water and the zircaloy grid spacer
 
 \begin{table}[h!]
   \centering
@@ -73,42 +175,31 @@ geometric specifications
 \stepcounter{footnote}\footnotetext{The control rod guide tube geometry above the dashpot.}
 \stepcounter{footnote}\footnotetext{The burnable poison geometry above the dashpot.}
 
-\begin{figure}[h!]
-\centering
-\begin{subfigure}{.5\textwidth}
-  \centering
-  \includegraphics[width=0.9\linewidth]{figures/benchmarks/fuel-pin-16}
-  \caption{}
-  \label{fig:chap7-pin-1.6}
-\end{subfigure}%
-\begin{subfigure}{.5\textwidth}
-  \centering
-  \includegraphics[width=0.9\linewidth]{figures/benchmarks/guide-tube}
-  \caption{}
-  \label{fig:chap7-pin-3.1}
-\end{subfigure}
-\begin{subfigure}{.5\textwidth}
-  \centering
-  \includegraphics[width=0.9\linewidth]{figures/benchmarks/instr-tube}
-  \caption{}
-  \label{fig:chap7-guide-tube}
-\end{subfigure}%
-\begin{subfigure}{.5\textwidth}
-  \centering
-  \includegraphics[width=0.9\linewidth]{figures/benchmarks/burn-abs}
-  \caption{}
-  \label{fig:chap7-instr-tube}
-\end{subfigure}%
-\caption[BEAVRS pin cell geometries]{1.6\% enriched fuel pin (a), control rod guide tube (b), instrument tube (c) and burnable poison (d). Blue -- borated water, red -- UO$_2$ fuel, gray -- zircaloy, brown -- helium, white -- air, green -- borosolicate glass; black -- stainless steel.}
-\label{fig:chap7-pin-cells}
-\end{figure}
 
-%\begin{figure}[h!]
-%  \centering
-%  \includegraphics[width=0.65\linewidth]{figures/benchmarks/assembly-16}
-%\caption[BEAVRS 1.6\% enriched assembly]{Whoa}
-%\label{fig:chap7-assm-16}
-%\end{figure}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Fuel Assemblies}
+\label{subsec:chap7-fuel-assms}
+
+first paragraph: different assembly types
+-three fuel assemblies taken from \ac{BEAVRS} full core benchmark
+  -modeled in isolation w/ reflective BCs
+-width of each assembly (assembly pitch)
+-stainless steel grid sleeve around each fuel assembly was not modeled
+-water between assemblies was not modeled
+
+second paragraph: types of fuel assemblies
+-increasing degrees of spatial heterogeneities
+-Fig.~\ref{fig:chap7-assm-16} - 1.6\% enriched with \ac{CRGT}s and a central instrument tube
+-Fig.~\ref{fig:chap7-assm-31} - 3.1\% enriched with same configuration to consider the impact of fuel enrichment
+-Fig.~\ref{fig:chap7-assm-31-20BPs} 3.1\% enriched with mixture of \ac{CRGT}s and \ac{BP}s to measure impact
+-all kinds of \ac{BP} configurations could be analyzed, but only a few were chosen for simplicity
+
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=0.65\linewidth]{figures/benchmarks/assembly-16}
+\caption[BEAVRS 1.6\% enriched assembly]{Whoa}
+\label{fig:chap7-assm-16}
+\end{figure}
 
 \begin{figure}[h!]
   \centering
@@ -119,10 +210,37 @@ geometric specifications
 
 \begin{figure}[h!]
   \centering
-  \includegraphics[width=0.65\linewidth]{figures/benchmarks/assembly-31-20BAs}
+  \includegraphics[width=0.65\linewidth]{figures/benchmarks/assembly-31-20BPs}
 \caption[BEAVRS 3.1\% enriched assembly with 20 \ac{BP}s]{Whoa}
-\label{fig:chap7-assm-31-20BAs}
+\label{fig:chap7-assm-31-20BPs}
 \end{figure}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{2$\times$2 Assembly Colorsets}
+\label{subsec:chap7-2x2-colorsets}
+
+first paragraph: two different colorsets
+-comprised of the fuel assemblies discussed earlier
+-three fuel assemblies taken from \ac{BEAVRS} full core benchmark
+  -modeled in isolation w/ reflective BCs
+-width of each assembly (assembly pitch)
+-stainless steel grid sleeve around each fuel assembly was not modeled
+-water between assemblies was not modeled
+
+second paragraph: types of fuel assemblies
+-increasing degrees of spatial heterogeneities
+-Fig.~\ref{fig:chap7-2x2} - 1.6\% and 3.1\% enriched fuel assemblies with \ac{BP}s
+  -introduces inter-assembly spatial heterogeneities
+  -periodics BCs
+  -fuel pins with different enrichments next to each other
+-Fig.~\ref{fig:chap7-reflector} - same 2$\times$2 but with reflector
+  -introduces water reflector
+  -reflective BCs on left, top
+  -vacuum BCs on right and bottom
+  -added moderation for pins near reflector
+  -leakage out of the geometry
+  -tilts power distribution across the colorset
+  -add baffle to benchmark
 
 \begin{figure}[h!]
   \centering
@@ -138,6 +256,19 @@ geometric specifications
 \label{fig:chap7-reflector}
 \end{figure}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{BEAVRS Full Core}
+\label{subsec:chap7-full-core}
+
+first paragraph: full \ac{BEAVRS} core in all its glory
+-cycle 1 loading pattern
+-includes baffle, barrel, core
+-includes inter-assembly 
+-\# of assemblies, \# of each type of pin
+--stainless steel grid sleeve around each fuel assembly included
+-water between assemblies included
+  -these radial heterogeneities will induce further spatial self-shielding effects!
+
 \begin{figure}[h!]
   \centering
   \includegraphics[width=0.9\linewidth]{figures/benchmarks/full-core}
@@ -145,34 +276,48 @@ geometric specifications
 \label{fig:chap7-full-core}
 \end{figure}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Fuel Assemblies}
-\label{subsec:chap7-fuel-assms}
-
-\subsubsection{1.6\% Enriched Fuel}
-
-\subsubsection{3.1\% Enriched Fuel}
-
-\subsubsection{3.1\% Enriched Fuel with Burnable Poisons}
-
-\subsection{2$\times$2 Assembly Colorset}
--periodic BCs
-
-\subsection{2$\times$2 Assembly Colorset with a Reflector}
--add baffle to benchmark
-
-\subsection{BEAVRS Full Core}
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Reference Results}
 \label{sec:chap7-ref-results}
 
 -mention iso-in-lab
+-NNDC cross sections
+  -not looking for truly accurate results
+  -generating reference results for comparison with multi-group \ac{MOC}
+-metrics of interest:
+  -eigenvalue
+  -energy-integrated pin-wise fission rates using an OpenMC rectilinear mesh tally
+  -energy-integrated pin-wise U-238 capture rates using an OpenMC rectilinear mesh tally
+ 
+runtime parameters:
+-1000 total batches
+  -200 inactive batches
+  -800 active batches
+-5 nodes of 24 Intel Xeon cores each
+-2 MPI processes per node
+-12 OpenMP threads per MPI process
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Source Convergence}
 \label{subsec:chap7-src-converge}
+
+first paragraph: shannon entropy
+-reference for shannon entropy to indicate source stationarity (Herman's thesis??)
+-pin-wise entropy mesh, used OpenMC's internally calculated shannon entropy
+-need to determine \# batches to reach reasonable source stationarity
+-used to fix the number of inactive batches before tallying 
+
+second paragraph:
+-Fig.~\ref{fig:chap7-entropy} - convergence of entropy for each of the benchmarks
+-normalized entropy to the final value on the last batch
+-stationary entropy is different for each geometry
+-normalization makes it easy to compare entropies for each benchmark
+-trivial convergence for individual fuel assemblies
+-takes $\sim$10 batches for the 2$\times$2 with reflector to converge
+-takes $\sim$200 batches for the full core \ac{BEAVRS} to converge
+-will use 100 inactive batches for all fuel assembly and 2$\times$ colorsets in subsequent simulations
+-will use 200 inactive batches for all full core \ac{BEAVRS} simulations in subsequent simulations
 
 \begin{figure}[h!]
   \centering
@@ -181,28 +326,21 @@ geometric specifications
 \label{fig:chap7-entropy}
 \end{figure}
 
-%\begin{figure}[h!]
-%\centering
-%\begin{subfigure}{\textwidth}
-%  \centering
-%  \includegraphics[width=0.9\linewidth]{figures/benchmarks/entropy/entropy-assms}
-%  \caption{}
-%  \label{fig:chap7-entropy-assms}
-%\end{subfigure}
-%\begin{subfigure}{\textwidth}
-%  \centering
-%  \includegraphics[width=0.9\linewidth]{figures/benchmarks/entropy/entropy-multi-assms}
-%  \caption{}
-%  \label{fig:chap7-entropy-multi-assms}
-%\end{subfigure}%
-%\caption[Shannon entropy source convergence for BEAVRS geometries]{Shannon entropy source convergence for BEAVRS geometries.}
-%\label{fig:chap7-entropy}
-%\end{figure}
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Eigenvalues}
 \label{subsec:chap7-eigenvalues}
+
+first paragraph: eigenvalues
+-Tab.~\ref{table:chap7-ref-eigenvalues} - converged eigenvalues for each benchmark
+-total runtime in CPU-hours for each case
+  -used same \# batches, \# particle histories / batch
+  -variation due to varying complexity of tracking particles in different geometries
+-trends
+  -greater enrichment (1.6\% to 3.1\%) increases fission-to-absorption ratio and increases eigenvalue
+  -\ac{BP}s increases absorption and reduces eigenvalue
+  -reflector reduces eigenvalue due to absorption and leakage
+-final converged eigenvalues serve as the reference for each benchmark throughout the remainder of thesis
 
 \begin{table}[h!]
   \centering
@@ -210,23 +348,46 @@ geometric specifications
   \small
   \label{table:chap7-ref-eigenvalues}
   \vspace{6pt}
-  \begin{tabular}{l c}
+  \begin{tabular}{l c c}
   \toprule
-  \textbf{Benchmark} & \textbf{$k^{OpenMC}_{eff}$} \\
+  \textbf{Benchmark} & $\mathbf{k^{OpenMC}_{eff}}$ & \textbf{Runtime [CPU-hours]} \\
   \midrule
-  1.6\% Enriched Assembly (no \ac{BP}s) & 1.00987 $\pm$ 0.00003 \\
-  3.1\% Enriched Assembly (no \ac{BP}s) & 1.22344 $\pm$ 0.00003 \\
-  3.1\% Enriched Assembly (20 \ac{BP}s) & 1.04530 $\pm$ 0.00003 \\
-  2$\times$2 Colorset & 1.03196 $\pm$ 0.00003 \\
-  2$\times$2 Colorset w/ Reflector & 0.95462 $\pm$ 0.00003 \\
-  \ac{BEAVRS} Full Core & 1.02497 $\pm$ 0.00003 \\
+  1.6\% Enriched Assembly (no \ac{BP}s) & 1.00987 $\pm$ 0.00003 & 331 \\
+  3.1\% Enriched Assembly (no \ac{BP}s) & 1.22344 $\pm$ 0.00003 & 326 \\
+  3.1\% Enriched Assembly (20 \ac{BP}s) & 1.04530 $\pm$ 0.00003 & 331 \\
+  2$\times$2 Colorset & 1.03196 $\pm$ 0.00003 & 345 \\
+  2$\times$2 Colorset w/ Reflector & 0.95462 $\pm$ 0.00003 & 337 \\
+  \ac{BEAVRS} Full Core & 1.02497 $\pm$ 0.00003 & 387 \\
   \bottomrule
 \end{tabular}
 \end{table}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Pin Power Distributions}
+\subsection{Fission Rate Spatial Distributions}
 \label{subsec:chap7-pin-powers}
+
+first paragraph: fission rates
+-how they were computed 
+  -rectilinear tally mesh in OpenMC
+  -energy-integrated
+  -volume-integrated across each pin
+  -fission from all nuclides
+-relative error or uncertainty computed how???
+
+second paragraph: spatial distributions
+-Fig.~\Crefrange{fig:chap7-fiss-rates-1.6-assm}{fig:chap7-fiss-rates-full-core} - all benchmark geometries
+-trends:
+  -adjacency to \ac{CRGT}s provides added moderation and increases fission rates
+  -adjacency to \ac{BP}s reduces neutron population and reduces fission rates
+  -pins in 3.1\% assm in 2$\times$2 have $\sim$35\% higher fission rates than those in 1.6\% assm
+    -more peaking / variation due to \ac{BP}s
+  -adjacency to reflector reduces fission rates since leakage reduces neutrons
+  -full core has complex distribution of fission rates
+
+third paragraph: convergence rate
+-Fig.~\ref{fig:chap7-fiss-rates-conv} has convergence of fission rate uncertainties
+-well below 1\% uncertainty of fission rates in each pin for 2D \ac{BEAVRS} benchmark
+-smoother convergence for mean than for max
 
 \begin{figure}[h!]
 \centering
@@ -342,21 +503,44 @@ geometric specifications
   \centering
   \includegraphics[width=0.8\linewidth]{figures/benchmarks/fission-rates/fiss-conv-max-assms}
   \caption{}
-  \label{fig:chap7-fiss-rate-max-conv-assms}
+  \label{fig:chap7-fiss-rate-max-conv-max}
 \end{subfigure}
 \begin{subfigure}{\textwidth}
   \centering
   \includegraphics[width=0.8\linewidth]{figures/benchmarks/fission-rates/fiss-conv-mean-assms}
   \caption{}
-  \label{fig:chap7-fiss-rate-max-conv-assms}
+  \label{fig:chap7-fiss-rate-max-conv-mean}
 \end{subfigure}
 \caption[Fission rate error convergence for BEAVRS geometries]{Fission rate relative error convergence for \ac{BEAVRS} geometries.}
 \label{fig:chap7-fiss-rates-conv}
 \end{figure}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{U-238 Capture Rate Distributions}
+\subsection{U-238 Capture Rate Spatial Distributions}
 \label{subsec:chap7-capture-rates}
+
+first paragraph: U-238 capture rates
+-how they were computed 
+  -rectilinear tally mesh in OpenMC
+  -energy-integrated
+  -volume-integrated across each pin
+  -only for U-238
+-relative error or uncertainty computed how???
+
+second paragraph: spatial distributions
+-Fig.~\Crefrange{fig:chap7-capt-rates-1.6-assm}{fig:chap7-capt-rates-full-core} - all benchmark geometries
+-trends - similar to fission rates since U-238 capture dominated by low-lying resonances
+  -adjacency to \ac{CRGT}s provides added moderation and increases capture rates
+  -adjacency to \ac{BP}s reduces neutron population and reduces capture rates
+  -pins in 3.1\% assm in 2$\times$2 have $\sim$35\% higher capture rates than those in 1.6\% assm
+    -more peaking / variation due to \ac{BP}s
+  -adjacency to reflector reduces capture rates since leakage reduces neutrons
+  -full core has complex distribution of capture rates
+
+third paragraph: convergence rate
+-Fig.~\ref{fig:chap7-capt-rates-conv} has convergence of capture rate uncertainties
+-well below 1\% uncertainty of capture rates in each pin for 2D \ac{BEAVRS} benchmark
+-smoother convergence for mean than for max
 
 \begin{figure}[h!]
 \centering
@@ -483,3 +667,6 @@ geometric specifications
 \caption[U-238 capture rate error convergence for BEAVRS geometries]{U-238 capture rate relative error convergence for \ac{BEAVRS} fuel geometries.}
 \label{fig:chap7-capt-rates-conv}
 \end{figure}
+
+
+-summary box!!!!

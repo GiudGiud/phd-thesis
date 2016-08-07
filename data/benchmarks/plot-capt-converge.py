@@ -24,7 +24,7 @@ plt.ioff()
 directories = OrderedDict()
 directories['fuel-1.6'] = '1.6% Enr. (no BPs)'
 directories['fuel-3.1'] = '3.1% Enr. (no BPs)'
-directories['fuel-3.1-20BAs'] = '3.1% Enr. (20 BPs)'
+directories['fuel-3.1-20BPs'] = '3.1% Enr. (20 BPs)'
 directories['2x2'] = '2x2'
 directories['reflector'] = 'reflector'
 directories['full-core'] = 'full core'
