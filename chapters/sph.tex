@@ -293,7 +293,7 @@ Although these results illustrate much better agreement between OpenMC and OpenM
 %\subsection{SPH Factors in Energy}
 %\label{subsubsec:chap6-sph-energy}
 
-A second case study investigated the impact of \ac{SPH} factors on the energy-dependent flux errors identified in Sec.~\ref{subsec:chap5-diagnosis-energy}. The error of OpenMOC's 70-group flux with respect to the reference OpenMC flux is displayed in Fig.~\ref{fig:chap6-rel-err-energy} for the slab and pin. The errors are shown for the innermost and outermost \ac{FSR}s in the fuel. The flux errors without \ac{SPH}-corrected \ac{MGXS} are reproduced from Fig.~\ref{fig:chap5-rel-err-energy} and are illustrated with dashed lines for comparison purposes. 
+A second case study investigated the impact of \ac{SPH} factors on the energy-dependent flux errors identified in Sec.~\ref{subsec:chap5-diagnosis-energy}. The error of OpenMOC's 70-group flux with respect to the reference OpenMC flux is displayed in Fig.~\ref{fig:chap6-rel-err-energy} for the slab and pin. The errors are shown for the innermost and outermost \ac{FSR}s in the fuel, along with the average error across all \ac{FSR}s in the fuel. The flux errors without \ac{SPH}-corrected \ac{MGXS} are reproduced from Fig.~\ref{fig:chap5-rel-err-energy} and are illustrated with dashed lines for comparison purposes. 
 
 \begin{figure}[h!]
 \begin{subfigure}{.9\textwidth}
@@ -306,7 +306,7 @@ A second case study investigated the impact of \ac{SPH} factors on the energy-de
   \includegraphics[width=\linewidth]{figures/sph/pin-cell/rel-err-inner-outer}
   \caption{}
 \end{subfigure}
-\caption[Flux relative error by energy group w/ SPH]{The energy-dependent relative error of the 70-group OpenMOC scalar flux with respect to the reference OpenMC flux in a 1D slab (a) and 2D fuel pin (b). The results correspond to Tables~\ref{table:chap6-sph-slab-energy} and~\ref{table:chap6-sph-pin-energy}.}
+\caption[Flux relative error by energy group w/ SPH]{The energy-dependent relative error of the 70-group OpenMOC scalar flux with respect to the reference OpenMC flux in a 1D slab (a) and 2D fuel pin (b) for the innermost, outermost and all \ac{FSR}s. The results correspond to Tables~\ref{table:chap6-sph-slab-energy} and~\ref{table:chap6-sph-pin-energy}.}
 \label{fig:chap6-rel-err-energy}
 \end{figure}
 
@@ -325,7 +325,7 @@ A second case study investigated the impact of \ac{SPH} factors on the energy-de
 \label{fig:chap6-sph-energy}
 \end{figure}
 
-As expected, the flux error is greatly reduced with \ac{SPH}-corrected \ac{MGXS}. The flux error profile is nearly flat in energy for both innermost and outermost \ac{FSR}s, unlike the highly energy-dependent profiles observed without \ac{SPH}. Furthermore, no systematic difference between the error profiles for the innermost and outermost \ac{FSR}s can be discerned from the plots. The improvement in OpenMOC's flux -- especially in those energy groups with large U-238 capture resonances -- is responsible for the reduction in the eigenvalue bias with \ac{SPH}-corrected \ac{MGXS} presented in Sec.~\ref{subsubsec:chap6-sph-eigenvalues}.
+As expected, the flux error is greatly reduced with \ac{SPH}-corrected \ac{MGXS}. The flux error profile is nearly flat in energy for innermost, outermost and all \ac{FSR}s, unlike the highly energy-dependent profiles observed without \ac{SPH}. Furthermore, no systematic difference between the error profiles for the innermost and outermost \ac{FSR}s can be discerned from the plots. The improvement in OpenMOC's flux -- especially in those energy groups with large U-238 capture resonances -- is responsible for the reduction in the eigenvalue bias with \ac{SPH}-corrected \ac{MGXS} presented in Sec.~\ref{subsubsec:chap6-sph-eigenvalues}.
 
 The \ac{SPH} factors in each energy group are illustrated for the innermost and outermost \ac{FSR}s in the slab and pin in Fig.~\ref{fig:chap6-sph-energy}. The \ac{SPH} factors show nearly the opposite energy-dependent behavior of the flux errors without \ac{SPH} factors. In general, the factors are less than unity in those groups with positive flux errors (\textit{e.g.}, the fast groups), while the factors are greater than unity in groups with negative errors (\textit{e.g.}, resonance groups in the innermost \ac{FSR}). This behavior is expected since an \ac{SPH} factor greater than unity will magnify the total cross section (see Eqn.~\ref{eqn:chap6-sph-update-sigt}) which will reduce the scalar flux, and vice versa. Furthermore, the deviation of the \ac{SPH} factors from unity is roughly the same as the error in each respective group. For example, the flux in group 27 with the U-238 capture resonance at 6.67 eV exhibits an error of nearly 1.5\% and 2.5\% for the slab and pin, respectively. Similarly, the \ac{SPH} factors in group 27 are approximately 0.984 and 0.970, or 1.6\% and 3\% reduced from unity, for the slab and pin.
 
