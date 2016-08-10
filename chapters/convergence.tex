@@ -5,45 +5,21 @@
 \section{Motivation}
 \label{sec:chap7-motivate}
 
-first paragraph: part iv -- clustering of mgxs
--tie back to part iii where we looked at intra-pin effects
-  -want to match CE MC as closely as possible with deterministic MG theory
-  -but in this part we are looking at larger geometries
-  -spatial self-shielding effects on a macro scale (e.g., inter-pin, inter-assm)
--heterogeneous geometries needed to explore this
-  -this chapter presents heterogeneous geoetry benchmark specs and reference results
-  -benchmarks and reference results used throughout the subsequent chapters in part iv
+This thesis is motivated by the desire to obtain Monte Carlo-quality solutions with computationally efficient deterministic neutron transport methods. In particular, this work evaluates the use of \ac{MC} for reactor agnostic \ac{MGXS} generation for high-fidelity neutron transport simulations. The analysis in Part III was dedicated to the evaluation of approximation errors in \ac{MGXS} and multi-group transport methods which appear in the modeling of even simple heterogeneous benchmarks such as a 2D fuel pin cell. The chapters in Part IV develop a new approach based upon statistical clustering to capture spatial self-shielding effects which occur only in large, complex heterogeneous geometries. This chapter presents several heterogeneous \ac{PWR} benchmark models which are used to evaluate the efficacy of the new methodology for \ac{MGXS} generation throughout the subsequent chapters in Part IV.
 
-second paragraph: heterogeneous benchmarks
--constructed different benchmarks from \ac{BEAVRS}
--each was intended to change one major variable to explore spatial self-shielding effects
-  -understand spatial self-shielding effects in pin-wise MGXS
--single assembly
-  -fuel enrichment, \ac{BP}s, 
--multiple assembly colorsets
-  -inter-assembly effects 
-  -water reflector
--full \ac{BEAVRS} core
-  -baffle, barrel, vessel
+Each of the heterogeneous benchmarks presented here is derived from the Benchmark for Evaluation And Validation of Reactor Simulations (BEAVRS) \ac{PWR} model~\cite{horelik2013beavrs}. A series of six heterogeous benchmarks were designed to introduce increasingly complex heterogeous features -- and corresponding spatial self-shielding effects -- to the models in order to understand their implications for accurate pin-wise \ac{MGXS} generation. The impact of \ac{CRGTs}, fuel enrichment, burnable poisons (BPs), inter-assembly currents, water reflectors, steel baffles and the core barrel and vessel is considered. This chapter details the geometric and material specifications for the individual fuel assemblies, multiple assembly colorsets, and full \ac{BEAVRS} core modeled with different \ac{MGXS} generation schemes throughout Part IV.
 
-third paragraph: metrics of interest
--source convergence with shannon entropy
-  -used to determine t
--converged eigenvalues
--Pin-wise fission rates
--Pin-wise U-238 capture rates
+In addition, this chapter presents the reference results for each of the six geometries used to evaluate the accuracy of \ac{MGXS} generation with statistical clustering. Since this thesis aims to enable \ac{MC} accuracy in deterministic transport simulations, OpenMC was used to generate the reference results for each of the six benchmarks. This chapter quantifies the source convergence rate for each of the benchmark models using Shannon entropy. In addition, a series of OpenMC simulations were used to calculate reference results for the following three metrics for validation of \ac{MGXS} in OpenMOC:
 
-fourth paragraph: outline chapter
--Sec.~\ref{sec:chap7-benchmarks} - outlines benchmark specifications
-  -taken from \ac{BEAVRS}
-  -geometric parameters
-  -isotopics
--Sec.~\ref{sec:chap7-ref-results}
-  -details reference results computed with OpenMC
-  -source convergence with shannon entropy
-  -converged eigenvalues
-  -Pin-wise fission rates
-  -Pin-wise U-238 capture rates
+\begin{itemize}[noitemsep,topsep=0pt]
+  \item \textbf{Eigenvalues}
+  \item \textbf{Pin-wise fission rates}
+  \item \textbf{Pin-wise U-238 capture rates}
+\end{itemize}
+
+\noindent The reference results for each of these three metrics were computed with highly converged OpenMC simulations. It is important to recall from Sec.~\ref{sec:chap1-objectives} that this thesis aimed to generate \ac{MGXS} with \ac{MC} in significantly less time\footnote{In this case, ``time'' is synonymous with the number of particle histories simulated with \ac{MC}.} than would be required to generate reference solutions with \ac{MC}. The methodology developed in Part IV aims to make this possible with statistical clustering of ``noisy'' \ac{MC} tallies for \ac{MGXS} generation.
+
+This chapter outlines the geometric and isotopic specifications for each of the six benchmark models in Sec.~\ref{sec:chap7-benchmarks}. The reference results computed with OpenMC for each of the benchmark models are presented in Sec.~\ref{sec:chap7-ref-results}.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -216,7 +192,7 @@ second paragraph: types of fuel assemblies
 \end{figure}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{2$\times$2 Assembly Colorsets}
+\subsection{2$\times$2 Assembly Colorsets}
 \label{subsec:chap7-2x2-colorsets}
 
 first paragraph: two different colorsets
