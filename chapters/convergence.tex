@@ -229,25 +229,21 @@ The continuous energy cross section data used by OpenMC was taken from the publi
 The reference solution for each benchmark model was computed with 200 inactive and 800 active batches of 10$^6$ particle histories per batch. Each OpenMC simulation was performed in parallel on five compute nodes on the Falcon supercomputer at Idaho National Laboratory. Each compute node included two dual socket Intel Xeon E5-2680 CPUs with 12 cores and 132 gigabytes of DRAM\footnote{Dynamic Random Access Memory.}. Two MPI processes were launched on each node (one MPI process per CPU) with 12 OpenMP parallel threads per MPI process.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Source Convergence}
-\label{subsec:chap7-src-converge}
+\subsection{Source Stationarity}
+\label{subsec:chap7-src-stationarity}
 
-first paragraph: shannon entropy
--reference for shannon entropy to indicate source stationarity (Herman's thesis??)
--pin-wise entropy mesh, used OpenMC's internally calculated shannon entropy
--need to determine \# batches to reach reasonable source stationarity
--used to fix the number of inactive batches before tallying 
+The first metric that was evaluated for each of the six benchmarks was the stationarity of the fission source distribution. The initial distribution of fission source sites is uniformly distributed in space across fissile material zones by OpenMC for the first batch of particle histories. Each subsequent batch of fission source sites is drawn from a bank of fission sites populated during the preceding batch of particle histories. In eigenvalue calculations, the distribution of fission source sites must reach stationarity before tallying integral quantities such as the eigenvalue or reaction rates. 
 
-second paragraph:
--Fig.~\ref{fig:chap7-entropy} - convergence of entropy for each of the benchmarks
--normalized entropy to the final value on the last batch
--stationary entropy is different for each geometry
--normalization makes it easy to compare entropies for each benchmark
--trivial convergence for individual fuel assemblies
--takes $\sim$10 batches for the 2$\times$2 with reflector to converge
--takes $\sim$200 batches for the full core \ac{BEAVRS} to converge
--will use 100 inactive batches for all fuel assembly and 2$\times$ colorsets in subsequent simulations
--will use 200 inactive batches for all full core \ac{BEAVRS} simulations in subsequent simulations
+The Shannon entropy is a commonly used diagnostic to measure source stationarity in \ac{MC} eigenvalue calculations~\cite{brown2006entropy}. To compute the Shannon entropy, a mesh of $M$ mesh cells is superimposed across the geometry and the number of fission source cites in each mesh cell is tabulated. The empirical multinomial probabilities $p_{i}$ for fission source sites is computed for each mesh cell $i$ as the ratio of sites in that cell to the total number of source sites in the geometry. The Shannon entropy $H$ is then computed from the multinomial probability distribution from the following equation:
+
+\begin{equation}
+\label{eqn:chap7-shannon-entropy}
+H = \displaystyle\sum\limits_{i=1}^{M} p_{i} \log_{2} p_{i}
+\end{equation}
+
+\noindent The Shannon entropy provides a single scalar value which characterizes the spatial distribution of fission source sites. By monitoring the value of $H$ for each batch, one may determine the number of inactive batches needed to reach source stationarity.
+
+The Shannon entropy was computed using a rectilinear pin-wise mesh for each of the six benchmark models and plotted in Fig.~\ref{fig:chap7-entropy}. The entropies in the plot are normalized to the entropy at the final 1000$^{th}$ batch in order to standardize the entropies for comparison in the same plot. The entropies for each of the three fuel assembly benchmarks, as well as the 2$\times$2 colorset without a reflector, all lie very near unity and do not exhibit any convergence behavior in the plot. The entropy for the 2$\times$2 colorset with a reflector appears to converge to near unity within 30 batches. Finally, the entropy for the high dominance ratio full \ac{BEAVRS} core appears to converge within 200 batches. 
 
 \begin{figure}[h!]
   \centering
@@ -256,21 +252,13 @@ second paragraph:
 \label{fig:chap7-entropy}
 \end{figure}
 
+As expected, the number of batches required to reach source stationarity increases with the benchmark size and heterogeneity, and the corresponding increase in the dominance ratio. This analysis of the Shannon entropy for each benchmark was used to determine an appropriately conservative number of inactive batches to employ in all subsequent OpenMC simulations of each benchmark model. In particular, all OpenMC simulations of the single assembly and 2$\times$2 colorsets use 50 inactive batches prior to tallying the eigenvalue, refernce reaction rate distributions and \ac{MGXS}. Similarly, 200 inactive batches are used prior for the full \ac{BEAVRS} model.
 
 %%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Eigenvalues}
 \label{subsec:chap7-eigenvalues}
 
-first paragraph: eigenvalues
--Tab.~\ref{table:chap7-ref-eigenvalues} - converged eigenvalues for each benchmark
--total runtime in CPU-hours for each case
-  -used same \# batches, \# particle histories / batch
-  -variation due to varying complexity of tracking particles in different geometries
--trends
-  -greater enrichment (1.6\% to 3.1\%) increases fission-to-absorption ratio and increases eigenvalue
-  -\ac{BP}s increases absorption and reduces eigenvalue
-  -reflector reduces eigenvalue due to absorption and leakage
--final converged eigenvalues serve as the reference for each benchmark throughout the remainder of thesis
+The reference eigenvalues were computed for each of the six benchmarks and are listed in Tab.~\ref{table:chap7-ref-eigenvalues}. The OpenMC ``combined'' eigenvalue estimator is reported along with the associated one sigma uncertainty of 3 \ac{pcm} for each of the benchmarks. A total of 950,000,000 particle histories (950 active batches of 10$^6$ particle histories per batch) were simulated for the individual fuel assembly and 2$\times$2 colorset benchmarks, while 800,000,000 total particle histories (800 active batches) were simulated for the \ac{BEAVRS} full core model. The total runtimes required for the OpenMC simulations to generate the reference eigenvalues are also reported in the table. 
 
 \begin{table}[h!]
   \centering
@@ -292,6 +280,8 @@ first paragraph: eigenvalues
   \bottomrule
 \end{tabular}
 \end{table}
+
+As expected, the eigenvalues increase with enrichment and decrease with the presence of \acp{BP} for the single fuel assembly benchmarks. The eigenvalue for the 2$\times$2 colorset is reduced with the addition of a reflector due to leakage, and to a lesser extent, absorption in the reflector. The eigenvalues reported in Tab.~\ref{table:chap7-ref-eigenvalues} are used to validate the OpenMOC simulations with \ac{MGXS} computed from OpenMC throughout the following chapters.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Fission Rate Spatial Distributions}
