@@ -13,7 +13,7 @@ from _collections import OrderedDict
 directories = OrderedDict()
 directories['fuel-1.6'] = '1.6% Enr. (no BPs)'
 directories['fuel-3.1'] = '3.1% Enr. (no BPs)'
-directories['fuel-3.1-20BAs'] = '3.1% Enr. (20 BPs)'
+directories['fuel-3.1-20BPs'] = '3.1% Enr. (20 BPs)'
 
 # Create a matplotlib figure for all entropy convergence curves
 fig = plt.figure()
@@ -69,7 +69,7 @@ plt.close()
 directories = OrderedDict()
 directories['fuel-1.6'] = '1.6% Enr. (no BPs)'
 directories['fuel-3.1'] = '3.1% Enr. (no BPs)'
-directories['fuel-3.1-20BAs'] = '3.1% Enr. (20 BPs)'
+directories['fuel-3.1-20BPs'] = '3.1% Enr. (20 BPs)'
 directories['2x2'] = '2x2 Colorset'
 directories['reflector'] = '2x2 w/ Reflector'
 directories['full-core'] = 'Full Core'
