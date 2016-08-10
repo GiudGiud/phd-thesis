@@ -61,7 +61,7 @@ for i, directory in enumerate(directories):
         curr_capt_std_dev = np.fliplr(curr_capt_std_dev)
 
         # Normalize the capture rates to sum to unity
-        curr_capt_mean /= np.mean(curr_capt_mean.flat)
+        curr_capt_mean /= np.mean(np.ravel(curr_capt_mean[curr_capt_mean != 0.]))
 
         # Set zero capture rates to NaN for transparency in plots
         zero_indices = np.where(curr_capt_mean < 1E-5)

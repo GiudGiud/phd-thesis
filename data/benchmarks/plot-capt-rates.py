@@ -42,7 +42,7 @@ for directory in directories:
     capt_std_dev = np.fliplr(capt_std_dev)
 
     # Normalize the capture rates to sum to unity
-    capt_mean /= np.mean(capt_mean.flat)
+    capt_mean /= np.mean(np.ravel(capt_mean[capt_mean != 0.]))
 
     # Set zero capture rates to NaN for transparency in plots
     zero_indices = np.where(capt_mean < 1E-5)

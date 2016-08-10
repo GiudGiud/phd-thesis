@@ -39,7 +39,7 @@ for directory in directories:
     fiss_std_dev = np.fliplr(fiss_std_dev)
 
     # Normalize the fission rates to sum to unity
-    fiss_mean /= np.mean(fiss_mean.flat)
+    fiss_mean /= np.nanmean(np.ravel(fiss_mean[fiss_mean != 0]))
 
     # Set zero fission rates to NaN for transparency in plots
     zero_indices = np.where(fiss_mean < 1E-3)

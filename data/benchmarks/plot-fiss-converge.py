@@ -58,7 +58,7 @@ for i, directory in enumerate(directories):
         curr_fiss_std_dev = np.fliplr(curr_fiss_std_dev)
 
         # Normalize the capture rates to sum to unity
-        curr_fiss_mean /= np.mean(curr_fiss_mean.flat)
+        curr_fiss_mean /= np.mean(np.ravel(curr_fiss_mean[curr_fiss_mean != 0.]))
 
         # Set zero capture rates to NaN for transparency in plots
         zero_indices = np.where(curr_fiss_mean < 1E-5)
