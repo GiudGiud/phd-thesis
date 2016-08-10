@@ -207,7 +207,7 @@ The first 2$\times$2 colorset model shown in Fig.~\ref{fig:chap7-2x2} is compose
 \subsection{BEAVRS Full Core}
 \label{subsec:chap7-full-core}
 
-The sixth and final benchmark is a 2D planar slice of the full core \ac{BEAVRS} model at the axial mid-plane as shown in Fig.~\ref{fig:chap7-full-core}. The 193 fuel assemblies in the full core model are configured according to the cycle 1 loading pattern detailed in the \ac{BEAVRS} specifications~\cite{horelik2013beavrs}. The full core model includes assemblies with 1.6\%, 2.4\% and 3.1\% enriched UO$_2$ fuel depicted as red, blue and yellow in Fig.~\ref{fig:chap7-full-core}, respectively. All of the radial heterogeneities in the \ac{BEAVRS} specifications are included in this model, including the inter-assembly stainless steel grid sleeves and water gaps, stainless steel baffle surrounding the fuel assemblies, core barrel, neutron shield panels and pressure vessel. The space outside of the pressure vessel is filled with air with vacuum \acp{BC} were applied to planar surfaces on the top, bottom, left and right. The 2D full core \ac{BEAVRS} model builds upon the preceding five simpler benchmarks to explore the impact of radial heterogeneities from a realistic core configuration on spatially self-shielded \ac{MGXS}.
+The sixth and final benchmark is a 2D planar slice of the full core \ac{BEAVRS} model at the axial mid-plane as shown in Fig.~\ref{fig:chap7-full-core}. The 193 fuel assemblies in the full core model are configured according to the cycle 1 loading pattern detailed in the \ac{BEAVRS} specifications~\cite{horelik2013beavrs}. The full core model includes assemblies with 1.6\%, 2.4\% and 3.1\% enriched UO$_2$ fuel depicted as red, blue and yellow in Fig.~\ref{fig:chap7-full-core}, respectively. All of the radial heterogeneities in the \ac{BEAVRS} specifications are included in this model, including the inter-assembly stainless steel grid sleeves and water gaps, stainless steel baffle surrounding the fuel assemblies, core barrel, neutron shield panels and pressure vessel. The space outside of the pressure vessel is filled with air with vacuum \acp{BC} applied to planar surfaces on the top, bottom, left and right. The 2D full core \ac{BEAVRS} model builds upon the preceding five simpler benchmarks to explore the impact of radial heterogeneities from a realistic core configuration on spatially self-shielded \ac{MGXS}.
 
 \begin{figure}[h!]
   \centering
@@ -222,22 +222,11 @@ The sixth and final benchmark is a 2D planar slice of the full core \ac{BEAVRS} 
 \section{Reference Results}
 \label{sec:chap7-ref-results}
 
--mention iso-in-lab
--NNDC cross sections
-  -not looking for truly accurate results
-  -generating reference results for comparison with multi-group \ac{MOC}
--metrics of interest:
-  -eigenvalue
-  -energy-integrated pin-wise fission rates using an OpenMC rectilinear mesh tally
-  -energy-integrated pin-wise U-238 capture rates using an OpenMC rectilinear mesh tally
- 
-runtime parameters:
--1000 total batches
-  -200 inactive batches
-  -800 active batches
--5 nodes of 24 Intel Xeon cores each
--2 MPI processes per node
--12 OpenMP threads per MPI process
+This section presents the reference results computed using OpenMC for each of the six benchmarks presented in the preceding section. As discussed in Sec.~\ref{subsec:chap7-src-converge}, OpenMC was employed to compute the Shannon entropy to determine the number of batches of particle histories needed to reach source stationarity. Sec.~\ref{subsec:chap7-eigenvalues} presents the converged $k_{eff}$ eigenvalue computed by OpenMC for each of the six benchmarks. Finally, Sec.~\ref{subsec:chap7-pin-powers} and Sec.~\ref{subsec:chap7-capture-rates} present the reference pin-wise spatial distributions of fission rates and U-238 capture rates in each benchmark as tallied in OpenMC, along with the associated uncertainties and batch-wise convergence for each reference solution.
+
+The continuous energy cross section data used by OpenMC was taken from the publicly released ENDF/B-VII.1 cross section library made available by the National Nuclear Data Center (NNDC) at Brookhaven National Laboratory~\cite{nndc2016endf}. It is generally not recommended to use NNDC's publicly available cross section data libraries for production calculations. However, the NNDC libraries were suitable for this work since the objective of this thesis was not to generate the most accurate results from \ac{MC}, but rather to generate accurate \ac{MGXS} from continuous energy \ac{MC} for multi-group deterministic methods. Hence, the observations made in this and subsequent chapters would remain valid if a more accurate cross section library were employed for \ac{MGXS} generation with \ac{MC}. It should also be noted that isotropic in lab scattering was employed for all reference calculations with OpenMC's iso-in-lab feature (see Sec.~\ref{subsec:chap4-iso-in-lab}). Although isotropic in lab scattering is a poor approximation for \acp{LWR}, it eliminated scattering source anisotropy as one possible source of approximation error between OpenMC and OpenMOC\footnote{At the time of this writing, OpenMOC employed an isotropic in lab neutron scattering kernel.} in order to isolate approximation errors resulting from spatially self-shielded \ac{MGXS}.
+
+The reference solution for each benchmark model was computed with 200 inactive and 800 active batches of 10$^6$ particle histories per batch. Each OpenMC simulation was performed in parallel on five compute nodes on the Falcon supercomputer at Idaho National Laboratory. Each compute node included two dual socket Intel Xeon E5-2680 CPUs with 12 cores and 132 gigabytes of DRAM\footnote{Dynamic Random Access Memory.}. Two MPI processes were launched on each node (one MPI process per CPU) with 12 OpenMP parallel threads per MPI process.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Source Convergence}
@@ -307,6 +296,8 @@ first paragraph: eigenvalues
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Fission Rate Spatial Distributions}
 \label{subsec:chap7-pin-powers}
+
+%  -energy-integrated pin-wise fission rates using an OpenMC rectilinear mesh tally
 
 first paragraph: fission rates
 -how they were computed 
@@ -460,6 +451,8 @@ third paragraph: convergence rate
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{U-238 Capture Rate Spatial Distributions}
 \label{subsec:chap7-capture-rates}
+
+%  -energy-integrated pin-wise U-238 capture rates using an OpenMC rectilinear mesh tally
 
 first paragraph: U-238 capture rates
 -how they were computed 
