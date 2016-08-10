@@ -26,7 +26,7 @@ This chapter outlines the geometric and isotopic specifications for each of the 
 \section{Benchmark Configurations}
 \label{sec:chap7-benchmarks}
 
-The heterogeneous benchmarks modeled throughout Part IV were based on upon the \ac{BEAVRS} \ac{PWR} model~\cite{horelik2013beavrs}. The \ac{BEAVRS} model is a highly-detailed \ac{PWR} specification which was created to validate high-fidelity core analysis methods. Five of the six benchmark models are based upon sub-components (\textit{e.g.}, fuel assemblies) of the full core \ac{BEAVRS} model, while the sixth benchmark is of the full \ac{BEAVRS} core model. Although \ac{BEAVRS} is an axially heterogeneous 3D core model, each of the benchmarks were fabricated in 2D due to the geometric constraints in OpenMOC. In particular, the 2D radial heterogeneity in each benchmark is taken from the axial mid-plane of the \ac{BEAVRS} model. The geometries used two planar surfaces perpendicular to the $z$-axis with reflective boundary conditions to model the benchmarks as infinitely long in the axial direction (\textit{e.g.}, each benchmark was treated as infinitely homogeneous along the $z$-axis).
+The heterogeneous benchmarks modeled throughout Part IV were based on upon the \ac{BEAVRS} \ac{PWR} model~\cite{horelik2013beavrs}. The \ac{BEAVRS} model is a highly-detailed \ac{PWR} specification which was created to validate high-fidelity core analysis methods. Five of the six benchmark models are based upon sub-components (\textit{e.g.}, fuel assemblies) of the full core \ac{BEAVRS} model, while the sixth benchmark is of the full \ac{BEAVRS} core model. Although \ac{BEAVRS} is an axially heterogeneous 3D core model, each of the benchmarks were fabricated in 2D due to the geometric constraints in OpenMOC. In particular, the 2D radial heterogeneity in each benchmark is taken from the axial mid-plane of the \ac{BEAVRS} model. The geometries used two planar surfaces perpendicular to the $z$-axis with reflective \acp{BC} to model the benchmarks as infinitely long in the axial direction (\textit{e.g.}, each benchmark was treated as infinitely homogeneous along the $z$-axis).
 
 %first paragraph: refer to the \ac{BEAVRS} model~\cite{horelik2013beavrs}
 %-\ac{BEAVRS} consists of fuel assemblies with four different enrichments and various
@@ -43,25 +43,25 @@ The materials and isotopic compositions in each of the benchmarks are detailed i
 \subsection{Materials}
 \label{subsec:chap7-materials}
 
-first paragraph: types of materials
--see Table 1 in BEAVRS specifications
--isotopic compositions tabulated in App.~\ref{app:beavrs-isotopes}.
--1.6\% and 3.1\% enriched UO$_2$ fuel
--borated water (975 ppm boron)
--stainless steel (SS304)
--borosilicate glass
--zircaloy 4
+The models described in this section were comprised of materials from the \ac{BEAVRS} model. The six benchmarks were comprised of some or all of the following materials:
+
+\begin{itemize}[noitemsep,topsep=0pt]
+  \item 1.6\% and 3.1\% enriched UO$_2$ fuel
+  \item Borated water\footnote{The water consisted of 975 parts per million (ppm) boron.}
+  \item Zircaloy 4
+  \item Borosilicate glass
+  \item Stainless steel (SS304)
+\end{itemize}
+
+\noindent The densities and isotopic compositions for each material are detailed in the \ac{BEAVRS} specifications~\cite{horelik2013beavrs} and are reproduced in App.~\ref{app:beavrs-isotopes}. Each of the materials was modeled with cross sections at the temperatures for hot zero power (HZP) conditions.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Pin Cells}
 \label{subsec:chap7-pin-cells}
 
-first paragraph: pin cell figures
--walk through Fig.~\ref{fig:chap7-pin-cells}
--fuel pin, \ac{CRGT}, instrument tube, \ac{BP} above dashpot
--grid spacer thickness
--pin pitch
--blue for 3.1\% enriched pins
+Each of the six benchmarks were composed of four different types of pin cells -- fuel pins, instrument tubes, control rod guide tubes and burnable poisons. Each of the four pin cell types is displayed in Fig.~\ref{fig:chap7-pin-cells}. The different material types are indicated with different colors. The fuel pin in Fig.~\ref{fig:chap7-pin-1.6} contains UO$_2$ fuel, helium gap and zircaloy cladding. The \ac{CRGT} in Fig.~\ref{fig:chap7-pin-crgt} is modeled in the control rod out configuration from above the dashpot and includes borated water surrounded by zircaloy cladding. The instrument tube in Fig.~\ref{fig:chap7-instr-tube} is filled with air surrounded by two tubes of zircaloy cladding. The \ac{BP} in Fig.~\ref{fig:chap7-bp} geometry is the geometry from above the dashpot in the \ac{BEAVRS} model and consists of eight layers of air, steel, borosilicate glass and zircaloy. Each pin cell is surrounded by borated water which serves as the neutron moderator and coolant. 
+
+The gray borders illustrated in Fig.~\ref{fig:chap7-pin-cells} represent the egg-crate grid spacer structure wrapped around each fuel pin. Each of the six benchmarks was sliced about the $z$-axis in order to encapsulate the fuel assembly grid spacer located at $203.558 \le z \le 209.273$ in the \ac{BEAVRS} model. Next-generation high-fidelity transport methods for reactor analysis must account for the axially-oriented spatial self-shielding effects induced by grid spacers in \ac{LWR} core geometries. Although axial spatial self-shielding effects were not modeled in this thesis, the grid spacers were included in the 2D benchmarks to stress the geometric modeling capabilities recently introduced in OpenMOC to support 3D \ac{MOC} calculations. Future work may build upon the analysis in this thesis to develop \ac{MGXS} generation schemes which account for spatial self-shielding effects from axial heterogeneities such as spacer grids.
 
 \begin{figure}[h!]
 \centering
@@ -75,28 +75,27 @@ first paragraph: pin cell figures
   \centering
   \includegraphics[width=0.9\linewidth]{figures/benchmarks/guide-tube}
   \caption{}
-  \label{fig:chap7-pin-3.1}
+  \label{fig:chap7-pin-crgt}
 \end{subfigure}
 \begin{subfigure}{.5\textwidth}
   \centering
   \includegraphics[width=0.9\linewidth]{figures/benchmarks/instr-tube}
   \caption{}
-  \label{fig:chap7-guide-tube}
+  \label{fig:chap7-instr-tube}
 \end{subfigure}%
 \begin{subfigure}{.5\textwidth}
   \centering
   \includegraphics[width=0.9\linewidth]{figures/benchmarks/burn-abs}
   \caption{}
-  \label{fig:chap7-instr-tube}
+  \label{fig:chap7-bp}
 \end{subfigure}%
 \caption[BEAVRS pin cell geometries]{1.6\% enriched fuel pin (a), control rod guide tube (b), instrument tube (c) and burnable poison (d). Light blue is borated water, red is UO$_2$ fuel, gray is zircaloy, brown is helium, white is air, green is borosolicate glass, and black is stainless steel.}
 \label{fig:chap7-pin-cells}
 \end{figure}
 
-second paragraph: geometric specifications
--walk through Tab.~\ref{table:chap7-pin-cell-radii} of pin cell radii
--pin cell pitch - everything beyond the outermost radius in Tab.~\ref{table:chap7-pin-cell-radii} is borated water and the zircaloy grid spacer
+The radii for each material zone in the pin cells are detailed in Tab.~\ref{table:chap7-pin-cell-radii}. Each pin is surrounded by borated water and a zircaloy egg-crate grid spacer.  The pin cell pitch is 1.25984 cm and the thickness of the grid spacer is 0.02014 cm.
 
+\renewcommand{\arraystretch}{0.9}
 \begin{table}[h!]
   \centering
   \caption[BEAVRS pin cell radii]{Pin cell radii for the \ac{BEAVRS} model.}
@@ -115,7 +114,7 @@ second paragraph: geometric specifications
   Helium & 0.40005 \\
   Zircaloy & 0.45720 \\
   \midrule
-  \multicolumn{2}{c}{\bf Empty Guide Tube\footnotemark} \\
+  \multicolumn{2}{c}{\bf Control Rod Guide Tube} \\
   \midrule
   Borated Water & 0.56134 \\
   Zircaloy & 0.60198 \\
@@ -127,7 +126,7 @@ second paragraph: geometric specifications
   Borated Water & 0.56134 \\
   Zircaloy & 0.60198 \\
   \midrule
-  \multicolumn{2}{c}{\bf Burnable Poison\footnotemark} \\
+  \multicolumn{2}{c}{\bf Burnable Poison} \\
   \midrule
   Air & 0.21400 \\
   Stainless Steel & 0.23051 \\
@@ -141,108 +140,80 @@ second paragraph: geometric specifications
 \end{tabular}
 \end{table}
 
-\addtocounter{footnote}{-2}
-\stepcounter{footnote}\footnotetext{The control rod guide tube geometry above the dashpot.}
-\stepcounter{footnote}\footnotetext{The burnable poison geometry above the dashpot.}
+%\addtocounter{footnote}{-2}
+%\stepcounter{footnote}\footnotetext{The control rod guide tube geometry above the dashpot.}
+%\stepcounter{footnote}\footnotetext{The burnable poison geometry above the dashpot.}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Fuel Assemblies}
 \label{subsec:chap7-fuel-assms}
 
-first paragraph: different assembly types
--three fuel assemblies taken from \ac{BEAVRS} full core benchmark
-  -modeled in isolation w/ reflective BCs
--width of each assembly (assembly pitch)
--stainless steel grid sleeve around each fuel assembly was not modeled
--water between assemblies was not modeled
-
-second paragraph: types of fuel assemblies
--increasing degrees of spatial heterogeneities
--Fig.~\ref{fig:chap7-assm-16} - 1.6\% enriched with \ac{CRGT}s and a central instrument tube
--Fig.~\ref{fig:chap7-assm-31} - 3.1\% enriched with same configuration to consider the impact of fuel enrichment
--Fig.~\ref{fig:chap7-assm-31-20BPs} 3.1\% enriched with mixture of \ac{CRGT}s and \ac{BP}s to measure impact
--all kinds of \ac{BP} configurations could be analyzed, but only a few were chosen for simplicity
+The first three benchmark models are based upon 2D models of individual fuel assemblies extracted from the full core \ac{BEAVRS} model. Each assembly consists of a 17$\times$17 rectilinear array of pin cells in a lattice with a height and width of 21.41728 cm. The stainless steel grid sleeve and water separating each fuel assembly in the full core \ac{BEAVRS} model are not included in the individual models of each fuel assembly. The intra-pin egg-crate grid spacer is included in each benchmark model. The assemblies are modeled with reflective \acp{BC} to simulate an infinite lattice of fuel pins, control rod guide tubes, burnable poisons and instrument tubes. 
 
 \begin{figure}[h!]
   \centering
   \includegraphics[width=0.65\linewidth]{figures/benchmarks/assembly-16}
-\caption[BEAVRS 1.6\% enriched assembly]{Whoa}
+\vspace{2mm}
+\caption[BEAVRS 1.6\% enriched assembly]{A 1.6\% enriched UO$_2$ fuel assembly without \acp{BP}.}
 \label{fig:chap7-assm-16}
 \end{figure}
 
 \begin{figure}[h!]
   \centering
   \includegraphics[width=0.65\linewidth]{figures/benchmarks/assembly-31}
-\caption[BEAVRS 3.1\% enriched assembly]{Whoa}
+\vspace{2mm}
+\caption[BEAVRS 3.1\% enriched assembly]{A 3.1\% enriched UO$_2$ fuel assembly without \acp{BP}.}
 \label{fig:chap7-assm-31}
 \end{figure}
 
 \begin{figure}[h!]
   \centering
   \includegraphics[width=0.65\linewidth]{figures/benchmarks/assembly-31-20BPs}
-\caption[BEAVRS 3.1\% enriched assembly with 20 \ac{BP}s]{Whoa}
+\vspace{2mm}
+\caption[BEAVRS 3.1\% enriched assembly with 20 \ac{BP}s]{A 1.6\% enriched UO$_2$ fuel assembly with 20 \acp{BP}.}
 \label{fig:chap7-assm-31-20BPs}
 \end{figure}
+
+The sequence of fuel assembly benchmarks are designed to investigate the impact of fuel enrichment, \acp{CRGT}, and \acp{BP} on spatially self-shielded \ac{MGXS}. The first fuel assembly benchmark depicted in Fig.~\ref{fig:chap7-assm-16} consists of 264 fuel pins with 1.6\% enriched UO$_2$ fuel, 24 \acp{CRGT}, and a single central instrument tube. The second benchmark shown in Fig.~\ref{fig:chap7-assm-31} is of the same geometric configuration, but is composed of 3.1\% enriched UO$_2$ fuel. The third benchmark illustrated in Fig.~\ref{fig:chap7-assm-31-20BPs} includes 3.1\% enriched UO$_2$ fuel with a mixture of 20 \acp{BP}, 4 \acp{CRGT} and a single central instrument tube. Although the \ac{BEAVRS} model is composed of assemblies with many different \ac{BP} configurations, only a single assembly with \acp{BP} was studied for practical reasons.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{2$\times$2 Assembly Colorsets}
 \label{subsec:chap7-2x2-colorsets}
 
-first paragraph: two different colorsets
--comprised of the fuel assemblies discussed earlier
--three fuel assemblies taken from \ac{BEAVRS} full core benchmark
-  -modeled in isolation w/ reflective BCs
--width of each assembly (assembly pitch)
--stainless steel grid sleeve around each fuel assembly was not modeled
--water between assemblies was not modeled
-
-second paragraph: types of fuel assemblies
--increasing degrees of spatial heterogeneities
--Fig.~\ref{fig:chap7-2x2} - 1.6\% and 3.1\% enriched fuel assemblies with \ac{BP}s
-  -introduces inter-assembly spatial heterogeneities
-  -periodics BCs
-  -fuel pins with different enrichments next to each other
--Fig.~\ref{fig:chap7-reflector} - same 2$\times$2 but with reflector
-  -introduces water reflector
-  -reflective BCs on left, top
-  -vacuum BCs on right and bottom
-  -added moderation for pins near reflector
-  -leakage out of the geometry
-  -tilts power distribution across the colorset
-  -add baffle to benchmark
+Two benchmarks were constructed from 2$\times$2 colorsets of fuel assemblies from the \ac{BEAVRS} model presented in Sec.~\ref{subsec:chap7-fuel-assms}. The pitch between fuel assemblies in the colorsets is 21.41728 cm (the height/width of each assembly). The stainless steel grid sleeve and water separating each fuel assembly in the full core \ac{BEAVRS} model are not included in the 2$\times$2 colorsets. The intra-pin egg-crate grid spacer is included in each benchmark model. The first colorset is modeled with periodic \acp{BC} on all sides to simulate an infinitely repeating array of fuel assemblies. The second colorset is surrounded of a water reflector on the bottom and right that was of the same width as a fuel assembly. The reflected colorset does not include the stainless steel baffle surrounding the fuel assemblies adjacent to the water reflector in the full core \ac{BEAVRS} model. The reflected colorset includes reflective \acp{BC} on the top and left (adjacent to the fuel assemblies) with vacuum \acp{BC} on the bottom and right (adjacent to the reflector).
 
 \begin{figure}[h!]
   \centering
-  \includegraphics[width=0.65\linewidth]{figures/benchmarks/2x2}
-\caption[A 2$\times$2 colorset of BEAVRS assemblies]{Whoa}
+  \includegraphics[width=0.63\linewidth]{figures/benchmarks/2x2}
+\vspace{2mm}
+\caption[A 2$\times$2 colorset of BEAVRS assemblies]{A 2$\times$2 colorset of BEAVRS assemblies with periodic \acp{BC}.}
 \label{fig:chap7-2x2}
 \end{figure}
 
 \begin{figure}[h!]
   \centering
-  \includegraphics[width=0.65\linewidth]{figures/benchmarks/reflector}
-\caption[A reflected 2$\times$2 colorset of BEAVRS assemblies]{Whoa}
+  \includegraphics[width=0.63\linewidth]{figures/benchmarks/reflector}
+\vspace{2mm}
+\caption[A reflected 2$\times$2 colorset of BEAVRS assemblies]{A 2$\times$2 colorset of BEAVRS assemblies surrounded by a water reflector. Reflective \acp{BC} were applied on the left/top, with vacuum \acp{BC} on the right/bottom.}
 \label{fig:chap7-reflector}
 \end{figure}
+
+The first 2$\times$2 colorset model shown in Fig.~\ref{fig:chap7-2x2} is composed of a checkerboard pattern of the fuel assemblies of 1.6\% enriched UO$_2$ without \acp{BP} (Fig.~\ref{fig:chap7-assm-16}) and 3.1\% enriched UO$_2$ with 20 \acp{BP} (Fig.~\ref{fig:chap7-assm-31-20BPs}). This benchmark model is designed to investigate the effects of inter-assembly spatial heterogeneities on the spatially self-shielded \ac{MGXS} of fuel pins of different enrichments (\textit{i.e.}, from different fuel assemblies) placed adjacent to one another. The second benchmark illustrated in Fig.~\ref{fig:chap7-reflector} is the same 2$\times$2 coloserset of fuel assemblies, but is surrounded by a water reflector. This benchmark is designed to quantify the impact of the moderation provided by the reflector, as well as the leakage of neutrons through the reflector, on spatially self-shielded \ac{MGXS}.
+
+% -add baffle to benchmark
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{BEAVRS Full Core}
 \label{subsec:chap7-full-core}
 
-first paragraph: full \ac{BEAVRS} core in all its glory
--cycle 1 loading pattern
--includes baffle, barrel, core
--includes inter-assembly 
--\# of assemblies, \# of each type of pin
---stainless steel grid sleeve around each fuel assembly included
--water between assemblies included
-  -these radial heterogeneities will induce further spatial self-shielding effects!
+The sixth and final benchmark is a 2D planar slice of the full core \ac{BEAVRS} model at the axial mid-plane as shown in Fig.~\ref{fig:chap7-full-core}. The 193 fuel assemblies in the full core model are configured according to the cycle 1 loading pattern detailed in the \ac{BEAVRS} specifications~\cite{horelik2013beavrs}. The full core model includes assemblies with 1.6\%, 2.4\% and 3.1\% enriched UO$_2$ fuel depicted as red, blue and yellow in Fig.~\ref{fig:chap7-full-core}, respectively. All of the radial heterogeneities in the \ac{BEAVRS} specifications are included in this model, including the inter-assembly stainless steel grid sleeves and water gaps, stainless steel baffle surrounding the fuel assemblies, core barrel, neutron shield panels and pressure vessel. The space outside of the pressure vessel is filled with air with vacuum \acp{BC} were applied to planar surfaces on the top, bottom, left and right. The 2D full core \ac{BEAVRS} model builds upon the preceding five simpler benchmarks to explore the impact of radial heterogeneities from a realistic core configuration on spatially self-shielded \ac{MGXS}.
 
 \begin{figure}[h!]
   \centering
   \includegraphics[width=0.9\linewidth]{figures/benchmarks/full-core}
-\caption[The \ac{BEAVRS} core at the axial mid-plane.]{A radial view of the \ac{BEAVRS} core at the axial mid-plane.}
+\vspace{2mm}
+\caption[The 2D full core \ac{BEAVRS} model]{The 2D full core \ac{BEAVRS} model.}
 \label{fig:chap7-full-core}
 \end{figure}
 
