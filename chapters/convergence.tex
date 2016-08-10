@@ -17,6 +17,8 @@ In addition, this chapter presents the reference results for each of the six geo
   \item \textbf{Pin-wise U-238 capture rates}
 \end{itemize}
 
+-need to explain why we care about U-238 capture rates
+
 \noindent The reference results for each of these three metrics were computed with highly converged OpenMC simulations. It is important to recall from Sec.~\ref{sec:chap1-objectives} that this thesis aimed to generate \ac{MGXS} with \ac{MC} in significantly less time\footnote{In this case, ``time'' is synonymous with the number of particle histories simulated with \ac{MC}.} than would be required to generate reference solutions with \ac{MC}. The methodology developed in Part IV aims to make this possible with statistical clustering of ``noisy'' \ac{MC} tallies for \ac{MGXS} generation.
 
 This chapter outlines the geometric and isotopic specifications for each of the six benchmark models in Sec.~\ref{sec:chap7-benchmarks}. The reference results computed with OpenMC for each of the benchmark models are presented in Sec.~\ref{sec:chap7-ref-results}.
@@ -287,11 +289,11 @@ As expected, the eigenvalues increase with enrichment and decrease with the pres
 \subsection{Fission Rate Spatial Distributions}
 \label{subsec:chap7-pin-powers}
 
-The reference energy-integrated fission rate spatial distributions for each of the six benchmarks were computed using rectilinear, pin-wise tally meshes in OpenMC. The fission rates are volume-integrated across each fuel pin and include fission from all nuclides (only U-235 and U-238 for the fresh \ac{PWR} UO$_2$ fuel modeled here). The fission rates were normalized to the mean of all non-zero fission rates in each benchmark. The percent relative errors for the tallied fission rates was computed from the ratio of the sample standard deviation to the mean fission rate in each fuel pin.
+The reference energy-integrated fission rate spatial distributions for each of the six benchmarks were computed using rectilinear, pin-wise tally meshes in OpenMC. The fission rates were volume-integrated across each fuel pin and include fission from all nuclides (only U-235 and U-238 for the fresh \ac{PWR} UO$_2$ fuel modeled here). The fission rates were normalized to the mean of all non-zero fission rates in each benchmark. The percent relative errors for the tallied fission rates was computed from the ratio of the sample standard deviation to the mean fission rate in each fuel pin.
 
-The fission rate spatial distributions and percent relative errors for each of the six benchmarks are presented as heatmaps in Figs.~\Crefrange{fig:chap7-fiss-rates-1.6-assm}{fig:chap7-fiss-rates-full-core}. The fission rates in the instrument tubes, \acp{CRGT} and \acp{BP} are all zero and are illustrated in white. The color bars for each of the heatmaps range from the minimum non-zero fission rate to the maximum fission rate for all fuel pins in each benchmark geometry. The batch-wise convergence rates of the fission rates is shown for the mean and maximum percent relative errors for each of the benchmark models in Fig.~\ref{fig:chap7-fiss-rates-conv}. The maximum relative error at the final 1000$^{\text{th}}$ batch is less than or equal to 0.0001\% for all of the benchmark models. These reference fission rate spatial distributions are used to validate the OpenMOC simulations with \ac{MGXS} computed from OpenMC throughout the following chapters.
+The fission rate spatial distributions and percent relative errors for each of the six benchmarks are presented as heatmaps in Figs.~\Crefrange{fig:chap7-fiss-rates-1.6-assm}{fig:chap7-fiss-rates-full-core}. The fission rates in the instrument tubes, \acp{CRGT} and \acp{BP} are all zero and are illustrated in white. The color bars for each of the heatmaps range from the minimum non-zero fission rate to the maximum fission rate for all fuel pins in each benchmark geometry. The batch-wise convergence rates of the fission rates is shown for the maximum and mean percent relative errors for each of the benchmarks in Fig.~\ref{fig:chap7-fiss-rates-conv}. The maximum relative error at the final 1000$^{\text{th}}$ batch is less than or equal to 0.0001\% for all of the benchmarks. These reference fission rate spatial distributions are used to validate the OpenMOC simulations with \ac{MGXS} computed from OpenMC throughout the following chapters.
 
-As illustrated in the figures, the fission rate distributions are strongly dependent on the spatially heterogeneous features in each benchmark geometry. For example, the \acp{CRGT} provided additional moderation and increase the fission rates in nearby fuel pins. The presence of \acp{BP} reduces the neutron population and therefore the fission rates for the surrounding fuel pins, while increasing the variation between the minimum and maximum fission rates. The presence of a reflector with a mixture of vacuum and reflective \acp{BC} induces a tilt in the fission rates across the assemblies in the 2$\times$2 colorset, with the maximum fission rates in the interior fuel pins and the minimum fission rates occurring near the reflector due to neutron leakage. The fission rates for the full core \ac{BEAVRS} model in Fig.~\ref{fig:chap7-fiss-rates-full-core} form a highly complex spatial distribution due to the convolution of many different interacting spatial self-shielding effects.
+As illustrated in the figures, the fission rate distributions are strongly dependent on the spatially heterogeneous features in each benchmark geometry. For example, the \acp{CRGT} provide additional moderation and increase the fission rates in nearby fuel pins. The presence of \acp{BP} reduces the neutron population and therefore the fission rates for the surrounding fuel pins, while increasing the variation between the minimum and maximum fission rates. The presence of a reflector with a mixture of vacuum and reflective \acp{BC} induces a tilt in the fission rates across the assemblies in the 2$\times$2 colorset, with the maximum fission rates in the interior fuel pins and the minimum fission rates occurring near the reflector due to neutron leakage. The fission rates for the full core \ac{BEAVRS} model in Fig.~\ref{fig:chap7-fiss-rates-full-core} form a highly complex spatial distribution due to the convolution of many different interacting spatial self-shielding effects.
 
 \begin{figure}[h!]
 \centering
@@ -419,34 +421,17 @@ As illustrated in the figures, the fission rate distributions are strongly depen
 \label{fig:chap7-fiss-rates-conv}
 \end{figure}
 
+\clearpage
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{U-238 Capture Rate Spatial Distributions}
 \label{subsec:chap7-capture-rates}
 
-%  -energy-integrated pin-wise U-238 capture rates using an OpenMC rectilinear mesh tally
+The reference energy-integrated U-238 capture rate spatial distributions for each of the six benchmarks were computed using rectilinear, pin-wise tally meshes in OpenMC. The U-238 capture rates were volume-integrated across each fuel pin. The capture rates were normalized to the mean of all non-zero capture rates in each benchmark. The percent relative errors for the tallied capture rates was computed from the ratio of the sample standard deviation to the mean capture rate in each fuel pin.
 
-first paragraph: U-238 capture rates
--how they were computed 
-  -rectilinear tally mesh in OpenMC
-  -energy-integrated
-  -volume-integrated across each pin
-  -only for U-238
--relative error or uncertainty computed how???
+The U-238 capture rate spatial distributions and percent relative errors for each of the six benchmarks are presented as heatmaps in Figs.~\Crefrange{fig:chap7-capt-rates-1.6-assm}{fig:chap7-capt-rates-full-core}. The capture rates in the instrument tubes, \acp{CRGT} and \acp{BP} are all zero and are illustrated in white. The color bars for each of the heatmaps range from the minimum non-zero capture rate to the maximum capture rate for all fuel pins in each benchmark geometry. The batch-wise convergence rates of the capture rates is shown for the maximum and mean percent relative errors for each of the benchmarks in Fig.~\ref{fig:chap7-capt-rates-conv}. The maximum relative error at the final 1000$^{\text{th}}$ batch is less than 0.0001\% for all of the benchmarks. These reference U-238 capture rate spatial distributions are used to validate the OpenMOC simulations with \ac{MGXS} computed from OpenMC throughout the following chapters.
 
-second paragraph: spatial distributions
--Fig.~\Crefrange{fig:chap7-capt-rates-1.6-assm}{fig:chap7-capt-rates-full-core} - all benchmark geometries
--trends - similar to fission rates since U-238 capture dominated by low-lying resonances
-  -adjacency to \ac{CRGT}s provides added moderation and increases capture rates
-  -adjacency to \ac{BP}s reduces neutron population and reduces capture rates
-  -pins in 3.1\% assm in 2$\times$2 have $\sim$35\% higher capture rates than those in 1.6\% assm
-    -more peaking / variation due to \ac{BP}s
-  -adjacency to reflector reduces capture rates since leakage reduces neutrons
-  -full core has complex distribution of capture rates
-
-third paragraph: convergence rate
--Fig.~\ref{fig:chap7-capt-rates-conv} has convergence of capture rate uncertainties
--well below 1\% uncertainty of capture rates in each pin for 2D \ac{BEAVRS} benchmark
--smoother convergence for mean than for max
+The impacts of \acp{CRGT}, \acp{BP}, reflectors and vacuum \acp{BC} are all similar for U-238 capture rates as they were for the fission rate distributions, though there are some noticeable differences. For example, the U-238 capture rates in the individual fuel assemblies appear to be less sensitive than the fission rates to the spatial self-shielding induced by moderation in \acp{CRGT}. In addition, the U-238 capture rates peak in the 1.6\% enriched fuel assemblies in the 2$\times$2 colorset without a reflector (Fig.~\ref{fig:chap7-capt-rate-rel-err-2x2}), while the fission rates peak in the 3.1\% enriched fuel assemblies (Fig.~\ref{fig:chap7-fiss-rate-rel-err-2x2}). The key reason for this is that there is a higher concentration of U-238 in the 1.6\% enriched fuel than the 3.1\% enriched fuel, which leads to a different ratio of fission to U-238 capture rates. In addition, the U-238 capture rates in the reflected 2$\times$2 benchmark (Fig.~\ref{fig:chap7-capt-rates-2x2}) are more smoothly varying at the inter-assembly interface than the fission rates (Fig.~\ref{fig:chap7-fiss-rates-2x2}).
 
 \begin{figure}[h!]
 \centering
@@ -553,7 +538,7 @@ third paragraph: convergence rate
   \label{fig:chap7-capt-rate-rel-err-full-core}
 \end{subfigure}%
 \caption[U-238 capture rates for the full 2D BEAVRS core]{U-238 capture rates for the 2D full core \ac{BEAVRS} model.}
-\label{fig:chap7-capt-rates-full-coe}
+\label{fig:chap7-capt-rates-full-core}
 \end{figure}
 
 \begin{figure}[h!]
@@ -575,4 +560,11 @@ third paragraph: convergence rate
 \end{figure}
 
 
--summary box!!!!
+\vfill
+\begin{highlightsbox}[frametitle=Highlights]
+\begin{itemize}
+  \item OpenMOC calculations were performed using \ac{MGXS} generated by OpenMC to compare eigenvalues for simple benchmarks.
+  \item The eigenvalues closely agreed for homogeneous infinite media. The eigenvalues exhibited a bias of -200 to -300 \ac{pcm} for heterogenous geometries, including a 1D slab and 2D fuel pin.
+\end{itemize}
+\end{highlightsbox}
+\vfill
