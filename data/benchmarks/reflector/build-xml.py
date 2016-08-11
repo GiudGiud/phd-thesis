@@ -101,7 +101,7 @@ fission_rates.scores = ['fission']
 # Instantiate energy-wise U-238 capture rate mesh Tally
 capture_rates = openmc.Tally(name='u-238 capture')
 capture_rates.filters = [mesh_filter]
-capture_rates.nuclides = ['U-238']
+capture_rates.nuclides = ['U238']
 capture_rates.scores = ['absorption', 'fission']
 
 # Create a "tallies.xml" file for the mesh tallies
