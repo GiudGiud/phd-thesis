@@ -81,7 +81,7 @@ fig = plt.figure()
 
 # Customize and save plot
 for i, directory in enumerate(directories):
-    plt.loglog(batches, np.nanmax(rel_err_max[i, :], axis=1), linewidth=2)
+    plt.loglog(batches, rel_err_max[i, :], linewidth=2)
 
 plt.title('Max. Fission Rate Error', fontsize=20)
 plt.grid(True, which="both")
@@ -96,7 +96,7 @@ fig = plt.figure()
 
 # Customize and save plot
 for i, directory in enumerate(directories):
-    plt.loglog(batches, np.nanmean(rel_err_mean[i, :], axis=1), linewidth=2)
+    plt.loglog(batches, rel_err_mean[i, :], linewidth=2)
 
 plt.title('Mean Fission Rate Error', fontsize=20)
 plt.grid(True, which="both")

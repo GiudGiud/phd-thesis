@@ -99,7 +99,7 @@ fig = plt.figure()
 
 # Customize and save plot
 for i, directory in enumerate(directories):
-    plt.loglog(batches, np.nanmean(rel_err_mean[i, :], axis=1), linewidth=2)
+    plt.loglog(batches, rel_err_mean[i, :], linewidth=2)
 
 plt.title('Mean U-238 Capture Rate Error', fontsize=20)
 plt.grid(True, which="both")
