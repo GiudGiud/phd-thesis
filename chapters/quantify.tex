@@ -11,6 +11,55 @@
 
 \subsection{Degenerate Homogenization}
 
+\begin{figure}[h!]
+\centering
+\begin{subfigure}{.5\textwidth}
+  \centering
+  \includegraphics[width=0.9\linewidth]{figures/quantification/fsrs-fuel-pin}
+  \caption{}
+  \label{fig:chap8-pin-1.6}
+\end{subfigure}%
+\begin{subfigure}{.5\textwidth}
+  \centering
+  \includegraphics[width=0.9\linewidth]{figures/quantification/fsrs-crgt}
+  \caption{}
+  \label{fig:chap8-pin-crgt}
+\end{subfigure}
+\begin{subfigure}{.5\textwidth}
+  \centering
+  \includegraphics[width=0.9\linewidth]{figures/quantification/fsrs-instr-tube}
+  \caption{}
+  \label{fig:chap8-instr-tube}
+\end{subfigure}%
+\begin{subfigure}{.5\textwidth}
+  \centering
+  \includegraphics[width=0.9\linewidth]{figures/quantification/fsrs-bp}
+  \caption{}
+  \label{fig:chap8-bp}
+\end{subfigure}%
+\caption[BEAVRS pin cell FSR discretization]{1.6\% enriched fuel pin (a), control rod guide tube (b), instrument tube (c) and burnable poison (d).}
+\label{fig:chap8-pin-cell-fsrs}
+\end{figure}
+
+\begin{figure}[h!]
+\centering
+\begin{subfigure}{\textwidth}
+  \centering
+  \includegraphics[width=0.7\linewidth]{figures/quantification/fsrs-assm-16}
+  \caption{}
+  \label{fig:chap8-assm-1.6}
+\end{subfigure}
+\begin{subfigure}{\textwidth}
+  \centering
+  \includegraphics[width=0.7\linewidth]{figures/quantification/cmfd-cells-assm}
+  \caption{}
+  \label{fig:chap8-cmfd-cells}
+\end{subfigure}
+\caption[BEAVRS fuel assembly FSR discretization and CMFD cells]{1.6\% enriched fuel pin (a), control rod guide tube (b).}
+\label{fig:chap8-assm-fsrs-cmfd-cells}
+\end{figure}
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{MGXS Convergence Rates}
 
@@ -26,9 +75,53 @@
 \end{itemize}
 
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Analysis of Multi-Group Results}
+\label{sec:chap8-mg-results}
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Eigenvalues}
+\label{subsec:chap8-eigenvalues}
+
+\begin{table}[h!]
+  \centering
+  \caption[OpenMOC eigenvalue bias for heterogeneous benchmarks]{OpenMOC eigenvalue bias $\Delta\rho$ for heterogeneous benchmarks with infinite, null and degenerate spatial homogenization schemes.}
+  \small
+  \label{table:chap8-openmoc-eigenvalues}
+  \vspace{6pt}
+  \begin{tabular}{l l S[table-format=6.1]}
+  \toprule
+  {\cellcolor{lightgray} \bf Benchmark} &
+  {\cellcolor{lightgray} \bf \ac{MGXS} Scheme} &
+  \multicolumn{1}{S[table-format=6.1]}{\cellcolor{lightgray}{$\bm{\Delta\rho}$}} \\
+  \midrule
+  \multirow{3}{*}{1.6\% Enr. Assembly (no \ac{BP}s)} & Infinite & 987 \\
+  & Null & \\
+  & Degenerate & \\
+  \midrule
+  \multirow{3}{*}{3.1\% Enr. Assembly (no \ac{BP}s)} & Infinite & 344 \\
+  & Null & \\
+  & Degenerate & \\
+  \midrule
+  \multirow{3}{*}{3.1\% Enr. Assembly (20 \ac{BP}s)} & Infinite & 530 \\
+  & Null & \\
+  & Degenerate & \\
+  \midrule
+  \multirow{3}{*}{2$\times$2 Colorset} & Infinite & 196 \\
+  & Null & \\
+  & Degenerate & \\
+  \midrule
+  \multirow{3}{*}{2$\times$2 Colorset w/ Reflector} & Infinite & 462\\
+  & Null & \\
+  & Degenerate & \\
+  \midrule
+  \multirow{3}{*}{\ac{BEAVRS} Full Core} & Infinite & 497 \\
+  & Null & \\
+  & Degenerate & \\
+  \bottomrule
+\end{tabular}
+\end{table}
 
 \begin{itemize}[noitemsep]
   \item table of eigenvalue bias with converged MGXS for each benchmark
@@ -43,7 +136,49 @@
   \end{itemize}
 \end{itemize}
 
-\subsection{Pin Power Distributions}
+%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Fission Rates}
+\label{subsec:chap8-fiss-rates}
+
+\begin{table}[h!]
+  \centering
+  \caption[OpenMOC fission rate errors for heterogeneous benchmarks]{OpenMOC fission rate errors for heterogeneous benchmarks with infinite, null and degenerate spatial homogenization schemes.}
+  \small
+  \label{table:chap8-openmoc-fiss-rates}
+  \vspace{6pt}
+  \begin{tabular}{l l S[table-format=4.1] S[table-format=4.1]}
+  \toprule
+  {\cellcolor{lightgray} \bf Benchmark} &
+  {\cellcolor{lightgray} \bf \ac{MGXS} Scheme} &
+  \multicolumn{1}{S[table-format=6.1]}{\cellcolor{lightgray} \textbf{Max Error [\%]}} &
+  \multicolumn{1}{S[table-format=6.1]}{\cellcolor{lightgray} \textbf{Mean Error [\%]}} \\
+  \midrule
+  \multirow{3}{*}{1.6\% Enr. Assembly (no \ac{BP}s)} & Infinite & 987 & 987 \\
+  & Null & & \\
+  & Degenerate & & \\
+  \midrule
+  \multirow{3}{*}{3.1\% Enr. Assembly (no \ac{BP}s)} & Infinite & 344 & 344 \\
+  & Null & & \\
+  & Degenerate & & \\
+  \midrule
+  \multirow{3}{*}{3.1\% Enr. Assembly (20 \ac{BP}s)} & Infinite & 530 & 580 \\
+  & Null & & \\
+  & Degenerate & & \\
+  \midrule
+  \multirow{3}{*}{2$\times$2 Colorset} & Infinite & 196 & 196 \\
+  & Null & & \\
+  & Degenerate & & \\
+  \midrule
+  \multirow{3}{*}{2$\times$2 Colorset w/ Reflector} & Infinite & 462 & 462 \\
+  & Null & & \\
+  & Degenerate & & \\
+  \midrule
+  \multirow{3}{*}{\ac{BEAVRS} Full Core} & Infinite & 497 & 497 \\
+  & Null & & \\
+  & Degenerate & & \\
+  \bottomrule
+\end{tabular}
+\end{table}
 
 \begin{itemize}[noitemsep]
   \item convergence rates for max/mean rel. err. for each benchmark
@@ -68,7 +203,49 @@
   \end{itemize}
 \end{itemize}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{U-238 Capture Rate Distributions}
+\label{subsec:chap8-capt-rates}
+
+\begin{table}[h!]
+  \centering
+  \caption[OpenMOC U-238 capture rate errors for heterogeneous benchmarks]{OpenMOC U-238 capture rate errors for heterogeneous benchmarks with infinite, null and degenerate spatial homogenization schemes.}
+  \small
+  \label{table:chap8-openmoc-capt-rates}
+  \vspace{6pt}
+  \begin{tabular}{l l S[table-format=4.1] S[table-format=4.1]}
+  \toprule
+  {\cellcolor{lightgray} \bf Benchmark} &
+  {\cellcolor{lightgray} \bf \ac{MGXS} Scheme} &
+  \multicolumn{1}{S[table-format=6.1]}{\cellcolor{lightgray} \textbf{Max Error [\%]}} &
+  \multicolumn{1}{S[table-format=6.1]}{\cellcolor{lightgray} \textbf{Mean Error [\%]}} \\
+  \midrule
+  \multirow{3}{*}{1.6\% Enr. Assembly (no \ac{BP}s)} & Infinite & 987 & 987 \\
+  & Null & & \\
+  & Degenerate & & \\
+  \midrule
+  \multirow{3}{*}{3.1\% Enr. Assembly (no \ac{BP}s)} & Infinite & 344 & 344 \\
+  & Null & & \\
+  & Degenerate & & \\
+  \midrule
+  \multirow{3}{*}{3.1\% Enr. Assembly (20 \ac{BP}s)} & Infinite & 530 & 580 \\
+  & Null & & \\
+  & Degenerate & & \\
+  \midrule
+  \multirow{3}{*}{2$\times$2 Colorset} & Infinite & 196 & 196 \\
+  & Null & & \\
+  & Degenerate & & \\
+  \midrule
+  \multirow{3}{*}{2$\times$2 Colorset w/ Reflector} & Infinite & 462 & 462 \\
+  & Null & & \\
+  & Degenerate & & \\
+  \midrule
+  \multirow{3}{*}{\ac{BEAVRS} Full Core} & Infinite & 497 & 497 \\
+  & Null & & \\
+  & Degenerate & & \\
+  \bottomrule
+\end{tabular}
+\end{table}
 
 \begin{itemize}[noitemsep]
   \item convergence rates for max/mean rel. err. for each benchmark

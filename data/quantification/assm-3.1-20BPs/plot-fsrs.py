@@ -54,3 +54,6 @@ openmoc.plotter.plot_cells(openmoc_geometry, zcoord=205., gridsize=2000,
 
 # Plot all FSRs in the geometry
 openmoc.plotter.plot_flat_source_regions(openmoc_geometry, gridsize=2000, library='pil')
+
+# Plot the CMFD cells
+openmoc.plotter.plot_cmfd_cells(openmoc_geometry, cmfd, gridsize=2000, library='pil')
