@@ -9,11 +9,10 @@ def find_assembly(assembly_name, opencg_geometry, wrap_geometry=True):
     # Get all OpenCG Universes
     all_univ = opencg_geometry.get_all_universes()
 
-    # FIXME
-    assm = infermc.beavrs.find_assembly(assembly_name)
-
+    # FIXME: This doesn't work
+    assm = infermc.beavrs.find_assembly(assembly_name, wrap_geometry=False)
     fuel_assembly = all_univ[assm.id]
-    print(fuel_assembly.name, fuel_assembly.id)
+    print(fuel_assembly)
 
     '''
     # Iterate over all Universes
