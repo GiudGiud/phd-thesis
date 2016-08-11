@@ -1,6 +1,5 @@
 import opencg
 import openmoc
-import infermc.beavrs
 
 
 def find_assembly(assembly_name, opencg_geometry, wrap_geometry=True):
@@ -9,15 +8,9 @@ def find_assembly(assembly_name, opencg_geometry, wrap_geometry=True):
     # Get all OpenCG Universes
     all_univ = opencg_geometry.get_all_universes()
 
-    # FIXME: This doesn't work
-#    assm = infermc.beavrs.find_assembly(assembly_name, wrap_geometry=False)
-#    fuel_assembly = all_univ[assm.id]
-#    print(fuel_assembly)
-
     # Iterate over all Universes
     fuel_assembly = None
     for univ_id, univ in all_univ.items():
-        print(univ.name)
         if univ.name == assembly_name:
             fuel_assembly = univ
 
