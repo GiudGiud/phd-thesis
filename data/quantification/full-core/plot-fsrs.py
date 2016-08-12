@@ -4,7 +4,7 @@ import openmoc
 import openmoc.plotter
 from openmoc.opencg_compatible import get_openmoc_geometry
 from infermc.energy_groups import group_structures
-from discretize import discretize_geometry
+from discretize import discretize_geometry_standalone
 
 
 openmoc.log.set_log_level('NORMAL')
@@ -31,7 +31,7 @@ openmoc.materialize.load_openmc_mgxs_lib(mat_mgxs_lib, openmoc_geometry)
 openmoc.materialize.load_openmc_mgxs_lib(cell_mgxs_lib, openmoc_geometry)
 
 # FIXME: Rev your engines for a little discretization....
-discretize_geometry(mat_mgxs_lib, openmoc_geometry)
+discretize_geometry_standalone(mat_mgxs_lib, openmoc_geometry)
 
 # Initialize CMFD
 #cmfd = openmoc.Cmfd()
@@ -41,18 +41,20 @@ discretize_geometry(mat_mgxs_lib, openmoc_geometry)
 #openmoc_geometry.setCmfd(cmfd)
 
 # Generate tracks
-track_generator = openmoc.TrackGenerator(openmoc_geometry, 32, 0.1)
-track_generator.setZCoord(205.0)
-track_generator.setNumThreads(opts.num_omp_threads)
-track_generator.generateTracks()
+#track_generator = openmoc.TrackGenerator(openmoc_geometry, 32, 0.1)
+#track_generator.setZCoord(205.0)
+#track_generator.setNumThreads(opts.num_omp_threads)
+#track_generator.generateTracks()
+
+openmoc_geometry.initializeFSRs(False)
 
 # Plot all FSRs in the geometry
 openmoc.plotter.plot_cells(
-    openmoc_geometry, zcoord=205., gridsize=1000,
-    xlim=(0,40), ylim=(0,40),library='pil')
-openmoc.plotter.plot_cells(
-    openmoc_geometry, zcoord=205., gridsize=1000,
-    xlim=(100,150), ylim=(100,150), library='pil')
+    openmoc_geometry, zcoord=205., gridsize=2000,
+    xlim=(0,60), ylim=(0,60),library='pil')
+#openmoc.plotter.plot_cells(
+#    openmoc_geometry, zcoord=205., gridsize=2000,
+#    xlim=(100,140), ylim=(100,140), library='pil')
 openmoc.plotter.plot_materials(openmoc_geometry, zcoord=205., gridsize=1000, library='pil')
 #openmoc.plotter.plot_flat_source_regions(openmoc_geometry, gridsize=1000, library='pil')
 #openmoc.plotter.plot_cmfd_cells(openmoc_geometry, gridsize=1000, library='pil')
