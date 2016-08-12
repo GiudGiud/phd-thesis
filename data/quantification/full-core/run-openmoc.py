@@ -34,6 +34,11 @@ for clusterizer_type in clusterizer_types:
     batchwise.zcoord = 205.
     batchwise.log_level = 'INFO'
 
+    # Initialize assembly-wise CMFD mesh
+    batchwise.cmfd = openmoc.Cmfd()
+    batchwise.cmfd.setLatticeStructure(23, 23)
+    batchwise.cmfd.setKNearest(3)
+
     # Attach a method to discretize this geometry to the Batchwise instance
     batchwise._discretize_geometry = types.MethodType(discretize_geometry, batchwise)
 
@@ -42,6 +47,7 @@ for clusterizer_type in clusterizer_types:
         batchwise.clusterizer = infermc.clusterizer.NullClusterizer()
         batchwise.clusterizer._type = 'infinite'
         batchwise.mat_mgxslib_directories.append('../pin-1.6/')
+        batchwise.mat_mgxslib_directories.append('../pin-3.1/')
     elif clusterizer_type == 'null':
         batchwise.clusterizer = infermc.clusterizer.NullClusterizer()
     elif clusterizer_type == 'degenerate':
@@ -49,7 +55,6 @@ for clusterizer_type in clusterizer_types:
 
     # Turn off MGXS plotting for speed
     batchwise.clusterizer.plot_mgxs = False
-    batchwise.plot_materials = False
 
     # Execute OpenMOC simulations over all batches of clustered MGXS libraries
     for num_groups in groups:

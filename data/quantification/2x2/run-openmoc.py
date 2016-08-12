@@ -42,6 +42,7 @@ for clusterizer_type in clusterizer_types:
         batchwise.clusterizer = infermc.clusterizer.NullClusterizer()
         batchwise.clusterizer._type = 'infinite'
         batchwise.mat_mgxslib_directories.append('../pin-1.6/')
+        batchwise.mat_mgxslib_directories.append('../pin-3.1/')
     elif clusterizer_type == 'null':
         batchwise.clusterizer = infermc.clusterizer.NullClusterizer()
     elif clusterizer_type == 'degenerate':
