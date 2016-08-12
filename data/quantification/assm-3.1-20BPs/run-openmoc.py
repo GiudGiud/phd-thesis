@@ -60,7 +60,7 @@ for clusterizer_type in clusterizer_types:
         batchwise._sp_counter -= 1
 
 print('EIGENVALUE BIAS')
-msg = '\multirow{3}{*}{\parbox{2.5cm}{1.6\% Assm.}} '
+msg = '\multirow{3}{*}{\parbox{2.5cm}{3.1\% Assm. w/ \\acp{BP}}} '
 for clusterizer_type in clusterizer_types:
     msg += '& {} '.format(clusterizer_type.capitalize())
     for num_groups in groups:
@@ -79,7 +79,7 @@ min_capt = +np.inf
 max_capt = -np.inf
 
 print('MAX FISSION RATE ERROR')
-msg = '\multirow{3}{*}{\parbox{2.5cm}{1.6\% Assm.}} '
+msg = '\multirow{3}{*}{\parbox{2.5cm}{3.1\% Assm. w/ \\acp{BP}}} '
 for clusterizer_type in clusterizer_types:
     msg += '& {} '.format(clusterizer_type.capitalize())
     for num_groups in groups:
@@ -95,7 +95,7 @@ msg += '\\\\\n'
 print(msg)
 
 print('MEAN FISSION RATE ERROR')
-msg = '\multirow{3}{*}{\parbox{2.5cm}{1.6\% Assm.}} '
+msg = '\multirow{3}{*}{\parbox{2.5cm}{3.1\% Assm. w/ \\acp{BP}}} '
 for clusterizer_type in clusterizer_types:
     msg += '& {} '.format(clusterizer_type.capitalize())
     for num_groups in groups:
@@ -109,7 +109,7 @@ msg += '\\\\\n'
 print(msg)
 
 print('MAX CAPTURE RATE ERROR')
-msg = '\multirow{3}{*}{\parbox{2.5cm}{1.6\% Assm.}} '
+msg = '\multirow{3}{*}{\parbox{2.5cm}{3.1\% Assm. w/ \\acp{BP}}} '
 for clusterizer_type in clusterizer_types:
     msg += '& {} '.format(clusterizer_type.capitalize())
     for num_groups in groups:
@@ -125,7 +125,7 @@ msg += '\\\\\n'
 print(msg)
 
 print('MEAN CAPTURE RATE ERROR')
-msg = '\multirow{3}{*}{\parbox{2.5cm}{1.6\% Assm.}} '
+msg = '\multirow{3}{*}{\parbox{2.5cm}{3.1\% Assm. w/ \\acp{BP}}} '
 for clusterizer_type in clusterizer_types:
     msg += '& {} '.format(clusterizer_type.capitalize())
     for num_groups in groups:
