@@ -3,14 +3,25 @@ import types
 
 import h5py
 import numpy as np
+import matplotlib
+
+# force headless backend, or set 'backend' to 'Agg'
+# in your ~/.matplotlib/matplotlibrc
+matplotlib.use('Agg')
+
+import matplotlib.pyplot as plt
+
+# Force non-interactive mode, or set 'interactive' to False
+# in your ~/.matplotlib/matplotlibrc
+plt.ioff()
 
 import infermc
 from discretize import discretize_geometry
 
 
 statepoints = glob.glob('statepoint.*.h5')
-groups = [2, 8] #, 70]
-clusterizer_types = ['infinite', 'null'] #, 'degenerate']
+groups = [2, 8, 70]
+clusterizer_types = ['infinite', 'null', 'degenerate']
 
 # Loop over 'infinite', 'null' and 'degenerate' clusterizers
 for clusterizer_type in clusterizer_types:
@@ -60,6 +71,12 @@ for clusterizer_type in clusterizer_types:
 msg += '\\\\\n'
 print(msg)
 
+# Track the minimum and maximum fission and capture rate errors
+min_fiss = +np.inf
+max_fiss = -np.inf
+min_capt = +np.inf
+max_capt = -np.inf
+
 print('MAX FISSION RATE ERROR')
 msg = '\multirow{3}{*}{\parbox{2.5cm}{1.6\% Assm.}} '
 for clusterizer_type in clusterizer_types:
@@ -67,7 +84,10 @@ for clusterizer_type in clusterizer_types:
     for num_groups in groups:
         f = h5py.File('{}-groups-{}.h5'.format(num_groups, clusterizer_type))
         bias = f['{}-groups'.format(num_groups)][clusterizer_type]['fission']['openmoc rel. err.']
-        msg += '& {:1.2E} '.format(np.nanmax(np.ravel(bias)))
+        bias = np.nanmax(np.ravel(bias))
+        msg += '& {:1.2E} '.format(bias)
+        max_fiss = max(max_fiss, bias)
+        min_fiss = min(min_fiss, bias)
         f.close()
     msg += '\\\\\n'
 msg += '\\\\\n'
@@ -80,7 +100,8 @@ for clusterizer_type in clusterizer_types:
     for num_groups in groups:
         f = h5py.File('{}-groups-{}.h5'.format(num_groups, clusterizer_type))
         bias = f['{}-groups'.format(num_groups)][clusterizer_type]['fission']['openmoc rel. err.']
-        msg += '& {:1.2E} '.format(np.nanmean(np.ravel(bias)))
+        bias = np.nanmean(np.ravel(bias))
+        msg += '& {:1.2E} '.format(bias)
         f.close()
     msg += '\\\\\n'
 msg += '\\\\\n'
@@ -93,7 +114,10 @@ for clusterizer_type in clusterizer_types:
     for num_groups in groups:
         f = h5py.File('{}-groups-{}.h5'.format(num_groups, clusterizer_type))
         bias = f['{}-groups'.format(num_groups)][clusterizer_type]['capture']['openmoc rel. err.']
-        msg += '& {:1.2E} '.format(np.nanmax(np.ravel(bias)))
+        bias = np.nanmax(np.ravel(bias))
+        msg += '& {:1.2E} '.format(bias)
+        max_capt = max(max_capt, bias)
+        min_capt = min(min_capt, bias)
         f.close()
     msg += '\\\\\n'
 msg += '\\\\\n'
@@ -106,8 +130,57 @@ for clusterizer_type in clusterizer_types:
     for num_groups in groups:
         f = h5py.File('{}-groups-{}.h5'.format(num_groups, clusterizer_type))
         bias = f['{}-groups'.format(num_groups)][clusterizer_type]['capture']['openmoc rel. err.']
-        msg += '& {:1.2E} '.format(np.nanmean(np.ravel(bias)))
+        bias = np.nanmean(np.ravel(bias))
+        msg += '& {:1.2E} '.format(bias)
         f.close()
     msg += '\\\\\n'
 msg += '\\\\\n'
 print(msg)
+
+# Plot fission rate error heat maps
+for clusterizer_type in clusterizer_types:
+    for num_groups in groups:
+        f = h5py.File('{}-groups-{}.h5'.format(num_groups, clusterizer_type))
+        bias = f['{}-groups'.format(num_groups)][clusterizer_type]['fission']
+
+        # Plot a colormap of the fission rate percent rel. err.
+        fig = plt.figure()
+        cmap = plt.get_cmap('jet')
+        cmap.set_bad(alpha=0.0)
+        plt.imshow(
+            bias['openmoc rel. err.'][-1, ...], interpolation='none', cmap=cmap)
+#            vmin=min_fiss, vmax=max_fiss, cmap=cmap)
+        plt.title('OpenMOC Rel. Err. [%]', fontsize=12)
+        cbar = plt.colorbar()
+        cbar.ax.ticklabel_format(fontsize=20)
+        plt.grid(False)
+        plt.axis('off')
+        filename = 'plots/{}-fiss-err-{}.png'.format(clusterizer_type, num_groups)
+        plt.savefig(filename, bbox_inches='tight')
+        plt.close(fig)
+
+        f.close()
+
+# Plot U-238 capture rate error heat maps
+for clusterizer_type in clusterizer_types:
+    for num_groups in groups:
+        f = h5py.File('{}-groups-{}.h5'.format(num_groups, clusterizer_type))
+        bias = f['{}-groups'.format(num_groups)][clusterizer_type]['capture']
+
+        # Plot a colormap of the fission rate percent rel. err.
+        fig = plt.figure()
+        cmap = plt.get_cmap('jet')
+        cmap.set_bad(alpha=0.0)
+        plt.imshow(
+            bias['openmoc rel. err.'][-1, ...], interpolation='none', cmap=cmap)
+#            vmin=min_capt, vmax=max_capt, cmap=cmap)
+        plt.title('OpenMOC Rel. Err. [%]', fontsize=12)
+        cbar = plt.colorbar()
+        cbar.ax.ticklabel_format(fontsize=20)
+        plt.grid(False)
+        plt.axis('off')
+        filename = 'plots/{}-capt-err-{}.png'.format(clusterizer_type, num_groups)
+        plt.savefig(filename, bbox_inches='tight')
+        plt.close(fig)
+
+        f.close()
