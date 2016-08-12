@@ -231,36 +231,39 @@
   \small
   \label{table:chap8-openmoc-capt-rates}
   \vspace{6pt}
-  \begin{tabular}{l l S[table-format=4.1] S[table-format=4.1]}
+  \begin{tabular}{l l S[table-format=6.1] S[table-format=6.1] S[table-format=6.1]}
   \toprule
-  {\cellcolor{lightgray} \bf Benchmark} &
-  {\cellcolor{lightgray} \bf \ac{MGXS} Scheme} &
-  \multicolumn{1}{S[table-format=6.1]}{\cellcolor{lightgray} \textbf{Max Error [\%]}} &
-  \multicolumn{1}{S[table-format=6.1]}{\cellcolor{lightgray} \textbf{Mean Error [\%]}} \\
+  \multirow{-2}{*}{\cellcolor{lightgray} \bf Benchmark} &
+  \multirow{-2}{*}{\cellcolor{lightgray} \bf \ac{MGXS} Scheme} &
+  \multicolumn{3}{S[table-format=6.1]}{\cellcolor{lightgray} \textbf{Max Error [\%]}} \\
+  & & {\cellcolor{lightgray} \bf 2-Group} &
+  {\cellcolor{lightgray} \bf 8-Group} &
+  {\cellcolor{lightgray} \bf 70-Group} \\
+%  \multicolumn{1}{S[table-format=6.1]}{\cellcolor{lightgray} \textbf{Mean Error [\%]}} \\
   \midrule
-  \multirow{3}{*}{1.6\% Enr. Assembly (no \ac{BP}s)} & Infinite & 987 & 987 \\
-  & Null & & \\
-  & Degenerate & & \\
+  \multirow{3}{*}{\parbox{2.5cm}{1.6\% Assm.}} & Infinite & 987 & 987 & \\
+  & Null & & & \\
+  & Degenerate & & & \\
   \midrule
-  \multirow{3}{*}{3.1\% Enr. Assembly (no \ac{BP}s)} & Infinite & 344 & 344 \\
-  & Null & & \\
-  & Degenerate & & \\
+  \multirow{3}{*}{\parbox{2.5cm}{3.1\% Assm.}} & Infinite & 344 & 344 & \\
+  & Null & & & \\
+  & Degenerate & & & \\
   \midrule
-  \multirow{3}{*}{3.1\% Enr. Assembly (20 \ac{BP}s)} & Infinite & 530 & 580 \\
-  & Null & & \\
-  & Degenerate & & \\
+  \multirow{3}{*}{\parbox{2cm}{3.1\% Assm. w/ 20 BPs}} & Infinite & 530 & 580 & \\
+  & Null & & & \\
+  & Degenerate & & & \\
   \midrule
-  \multirow{3}{*}{2$\times$2 Colorset} & Infinite & 196 & 196 \\
-  & Null & & \\
-  & Degenerate & & \\
+  \multirow{3}{*}{\parbox{2.5cm}{2$\times$2 Colorset}} & Infinite & 196 & 196 & \\
+  & Null & & & \\
+  & Degenerate & & & \\
   \midrule
-  \multirow{3}{*}{2$\times$2 Colorset w/ Reflector} & Infinite & 462 & 462 \\
-  & Null & & \\
-  & Degenerate & & \\
+  \multirow{3}{*}{\parbox{2.3cm}{2$\times$2 Colorset w/ Reflector}} & Infinite & 462 & 462 & \\
+  & Null & & & \\
+  & Degenerate & & & \\
   \midrule
-  \multirow{3}{*}{\ac{BEAVRS} Full Core} & Infinite & 497 & 497 \\
-  & Null & & \\
-  & Degenerate & & \\
+  \multirow{3}{*}{\parbox{2cm}{\ac{BEAVRS} Full Core}} & Infinite & 497 & 497 & \\
+  & Null & & & \\
+  & Degenerate & & & \\
   \bottomrule
 \end{tabular}
 \end{table}
