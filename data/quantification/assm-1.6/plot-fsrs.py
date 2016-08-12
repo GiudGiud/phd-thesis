@@ -4,7 +4,7 @@ import openmoc
 import openmoc.plotter
 from openmoc.opencg_compatible import get_openmoc_geometry
 from infermc.energy_groups import group_structures
-from discretize import discretize_geometry
+from discretize import discretize_geometry_standalone
 
 
 openmoc.log.set_log_level('NORMAL')
@@ -31,7 +31,7 @@ openmoc.materialize.load_openmc_mgxs_lib(mat_mgxs_lib, openmoc_geometry)
 openmoc.materialize.load_openmc_mgxs_lib(cell_mgxs_lib, openmoc_geometry)
 
 # FIXME: Rev your engines for a little discretization....
-discretize_geometry(mat_mgxs_lib, openmoc_geometry)
+discretize_geometry_standalone(mat_mgxs_lib, openmoc_geometry)
 
 # Initialize CMFD
 cmfd = openmoc.Cmfd()

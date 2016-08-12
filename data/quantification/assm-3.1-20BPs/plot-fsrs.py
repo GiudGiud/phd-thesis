@@ -31,7 +31,7 @@ openmoc.materialize.load_openmc_mgxs_lib(mat_mgxs_lib, openmoc_geometry)
 openmoc.materialize.load_openmc_mgxs_lib(cell_mgxs_lib, openmoc_geometry)
 
 # FIXME: Rev your engines for a little discretization....
-discretize_geometry(mat_mgxs_lib, openmoc_geometry)
+discretize_geometry_standalone(mat_mgxs_lib, openmoc_geometry)
 
 # Initialize CMFD
 cmfd = openmoc.Cmfd()
