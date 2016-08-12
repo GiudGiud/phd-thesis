@@ -5,7 +5,8 @@ import openmc.mgxs
 from infermc.energy_groups import group_structures
 
 # Load the summary file
-sp = openmc.StatePoint(glob.glob('statepoint.*.h5')[-1])
+statepoints = sorted(glob.glob('statepoint.*.h5'))
+sp = openmc.StatePoint(statepoints[-1])
 
 # Initialize a fine (70-) group "material" MGXS Library for OpenMOC
 mgxs_lib = openmc.mgxs.Library(sp.summary.openmc_geometry, by_nuclide=True)

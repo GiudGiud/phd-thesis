@@ -24,4 +24,5 @@ export MV2_ENABLE_AFFINITY
 #PBS -k eo
 OMP_NUM_THREADS=12
 export OMP_NUM_THREADS
+#mpirun -ppn 2 -map-by socket $HOME/openmc/build/bin/openmc
 mpirun -ppn 2 -bind-to socket -map-by socket $HOME/openmc/build/bin/openmc
