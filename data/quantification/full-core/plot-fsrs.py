@@ -41,11 +41,18 @@ discretize_geometry(mat_mgxs_lib, openmoc_geometry)
 #openmoc_geometry.setCmfd(cmfd)
 
 # Generate tracks
-track_generator = openmoc.TrackGenerator(openmoc_geometry, 32, 0.1)
-track_generator.setZCoord(205.0)
-track_generator.setNumThreads(opts.num_omp_threads)
-track_generator.generateTracks()
+#track_generator = openmoc.TrackGenerator(openmoc_geometry, 32, 0.1)
+#track_generator.setZCoord(205.0)
+#track_generator.setNumThreads(opts.num_omp_threads)
+#track_generator.generateTracks()
 
 # Plot all FSRs in the geometry
-openmoc.plotter.plot_flat_source_regions(openmoc_geometry, gridsize=1000, library='pil')
-openmoc.plotter.plot_cmfd_cells(openmoc_geometry, gridsize=1000, library='pil')
+openmoc.plotter.plot_cells(
+    openmoc_geometry, zcoord=205., gridsize=1000,
+    xlim=(0,40), ylim=(0,40),library='pil')
+openmoc.plotter.plot_cells(
+    openmoc_geometry, zcoord=205., gridsize=1000,
+    xlim=(100,150), ylim=(100,150), library='pil')
+openmoc.plotter.plot_materials(openmoc_geometry, zcoord=205., gridsize=1000, library='pil')
+#openmoc.plotter.plot_flat_source_regions(openmoc_geometry, gridsize=1000, library='pil')
+#openmoc.plotter.plot_cmfd_cells(openmoc_geometry, gridsize=1000, library='pil')
