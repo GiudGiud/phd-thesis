@@ -104,39 +104,46 @@
 
 \begin{table}[h!]
   \centering
-  \caption[OpenMOC eigenvalue bias for heterogeneous benchmarks]{OpenMOC eigenvalue bias $\Delta\rho$ for heterogeneous benchmarks with infinite, null and degenerate spatial homogenization schemes.}
+  \caption[OpenMOC eigenvalue bias for heterogeneous benchmarks]{OpenMOC eigenvalue bias $\Delta\rho$ for heterogeneous benchmarks with varying spatial homogenization schemes and energy group structures.}
   \small
   \label{table:chap8-openmoc-eigenvalues}
   \vspace{6pt}
-  \begin{tabular}{l l S[table-format=6.1]}
+  \begin{tabular}{l l S[table-format=6.0] S[table-format=6.0] S[table-format=6.0]}
   \toprule
-  {\cellcolor{lightgray} \bf Benchmark} &
-  {\cellcolor{lightgray} \bf \ac{MGXS} Scheme} &
-  \multicolumn{1}{S[table-format=6.1]}{\cellcolor{lightgray}{$\bm{\Delta\rho}$}} \\
+%  {\cellcolor{lightgray} \bf Benchmark} &
+%  {\cellcolor{lightgray} \bf \ac{MGXS} Scheme} &
+%  \multicolumn{1}{S[table-format=6.1]}{\cellcolor{lightgray}{$\bm{\Delta\rho}$}} \\
+  \rowcolor{lightgray}
+  & & \multicolumn{3}{S[table-format=6.1]}{\cellcolor{lightgray} {$\bm{\Delta\rho}$ \textbf{[pcm]}}} \\
+  \multirow{-2}{*}{\cellcolor{lightgray} \bf Benchmark} &
+  \multirow{-2}{*}{\cellcolor{lightgray} \bf \ac{MGXS} Scheme} &
+  {\cellcolor{lightgray} \bf 2-Group} &
+  {\cellcolor{lightgray} \bf 8-Group} &
+  {\cellcolor{lightgray} \bf 70-Group} \\
   \midrule
-  \multirow{3}{*}{1.6\% Enr. Assembly (no \ac{BP}s)} & Infinite & 987 \\
-  & Null & \\
-  & Degenerate & \\
+  \multirow{3}{*}{\parbox{2.5cm}{1.6\% Assm.}} & Infinite & 987 & 987 & \\
+  & Null & & & \\
+  & Degenerate & & & \\
   \midrule
-  \multirow{3}{*}{3.1\% Enr. Assembly (no \ac{BP}s)} & Infinite & 344 \\
-  & Null & \\
-  & Degenerate & \\
+  \multirow{3}{*}{\parbox{2.5cm}{3.1\% Assm.}} & Infinite & 344 & 344 & \\
+  & Null & & & \\
+  & Degenerate & & & \\
   \midrule
-  \multirow{3}{*}{3.1\% Enr. Assembly (20 \ac{BP}s)} & Infinite & 530 \\
-  & Null & \\
-  & Degenerate & \\
+  \multirow{3}{*}{\parbox{2cm}{3.1\% Assm. w/ 20 BPs}} & Infinite & 530 & 580 & \\
+  & Null & & & \\
+  & Degenerate & & & \\
   \midrule
-  \multirow{3}{*}{2$\times$2 Colorset} & Infinite & 196 \\
-  & Null & \\
-  & Degenerate & \\
+  \multirow{3}{*}{\parbox{2.5cm}{2$\times$2 Colorset}} & Infinite & 196 & 196 & \\
+  & Null & & & \\
+  & Degenerate & & & \\
   \midrule
-  \multirow{3}{*}{2$\times$2 Colorset w/ Reflector} & Infinite & 462\\
-  & Null & \\
-  & Degenerate & \\
+  \multirow{3}{*}{\parbox{2.3cm}{2$\times$2 Colorset w/ Reflector}} & Infinite & 462 & 462 & \\
+  & Null & & & \\
+  & Degenerate & & & \\
   \midrule
-  \multirow{3}{*}{\ac{BEAVRS} Full Core} & Infinite & 497 \\
-  & Null & \\
-  & Degenerate & \\
+  \multirow{3}{*}{\parbox{2cm}{\ac{BEAVRS} Full Core}} & Infinite & 497 & 497 & \\
+  & Null & & & \\
+  & Degenerate & & & \\
   \bottomrule
 \end{tabular}
 \end{table}
@@ -160,40 +167,86 @@
 
 \begin{table}[h!]
   \centering
-  \caption[OpenMOC fission rate errors for heterogeneous benchmarks]{OpenMOC fission rate errors for heterogeneous benchmarks with infinite, null and degenerate spatial homogenization schemes.}
+  \caption[Maximum OpenMOC fission rate errors]{Maximum OpenMOC fission rate errors for varying spatial homogenization schemes and energy groups structures.}
   \small
-  \label{table:chap8-openmoc-fiss-rates}
+  \label{table:chap8-openmoc-max-fiss-rates}
   \vspace{6pt}
-  \begin{tabular}{l l S[table-format=4.1] S[table-format=4.1]}
+  \begin{tabular}{l l S[table-format=6.1] S[table-format=6.1] S[table-format=6.1]}
   \toprule
-  {\cellcolor{lightgray} \bf Benchmark} &
-  {\cellcolor{lightgray} \bf \ac{MGXS} Scheme} &
-  \multicolumn{1}{S[table-format=6.1]}{\cellcolor{lightgray} \textbf{Max Error [\%]}} &
-  \multicolumn{1}{S[table-format=6.1]}{\cellcolor{lightgray} \textbf{Mean Error [\%]}} \\
+  \rowcolor{lightgray}
+  & & \multicolumn{3}{S[table-format=6.1]}{\cellcolor{lightgray} \textbf{Max Error [\%]}} \\
+  \multirow{-2}{*}{\cellcolor{lightgray} \bf Benchmark} &
+  \multirow{-2}{*}{\cellcolor{lightgray} \bf \ac{MGXS} Scheme} &
+  {\cellcolor{lightgray} \bf 2-Group} &
+  {\cellcolor{lightgray} \bf 8-Group} &
+  {\cellcolor{lightgray} \bf 70-Group} \\
   \midrule
-  \multirow{3}{*}{1.6\% Enr. Assembly (no \ac{BP}s)} & Infinite & 987 & 987 \\
-  & Null & & \\
-  & Degenerate & & \\
+  \multirow{3}{*}{\parbox{2.5cm}{1.6\% Assm.}} & Infinite & 987 & 987 & \\
+  & Null & & & \\
+  & Degenerate & & & \\
   \midrule
-  \multirow{3}{*}{3.1\% Enr. Assembly (no \ac{BP}s)} & Infinite & 344 & 344 \\
-  & Null & & \\
-  & Degenerate & & \\
+  \multirow{3}{*}{\parbox{2.5cm}{3.1\% Assm.}} & Infinite & 344 & 344 & \\
+  & Null & & & \\
+  & Degenerate & & & \\
   \midrule
-  \multirow{3}{*}{3.1\% Enr. Assembly (20 \ac{BP}s)} & Infinite & 530 & 580 \\
-  & Null & & \\
-  & Degenerate & & \\
+  \multirow{3}{*}{\parbox{2cm}{3.1\% Assm. w/ 20 BPs}} & Infinite & 530 & 580 & \\
+  & Null & & & \\
+  & Degenerate & & & \\
   \midrule
-  \multirow{3}{*}{2$\times$2 Colorset} & Infinite & 196 & 196 \\
-  & Null & & \\
-  & Degenerate & & \\
+  \multirow{3}{*}{\parbox{2.5cm}{2$\times$2 Colorset}} & Infinite & 196 & 196 & \\
+  & Null & & & \\
+  & Degenerate & & & \\
   \midrule
-  \multirow{3}{*}{2$\times$2 Colorset w/ Reflector} & Infinite & 462 & 462 \\
-  & Null & & \\
-  & Degenerate & & \\
+  \multirow{3}{*}{\parbox{2.3cm}{2$\times$2 Colorset w/ Reflector}} & Infinite & 462 & 462 & \\
+  & Null & & & \\
+  & Degenerate & & & \\
   \midrule
-  \multirow{3}{*}{\ac{BEAVRS} Full Core} & Infinite & 497 & 497 \\
-  & Null & & \\
-  & Degenerate & & \\
+  \multirow{3}{*}{\parbox{2cm}{\ac{BEAVRS} Full Core}} & Infinite & 497 & 497 & \\
+  & Null & & & \\
+  & Degenerate & & & \\
+  \bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[h!]
+  \centering
+  \caption[Mean OpenMOC fission rate errors]{Mean OpenMOC fission rate errors for varying spatial homogenization schemes and energy groups structures.}
+  \small
+  \label{table:chap8-openmoc-mean-fiss-rates}
+  \vspace{6pt}
+  \begin{tabular}{l l S[table-format=6.1] S[table-format=6.1] S[table-format=6.1]}
+  \toprule
+  \rowcolor{lightgray}
+  & & \multicolumn{3}{S[table-format=6.1]}{\cellcolor{lightgray} \textbf{Max Error [\%]}} \\
+  \multirow{-2}{*}{\cellcolor{lightgray} \bf Benchmark} &
+  \multirow{-2}{*}{\cellcolor{lightgray} \bf \ac{MGXS} Scheme} &
+  {\cellcolor{lightgray} \bf 2-Group} &
+  {\cellcolor{lightgray} \bf 8-Group} &
+  {\cellcolor{lightgray} \bf 70-Group} \\
+  \midrule
+  \multirow{3}{*}{\parbox{2.5cm}{1.6\% Assm.}} & Infinite & 987 & 987 & \\
+  & Null & & & \\
+  & Degenerate & & & \\
+  \midrule
+  \multirow{3}{*}{\parbox{2.5cm}{3.1\% Assm.}} & Infinite & 344 & 344 & \\
+  & Null & & & \\
+  & Degenerate & & & \\
+  \midrule
+  \multirow{3}{*}{\parbox{2cm}{3.1\% Assm. w/ 20 BPs}} & Infinite & 530 & 580 & \\
+  & Null & & & \\
+  & Degenerate & & & \\
+  \midrule
+  \multirow{3}{*}{\parbox{2.5cm}{2$\times$2 Colorset}} & Infinite & 196 & 196 & \\
+  & Null & & & \\
+  & Degenerate & & & \\
+  \midrule
+  \multirow{3}{*}{\parbox{2.3cm}{2$\times$2 Colorset w/ Reflector}} & Infinite & 462 & 462 & \\
+  & Null & & & \\
+  & Degenerate & & & \\
+  \midrule
+  \multirow{3}{*}{\parbox{2cm}{\ac{BEAVRS} Full Core}} & Infinite & 497 & 497 & \\
+  & Null & & & \\
+  & Degenerate & & & \\
   \bottomrule
 \end{tabular}
 \end{table}
@@ -227,19 +280,19 @@
 
 \begin{table}[h!]
   \centering
-  \caption[OpenMOC U-238 capture rate errors for heterogeneous benchmarks]{OpenMOC U-238 capture rate errors for heterogeneous benchmarks with infinite, null and degenerate spatial homogenization schemes.}
+  \caption[Maximum OpenMOC U-238 capture rate errors]{Maximum OpenMOC U-238 capture rate errors for varying spatial homogenization schemes and energy groups structures.}
   \small
-  \label{table:chap8-openmoc-capt-rates}
+  \label{table:chap8-openmoc-max-capt-rates}
   \vspace{6pt}
   \begin{tabular}{l l S[table-format=6.1] S[table-format=6.1] S[table-format=6.1]}
   \toprule
+  \rowcolor{lightgray}
+  & & \multicolumn{3}{S[table-format=6.1]}{\cellcolor{lightgray} \textbf{Max Error [\%]}} \\
   \multirow{-2}{*}{\cellcolor{lightgray} \bf Benchmark} &
   \multirow{-2}{*}{\cellcolor{lightgray} \bf \ac{MGXS} Scheme} &
-  \multicolumn{3}{S[table-format=6.1]}{\cellcolor{lightgray} \textbf{Max Error [\%]}} \\
-  & & {\cellcolor{lightgray} \bf 2-Group} &
+  {\cellcolor{lightgray} \bf 2-Group} &
   {\cellcolor{lightgray} \bf 8-Group} &
   {\cellcolor{lightgray} \bf 70-Group} \\
-%  \multicolumn{1}{S[table-format=6.1]}{\cellcolor{lightgray} \textbf{Mean Error [\%]}} \\
   \midrule
   \multirow{3}{*}{\parbox{2.5cm}{1.6\% Assm.}} & Infinite & 987 & 987 & \\
   & Null & & & \\
@@ -267,6 +320,50 @@
   \bottomrule
 \end{tabular}
 \end{table}
+
+\begin{table}[h!]
+  \centering
+  \caption[Mean OpenMOC U-238 capture rate errors]{Mean OpenMOC U-238 capture rate errors for varying spatial homogenization schemes and energy groups structures.}
+  \small
+  \label{table:chap8-openmoc-mean-capt-rates}
+  \vspace{6pt}
+  \begin{tabular}{l l S[table-format=6.1] S[table-format=6.1] S[table-format=6.1]}
+  \toprule
+  \rowcolor{lightgray}
+  & & \multicolumn{3}{S[table-format=6.1]}{\cellcolor{lightgray} \textbf{Mean Error [\%]}} \\
+  \multirow{-2}{*}{\cellcolor{lightgray} \bf Benchmark} &
+  \multirow{-2}{*}{\cellcolor{lightgray} \bf \ac{MGXS} Scheme} &
+  {\cellcolor{lightgray} \bf 2-Group} &
+  {\cellcolor{lightgray} \bf 8-Group} &
+  {\cellcolor{lightgray} \bf 70-Group} \\
+  \midrule
+  \multirow{3}{*}{\parbox{2.5cm}{1.6\% Assm.}} & Infinite & 987 & 987 & \\
+  & Null & & & \\
+  & Degenerate & & & \\
+  \midrule
+  \multirow{3}{*}{\parbox{2.5cm}{3.1\% Assm.}} & Infinite & 344 & 344 & \\
+  & Null & & & \\
+  & Degenerate & & & \\
+  \midrule
+  \multirow{3}{*}{\parbox{2cm}{3.1\% Assm. w/ 20 BPs}} & Infinite & 530 & 580 & \\
+  & Null & & & \\
+  & Degenerate & & & \\
+  \midrule
+  \multirow{3}{*}{\parbox{2.5cm}{2$\times$2 Colorset}} & Infinite & 196 & 196 & \\
+  & Null & & & \\
+  & Degenerate & & & \\
+  \midrule
+  \multirow{3}{*}{\parbox{2.3cm}{2$\times$2 Colorset w/ Reflector}} & Infinite & 462 & 462 & \\
+  & Null & & & \\
+  & Degenerate & & & \\
+  \midrule
+  \multirow{3}{*}{\parbox{2cm}{\ac{BEAVRS} Full Core}} & Infinite & 497 & 497 & \\
+  & Null & & & \\
+  & Degenerate & & & \\
+  \bottomrule
+\end{tabular}
+\end{table}
+
 
 \begin{itemize}[noitemsep]
   \item convergence rates for max/mean rel. err. for each benchmark
