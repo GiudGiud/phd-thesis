@@ -50,7 +50,8 @@ for clusterizer_type in clusterizer_types:
 
     # Turn off MGXS plotting for speed
     batchwise.clusterizer.plot_mgxs = False
-    batchwise.plot_materials = False
+    batchwise.plot_materials = True
+    batchwise.plot_cells = True
 
     # Execute OpenMOC simulations over all batches of clustered MGXS libraries
     for num_groups in groups:
@@ -154,7 +155,6 @@ for clusterizer_type in clusterizer_types:
         plt.imshow(
             bias['openmoc rel. err.'][-1, ...], interpolation='none', cmap=cmap)
 #            vmin=min_fiss, vmax=max_fiss, cmap=cmap)
-        plt.title('OpenMOC Rel. Err. [%]', fontsize=12)
         cbar = plt.colorbar()
         cbar.ax.ticklabel_format(fontsize=20)
         plt.grid(False)
@@ -178,7 +178,6 @@ for clusterizer_type in clusterizer_types:
         plt.imshow(
             bias['openmoc rel. err.'][-1, ...], interpolation='none', cmap=cmap)
 #            vmin=min_capt, vmax=max_capt, cmap=cmap)
-        plt.title('OpenMOC Rel. Err. [%]', fontsize=12)
         cbar = plt.colorbar()
         cbar.ax.ticklabel_format(fontsize=20)
         plt.grid(False)

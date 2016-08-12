@@ -16,12 +16,13 @@ import matplotlib.pyplot as plt
 # in your ~/.matplotlib/matplotlibrc
 plt.ioff()
 
+import openmoc
 import infermc
 from discretize import discretize_geometry
 
 
 statepoints = glob.glob('statepoint.*.h5')
-groups = [2, 8, 70]
+groups = [2] #, 8, 70]
 clusterizer_types = ['infinite', 'null', 'degenerate']
 
 # Loop over 'infinite', 'null' and 'degenerate' clusterizers
@@ -56,6 +57,8 @@ for clusterizer_type in clusterizer_types:
 
     # Turn off MGXS plotting for speed
     batchwise.clusterizer.plot_mgxs = False
+    batchwise.plot_materials = True
+    batchwise.plot_cells = True
 
     # Execute OpenMOC simulations over all batches of clustered MGXS libraries
     for num_groups in groups:
@@ -159,7 +162,6 @@ for clusterizer_type in clusterizer_types:
         plt.imshow(
             bias['openmoc rel. err.'][-1, ...], interpolation='none', cmap=cmap)
 #            vmin=min_fiss, vmax=max_fiss, cmap=cmap)
-        plt.title('OpenMOC Rel. Err. [%]', fontsize=12)
         cbar = plt.colorbar()
         cbar.ax.ticklabel_format(fontsize=20)
         plt.grid(False)
@@ -183,7 +185,6 @@ for clusterizer_type in clusterizer_types:
         plt.imshow(
             bias['openmoc rel. err.'][-1, ...], interpolation='none', cmap=cmap)
 #            vmin=min_capt, vmax=max_capt, cmap=cmap)
-        plt.title('OpenMOC Rel. Err. [%]', fontsize=12)
         cbar = plt.colorbar()
         cbar.ax.ticklabel_format(fontsize=20)
         plt.grid(False)
