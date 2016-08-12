@@ -41,10 +41,10 @@ discretize_geometry(mat_mgxs_lib, openmoc_geometry)
 #openmoc_geometry.setCmfd(cmfd)
 
 # Generate tracks
-#track_generator = openmoc.TrackGenerator(openmoc_geometry, 32, 0.1)
-#track_generator.setZCoord(205.0)
-#track_generator.setNumThreads(opts.num_omp_threads)
-#track_generator.generateTracks()
+track_generator = openmoc.TrackGenerator(openmoc_geometry, 32, 0.1)
+track_generator.setZCoord(205.0)
+track_generator.setNumThreads(opts.num_omp_threads)
+track_generator.generateTracks()
 
 # Plot all FSRs in the geometry
 openmoc.plotter.plot_cells(

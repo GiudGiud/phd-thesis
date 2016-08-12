@@ -1,5 +1,6 @@
 import glob
 import types
+import os
 
 import h5py
 import numpy as np
@@ -136,6 +137,9 @@ for clusterizer_type in clusterizer_types:
     msg += '\\\\\n'
 msg += '\\\\\n'
 print(msg)
+
+if not os.path.exists('plots'):
+    os.makedirs('plots')
 
 # Plot fission rate error heat maps
 for clusterizer_type in clusterizer_types:
