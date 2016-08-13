@@ -34,6 +34,7 @@ for clusterizer_type in clusterizer_types:
     batchwise.cell_mgxslib_filename = 'distribcell'
     batchwise.mat_mgxslib_filename = 'material'
     batchwise.zcoord = 205.
+    batchwise.with_cmfd = False
     batchwise.log_level = 'INFO'
 
     # Initialize assembly-wise CMFD mesh
