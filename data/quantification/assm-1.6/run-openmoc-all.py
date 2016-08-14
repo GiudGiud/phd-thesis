@@ -7,7 +7,7 @@ from discretize import discretize_geometry
 
 statepoints = glob.glob('statepoint.*.h5')
 groups = [2, 8, 70]
-clusterizer_types = ['infinite', 'null', 'degenerate']
+clusterizer_types = ['degenerate', 'infinite', 'null', 'degenerate']
 
 # Loop over 'infinite', 'null' and 'degenerate' clusterizers
 for clusterizer_type in clusterizer_types:

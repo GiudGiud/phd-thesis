@@ -14,8 +14,23 @@ cd $PBS_O_WORKDIR
 PATH=$PBS_O_PATH
 
 ###############################################################################
-# Run OpenMC
+# Run OpenMOC
+# This accepts command line arguments through the "flags" shell variable.
+# For example, the following will run batchwise with Local Neighbor Symmetry
+# clustering and 128 azimuthal angles and 0.05 cm track spacing for each
+# OpenMOC simulation:
+#
+# > qsub batchwise-3.1-20BPs.pbs -v flags="-clusterizer=lns -a 128 -s 0.05"
+#
 ###############################################################################
 
+MV2_ENABLE_AFFINITY=0
+export MV2_ENABLE_AFFINITY
+
 #PBS -k eo
-python run-openmoc.py -a 128 -s 0.1 -t 24
+OMP_NUM_THREADS=24
+export OMP_NUM_THREADS
+
+#PBS -k eo
+echo ${flags}
+python batchwise.py ${flags}
