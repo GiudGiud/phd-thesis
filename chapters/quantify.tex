@@ -188,9 +188,9 @@
 & Null & -139 & -162 & -243 \\
 & Degenerate & -186 & -164 & -239 \\
   \midrule
-  \multirow{3}{*}{\parbox{2.5cm}{2$\times$2 Colorset}} & Infinite & 196 & 196 & \\
-  & Null & & & \\
-  & Degenerate & & & \\
+\multirow{3}{*}{\parbox{2.5cm}{2$\times$2 Colorset}} & Infinite & 355 & -149 & -298 \\
+& Null & 10 & -146 & -266 \\
+& Degenerate & -17 & -146 & -263 \\
   \midrule
   \multirow{3}{*}{\parbox{2.3cm}{2$\times$2 Colorset w/ Reflector}} & Infinite & 462 & 462 & \\
   & Null & & & \\
@@ -236,9 +236,9 @@
 & Null & 2.20E+00 & 6.17E-01 & 8.50E-01 \\
 & Degenerate & 1.77E+00 & 7.22E-01 & 7.97E-01 \\
   \midrule
-  \multirow{3}{*}{\parbox{2.5cm}{2$\times$2 Colorset}} & Infinite & 196 & 196 & \\
-  & Null & & & \\
-  & Degenerate & & & \\
+  \multirow{3}{*}{\parbox{2.5cm}{2$\times$2 Colorset}} & Infinite & 6.92E+00 & 2.23E+00 & 1.29E+00 \\
+& Null & 7.04E+00 & 2.22E+00 & 1.30E+00 \\
+& Degenerate & 4.39E+00 & 2.04E+00 & 1.25E+00 \\
   \midrule
   \multirow{3}{*}{\parbox{2.3cm}{2$\times$2 Colorset w/ Reflector}} & Infinite & 462 & 462 & \\
   & Null & & & \\
@@ -280,9 +280,9 @@
 & Null & 9.15E-02 & 1.73E-02 & 6.99E-03 \\
 & Degenerate & 2.02E-02 & 1.11E-02 & 6.69E-03 \\
   \midrule
-  \multirow{3}{*}{\parbox{2.5cm}{2$\times$2 Colorset}} & Infinite & 196 & 196 & \\
-  & Null & & & \\
-  & Degenerate & & & \\
+  \multirow{3}{*}{\parbox{2.5cm}{2$\times$2 Colorset}} & Infinite & 4.02E-02 & -1.17E-02 & -4.78E-03 \\
+& Null & 3.44E-02 & -1.30E-02 & -4.81E-03 \\
+& Degenerate & -1.05E-01 & -2.78E-02 & -5.62E-03 \\
   \midrule
   \multirow{3}{*}{\parbox{2.3cm}{2$\times$2 Colorset w/ Reflector}} & Infinite & 462 & 462 & \\
   & Null & & & \\
@@ -355,6 +355,66 @@
 \label{fig:chap8-assm-1.6-fiss-err}
 \end{figure}
 
+\begin{figure}[h!]
+\centering
+\begin{subfigure}{.33\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{figures/quantification/2x2/infinite-fiss-err-2}
+  \caption{}
+  \label{fig:chap8-2x2-inf-fiss-2}
+\end{subfigure}%
+\begin{subfigure}{.33\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{figures/quantification/2x2/infinite-fiss-err-8}
+  \caption{}
+  \label{fig:chap8-2x2-inf-fiss-8}
+\end{subfigure}%
+\begin{subfigure}{.33\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{figures/quantification/2x2/infinite-fiss-err-70}
+  \caption{}
+  \label{fig:chap8-2x2-inf-fiss-70}
+\end{subfigure}
+\begin{subfigure}{.33\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{figures/quantification/2x2/null-fiss-err-2}
+  \caption{}
+  \label{fig:chap8-2x2-null-fiss-2}
+\end{subfigure}%
+\begin{subfigure}{.33\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{figures/quantification/2x2/null-fiss-err-8}
+  \caption{}
+  \label{fig:chap8-2x2-null-fiss-8}
+\end{subfigure}%
+\begin{subfigure}{.33\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{figures/quantification/2x2/null-fiss-err-70}
+  \caption{}
+  \label{fig:chap8-2x2-null-fiss-70}
+\end{subfigure}
+\begin{subfigure}{.33\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{figures/quantification/2x2/degenerate-fiss-err-2}
+  \caption{}
+  \label{fig:chap8-2x2-degenerate-fiss-2}
+\end{subfigure}%
+\begin{subfigure}{.33\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{figures/quantification/2x2/degenerate-fiss-err-8}
+  \caption{}
+  \label{fig:chap8-2x2-degenerate-fiss-8}
+\end{subfigure}%
+\begin{subfigure}{.33\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{figures/quantification/2x2/degenerate-fiss-err-70}
+  \caption{}
+  \label{fig:chap8-2x2-degenerate-fiss-70}
+\end{subfigure}
+\caption[Fission rate errors for a 2$\times$2 colorset]{1.6\% enriched fuel pin (a), control rod guide tube (b), instrument tube (c) and burnable poison (d).}
+\label{fig:chap8-2x2-fiss-err}
+\end{figure}
+
 \begin{itemize}[noitemsep]
   \item convergence rates for max/mean rel. err. for each benchmark
   \begin{itemize}[noitemsep]
@@ -401,9 +461,9 @@
 & Null & 2.98E+00 & 1.17E+00 & 1.06E+00 \\
 & Degenerate & 1.37E+00 & 9.21E-01 & 7.48E-01 \\
   \midrule
-  \multirow{3}{*}{\parbox{2.5cm}{2$\times$2 Colorset}} & Infinite & 196 & 196 & \\
-  & Null & & & \\
-  & Degenerate & & & \\
+  \multirow{3}{*}{\parbox{2.5cm}{2$\times$2 Colorset}} & Infinite & 4.12E+00 & 2.16E+00 & 1.75E+00 \\
+& Null & 4.20E+00 & 2.17E+00 & 1.75E+00 \\
+& Degenerate & 2.61E+00 & 1.29E+00 & 1.30E+00 \\
   \midrule
   \multirow{3}{*}{\parbox{2.3cm}{2$\times$2 Colorset w/ Reflector}} & Infinite & 462 & 462 & \\
   & Null & & & \\
@@ -445,9 +505,9 @@
 & Null & -6.88E-03 & -2.78E-03 & -1.20E-03 \\
 & Degenerate & -2.46E-03 & -2.03E-03 & 1.20E-03 \\
   \midrule
-  \multirow{3}{*}{\parbox{2.5cm}{2$\times$2 Colorset}} & Infinite & 196 & 196 & \\
-  & Null & & & \\
-  & Degenerate & & & \\
+  \multirow{3}{*}{\parbox{2.5cm}{2$\times$2 Colorset}} & Infinite & 1.20E-01 & 1.73E-03 & 1.16E-02 \\
+& Null & 1.28E-01 & 1.87E-03 & 1.16E-02 \\
+& Degenerate & 9.84E-02 & -8.66E-03 & 6.95E-03 \\
   \midrule
   \multirow{3}{*}{\parbox{2.3cm}{2$\times$2 Colorset w/ Reflector}} & Infinite & 462 & 462 & \\
   & Null & & & \\
@@ -520,6 +580,68 @@
 \caption[U-238 capture rate errors for a 1.6\& enriched assembly]{1.6\% enriched fuel pin (a), control rod guide tube (b), instrument tube (c) and burnable poison (d).}
 \label{fig:chap8-assm-1.6-capt-err}
 \end{figure}
+
+
+\begin{figure}[h!]
+\centering
+\begin{subfigure}{.33\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{figures/quantification/2x2/infinite-capt-err-2}
+  \caption{}
+  \label{fig:chap8-2x2-inf-capt-2}
+\end{subfigure}%
+\begin{subfigure}{.33\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{figures/quantification/2x2/infinite-capt-err-8}
+  \caption{}
+  \label{fig:chap8-2x2-inf-capt-8}
+\end{subfigure}%
+\begin{subfigure}{.33\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{figures/quantification/2x2/infinite-capt-err-70}
+  \caption{}
+  \label{fig:chap8-2x2-inf-capt-70}
+\end{subfigure}
+\begin{subfigure}{.33\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{figures/quantification/2x2/null-capt-err-2}
+  \caption{}
+  \label{fig:chap8-2x2-null-capt-2}
+\end{subfigure}%
+\begin{subfigure}{.33\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{figures/quantification/2x2/null-capt-err-8}
+  \caption{}
+  \label{fig:chap8-2x2-null-capt-8}
+\end{subfigure}%
+\begin{subfigure}{.33\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{figures/quantification/2x2/null-capt-err-70}
+  \caption{}
+  \label{fig:chap8-2x2-null-capt-70}
+\end{subfigure}
+\begin{subfigure}{.33\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{figures/quantification/2x2/degenerate-capt-err-2}
+  \caption{}
+  \label{fig:chap8-2x2-degenerate-capt-2}
+\end{subfigure}%
+\begin{subfigure}{.33\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{figures/quantification/2x2/degenerate-capt-err-8}
+  \caption{}
+  \label{fig:chap8-2x2-degenerate-capt-8}
+\end{subfigure}%
+\begin{subfigure}{.33\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{figures/quantification/2x2/degenerate-capt-err-70}
+  \caption{}
+  \label{fig:chap8-2x2-degenerate-capt-70}
+\end{subfigure}
+\caption[U-238 capture rate errors for a 2$\times$2 colorset]{1.6\% enriched fuel pin (a), control rod guide tube (b), instrument tube (c) and burnable poison (d).}
+\label{fig:chap8-2x2-capt-err}
+\end{figure}
+
 
 \begin{itemize}[noitemsep]
   \item convergence rates for max/mean rel. err. for each benchmark
