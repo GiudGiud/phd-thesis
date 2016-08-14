@@ -144,28 +144,38 @@ print(msg)
 if not os.path.exists('plots'):
     os.makedirs('plots')
 
+fig, axes = plt.subplots(nrows=len(clusterizer_types), ncols=len(groups))
+cmap = plt.get_cmap('jet')
+cmap.set_bad(alpha=0.0)
+
 # Plot fission rate error heat maps
-for clusterizer_type in clusterizer_types:
-    for num_groups in groups:
+for i, clusterizer_type in enumerate(clusterizer_types):
+    for j, num_groups in enumerate(groups):
         f = h5py.File('{}-groups-{}.h5'.format(num_groups, clusterizer_type))
         bias = f['{}-groups'.format(num_groups)][clusterizer_type]['fission']
 
         # Plot a colormap of the fission rate percent rel. err.
-        fig = plt.figure()
-        cmap = plt.get_cmap('jet')
-        cmap.set_bad(alpha=0.0)
-        plt.imshow(
-            bias['openmoc rel. err.'][-1, ...], interpolation='none', cmap=cmap)
-#            vmin=min_fiss, vmax=max_fiss, cmap=cmap)
-        cbar = plt.colorbar()
-        cbar.ax.ticklabel_format(fontsize=20)
-        plt.grid(False)
-        plt.axis('off')
-        filename = 'plots/{}-fiss-err-{}.png'.format(clusterizer_type, num_groups)
-        plt.savefig(filename, bbox_inches='tight')
-        plt.close(fig)
+#        fig = plt.figure()
+        im = axes[i*len(groups)+j].imshow(
+            bias['openmoc rel. err.'][-1, ...], interpolation='none',
+            vmin=min_fiss, vmax=max_fiss, cmap=cmap)
+#        cbar = plt.colorbar()
+#        cbar.ax.ticklabel_format(fontsize=20)
+        axes[i*len(groups)+j].grid(False)
+        axes[i * len(groups) + j].axis('off')
+#        plt.grid(False)
+#        plt.axis('off')
+#        filename = 'plots/{}-fiss-err-{}.png'.format(clusterizer_type, num_groups)
+#        plt.savefig(filename, bbox_inches='tight')
+#        plt.close(fig)
 
         f.close()
+
+# FIXME
+fig.subplots_adjust(right=0.8)
+cbar_ax = fig.add_axes([0.85, 0.15, 0.05, 0.7])
+fig.colorbar(im, cax=cbar_ax)
+plt.savefig('plots/fiss-err.png', bbox_inches='tight')
 
 # Plot U-238 capture rate error heat maps
 for clusterizer_type in clusterizer_types:
@@ -178,8 +188,8 @@ for clusterizer_type in clusterizer_types:
         cmap = plt.get_cmap('jet')
         cmap.set_bad(alpha=0.0)
         plt.imshow(
-            bias['openmoc rel. err.'][-1, ...], interpolation='none', cmap=cmap)
-#            vmin=min_capt, vmax=max_capt, cmap=cmap)
+            bias['openmoc rel. err.'][-1, ...], interpolation='none',
+            vmin=min_capt, vmax=max_capt, cmap=cmap)
         cbar = plt.colorbar()
         cbar.ax.ticklabel_format(fontsize=20)
         plt.grid(False)
