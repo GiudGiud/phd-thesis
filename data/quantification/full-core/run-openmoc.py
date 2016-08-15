@@ -16,7 +16,7 @@ batchwise.sp_start = len(statepoints) - 1
 batchwise.cell_mgxslib_filename = 'distribcell'
 batchwise.mat_mgxslib_filename = 'material'
 batchwise.zcoord = 205.
-batchwise.with_cmfd = False
+batchwise.with_cmfd = True
 batchwise.log_level = 'INFO'
 
 # Initialize assembly-wise CMFD mesh

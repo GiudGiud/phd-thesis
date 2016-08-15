@@ -26,8 +26,8 @@ directories = {'assm-1.6': '1.6\\% Assm',
                'reflector': '2\\times2 Colorset w/ Reflector',
                'full-core': 'BEAVRS Full Core'}
 
-groups = [2, 2, 2] # 8, 70]
-clusterizer_types = ['infinite', 'null', 'null'] #, 'degenerate']
+groups = [2, 8, 70]
+clusterizer_types = ['infinite', 'null', 'degenerate']
 
 print('EIGENVALUE BIAS')
 msg = '\multirow{3}{*}{\parbox{2.5cm}{%s}} ' % directories[benchmark]
@@ -116,7 +116,7 @@ for i, clusterizer_type in enumerate(clusterizer_types):
         im = plt.imshow(
             bias['openmoc rel. err.'][-1, ...], interpolation='none', cmap=cmap)
         title = '{} ({}-group)'.format(clusterizer_type.capitalize(), num_groups)
-        plt.title(title, fontsize=16)
+        plt.title(title, fontsize=12)
         plt.grid(False)
         plt.axis('off')
 
@@ -148,7 +148,7 @@ for i, clusterizer_type in enumerate(clusterizer_types):
         im = plt.imshow(
             bias['openmoc rel. err.'][-1, ...], interpolation='none', cmap=cmap)
         title = '{} ({}-groups)'.format(clusterizer_type.capitalize(), num_groups)
-        plt.title(title, fontsize=16)
+        plt.title(title, fontsize=12)
         plt.grid(False)
         plt.axis('off')
 
