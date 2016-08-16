@@ -41,6 +41,9 @@ for clusterizer_type in clusterizer_types:
     msg += '\\\\\n'
 print(msg)
 
+min_fiss = +1.e3
+max_fiss = -1.e3
+
 print('MAX FISSION RATE ERROR')
 msg = '\multirow{3}{*}{\parbox{2.5cm}{%s}} ' % directories[benchmark]
 for clusterizer_type in clusterizer_types:
@@ -48,7 +51,11 @@ for clusterizer_type in clusterizer_types:
     for num_groups in groups:
         f = h5py.File('{}-groups-{}.h5'.format(num_groups, clusterizer_type))
         bias = f['{}-groups'.format(num_groups)][clusterizer_type]['fission']['openmoc rel. err.']
-        bias = np.nanmax(np.ravel(bias))
+        max_fiss = max(np.nanmax(np.ravel(bias)), max_fiss)
+        min_fiss = min(np.nanmin(np.ravel(bias)), min_fiss)
+        min_bias = np.nanmin(np.ravel(bias))
+        max_bias = np.nanmax(np.ravel(bias))
+        bias = max_bias if abs(max_bias) > abs(min_bias) else min_bias
         msg += '& {:1.2E} '.format(bias)
         f.close()
     msg += '\\\\\n'
@@ -67,6 +74,9 @@ for clusterizer_type in clusterizer_types:
     msg += '\\\\\n'
 print(msg)
 
+min_capt = +1.e3
+max_capt = -1.e3
+
 print('MAX CAPTURE RATE ERROR')
 msg = '\multirow{3}{*}{\parbox{2.5cm}{%s}} ' % directories[benchmark]
 for clusterizer_type in clusterizer_types:
@@ -74,7 +84,11 @@ for clusterizer_type in clusterizer_types:
     for num_groups in groups:
         f = h5py.File('{}-groups-{}.h5'.format(num_groups, clusterizer_type))
         bias = f['{}-groups'.format(num_groups)][clusterizer_type]['capture']['openmoc rel. err.']
-        bias = np.nanmax(np.ravel(bias))
+        max_capt = max(np.nanmax(np.ravel(bias)), max_fiss)
+        min_capt = min(np.nanmin(np.ravel(bias)), min_fiss)
+        min_bias = np.nanmin(np.ravel(bias))
+        max_bias = np.nanmax(np.ravel(bias))
+        bias = max_bias if abs(max_bias) > abs(min_bias) else min_bias
         msg += '& {:1.2E} '.format(bias)
         f.close()
     msg += '\\\\\n'
@@ -114,11 +128,20 @@ for i, clusterizer_type in enumerate(clusterizer_types):
         subplot_ctr = '{}{}{}'.format(len(clusterizer_types),len(groups),i*len(groups)+j+1)
         plt.subplot(int(subplot_ctr))
         im = plt.imshow(
-            bias['openmoc rel. err.'][-1, ...], interpolation='none', cmap=cmap)
-        title = '{} ({}-group)'.format(clusterizer_type.capitalize(), num_groups)
-        plt.title(title, fontsize=12)
+            bias['openmoc rel. err.'][-1, ...], interpolation='none',
+            cmap=cmap, vmin=min_fiss, vmax=max_fiss)
+
+        if num_groups == groups[0]:
+            plt.ylabel(clusterizer_type.capitalize(), fontsize=16)
+        if clusterizer_type == clusterizer_types[0]:
+            plt.title('{} Groups'.format(num_groups), fontsize=16)
         plt.grid(False)
-        plt.axis('off')
+        plt.gca().xaxis.set_major_locator(plt.NullLocator())
+        plt.gca().yaxis.set_major_locator(plt.NullLocator())
+        plt.gca().spines['top'].set_visible(False)
+        plt.gca().spines['right'].set_visible(False)
+        plt.gca().spines['bottom'].set_visible(False)
+        plt.gca().spines['left'].set_visible(False)
 
         f.close()
 
@@ -127,7 +150,7 @@ fig.subplots_adjust(bottom=0.1, hspace=0.15, wspace=0)
 cbar_ax = fig.add_axes([0.165, 0.07, 0.7, 0.02])
 cbar = fig.colorbar(im, cax=cbar_ax, orientation='horizontal')
 for t in cbar.ax.get_xticklabels():
-    t.set_fontsize(16)
+    t.set_fontsize(12)
 
 plt.savefig('plots/fiss-err.png', bbox_inches='tight', pad_inches=0)
 
@@ -146,11 +169,20 @@ for i, clusterizer_type in enumerate(clusterizer_types):
         subplot_ctr = '{}{}{}'.format(len(clusterizer_types),len(groups),i*len(groups)+j+1)
         plt.subplot(int(subplot_ctr))
         im = plt.imshow(
-            bias['openmoc rel. err.'][-1, ...], interpolation='none', cmap=cmap)
-        title = '{} ({}-groups)'.format(clusterizer_type.capitalize(), num_groups)
-        plt.title(title, fontsize=12)
+            bias['openmoc rel. err.'][-1, ...], interpolation='none',
+            cmap=cmap, vmin=min_fiss, vmax=max_fiss)
+
+        if num_groups == groups[0]:
+            plt.ylabel(clusterizer_type.capitalize(), fontsize=16)
+        if clusterizer_type == clusterizer_types[0]:
+            plt.title('{} Groups'.format(num_groups), fontsize=16)
         plt.grid(False)
-        plt.axis('off')
+        plt.gca().xaxis.set_major_locator(plt.NullLocator())
+        plt.gca().yaxis.set_major_locator(plt.NullLocator())
+        plt.gca().spines['top'].set_visible(False)
+        plt.gca().spines['right'].set_visible(False)
+        plt.gca().spines['bottom'].set_visible(False)
+        plt.gca().spines['left'].set_visible(False)
 
         f.close()
 
@@ -159,6 +191,6 @@ fig.subplots_adjust(bottom=0.1, hspace=0.15, wspace=0)
 cbar_ax = fig.add_axes([0.165, 0.07, 0.7, 0.02])
 fig.colorbar(im, cax=cbar_ax, orientation='horizontal')
 for t in cbar.ax.get_xticklabels():
-    t.set_fontsize(16)
+    t.set_fontsize(12)
 
 plt.savefig('plots/capt-err.png', bbox_inches='tight', pad_inches=0)
