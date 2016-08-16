@@ -32,6 +32,9 @@ first paragraph: intro paragraph?
   -collapsed to 2-group and 8-group \ac{MGXS} in downstream data processing
 -Fig.~\ref{fig:chap8-homogenization-schemes} illustrates the materials and \ac{MGXS}
   -infinite, null and degenerate schemes
+-Tab.~\ref{table:chap8-num-materials} - number of unique materials / \ac{MGXS} for each geometry with each scheme
+
+second paragraph: outline
 -outline following sections
 
 -1e6 particles / batch, 1000 batches to tally \ac{MGXS} for each benchmark
@@ -40,6 +43,37 @@ first paragraph: intro paragraph?
 -need summary box for this section
 -rethink names for null and degenerate???
 -re-color the water, fuel, etc.!!!
+
+\begin{table}[h!]
+  \centering
+  \caption[Number of multi-group material for each spatial homogenization scheme]{Number of multi-group materials modeled with unique \ac{MGXS} in each heterogeneous benchmark for each spatial homogenization scheme.}
+  \small
+  \label{table:chap8-num-materials}
+  \vspace{6pt}
+  \begin{tabular}{l r r r}
+  \toprule
+  \rowcolor{lightgray}
+  & \multicolumn{3}{c}{\cellcolor{lightgray} \bf \# Materials} \\
+  \multirow{-2}{*}{\cellcolor{lightgray} \bf Benchmark} &
+  {\cellcolor{lightgray} \bf Infinite} &
+  {\cellcolor{lightgray} \bf Null} &
+  {\cellcolor{lightgray} \bf Degenerate} \\
+  \midrule
+1.6\% Assm & 8 & 8 & 271 \\
+  \midrule
+3.1\% Assm & 8 & 8 & 271 \\
+  \midrule
+3.1\% Assm w/ 20 BPs & 10 & 10 & 273  \\
+  \midrule
+2$\times$2 Colorset & 11 & 11 & 1065 \\
+  \midrule
+2$\times$2 Colorset w/ Reflector & 11 & 11 & 1065 \\
+  \midrule
+\ac{BEAVRS} Full Core & 15 & 15 & 50,000+ \\
+  \bottomrule
+\end{tabular}
+\end{table}
+
 
 \begin{figure}[h!]
 \centering
@@ -115,6 +149,10 @@ first paragraph: degenerate scheme
 \section{\ac{MOC} Runtime Parameters}
 \label{sec:chap8-moc-params}
 
+first paragraph: overview/outline
+-used double precision installation of OpenMOC on INL's Falcon machine
+-outline each subsection
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Angular Discretization}
 \label{subsec:chap8-angular-discretizations}
@@ -122,10 +160,25 @@ first paragraph: degenerate scheme
 first paragraph: 
 -0.05 cm track spacing
 -128 azimuthal angles
+-size of each track file in GB??
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{\ac{FSR} Discretization}
 \label{subsec:chap8-fsr-discretizations}
+
+first paragraph: pin cells
+-Fig.~\ref{fig:chap8-pin-cell-fsrs}
+-8 sectors everywhere, including the grid spacers
+-num rings in fuel, moderator, guide tubes, instr tubes, BPs
+-note that rings in moderator are equal spacing???
+-equal volume rings in fuel, guide tube, BP
+
+second paragraph: fuel assemblies, colorsets, full core
+-Fig.~\ref{fig:chap8-pin-cell-fsrs}
+-same discretization of each pin cell
+-composed in each of the assembly, colorsets benchmarks introduced in preceding chapter
+
+
 
 \begin{figure}[h!]
 \centering
@@ -244,7 +297,7 @@ first paragraph:
 & Null & 16 & -79 & -183 \\
 & Degenerate & -11 & -80 & -181 \\
   \midrule
-\multirow{3}{*}{\parbox{2.5cm}{2$\times$2 Colorset w/ Reflector}} & Infinite & 2947 & 390 & -125 \\
+\multirow{3}{*}{\parbox{2.5cm}{2$\times$2 Colorset w/ Reflector}} & Infinite & 2951 & 389 & -127 \\
 & Null & 1477 & 474 & -109 \\
 & Degenerate & 1394 & 482 & -98 \\
   \midrule
@@ -276,25 +329,25 @@ first paragraph:
   {\cellcolor{lightgray} \bf 8-Group} &
   {\cellcolor{lightgray} \bf 70-Group} \\
   \midrule
-\multirow{3}{*}{\parbox{2.5cm}{1.6\% Assm}} & Infinite & 2.76E+00 & 7.56E-01 & 4.71E-01 \\
-& Null & 2.76E+00 & 7.46E-01 & 4.71E-01 \\
-& Degenerate & 1.87E+00 & 7.83E-01 & 3.90E-01 \\
+\multirow{3}{*}{\parbox{2.5cm}{1.6\% Assm}} & Infinite & 2.76E+00 & 7.56E--01 & 4.71E--01 \\
+& Null & 2.76E+00 & 7.46E--01 & 4.71E--01 \\
+& Degenerate & 1.87E+00 & 7.83E--01 & 3.90E--01 \\
   \midrule
-\multirow{3}{*}{\parbox{2.5cm}{3.1\% Assm}} & Infinite & 3.10E+00 & 8.29E-01 & 5.41E-01 \\
-& Null & 3.09E+00 & 8.17E-01 & 5.42E-01 \\
-& Degenerate & 2.09E+00 & 8.68E-01 & 4.72E-01 \\
+\multirow{3}{*}{\parbox{2.5cm}{3.1\% Assm}} & Infinite & 3.10E+00 & 8.29E--01 & 5.41E--01 \\
+& Null & 3.09E+00 & 8.17E--01 & 5.42E--01 \\
+& Degenerate & 2.09E+00 & 8.68E--01 & 4.72E--01 \\
   \midrule
-\multirow{3}{*}{\parbox{2.5cm}{3.1\% Assm w/ 20 BPs}} & Infinite & -3.96E+00 & -9.41E-01 & 4.42E-01 \\
-& Null & -4.02E+00 & -9.31E-01 & 4.44E-01 \\
-& Degenerate & -1.88E+00 & -7.57E-01 & 3.70E-01 \\
+\multirow{3}{*}{\parbox{2.5cm}{3.1\% Assm w/ 20 BPs}} & Infinite & -3.96E+00 & -9.41E--01 & 4.42E--01 \\
+& Null & -4.02E+00 & -9.31E--01 & 4.44E--01 \\
+& Degenerate & -1.88E+00 & -7.57E--01 & 3.70E--01 \\
   \midrule
-\multirow{3}{*}{\parbox{2.5cm}{2$\times$2 Colorset}} & Infinite & 6.45E+00 & -1.52E+00 & 4.99E-01 \\
-& Null & 6.17E+00 & -1.54E+00 & 5.34E-01 \\
-& Degenerate & -4.62E+00 & -1.44E+00 & 5.00E-01 \\
+\multirow{3}{*}{\parbox{2.5cm}{2$\times$2 Colorset}} & Infinite & 6.45E+00 & -1.52E+00 & 4.99E--01 \\
+& Null & 6.17E+00 & -1.54E+00 & 5.34E--01 \\
+& Degenerate & -4.62E+00 & -1.44E+00 & 5.00E--01 \\
   \midrule
-\multirow{3}{*}{\parbox{2.5cm}{2$\times$2 Colorset w/ Reflector}} & Infinite & 1.25E+01 & 3.18E+00 & 8.40E-01 \\
-& Null & -1.33E+01 & 2.96E+00 & 8.66E-01 \\
-& Degenerate & 1.01E+01 & 2.59E+00 & 7.97E-01 \\
+\multirow{3}{*}{\parbox{2.5cm}{2$\times$2 Colorset w/ Reflector}} & Infinite & 1.24E+01 & 3.18E+00 & 8.37E--01 \\
+& Null & -1.33E+01 & 2.96E+00 & 8.66E--01 \\
+& Degenerate & 1.01E+01 & 2.59E+00 & 7.97E--01 \\
   \midrule
   \multirow{3}{*}{\parbox{2cm}{\ac{BEAVRS} Full Core}} & Infinite & 497 & 497 & \\
   & Null & & & \\
@@ -319,25 +372,25 @@ first paragraph:
   {\cellcolor{lightgray} \bf 8-Group} &
   {\cellcolor{lightgray} \bf 70-Group} \\
   \midrule
-\multirow{3}{*}{\parbox{2.5cm}{1.6\% Assm}} & Infinite & 5.09E-02 & 1.22E-02 & 7.47E-05 \\
-& Null & 5.07E-02 & 1.20E-02 & 5.91E-05 \\
-& Degenerate & 3.02E-02 & 1.09E-02 & 2.02E-03 \\
+\multirow{3}{*}{\parbox{2.5cm}{1.6\% Assm}} & Infinite & 5.09E--02 & 1.22E--02 & 7.47E--05 \\
+& Null & 5.07E--02 & 1.20E--02 & 5.91E--05 \\
+& Degenerate & 3.02E--02 & 1.09E--02 & 2.02E--03 \\
   \midrule
-\multirow{3}{*}{\parbox{2.5cm}{3.1\% Assm}} & Infinite & 7.88E-02 & 1.89E-02 & 9.45E-04 \\
-& Null & 7.81E-02 & 1.85E-02 & 8.94E-04 \\
-& Degenerate & 4.50E-02 & 1.69E-02 & 3.36E-03 \\
+\multirow{3}{*}{\parbox{2.5cm}{3.1\% Assm}} & Infinite & 7.88E--02 & 1.89E--02 & 9.45E--04 \\
+& Null & 7.81E--02 & 1.85E--02 & 8.94E--04 \\
+& Degenerate & 4.50E--02 & 1.69E--02 & 3.36E--03 \\
   \midrule
-\multirow{3}{*}{\parbox{2.5cm}{3.1\% Assm w/ 20 BPs}} & Infinite & 9.02E-02 & 1.55E-02 & 4.54E-03 \\
-& Null & 8.83E-02 & 1.47E-02 & 4.45E-03 \\
-& Degenerate & 1.71E-02 & 8.44E-03 & 4.15E-03 \\
+\multirow{3}{*}{\parbox{2.5cm}{3.1\% Assm w/ 20 BPs}} & Infinite & 9.02E--02 & 1.55E--02 & 4.54E--03 \\
+& Null & 8.83E--02 & 1.47E--02 & 4.45E--03 \\
+& Degenerate & 1.71E--02 & 8.44E--03 & 4.15E--03 \\
   \midrule
-\multirow{3}{*}{\parbox{2.5cm}{2$\times$2 Colorset}} & Infinite & 1.13E-02 & -1.11E-02 & -1.73E-03 \\
-& Null & 3.55E-02 & -1.11E-02 & -2.88E-03 \\
-& Degenerate & -1.03E-01 & -2.59E-02 & -3.73E-03 \\
+\multirow{3}{*}{\parbox{2.5cm}{2$\times$2 Colorset}} & Infinite & 1.13E--02 & -1.11E--02 & -1.73E--03 \\
+& Null & 3.55E--02 & -1.11E--02 & -2.88E--03 \\
+& Degenerate & -1.03E--01 & -2.59E--02 & -3.73E--03 \\
   \midrule
-\multirow{3}{*}{\parbox{2.5cm}{2$\times$2 Colorset w/ Reflector}} & Infinite & 1.22E+00 & 3.20E-01 & 3.82E-02 \\
-& Null & 8.54E-01 & 2.42E-01 & 4.28E-02 \\
-& Degenerate & 1.08E+00 & 2.07E-01 & 1.16E-02 \\
+\multirow{3}{*}{\parbox{2.5cm}{2$\times$2 Colorset w/ Reflector}} & Infinite & 1.22E+00 & 3.19E--01 & 3.66E--02 \\
+& Null & 8.54E--01 & 2.42E--01 & 4.28E--02 \\
+& Degenerate & 1.08E+00 & 2.07E--01 & 1.16E--02 \\
   \midrule
   \multirow{3}{*}{\parbox{2cm}{\ac{BEAVRS} Full Core}} & Infinite & 497 & 497 & \\
   & Null & & & \\
@@ -416,23 +469,23 @@ first paragraph:
   \midrule
 \multirow{3}{*}{\parbox{2.5cm}{1.6\% Assm}} & Infinite & -2.86E+00 & -1.61E+00 & -1.17E+00 \\
 & Null & -2.86E+00 & -1.60E+00 & -1.17E+00 \\
-& Degenerate & 9.07E-01 & 3.88E-01 & 2.99E-01 \\
+& Degenerate & 9.07E--01 & 3.88E--01 & 2.99E--01 \\
   \midrule
 \multirow{3}{*}{\parbox{2.5cm}{3.1\% Assm}} & Infinite & -3.25E+00 & -1.91E+00 & -1.44E+00 \\
 & Null & -3.24E+00 & -1.90E+00 & -1.44E+00 \\
-& Degenerate & 8.14E-01 & 4.75E-01 & 3.39E-01 \\
+& Degenerate & 8.14E--01 & 4.75E--01 & 3.39E--01 \\
   \midrule
 \multirow{3}{*}{\parbox{2.5cm}{3.1\% Assm w/ 20 BPs}} & Infinite & 3.00E+00 & -1.30E+00 & -1.04E+00 \\
 & Null & 3.02E+00 & -1.29E+00 & -1.04E+00 \\
-& Degenerate & 1.36E+00 & 6.19E-01 & 2.96E-01 \\
+& Degenerate & 1.36E+00 & 6.19E--01 & 2.96E--01 \\
   \midrule
 \multirow{3}{*}{\parbox{2.5cm}{2$\times$2 Colorset}} & Infinite & -4.92E+00 & -2.09E+00 & -1.65E+00 \\
 & Null & -4.52E+00 & -1.90E+00 & -1.59E+00 \\
-& Degenerate & -2.12E+00 & -7.11E-01 & 4.75E-01 \\
+& Degenerate & -2.12E+00 & -7.11E--01 & 4.75E--01 \\
   \midrule
-\multirow{3}{*}{\parbox{2.5cm}{2$\times$2 Colorset w/ Reflector}} & Infinite & 1.26E+01 & 5.09E+00 & -2.24E+00 \\
+\multirow{3}{*}{\parbox{2.5cm}{2$\times$2 Colorset w/ Reflector}} & Infinite & 1.27E+01 & 4.84E+00 & -2.42E+00 \\
 & Null & 1.17E+01 & 3.74E+00 & -2.47E+00 \\
-& Degenerate & 9.67E+00 & 3.28E+00 & -7.08E-01 \\
+& Degenerate & 9.67E+00 & 3.28E+00 & -7.08E--01 \\
   \midrule
   \multirow{3}{*}{\parbox{2cm}{\ac{BEAVRS} Full Core}} & Infinite & 497 & 497 & \\
   & Null & & & \\
@@ -457,25 +510,25 @@ first paragraph:
   {\cellcolor{lightgray} \bf 8-Group} &
   {\cellcolor{lightgray} \bf 70-Group} \\
   \midrule
-\multirow{3}{*}{\parbox{2.5cm}{1.6\% Assm}} & Infinite & 3.41E-02 & 1.65E-02 & 1.17E-02 \\
-& Null & 3.41E-02 & 1.65E-02 & 1.17E-02 \\
-& Degenerate & 8.19E-03 & 5.01E-04 & 4.37E-04 \\
+\multirow{3}{*}{\parbox{2.5cm}{1.6\% Assm}} & Infinite & 3.41E--02 & 1.65E--02 & 1.17E--02 \\
+& Null & 3.41E--02 & 1.65E--02 & 1.17E--02 \\
+& Degenerate & 8.19E--03 & 5.01E--04 & 4.37E--04 \\
   \midrule
-\multirow{3}{*}{\parbox{2.5cm}{3.1\% Assm}} & Infinite & 3.95E-02 & 1.98E-02 & 1.46E-02 \\
-& Null & 3.94E-02 & 1.98E-02 & 1.46E-02 \\
-& Degenerate & 8.15E-03 & -2.87E-04 & 4.77E-04 \\
+\multirow{3}{*}{\parbox{2.5cm}{3.1\% Assm}} & Infinite & 3.95E--02 & 1.98E--02 & 1.46E--02 \\
+& Null & 3.94E--02 & 1.98E--02 & 1.46E--02 \\
+& Degenerate & 8.15E--03 & -2.87E--04 & 4.77E--04 \\
   \midrule
-\multirow{3}{*}{\parbox{2.5cm}{3.1\% Assm w/ 20 BPs}} & Infinite & -8.62E-03 & -3.80E-03 & -2.13E-03 \\
-& Null & -7.91E-03 & -3.75E-03 & -2.17E-03 \\
-& Degenerate & -3.50E-03 & -3.00E-03 & 2.29E-04 \\
+\multirow{3}{*}{\parbox{2.5cm}{3.1\% Assm w/ 20 BPs}} & Infinite & -8.62E--03 & -3.80E--03 & -2.13E--03 \\
+& Null & -7.91E--03 & -3.75E--03 & -2.17E--03 \\
+& Degenerate & -3.50E--03 & -3.00E--03 & 2.29E--04 \\
   \midrule
-\multirow{3}{*}{\parbox{2.5cm}{2$\times$2 Colorset}} & Infinite & 1.68E-01 & 1.71E-02 & 1.67E-02 \\
-& Null & 1.28E-01 & 1.71E-03 & 1.13E-02 \\
-& Degenerate & 9.91E-02 & -8.60E-03 & 6.92E-03 \\
+\multirow{3}{*}{\parbox{2.5cm}{2$\times$2 Colorset}} & Infinite & 1.68E--01 & 1.71E--02 & 1.67E--02 \\
+& Null & 1.28E--01 & 1.71E--03 & 1.13E--02 \\
+& Degenerate & 9.91E--02 & -8.60E--03 & 6.92E--03 \\
   \midrule
-\multirow{3}{*}{\parbox{2.5cm}{2$\times$2 Colorset w/ Reflector}} & Infinite & 1.90E+00 & 4.41E-01 & -2.59E-02 \\
-& Null & 1.54E+00 & 3.60E-01 & -2.21E-02 \\
-& Degenerate & 1.78E+00 & 4.42E-01 & 9.53E-03 \\
+\multirow{3}{*}{\parbox{2.5cm}{2$\times$2 Colorset w/ Reflector}} & Infinite & 1.90E+00 & 4.42E--01 & -2.59E--02 \\
+& Null & 1.54E+00 & 3.60E--01 & -2.21E--02 \\
+& Degenerate & 1.78E+00 & 4.42E--01 & 9.53E--03 \\
   \midrule
   \multirow{3}{*}{\parbox{2cm}{\ac{BEAVRS} Full Core}} & Infinite & 497 & 497 & \\
   & Null & & & \\
