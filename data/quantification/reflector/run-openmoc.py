@@ -14,6 +14,7 @@ batchwise.cell_mgxslib_filename = 'distribcell'
 batchwise.mat_mgxslib_filename = 'material'
 batchwise.zcoord = 205.
 batchwise.log_level = 'INFO'
+batchwise.with_cmfd = True
 
 # Attach a method to discretize this geometry to the Batchwise instance
 batchwise._discretize_geometry = types.MethodType(discretize_geometry, batchwise)

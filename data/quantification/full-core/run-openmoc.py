@@ -16,13 +16,13 @@ batchwise.sp_start = len(statepoints) - 1
 batchwise.cell_mgxslib_filename = 'distribcell'
 batchwise.mat_mgxslib_filename = 'material'
 batchwise.zcoord = 205.
-batchwise.with_cmfd = True
 batchwise.log_level = 'INFO'
 
 # Initialize assembly-wise CMFD mesh
 batchwise.cmfd = openmoc.Cmfd()
 batchwise.cmfd.setLatticeStructure(23, 23)
 batchwise.cmfd.setKNearest(3)
+batchwise.with_cmfd = True
 
 # Attach a method to discretize this geometry to the Batchwise instance
 batchwise._discretize_geometry = types.MethodType(discretize_geometry, batchwise)
@@ -41,8 +41,8 @@ elif batchwise.options.clusterizer_type == 'degenerate':
 
 # Turn off MGXS plotting for speed
 batchwise.clusterizer.plot_mgxs = False
-batchwise.plot_materials = False
-batchwise.plot_cells = False
+batchwise.plot_materials = True
+batchwise.plot_cells = True
 
 # Execute OpenMOC simulations over all batches of clustered MGXS libraries
 batchwise.execute()
