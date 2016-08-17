@@ -69,7 +69,7 @@ second paragraph: outline
   \midrule
 2$\times$2 Colorset w/ Reflector & 11 & 11 & 1065 \\
   \midrule
-\ac{BEAVRS} Full Core & 15 & 15 & 50,000+ \\
+\ac{BEAVRS} Full Core & 15 & 15 & 50,961 \\
   \bottomrule
 \end{tabular}
 \end{table}
@@ -79,29 +79,41 @@ second paragraph: outline
 \centering
 \begin{subfigure}{.5\textwidth}
   \centering
-  \includegraphics[width=0.9\linewidth]{figures/quantification/homogenization/assm-16-null-materials}
+  \includegraphics[width=0.8\linewidth]{figures/quantification/homogenization/assm-16-null-materials}
   \caption{}
   \label{fig:chap8-assm-16-null-materials}
 \end{subfigure}%
 \begin{subfigure}{.5\textwidth}
   \centering
-  \includegraphics[width=0.9\linewidth]{figures/quantification/homogenization/assm-16-degenerate-materials}
+  \includegraphics[width=0.8\linewidth]{figures/quantification/homogenization/assm-16-degenerate-materials}
   \caption{}
   \label{fig:chap8-assm-16-degenerate-materials}
 \end{subfigure}
 \begin{subfigure}{.5\textwidth}
   \centering
-  \includegraphics[width=0.9\linewidth]{figures/quantification/homogenization/2x2-null-materials}
+  \includegraphics[width=0.8\linewidth]{figures/quantification/homogenization/2x2-null-materials}
   \caption{}
   \label{fig:chap8-2x2-null-materials}
 \end{subfigure}%
 \begin{subfigure}{.5\textwidth}
   \centering
-  \includegraphics[width=0.9\linewidth]{figures/quantification/homogenization/2x2-degenerate-materials}
+  \includegraphics[width=0.8\linewidth]{figures/quantification/homogenization/2x2-degenerate-materials}
   \caption{}
   \label{fig:chap8-2x2-degenerate-materials}
 \end{subfigure}
-\caption[Depiction of infinite, null and degenerate spatial homogenization schemes]{OpenMOC materials for a single fuel assembly and for a 2$\times$ colorset. The materials for the infinite and null schemes are depicted in (a) and (c), and for the degenerate scheme in (b) and (d), respectively. Each uniquely colored material represents a unique set of self-shielded \ac{MGXS}.}
+\begin{subfigure}{.5\textwidth}
+  \centering
+  \includegraphics[width=0.8\linewidth]{figures/quantification/homogenization/full-core-null-materials}
+  \caption{}
+  \label{fig:chap8-full-core-null-materials}
+\end{subfigure}%
+\begin{subfigure}{.5\textwidth}
+  \centering
+  \includegraphics[width=0.8\linewidth]{figures/quantification/homogenization/full-core-degenerate-materials}
+  \caption{}
+  \label{fig:chap8-full-core-degenerate-materials}
+\end{subfigure}
+\caption[Depiction of infinite, null and degenerate spatial homogenization schemes]{OpenMOC materials for a single fuel assembly, a 2$\times$ colorset and the 2D full core \ac{BEAVRS} model. The materials for the infinite and null schemes are depicted in (a), (c) and (e), and for the degenerate scheme in (b), (d) and (f), respectively. Each uniquely colored material represents a unique set of self-shielded \ac{MGXS}.}
 \label{fig:chap8-homogenization-schemes}
 \end{figure}
 
@@ -434,6 +446,13 @@ first paragraph:
 \label{fig:chap8-reflector-fiss-err}
 \end{figure}
 
+\begin{figure}[h!]
+\centering
+\includegraphics[width=\linewidth]{figures/quantification/full-core/fiss-err}
+\caption[Fission rate errors for the 2D full core \ac{BEAVRS} model]{Fission rate errors for the 2D full core \ac{BEAVRS} model.}
+\label{fig:chap8-full-core-fiss-err}
+\end{figure}
+
 \begin{itemize}[noitemsep]
   \item convergence rates for max/mean rel. err. for each benchmark
   \begin{itemize}[noitemsep]
@@ -571,6 +590,13 @@ first paragraph:
 \includegraphics[width=\linewidth]{figures/quantification/reflector/capt-err}
 \caption[U-238 capture rate errors for a 2$\times$2 colorset with a reflector]{U-238 capture rate errors for a 2$\times$2 colorset with a reflector.}
 \label{fig:chap8-reflector-capt-err}
+\end{figure}
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=\linewidth]{figures/quantification/full-core/capt-err}
+\caption[U-238 capture rate errors for the 2D full core \ac{BEAVRS} model]{U-238 capture rate errors for the 2D full core \ac{BEAVRS} model.}
+\label{fig:chap8-full-core-capt-err}
 \end{figure}
 
 
