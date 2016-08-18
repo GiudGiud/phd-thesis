@@ -17,6 +17,19 @@ plt.ioff()
 
 # Enter the directory of the benchmark of interest
 benchmark = str(input('Benchmark: '))
+quarter_symmetric = str(input('Quarter Core Symmetric: '))
+code = str(input('openmc or openmoc: '))
+metric = str(input('mean or rel. err.: '))
+
+if metric == 'rel. err.':
+    hdf5_key = '{} {}'.format(code.lower(), metric.lower())
+else:
+    hdf5_key = code.lower()
+if quarter_symmetric == 'True':
+    quarter_symmetric = True
+else:
+    quarter_symmetric = False
+
 os.chdir(benchmark)
 
 directories = {'assm-1.6': '1.6\\% Assm',
@@ -26,8 +39,8 @@ directories = {'assm-1.6': '1.6\\% Assm',
                'reflector': '2\\times2 Colorset w/ Reflector',
                'full-core': 'BEAVRS Full Core'}
 
-groups = [2, 8, 70]
-clusterizer_types = ['infinite', 'null', 'degenerate']
+groups = [2] #, 8, 70]
+clusterizer_types = ['null'] #['infinite', 'null', 'degenerate']
 
 print('EIGENVALUE BIAS')
 msg = '\multirow{3}{*}{\parbox{2.5cm}{%s}} ' % directories[benchmark]
@@ -50,7 +63,7 @@ for clusterizer_type in clusterizer_types:
     msg += '& {} '.format(clusterizer_type.capitalize())
     for num_groups in groups:
         f = h5py.File('{}-groups-{}.h5'.format(num_groups, clusterizer_type))
-        bias = f['{}-groups'.format(num_groups)][clusterizer_type]['fission']['openmoc rel. err.']
+        bias = f['{}-groups'.format(num_groups)][clusterizer_type]['fission'][hdf5_key]
         max_fiss = max(np.nanmax(np.ravel(bias)), max_fiss)
         min_fiss = min(np.nanmin(np.ravel(bias)), min_fiss)
         min_bias = np.nanmin(np.ravel(bias))
@@ -67,7 +80,7 @@ for clusterizer_type in clusterizer_types:
     msg += '& {} '.format(clusterizer_type.capitalize())
     for num_groups in groups:
         f = h5py.File('{}-groups-{}.h5'.format(num_groups, clusterizer_type))
-        bias = f['{}-groups'.format(num_groups)][clusterizer_type]['fission']['openmoc rel. err.']
+        bias = f['{}-groups'.format(num_groups)][clusterizer_type]['fission'][hdf5_key]
         bias = np.nanmean(np.ravel(bias))
         msg += '& {:1.2E} '.format(bias)
         f.close()
@@ -83,7 +96,7 @@ for clusterizer_type in clusterizer_types:
     msg += '& {} '.format(clusterizer_type.capitalize())
     for num_groups in groups:
         f = h5py.File('{}-groups-{}.h5'.format(num_groups, clusterizer_type))
-        bias = f['{}-groups'.format(num_groups)][clusterizer_type]['capture']['openmoc rel. err.']
+        bias = f['{}-groups'.format(num_groups)][clusterizer_type]['capture'][hdf5_key]
         max_capt = max(np.nanmax(np.ravel(bias)), max_fiss)
         min_capt = min(np.nanmin(np.ravel(bias)), min_fiss)
         min_bias = np.nanmin(np.ravel(bias))
@@ -100,7 +113,7 @@ for clusterizer_type in clusterizer_types:
     msg += '& {} '.format(clusterizer_type.capitalize())
     for num_groups in groups:
         f = h5py.File('{}-groups-{}.h5'.format(num_groups, clusterizer_type))
-        bias = f['{}-groups'.format(num_groups)][clusterizer_type]['capture']['openmoc rel. err.']
+        bias = f['{}-groups'.format(num_groups)][clusterizer_type]['capture'][hdf5_key]
         bias = np.nanmean(np.ravel(bias))
         msg += '& {:1.2E} '.format(bias)
         f.close()
@@ -122,13 +135,26 @@ cmap.set_bad(alpha=0.0)
 for i, clusterizer_type in enumerate(clusterizer_types):
     for j, num_groups in enumerate(groups):
         f = h5py.File('{}-groups-{}.h5'.format(num_groups, clusterizer_type))
-        bias = f['{}-groups'.format(num_groups)][clusterizer_type]['fission']
+        bias = f['{}-groups'.format(num_groups)][clusterizer_type]['fission'][hdf5_key][-1, ...]
+
+        # Extract the array and make it quarter core symmetric
+        if quarter_symmetric:
+            full_bias = np.zeros((2*bias.shape[0]-1, 2*bias.shape[0]-1), dtype=np.float)
+            full_bias[:bias.shape[0], :bias.shape[1]] = bias[::-1,:]    # top left
+            full_bias[bias.shape[0]-1:, :bias.shape[1]] = bias[:,:]       # top right
+            full_bias[:bias.shape[0], bias.shape[1]-1:] = bias[::-1,::-1]     # bottom left
+            full_bias[bias.shape[0]-1:, bias.shape[1]-1:] = bias[:,::-1]     # bottom right
+
+            if metric == 'mean':
+                full_bias[bias.shape[0]-1,:] *= 2.
+                full_bias[:,bias.shape[1]-1] *= 2.
+
+            bias = full_bias
 
         # Plot a colormap of the fission rate percent rel. err.
         subplot_ctr = '{}{}{}'.format(len(clusterizer_types),len(groups),i*len(groups)+j+1)
         plt.subplot(int(subplot_ctr))
-        im = plt.imshow(
-            bias['openmoc rel. err.'][-1, ...], interpolation='none',
+        im = plt.imshow(bias, interpolation='none',
             cmap=cmap, vmin=min_fiss, vmax=max_fiss)
 
         if num_groups == groups[0]:
@@ -163,13 +189,26 @@ fig.set_figwidth(8.5)
 for i, clusterizer_type in enumerate(clusterizer_types):
     for j, num_groups in enumerate(groups):
         f = h5py.File('{}-groups-{}.h5'.format(num_groups, clusterizer_type))
-        bias = f['{}-groups'.format(num_groups)][clusterizer_type]['capture']
+        bias = f['{}-groups'.format(num_groups)][clusterizer_type]['capture'][hdf5_key][-1, ...]
+
+        # Extract the array and make it quarter core symmetric
+        if quarter_symmetric:
+            full_bias = np.zeros((2*bias.shape[0]-1, 2*bias.shape[0]-1), dtype=np.float)
+            full_bias[:bias.shape[0], :bias.shape[1]] = bias[::-1,:]    # top left
+            full_bias[bias.shape[0]-1:, :bias.shape[1]] = bias[:,:]       # top right
+            full_bias[:bias.shape[0], bias.shape[1]-1:] = bias[::-1,::-1]     # bottom left
+            full_bias[bias.shape[0]-1:, bias.shape[1]-1:] = bias[:,::-1]     # bottom right
+
+            if metric == 'mean':
+                full_bias[bias.shape[0]-1,:] *= 2.
+                full_bias[:,bias.shape[1]-1] *= 2.
+
+            bias = full_bias
 
         # Plot a colormap of the fission rate percent rel. err.
         subplot_ctr = '{}{}{}'.format(len(clusterizer_types),len(groups),i*len(groups)+j+1)
         plt.subplot(int(subplot_ctr))
-        im = plt.imshow(
-            bias['openmoc rel. err.'][-1, ...], interpolation='none',
+        im = plt.imshow(bias, interpolation='none',
             cmap=cmap, vmin=min_fiss, vmax=max_fiss)
 
         if num_groups == groups[0]:
