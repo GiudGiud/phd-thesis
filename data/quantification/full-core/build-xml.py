@@ -26,7 +26,7 @@ openmc_geometry.export_to_xml()
 ##################   Exporting to OpenMC settings.xml File  ###################
 
 # Construct uniform initial source distribution over fissionable zones
-lower_left = [-200., -200., full_core.bounds[2]]
+lower_left = [0., 0., full_core.bounds[2]]
 upper_right = [+200., +200., full_core.bounds[5]]
 source = openmc.source.Source(space=openmc.stats.Box(lower_left, upper_right))
 source.space.only_fissionable = True
@@ -75,7 +75,7 @@ for cell in mat_cells:
         fuel_cells.append(cell)
 
 # Initialize a fine (40-) group "distribcell" MGXS Library for OpenMOC
-cell_mgxs_lib = openmc.mgxs.Library(openmc_geometry, by_nuclide=False)
+cell_mgxs_lib = openmc.mgxs.Library(openmc_geometry, by_nuclide=True)
 cell_mgxs_lib.energy_groups = group_structures['CASMO']['40-group']
 cell_mgxs_lib.mgxs_types = ['total', 'fission', 'nu-fission', 'nu-scatter matrix',
                             'chi', 'absorption', 'capture']
@@ -85,7 +85,7 @@ cell_mgxs_lib.correction = None
 cell_mgxs_lib.build_library()
 
 # Initialize a fine (40-) group "material" MGXS Library for OpenMOC
-mat_mgxs_lib = openmc.mgxs.Library(openmc_geometry, by_nuclide=False)
+mat_mgxs_lib = openmc.mgxs.Library(openmc_geometry, by_nuclide=True)
 mat_mgxs_lib.energy_groups = group_structures['CASMO']['40-group']
 mat_mgxs_lib.mgxs_types = ['total', 'fission', 'nu-fission', 'nu-scatter matrix',
                            'chi', 'absorption', 'capture']
@@ -99,8 +99,8 @@ mat_mgxs_lib.build_library()
 # Instantiate a tally Mesh
 mesh = openmc.Mesh(name='assembly mesh')
 mesh.type = 'regular'
-mesh.dimension = [15*17, 15*17, 1]
-mesh.lower_left = [-15*17*1.26492/2., -15*17*1.26492/2., 203.]
+mesh.dimension = [int(15./2.*17), int(15./2.*17), 1]
+mesh.lower_left = [-1.26492/2., -1.26492/2., 203.]
 mesh.width = (1.26492, 1.26492, 10)
 
 # Instantiate tally Filter
