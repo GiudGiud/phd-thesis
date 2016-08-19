@@ -15,27 +15,13 @@ Three different schemes for spatial homogenization of pin-wise \ac{MGXS} are int
 \section{Pin-wise Spatial Homogenization Schemes}
 \label{sec:chap8-pinwise-space-homogenize}
 
-first paragraph: intro paragraph?
--motivation is to explore impact of using proper spatial self-shielding on fuel pins ONLY
--used \texttt{openmc.mgxs} module to tally 70-group \ac{MGXS} in each case
-  -collapsed to 2-group and 8-group \ac{MGXS} in downstream data processing
--Fig.~\ref{fig:chap8-homogenization-schemes} illustrates the materials and \ac{MGXS}
-  -infinite, null and degenerate schemes
--Tab.~\ref{table:chap8-num-materials} - number of unique materials / \ac{MGXS} for each geometry with each scheme
+This chapter employs three different spatial homogenization schemes to model spatial self-shielding effects in \ac{MGXS}. Although all spatial zones may experience spatial self-shielding, this chapter only models the impact of spatial self-shielding on \ac{MGXS} in fissile regions. The \textit{infinite}, \textit{null} and \textit{degenerate} spatial homogenization schemes are introduced in Secs.~\Crefrange{subsec:chap8-infinite}{subsec:chap8-degenerate}. These schemes model spatial self-shielding for each fuel pin with increasing granularity and complexity. The total number of materials (\textit{i.e.}, \ac{MGXS}) used to model each benchmark with each homogenization scheme is given in Tab.~\ref{table:chap8-num-materials}. A fuel assembly, 2$\times$2 colorset and part of the full core \ac{BEAVRS} model are color-coded by material and illustrated in Fig.~\ref{fig:chap8-homogenization-schemes} for each homogenization scheme.
 
-second paragraph: outline
--outline following sections
-
--1e6 particles / batch, 1000 batches to tally \ac{MGXS} for each benchmark
-  -the same parameters used to generate the reference solutions in the preceding chapter
-
--need summary box for this section
--rethink names for null and degenerate???
--re-color the water, fuel, etc.!!!
+The \texttt{openmc.mgxs} module (see Sec.~\ref{subsec:chap4-mgxs}) was used to compute 70-group \ac{MGXS} with OpenMC for each of the six heterogeneous benchmarks introduced in Chap.~\ref{chap:benchmarks}. The tallied \ac{MGXS} data was condensed to coarse 2-group and 8-group structures with downstream data processing as necessary. The OpenMC simulations were performed with the same runtime parameters as those used to generate the reference results (see Sec.~\ref{sec:chap7-ref-results}). In particular, 1000 batches with 10$^{6}$ particle histories per batch were simulated for each benchmark. The fission source was converged with 200 inactive batches for the full core \ac{BEAVRS} model, while 100 inactive batches were employed for the other five benchmarks (see Sec.~\ref{subsec:chap7-src-stationarity}). OpenMC's iso-in-lab feature (see Sec.~\ref{subsec:chap4-iso-in-lab}) was employed to enable consistent comparisons between OpenMC's reference results and OpenMOC's calculations with an isotropic in lab scattering source.
 
 \begin{table}[h!]
   \centering
-  \caption[Number of multi-group material for each spatial homogenization scheme]{Number of multi-group materials modeled with unique \ac{MGXS} in each heterogeneous benchmark for each spatial homogenization scheme.}
+  \caption[Number of materials for each spatial homogenization scheme]{Number of materials modeled with unique \ac{MGXS} in each heterogeneous benchmark for each spatial homogenization scheme.}
   \small
   \label{table:chap8-num-materials}
   \vspace{6pt}
@@ -54,15 +40,14 @@ second paragraph: outline
   \midrule
 3.1\% Assm w/ 20 BPs & 10 & 10 & 273  \\
   \midrule
-2$\times$2 Colorset & 11 & 11 & 1065 \\
+2$\times$2 Colorset & 11 & 11 & 1,065 \\
   \midrule
-2$\times$2 Colorset w/ Reflector & 11 & 11 & 1065 \\
+2$\times$2 Colorset w/ Reflector & 11 & 11 & 1,065 \\
   \midrule
-\ac{BEAVRS} Quarter Core & 15 & 15 & 13028 \\ % 50,964
+\ac{BEAVRS} Quarter Core & 15 & 15 & 13,028 \\ % 50,964
   \bottomrule
 \end{tabular}
 \end{table}
-
 
 \begin{figure}[h!]
 \centering
@@ -144,6 +129,10 @@ first paragraph: degenerate scheme
   -used to benchmark clustering methodology introduced in next chapter(s)
 -captures the different spatial self-shielding effects experienced in each fuel pin
   -unlike the infinite and null schemes
+
+
+-need summary box for this section
+-rethink names for null and degenerate???
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
