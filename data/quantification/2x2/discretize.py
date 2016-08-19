@@ -20,13 +20,51 @@ def discretize_geometry(self):
 
     openmoc.log.py_printf('INFO', 'Discretizing the geometry...')
 
+    openmc_geometry = self.mat_mgxslibs[0].openmc_geometry
     opencg_geometry = self.mat_mgxslibs[0].opencg_geometry
     all_cells = self.openmoc_geometry.getAllMaterialCells()
+    all_openmoc_cells = self.openmoc_geometry.getAllMaterialCells()
 
     # Add angular sectors to all material-filled cells
     for cell_id in all_cells:
         all_cells[cell_id].setNumSectors(8)
 
+    # Find the fuel clad outer radius zcylinder
+    all_surfs = self.openmoc_geometry.getAllSurfaces()
+    for surf_id in all_surfs:
+        if all_surfs[surf_id].getName() == 'Fuel clad OR':
+            fuel_or = openmoc.castSurfaceToZCylinder(all_surfs[surf_id])
+
+    instr_tube_name = 'Instrument tube thimble radial 0: air'
+    guide_tube_name = 'Empty GT above the dashpot radial 0: water'
+    burn_abs1_name = 'BPRA rod active poison radial 0: air'
+    burn_abs2_name = 'BPRA rod active poison radial 3: borosilicate'
+    instr_guide_bp_tube_mod_name = 'Intermediate grid pincell radial 0: water'
+
+    instr_tube = openmc_geometry.get_cells_by_name(instr_tube_name)
+    guide_tube = openmc_geometry.get_cells_by_name(guide_tube_name)
+    burn_abs1 = openmc_geometry.get_cells_by_name(burn_abs1_name)
+    burn_abs2 = openmc_geometry.get_cells_by_name(burn_abs2_name)
+    mod = openmc_geometry.get_cells_by_name(instr_guide_bp_tube_mod_name)
+
+    for cell in instr_tube:
+        print(cell.name, 'instr tube')
+        all_openmoc_cells[cell.id].setNumRings(10)
+    for cell in guide_tube:
+        print(cell.name, 'guide tube')
+        all_openmoc_cells[cell.id].setNumRings(10)
+    for cell in burn_abs1:
+        print(cell.name, 'burn abs1')
+        all_openmoc_cells[cell.id].setNumRings(5)
+    for cell in burn_abs2:
+        print(cell.name, 'burn abs2')
+        all_openmoc_cells[cell.id].setNumRings(5)
+    for cell in mod:
+        print(cell.name, 'mod')
+        all_openmoc_cells[cell.id].setNumRings(5)
+        all_openmoc_cells[cell.id].addSurface(surface=fuel_or, halfspace=+1)
+
+    '''
     # Get the bounding box from the OpenCG geometry
     min_x = opencg_geometry.min_x
     min_y = opencg_geometry.min_y
@@ -60,6 +98,11 @@ def discretize_geometry(self):
     burn_abs1.setNumRings(5)
     burn_abs2.setNumRings(5)
 
+    print('instr tube: {} {}'.format(instr_tube.getName(), instr_tube.getId()))
+    print('burn abs1: {} {}'.format(burn_abs1.getName(), burn_abs1.getId()))
+    print('burn abs2: {} {}'.format(burn_abs2.getName(), burn_abs2.getId()))
+    print('guide tube: {} {}'.format(guide_tube.getName(), guide_tube.getId()))
+
     # Discretize the guide and instrument tubes
     instr_tube_moderator = opencg_geometry.find_cell(x=assm_x+0.6, y=assm_y+0.6, z=mid_z)
     guide_tube_moderator = opencg_geometry.find_cell(x=assm_x+0.6, y=assm_y+3.77952+0.6, z=mid_z)
@@ -70,6 +113,11 @@ def discretize_geometry(self):
     instr_tube_moderator.setNumRings(5)
     guide_tube_moderator.setNumRings(5)
     burn_abs_moderator.setNumRings(5)
+
+    print('instr tube mod: {} {}'.format(instr_tube_moderator.getName(), instr_tube.getId()))
+    print('guide tube mod: {} {}'.format(guide_tube_moderator.getName(), guide_tube_moderator.getId()))
+    print('burn abs mod: {} {}'.format(burn_abs_moderator.getName(), burn_abs_moderator.getId()))
+    print('')
 
     ###########################################################################
     # Discretize the instr., guide tubes and BAs in assemblies off diagonal
@@ -93,6 +141,11 @@ def discretize_geometry(self):
     burn_abs1.setNumRings(5)
     burn_abs2.setNumRings(5)
 
+    print('instr tube: {} {}'.format(instr_tube.getName(), instr_tube.getId()))
+    print('burn abs1: {} {}'.format(burn_abs1.getName(), burn_abs1.getId()))
+    print('burn abs2: {} {}'.format(burn_abs2.getName(), burn_abs2.getId()))
+    print('guide tube: {} {}'.format(guide_tube.getName(), guide_tube.getId()))
+
     # Discretize the guide and instrument tubes and burnable absorber moderator
     instr_tube_moderator = opencg_geometry.find_cell(x=assm_x+0.6, y=assm_y+0.6, z=mid_z)
     guide_tube_moderator = opencg_geometry.find_cell(x=assm_x+0.6, y=assm_y+3.77952+0.6, z=mid_z)
@@ -103,6 +156,11 @@ def discretize_geometry(self):
     instr_tube_moderator.setNumRings(5)
     guide_tube_moderator.setNumRings(5)
     burn_abs_moderator.setNumRings(5)
+
+    print('instr tube mod: {} {}'.format(instr_tube_moderator.getName(), instr_tube.getId()))
+    print('guide tube mod: {} {}'.format(guide_tube_moderator.getName(), guide_tube_moderator.getId()))
+    print('burn abs mod: {} {}'.format(burn_abs_moderator.getName(), burn_abs_moderator.getId()))
+    print('')
 
     ###########################################################################
     # Discretize the moderator cells around the fuel pins in both assemblies
@@ -124,6 +182,11 @@ def discretize_geometry(self):
     top_right.addSurface(surface=fuel_or, halfspace=+1)
     top_left.setNumRings(10)
     top_right.setNumRings(10)
+
+    print('top left: {} {}'.format(top_left.getName(), top_left.getId()))
+    print('top right: {} {}'.format(top_left.getName(), top_left.getId()))
+    print('')
+    '''
 
     ###########################################################################
     # Discretize the fuel pin cells in both assemblies
