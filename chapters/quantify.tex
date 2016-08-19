@@ -30,9 +30,9 @@ The \texttt{openmc.mgxs} module (see Sec.~\ref{subsec:chap4-mgxs}) was used to c
   \rowcolor{lightgray}
   & \multicolumn{3}{c}{\cellcolor{lightgray} \bf \# Materials} \\
   \multirow{-2}{*}{\cellcolor{lightgray} \bf Benchmark} &
-  \multicolumn{1}{c}{{\cellcolor{lightgray} \bf Infinite}} &
-  \multicolumn{1}{c}{{\cellcolor{lightgray} \bf Null}} &
-  \multicolumn{1}{c}{{\cellcolor{lightgray} \bf Degenerate}} \\
+  \multicolumn{1}{c}{\cellcolor{lightgray} \bf Infinite} &
+  \multicolumn{1}{c}{\cellcolor{lightgray} \bf Null} &
+  \multicolumn{1}{c}{\cellcolor{lightgray} \bf Degenerate} \\
   \midrule
 1.6\% Assm & 8 & 8 & 271 \\
   \midrule
@@ -51,43 +51,43 @@ The \texttt{openmc.mgxs} module (see Sec.~\ref{subsec:chap4-mgxs}) was used to c
 
 \begin{figure}[h!]
 \centering
-\begin{subfigure}{.5\textwidth}
+\begin{subfigure}{.45\textwidth}
   \centering
-  \includegraphics[width=0.8\linewidth]{figures/quantification/homogenization/assm-16-null-materials}
+  \includegraphics[width=0.87\linewidth]{figures/quantification/homogenization/assm-16-null-materials}
   \caption{}
   \label{fig:chap8-assm-16-null-materials}
 \end{subfigure}%
-\begin{subfigure}{.5\textwidth}
+\begin{subfigure}{.45\textwidth}
   \centering
-  \includegraphics[width=0.8\linewidth]{figures/quantification/homogenization/assm-16-degenerate-materials}
+  \includegraphics[width=0.87\linewidth]{figures/quantification/homogenization/assm-16-degenerate-materials}
   \caption{}
   \label{fig:chap8-assm-16-degenerate-materials}
 \end{subfigure}
-\begin{subfigure}{.5\textwidth}
+\begin{subfigure}{.45\textwidth}
   \centering
-  \includegraphics[width=0.8\linewidth]{figures/quantification/homogenization/2x2-null-materials}
+  \includegraphics[width=0.87\linewidth]{figures/quantification/homogenization/2x2-null-materials}
   \caption{}
   \label{fig:chap8-2x2-null-materials}
 \end{subfigure}%
-\begin{subfigure}{.5\textwidth}
+\begin{subfigure}{.45\textwidth}
   \centering
-  \includegraphics[width=0.8\linewidth]{figures/quantification/homogenization/2x2-degenerate-materials}
+  \includegraphics[width=0.87\linewidth]{figures/quantification/homogenization/2x2-degenerate-materials}
   \caption{}
   \label{fig:chap8-2x2-degenerate-materials}
 \end{subfigure}
-\begin{subfigure}{.5\textwidth}
+\begin{subfigure}{.45\textwidth}
   \centering
-  \includegraphics[width=0.8\linewidth]{figures/quantification/homogenization/full-core-null-materials}
+  \includegraphics[width=0.87\linewidth]{figures/quantification/homogenization/full-core-null-materials}
   \caption{}
   \label{fig:chap8-full-core-null-materials}
 \end{subfigure}%
-\begin{subfigure}{.5\textwidth}
+\begin{subfigure}{.45\textwidth}
   \centering
-  \includegraphics[width=0.8\linewidth]{figures/quantification/homogenization/full-core-degenerate-materials}
+  \includegraphics[width=0.87\linewidth]{figures/quantification/homogenization/full-core-degenerate-materials}
   \caption{}
   \label{fig:chap8-full-core-degenerate-materials}
 \end{subfigure}
-\caption[Depiction of infinite, null and degenerate spatial homogenization schemes]{OpenMOC materials for a single fuel assembly, a 2$\times$ colorset and the 2D quarter core \ac{BEAVRS} model. The materials for the infinite and null schemes are depicted in (a), (c) and (e), and for the degenerate scheme in (b), (d) and (f), respectively. Each uniquely colored material represents a unique set of self-shielded \ac{MGXS}.}
+\caption[Depiction of infinite, null and degenerate spatial homogenization schemes]{OpenMOC materials for a single fuel assembly, a 2$\times$2 colorset and the 2D quarter core \ac{BEAVRS} model. The materials for the infinite and null schemes are depicted in (a), (c) and (e), and for the degenerate scheme in (b), (d) and (f), respectively. Each uniquely colored material represents a unique set of self-shielded \ac{MGXS}.}
 \label{fig:chap8-homogenization-schemes}
 \end{figure}
 
@@ -95,44 +95,29 @@ The \texttt{openmc.mgxs} module (see Sec.~\ref{subsec:chap4-mgxs}) was used to c
 \subsection{Infinite Lattice Homogenization}
 \label{subsec:chap8-infinite}
 
-first paragraph: infinite scheme
--use OpenMC cell tallies for \ac{MGXS} in two different geometries
--model each type of fuel pin (each enrichment) and compute \ac{MGXS} in an infinite lattice
--compute \ac{MGXS} for other pin types -- \acp{CRGT}, \acp{BP}, instr tubes -- in original lattice
--\ac{MGXS} computed for each single (infinitely repeated) fuel pin cell 
--each instance of a unique fuel pin type (e.g, enrichment) gets a single type of \ac{MGXS}
--foonote: unable to run infinite pin cell calculations for non-fissile pin cells (CRGTs, BPs, instr tubes) since it's not a criticality calculation
--neglects (averages over) the different spatial self-shielding effects experienced in each fuel pin
+The \textit{infinite} spatial homogenization scheme is most reminiscent of the traditional multi-level schemes used to generate \ac{MGXS} (see Sec.~\ref{subsec:chap2-mgxs-lib-std-approach}), and is the simplest approach to model spatial self-shielding effects considered by this thesis. The infinite scheme employs multiple OpenMC simulations to compute \ac{MGXS} for each heterogeneous benchmark. The \ac{MGXS} for each type of fuel (\textit{e.g.}, enrichment) are generated by OpenMC simulations of each fuel pin type in an infinite, repeating array\footnote{An infinite, repeating array of fuel pins is modeled by a single fuel pin with reflective boundary conditions.}. The \ac{MGXS} for all other materials -- including borated water, zircaloy, helium, etc. -- are generated from OpenMC simulations of each heterogeneous benchmark where the reaction rates and fluxes are averaged across each geometry.
+
+The infinite scheme is designed to quantify the impact of using the ``true'' Monte Carlo flux from an infinite lattice calculation, rather than the ``true'' flux from the true heterogeneous geometry, to collapse \ac{MGXS} in fissile zones. The scheme employs a single \ac{MGXS} in each instance of a material zone, such as a fuel pin replicated many times throughout a benchmark geometry. The \ac{MGXS} for each fissile zone is generated from an infinite lattice calculation with OpenMC. The \ac{MGXS} for all non-fissile zones are generated using the ``true''  flux distribution in space and energy for each of the heterogeneous benchmarks. The scheme does not account for spatial self-shielding effects experienced by different non-fissile spatial zones filled by the same material, and instead averages these effects across the entire geometry for each material.
+
+%-foonote: unable to run infinite pin cell calculations for non-fissile pin cells (CRGTs, BPs, instr tubes) since it's not a criticality calculation
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Null Homogenization}
 \label{subsec:chap8-null}
 
-first paragraph: null scheme
--used OpenMC cell tallies in the same heterogeneous geometry we wish to model with OpenMC
--each instance of a unique fuel pin type (e.g, enrichment) gets a single type of \ac{MGXS}
--the spectrum used to collapse / homogenize \ac{MGXS} is more appropriate than that used for infinite
--neglects (averages over) the different spatial self-shielding effects experienced in each fuel pin
+The \textit{null} spatial homogenization scheme builds upon the infinite scheme, but uses the ``true'' heterogeneous flux to collapse \ac{MGXS} for fissile as well as non-fissile materials. The null scheme eliminates the infinite lattice calculation to generate \ac{MGXS} for fissile zones, and instead uses a single Monte Carlo calculation of the complete heterogeneous geometry to generate \ac{MGXS} for \textit{all} materials. In this way, the null scheme fully abandons the multi-level approach used by the infinite scheme and most traditional approaches to generate \ac{MGXS}. Unlike the infinite scheme, the spatially self-shielded flux is used to collapse the cross sections in the fuel. However, the null scheme does not account for spatial self-shielding effects experienced by different fuel pins filled by the same type of fuel, and instead averages these effects across the entire geometry. As with the infinite scheme, a single \ac{MGXS} is employed in each instance of a material zone, such as a fuel pin replicated many times throughout a benchmark geometry.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Degenerate Homogenization}
 \label{subsec:chap8-degenerate}
 
-first paragraph: degenerate scheme
--used OpenMC distribcell tallies in the same heterogeneous geometry we wish to model with OpenMC
--OpenMC distribcell tallies used to tally \ac{MGXS} in each fuel pin instance
--OpenCG region differentiation used to build an OpenMOC combinatorial geometry
-  -each fuel pin as its own cell with its own material with its own \ac{MGXS}
--every instance of a unique fuel pin type (e.g, enrichment) gets a different \ac{MGXS}
--this is the ``reference'' case:
-  -the best we can do if we fully account spatial self-shielding effects
-  -used to benchmark clustering methodology introduced in next chapter(s)
--captures the different spatial self-shielding effects experienced in each fuel pin
-  -unlike the infinite and null schemes
+Unlike the infinite and null spatial homogenization schemes, the \textit{degenerate} scheme accounts for the different spatial self-shielding effects experienced by each instance of each fuel pin throughout a heterogeneous geometry. Like the null scheme, a single \ac{MC} calculation of the complete heterogeneous geometry is used to generate \ac{MGXS} for all materials. Unlike the null scheme, the \ac{MGXS} are tallied separately for each instance of fissile material zones. For example, if a heterogeneous benchmark includes $N$ fuel pins, then $N$ collections of \ac{MGXS} are separately tabulated for each fuel pin instance. The degenerate scheme tallies different \ac{MGXS} even if the isotopic compositions in the fuel pin instances are identical (\textit{e.g.}, fresh fuel at the beginning of life) since each instance may experience different spatial self-shielding effects and hence have different \ac{MGXS}.
 
+Multi-group transport calculations with \ac{MGXS} generated using infinite/null and degenerate schemes may be compared to quantify the impact of modeling spatial self-shielding effects in \ac{MGXS} for fissile zones in heterogeneous geometries. The degenerate scheme applies the finest granularity to pin-wise spatial homogenization of any of the schemes considered in this thesis since it best captures different spatial self-shielding effects in each fuel pin. As a result, the degenerate scheme is used to benchmark the efficacy of the new methodology for spatial homogenization based on statistical clustering developed in the following chapters. Like both the infinite and null schemes, the spatial self-shielding effects experienced by different non-fissile spatial zones are averaged across the entire geometry for each non-fissile material.
+
+The degenerate scheme generates \ac{MGXS} for each fuel pin instance using OpenMC's distributed cell tallies (see Sec.~\ref{subsec:chap4-distribcells}). The OpenCG region differentiation algorithm (see Sec.~\ref{sec:chap4-region-diff}) is used to build a new OpenMOC geometry with unique cells and materials for each fuel pin. The \ac{MGXS} are appropriately selected from OpenMC's distributed cell tallies to populate the \ac{MGXS} in the OpenMOC materials.
 
 -need summary box for this section
--rethink names for null and degenerate???
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -197,8 +182,6 @@ second paragraph: fuel assemblies, colorsets, full core
 -Fig.~\ref{fig:chap8-pin-cell-fsrs}
 -same discretization of each pin cell
 -composed in each of the assembly, colorsets benchmarks introduced in preceding chapter
-
-
 
 \begin{figure}[h!]
 \centering
@@ -271,7 +254,6 @@ second paragraph: fuel assemblies, colorsets, full core
 \caption[FSR discretization and CMFD cells for heterogeneous benchmarks]{\ac{FSR} discretization and \ac{CMFD} cells for a fuel assembly (a) and (b), a 2$\times$2 colorset with reflector (c) and (d), and the 2D quarter core \ac{BEAVRS} benchmark (e) and (f), respectively.}
 \label{fig:chap8-assm-fsrs-cmfd-cells}
 \end{figure}
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{\ac{CMFD}}
