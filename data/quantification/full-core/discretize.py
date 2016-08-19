@@ -122,7 +122,7 @@ def discretize_geometry(self):
 
     # Sliced up water cells with a lattice
     mesh_per_pin = 2
-    lattice = openmoc.Lattice(name='{} x {} Spaced Reflector'.format(mesh_per_pin))
+    lattice = openmoc.Lattice(name='{} x {} Spaced Reflector'.format(mesh_per_pin, mesh_per_pin))
     lattice.setWidth(width_x=1.26492 / mesh_per_pin, width_y=1.26492 / mesh_per_pin)
     template = [[reflector] * 17 * mesh_per_pin] * 17 * mesh_per_pin
     lattice.setUniverses([template])
