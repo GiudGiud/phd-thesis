@@ -21,7 +21,6 @@ batchwise.log_level = 'INFO'
 # Initialize assembly-wise CMFD mesh
 batchwise.cmfd = openmoc.Cmfd()
 batchwise.cmfd.setLatticeStructure(23*17, 23*17)
-#batchwise.cmfd.setLatticeStructure(17, 17)
 batchwise.cmfd.setKNearest(3)
 batchwise.with_cmfd = True
 
@@ -44,7 +43,7 @@ elif batchwise.options.clusterizer_type == 'degenerate':
 batchwise.clusterizer.plot_mgxs = False
 batchwise.plot_materials = True
 batchwise.plot_cells = True
-#batchwise.plot_fsrs = True
+batchwise.plot_fsrs = True
 
 # Execute OpenMOC simulations over all batches of clustered MGXS libraries
 batchwise.execute()
