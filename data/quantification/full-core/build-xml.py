@@ -90,12 +90,6 @@ for domain in cell_mgxs_lib.domains:
         mgxs = cell_mgxs_lib.get_mgxs(domain.id, mgxs_type)
         mgxs.nuclides = ['U235', 'U238', 'total']
 
-# Select the nuclides for the distribcell MGXS
-for domain in cell_mgxs_lib.domains:
-    for mgxs_type in cell_mgxs_lib.mgxs_types:
-        mgxs = cell_mgxs_lib.get_mgxs(domain.id, mgxs_type)
-        mgxs.nuclides = [*mgxs.nuclides, 'total']
-
 # Initialize a fine (40-) group "material" MGXS Library for OpenMOC
 mat_mgxs_lib = openmc.mgxs.Library(openmc_geometry, by_nuclide=False)
 mat_mgxs_lib.energy_groups = group_structures['CASMO']['40-group']
