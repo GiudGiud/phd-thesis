@@ -43,7 +43,6 @@ elif batchwise.options.clusterizer_type == 'degenerate':
 batchwise.clusterizer.plot_mgxs = False
 batchwise.plot_materials = False
 batchwise.plot_cells = False
-batchwise.plot_fsrs = False
 
 # Execute OpenMOC simulations over all batches of clustered MGXS libraries
 batchwise.execute()

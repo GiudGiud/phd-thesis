@@ -17,4 +17,11 @@ mgxs_lib.domain_type = 'material'
 mgxs_lib.correction = None
 mgxs_lib.build_library()
 mgxs_lib.load_from_statepoint(sp)
+
+# Select the nuclides for the material MGXS
+for domain in mgxs_lib.domains:
+    for mgxs_type in mgxs_lib.mgxs_types:
+        mgxs = mgxs_lib.get_mgxs(domain.id, mgxs_type)
+        mgxs.nuclides = [*mgxs.nuclides, 'total']
+
 mgxs_lib.dump_to_file(filename='material')
