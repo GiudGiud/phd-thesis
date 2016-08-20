@@ -40,7 +40,7 @@ directories = {'assm-1.6': '1.6\\% Assm',
                'full-core': 'BEAVRS Full Core'}
 
 groups = [2] #, 8, 70]
-clusterizer_types = ['null'] #['infinite', 'null', 'degenerate']
+clusterizer_types = ['degenerate'] #['infinite', 'null', 'degenerate']
 
 print('EIGENVALUE BIAS')
 msg = '\multirow{3}{*}{\parbox{2.5cm}{%s}} ' % directories[benchmark]
