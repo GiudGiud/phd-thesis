@@ -14,6 +14,11 @@ batchwise.cell_mgxslib_filename = 'distribcell'
 batchwise.mat_mgxslib_filename = 'material'
 batchwise.zcoord = 205.
 batchwise.log_level = 'INFO'
+
+# Initialize pin-wise CMFD mesh
+batchwise.cmfd = openmoc.Cmfd()
+batchwise.cmfd.setLatticeStructure(51, 51)
+batchwise.cmfd.setKNearest(3)
 batchwise.with_cmfd = True
 
 # Attach a method to discretize this geometry to the Batchwise instance
@@ -32,8 +37,8 @@ elif batchwise.options.clusterizer_type == 'degenerate':
 
 # Turn off MGXS plotting for speed
 batchwise.clusterizer.plot_mgxs = False
-batchwise.plot_materials = False
-batchwise.plot_cells = False
+batchwise.plot_materials = True
+batchwise.plot_cells = True
 
 # Execute OpenMOC simulations over all batches of clustered MGXS libraries
 batchwise.execute()
