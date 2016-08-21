@@ -118,7 +118,7 @@ Multi-group transport calculations with \ac{MGXS} generated using infinite/null 
 The degenerate scheme generates \ac{MGXS} for each fuel pin instance using OpenMC's distributed cell tallies (see Sec.~\ref{subsec:chap4-distribcells}). The OpenCG region differentiation algorithm (see Sec.~\ref{sec:chap4-region-diff}) is used to build a new OpenMOC geometry with unique cells and materials for each fuel pin. The \ac{MGXS} are appropriately selected from OpenMC's distributed cell tallies to populate the \ac{MGXS} in the OpenMOC materials.
 
 \begin{emphbox}
-\textbf{The infinite, null and degenerate spatial homogenization schemes are used to quantify approximation errors made when neglecting spatial self-shielding effects due to neighboring pins, reflectors, etc. in heterogeneous \ac{PWR} benchmarks.}
+\textbf{The infinite, null and degenerate spatial homogenization schemes are used to quantify approximation errors made when neglecting spatial self-shielding due to neighboring pins, reflectors, etc. in heterogeneous \ac{PWR} benchmarks.}
 \end{emphbox}
 
 
@@ -126,13 +126,13 @@ The degenerate scheme generates \ac{MGXS} for each fuel pin instance using OpenM
 \section{\ac{MOC} Runtime Parameters}
 \label{sec:chap8-moc-params}
 
-The infinite, null and spatial homogenization schemes were used to prepare \ac{MGXS} libraries for OpenMOC simulations of each of the six heterogeneous \ac{PWR} benchmarks introduced in Chap.~\ref{chap:benchmarks}. This section briefly outlines the angular, spatial and \ac{CMFD} meshes used in the OpenMOC simulations. The total number of flat source regions, and \ac{MOC} tracks and segments are summarized for each benchmark in Tab.~\ref{table:chap8-num-fsrs-tracks-segments}. 
+The infinite, null and spatial homogenization schemes were used to prepare \ac{MGXS} libraries for OpenMOC simulations of each of the six heterogeneous \ac{PWR} benchmarks introduced in Chap.~\ref{chap:benchmarks}. This section briefly outlines the angular, spatial and \ac{CMFD} meshes used in the OpenMOC simulations. The total number of flat source regions, and \ac{MOC} tracks and segments are summarized for each benchmark in Tab.~\ref{table:chap8-num-fsrs-tracks-segments}. It was crucial to use an adequate discretization to accurately compare simulation results between the three spatial homogenization schemes, as well as to the reference OpenMC results.
 
-The OpenMOC simulations were performed using a version of the code compiled with double precision floating point arithmetic. Each of the simulations were converged to 10$^{-5}$ on the root mean square of the energy-integrated fission source in each \ac{FSR}\footnote{It should be noted that a convergence criterion of 10$^{-7}$ was employed for the OpenMOC simulations of simple benchmarks without \ac{CMFD} in Chap.~\ref{chap:biases}. However, a looser convergence criterion of 10$^{-5}$ may be used with \ac{CMFD}}. Each of the calculations used OpenMOC's \ac{CMFD} acceleration (see Sec.~\ref{subsubsec:chap4-openmoc-cmfd}) with the same energy group structures as the corresponding \ac{MOC} calculations. 
+The OpenMOC simulations were performed using a version of the code compiled with double precision floating point arithmetic. Each of the simulations was converged to 10$^{-5}$ on the root mean square of the energy-integrated fission source in each \ac{FSR}. It should be noted that a convergence criterion of 10$^{-7}$ was employed for the OpenMOC simulations of simple benchmarks without \ac{CMFD} in Chap.~\ref{chap:biases}, but the looser convergence criterion of 10$^{-5}$ may be used for calculations with \ac{CMFD} acceleration (see Sec.~\ref{subsubsec:chap4-openmoc-cmfd})\footnote{The convergence criteria measures the residual between successive iterations. However, the metrics of interest should actually measure convergence to the asymptotic solution, which depends on both the residual between successive iterations and the dominance ratio (or convergence ratio). \ac{CMFD} significantly reduces the dominance ratio such that sufficient convergence to the asymptotic solution is achieved at a much lower successive iteration residual.} \ac{CMFD} used the same energy group structure as the corresponding \ac{MOC} calculations.
 
 \begin{table}[h!]
   \centering
-  \caption[Number of \ac{FSR}s, tracks and segments for each heterogeneous benchmark]{Number of OpenMOC \ac{FSR}s, tracks and segments modeled for each heterogeneous benchmark.}
+  \caption[Number of \ac{FSR}s, tracks and segments for each heterogeneous benchmark]{The number of \ac{MOC} \ac{FSR}s, tracks and segments modeled in each benchmark.}
   \small
   \label{table:chap8-num-fsrs-tracks-segments}
   \vspace{6pt}
@@ -163,15 +163,15 @@ The OpenMOC simulations were performed using a version of the code compiled with
 \subsection{Angular Discretization}
 \label{subsec:chap8-angular-discretizations}
 
-The OpenMOC simulations of each of the six heterogenous benchmarks used the same \ac{MOC} angular discretization with 128 azimuthal angles and 0.05 cm track spacing. These parameters were selected since they were previously demonstrated to converge the solution for simple heterogeneous \ac{PWR} benchmark models~\cite{boyd2014ms}. Although the eigenvalues in Chap.~\ref{chap:biases} were only shown to converge for 1D slab and 2D fuel pin with 0.01 cm track spacing, a coarser spacing of 0.05 cm spacing was employed for the heterogeneous benchmarks modeled here for practical reasons\footnote{The computational expense of solving the \ac{MOC} equations scales linearly with the number of track segments. In addition, OpenMOC's memory footprint is dominated by track segments which can make some problems intractable except on high memory nodes. Finally, the time spent ray tracing across a combinatorial geometry is non-negligible if not prohibitive for fine track spacings in large geometries.}. The total number of tracks and segments resulting from the selected angular discretization are itemized in Tab.~\ref{table:chap8-num-fsrs-tracks-segments} for each benchmark analyzed in this thesis. 
+The OpenMOC simulations of each of the six heterogenous benchmarks used the same \ac{MOC} angular discretization with 128 azimuthal angles and 0.05 cm track spacing. These parameters were selected since they were previously demonstrated to converge the solution for simple heterogeneous \ac{PWR} benchmark models~\cite{boyd2014ms}. Although the eigenvalues in Chap.~\ref{chap:biases} were only shown to converge for a 1D slab and 2D fuel pin with 0.01 cm track spacing, a coarser spacing of 0.05 cm was employed for the heterogeneous benchmarks for practical reasons\footnote{The computational expense of solving the \ac{MOC} equations scales linearly with the number of track segments. In addition, OpenMOC's memory footprint is dominated by track segments which can make some problems intractable except on high memory nodes. Finally, the time spent ray tracing across a combinatorial geometry is non-negligible if not prohibitive for fine track spacings in large geometries.}. The total number of tracks and segments resulting from the selected angular discretization are itemized in Tab.~\ref{table:chap8-num-fsrs-tracks-segments}. 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{\ac{FSR} Discretization}
 \label{subsec:chap8-fsr-discretizations}
 
-A flat source region spatial discretization mesh are applied to each of the six heterogeneous benchmarks in the OpenMOC simulations. The \ac{FSR} meshes applied to the fuel pin, control rod guide tube, instrument tube and burnable poison pin cells are shown in Fig.~\ref{fig:chap8-pin-cell-fsrs}. As shown in the figures, eight equal angle subdivisions are used in all material zones, including the grid spacers surrounding each pin cell. The UO$_2$ fuel is further subdivided into five equal volume radial rings, while ten radial rings are employed in the water-filled \acp{CRGT} and instrument tubes. The borosilicate glass and borated water material zones filling the \acp{BP} are each discretized into five equal volume radial rings. Finally, five equally spaced rings are used in the moderator zones surrounding each pin.
+Flat source region spatial discretization meshes are applied to each of the six heterogeneous benchmarks in the OpenMOC simulations. The total number of \ac{FSR}s is itemized in Tab.~\ref{table:chap8-num-fsrs-tracks-segments} for each benchmark analyzed in this thesis. The \ac{FSR} meshes applied to the fuel pin, control rod guide tube, instrument tube and burnable poison pin cells are shown in Fig.~\ref{fig:chap8-pin-cell-fsrs}. As shown in the figures, eight equal angle subdivisions are used in all material zones, including the grid spacers surrounding each pin cell. The UO$_2$ fuel is further subdivided into five equal volume radial rings, while ten radial rings are employed in the water-filled \acp{CRGT} and instrument tubes. The borosilicate glass and borated water material zones filling the \acp{BP} are each discretized into five equal volume radial rings. Finally, five equally spaced rings are used in the moderator zones surrounding each pin.
 
-\begin{figure}[h!]
+\begin{figure}[hb!]
 \centering
 \begin{subfigure}{.5\textwidth}
   \centering
@@ -197,7 +197,7 @@ A flat source region spatial discretization mesh are applied to each of the six 
   \caption{}
   \label{fig:chap8-bp}
 \end{subfigure}%
-\caption[FSR discretization meshes applied to BEAVRS pin cells]{The \ac{FSR} spatial mesh used for fuel pins (a), control rod guide tubes (b), instrument tubes (c) and \acp{BP} (d). Color-coded diagrams of the material zones in each pin are shown in Fig.~\ref{fig:chap7-pin-cells}.}.
+\caption[FSR discretization meshes applied to BEAVRS pin cells]{The \ac{FSR} spatial mesh used for fuel pins (a), control rod guide tubes (b), instrument tubes (c) and burnable poisons (d). Diagrams of each pin type color-coded by material are shown in Fig.~\ref{fig:chap7-pin-cells}.}.
 \label{fig:chap8-pin-cell-fsrs}
 \end{figure}
 
@@ -239,13 +239,13 @@ A flat source region spatial discretization mesh are applied to each of the six 
   \caption{}
   \label{fig:chap8-full-core-cmfd-cells}
 \end{subfigure}
-\caption[FSR discretization and CMFD cells for heterogeneous benchmarks]{\ac{FSR} discretization and \ac{CMFD} cells for a fuel assembly (a) and (b), a 2$\times$2 colorset with reflector (c) and (d), and quarter core \ac{BEAVRS} benchmark (e) and (f).}
+\caption[FSR discretization and CMFD cells for heterogeneous benchmarks]{\ac{FSR} (left) and \ac{CMFD} (right) meshes for a fuel assembly (a) and (b), a 2$\times$2 colorset with reflector (c) and (d), and quarter core \ac{BEAVRS} benchmark (e) and (f).}
 \label{fig:chap8-assm-fsrs-cmfd-cells}
 \end{figure}
 
-The spatially discretized pin cells are used in each of the six heterogeneous benchmarks. The \ac{FSR} discretizations for an individual fuel assembly, 2$\times$2 colorset with a water reflector, and the upper right quadrant of the \ac{BEAVRS} core are depicted in Fig.~\ref{fig:chap8-assm-fsrs-cmfd-cells}. The water reflector in the 2$\times$2 colorset is discretized using a mesh shown to converge the solution for the similarly designed C5G7 benchmark~\cite{lewis2003c5g7} in~\cite{boyd2014ms}. In particular, the 13.85824 cm (equivalent to 11 pin cells) of water reflector nearest the fuel assemblies is discretized in a 0.125984 cm $\times$ 0.125984 cm rectilinear mesh (equivalent to a 10$\times$10 mesh in each pin). The 7.55904 cm (equivalent to 6 pin cells) of water reflector furthest from the fuel assemblies is discretized in a 1.25984 cm $\times$ 1.25984 cm pin-wise rectilinear mesh.
+The spatially discretized pin cells are used in each of the six heterogeneous benchmarks. The \ac{FSR} discretizations for an individual fuel assembly, 2$\times$2 colorset with a water reflector, and the upper right quadrant of the \ac{BEAVRS} core are depicted in Fig.~\ref{fig:chap8-assm-fsrs-cmfd-cells}. The water reflector in the 2$\times$2 colorset is discretized using a mesh shown to converge the solution for the similarly designed C5G7 benchmark~\cite{lewis2003c5g7} in~\cite{boyd2014ms}. In particular, the 13.85824 cm (equivalent to 11 pin cells) of water reflector nearest the fuel assemblies is discretized in a 0.125984 cm $\times$ 0.125984 cm rectilinear mesh (equivalent to a 10$\times$10 mesh in each pin). The 7.55904 cm (equivalent to 6 pin cells) of water reflector furthest from the fuel assemblies is discretized in a 1.25984 cm $\times$ 1.25984 cm pin-wise mesh.
 
-Each pin cell are discretized in the same way for the quarter core \ac{BEAVRS} model. In addition, the inter-assembly grid sleeves surrounding each fuel assembly are discretized into 17 equal volume slabs on each face. Furthermore, a quarter pin-wise \ac{CMFD} mesh (\textit{e.g.}, 0.62992 cm $\times$ 0.62992 cm) is employed for the \ac{BEAVRS} model, which discretizes the baffle, reflector, and core barrel and vessel into a corresponding \ac{FSR} mesh. The total number of \ac{FSR}s is itemized in Tab.~\ref{table:chap8-num-fsrs-tracks-segments} for each benchmark analyzed in this thesis.
+Each type of pin cell is discretized in the same way for the quarter core \ac{BEAVRS} model. In addition, the inter-assembly grid sleeves surrounding each fuel assembly are discretized into 17 equal volume slabs on each face. Furthermore, a quarter pin-wise \ac{CMFD} mesh (\textit{e.g.}, 0.62992 cm $\times$ 0.62992 cm) is employed for the \ac{BEAVRS} model, which discretizes the baffle, reflector, and core barrel and vessel into a corresponding \ac{FSR} mesh. The quarter pin mesh in the reflector is coarser than the mesh used in the reflector for the 2$\times$2 colorset since a finer mesh was not computationally practical for the quarter core \ac{BEAVRS} model.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
