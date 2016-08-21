@@ -35,8 +35,8 @@ os.chdir(benchmark)
 directories = {'assm-1.6': '1.6\\% Assm',
                'assm-3.1': '3.1\\% Assm',
                'assm-3.1-20BPs': '3.1\\% Assm w/ 20 BPs',
-               '2x2': '2\\times2 Colorset',
-               'reflector': '2\\times2 Colorset w/ Reflector',
+               '2x2': '2$\\times$2 Colorset',
+               'reflector': '2$\\times$2 Colorset w/ Reflector',
                'full-core': 'BEAVRS Full Core'}
 
 groups = [2, 8, 70]
