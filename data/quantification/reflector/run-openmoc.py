@@ -1,5 +1,6 @@
 import glob
 import types
+import openmoc
 import infermc
 from discretize import discretize_geometry
 
