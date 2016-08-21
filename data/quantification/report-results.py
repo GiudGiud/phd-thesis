@@ -39,8 +39,8 @@ directories = {'assm-1.6': '1.6\\% Assm',
                'reflector': '2\\times2 Colorset w/ Reflector',
                'full-core': 'BEAVRS Full Core'}
 
-groups = [2] #, 8, 70]
-clusterizer_types = ['degenerate'] #['infinite', 'null', 'degenerate']
+groups = [2, 8, 70]
+clusterizer_types = ['infinite', 'null', 'degenerate']
 
 print('EIGENVALUE BIAS')
 msg = '\multirow{3}{*}{\parbox{2.5cm}{%s}} ' % directories[benchmark]
@@ -81,7 +81,7 @@ for clusterizer_type in clusterizer_types:
     for num_groups in groups:
         f = h5py.File('{}-groups-{}.h5'.format(num_groups, clusterizer_type))
         bias = f['{}-groups'.format(num_groups)][clusterizer_type]['fission'][hdf5_key]
-        bias = np.nanmean(np.ravel(bias))
+        bias = np.nanmean(np.fabs(np.ravel(bias)))
         msg += '& {:1.2E} '.format(bias)
         f.close()
     msg += '\\\\\n'
@@ -114,7 +114,7 @@ for clusterizer_type in clusterizer_types:
     for num_groups in groups:
         f = h5py.File('{}-groups-{}.h5'.format(num_groups, clusterizer_type))
         bias = f['{}-groups'.format(num_groups)][clusterizer_type]['capture'][hdf5_key]
-        bias = np.nanmean(np.ravel(bias))
+        bias = np.nanmean(np.fabs(np.ravel(bias)))
         msg += '& {:1.2E} '.format(bias)
         f.close()
     msg += '\\\\\n'
