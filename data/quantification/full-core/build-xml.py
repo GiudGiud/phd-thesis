@@ -91,19 +91,13 @@ for domain in cell_mgxs_lib.domains:
         mgxs.nuclides = ['U235', 'U238', 'total']
 
 # Initialize a fine (40-) group "material" MGXS Library for OpenMOC
-mat_mgxs_lib = openmc.mgxs.Library(openmc_geometry, by_nuclide=False)
+mat_mgxs_lib = openmc.mgxs.Library(openmc_geometry, by_nuclide=True)
 mat_mgxs_lib.energy_groups = group_structures['CASMO']['40-group']
 mat_mgxs_lib.mgxs_types = ['total', 'fission', 'nu-fission', 'nu-scatter matrix',
                            'chi', 'absorption', 'capture']
 mat_mgxs_lib.domain_type = 'material'
 mat_mgxs_lib.correction = None
 mat_mgxs_lib.build_library()
-
-# Select the nuclides for the material MGXS
-for domain in mat_mgxs_lib.domains:
-    for mgxs_type in mat_mgxs_lib.mgxs_types:
-        mgxs = mat_mgxs_lib.get_mgxs(domain.id, mgxs_type)
-        mgxs.nuclides = [*mgxs.nuclides, 'total']
 
 
 ###################  Create Mesh Tallies for Verification  ####################

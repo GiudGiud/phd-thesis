@@ -56,12 +56,6 @@ mgxs_lib.domain_type = 'material'
 mgxs_lib.correction = None
 mgxs_lib.build_library()
 
-# Select the nuclides for the material MGXS
-for domain in mgxs_lib.domains:
-    for mgxs_type in mgxs_lib.mgxs_types:
-        mgxs = mgxs_lib.get_mgxs(domain.id, mgxs_type)
-        mgxs.nuclides = [*mgxs.nuclides, 'total']
-
 # Create a "tallies.xml" file for the MGXS Library
 tallies_file = openmc.Tallies()
 mgxs_lib.add_to_tallies_file(tallies_file, merge=True)
