@@ -147,9 +147,11 @@ def discretize_geometry(self):
     barrel = openmc_geometry.get_cells_by_name('Core Barrel', matching=True)[0]
     vessel = openmc_geometry.get_cells_by_name('RPV', matching=True)[0]
     vessel_liner = openmc_geometry.get_cells_by_name('RPV Liner', matching=True)[0]
+    downcomer = openmc_geometry.get_cells_by_name('RPV Liner', matching=True)[0]
     all_openmoc_cells[barrel.id].setNumSectors(0)
     all_openmoc_cells[vessel.id].setNumSectors(0)
     all_openmoc_cells[vessel_liner.id].setNumSectors(0)
+    all_openmoc_cells[downcomer.id].setNumSectors(0)
 
     # FIXME: Discretize the baffle to hell
     baffle_cells = openmc_geometry.get_cells_by_name('Baffle Steel', matching=False)
