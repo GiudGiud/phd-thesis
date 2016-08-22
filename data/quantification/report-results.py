@@ -39,7 +39,7 @@ directories = {'assm-1.6': '1.6\\% Assm',
                'reflector': '2$\\times$2 Colorset w/ Reflector',
                'full-core': 'BEAVRS Full Core'}
 
-groups = [2] #, 8, 70]
+groups = [2, 8, 70]
 clusterizer_types = ['infinite', 'null', 'degenerate']
 
 print('EIGENVALUE BIAS')
@@ -97,8 +97,8 @@ for clusterizer_type in clusterizer_types:
     for num_groups in groups:
         f = h5py.File('{}-groups-{}.h5'.format(num_groups, clusterizer_type))
         bias = f['{}-groups'.format(num_groups)][clusterizer_type]['capture'][hdf5_key]
-        max_capt = max(np.nanmax(np.ravel(bias)), max_fiss)
-        min_capt = min(np.nanmin(np.ravel(bias)), min_fiss)
+        max_capt = max(np.nanmax(np.ravel(bias)), max_capt)
+        min_capt = min(np.nanmin(np.ravel(bias)), min_capt)
         min_bias = np.nanmin(np.ravel(bias))
         max_bias = np.nanmax(np.ravel(bias))
         bias = max_bias if abs(max_bias) > abs(min_bias) else min_bias
@@ -209,7 +209,7 @@ for i, clusterizer_type in enumerate(clusterizer_types):
         subplot_ctr = '{}{}{}'.format(len(clusterizer_types),len(groups),i*len(groups)+j+1)
         plt.subplot(int(subplot_ctr))
         im = plt.imshow(bias, interpolation='none',
-            cmap=cmap, vmin=min_fiss, vmax=max_fiss)
+            cmap=cmap, vmin=min_capt, vmax=max_capt)
 
         if num_groups == groups[0]:
             plt.ylabel(clusterizer_type.capitalize(), fontsize=16)
