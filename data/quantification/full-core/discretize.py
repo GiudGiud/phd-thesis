@@ -98,6 +98,7 @@ def discretize_geometry(self):
                   'Baffle South East Tip radial outer: water',
                   'Tip Baffle Outer Water W',
                   'Tip Baffle Outer Water N',
+                  'Tip Baffle Outer Water SE',
                   'Baffle South West Tip radial outer: water',
                   'Baffle South West Corner radial outer: water',
                   'Baffle South East Corner radial outer: water',
@@ -131,6 +132,24 @@ def discretize_geometry(self):
     for refl_cell in refl_cells:
         all_openmoc_cells[refl_cell.id].setFill(lattice)
         all_openmoc_cells[refl_cell.id].setNumSectors(0)
+
+    # FIXME: Cleanup
+    outer_cell = openmc_geometry.get_cells_by_name('outer borosilicate', matching=True)[0]
+    all_openmoc_cells[outer_cell.id].setNumSectors(0)
+
+    shield_panels = openmc_geometry.get_cells_by_name('NE Shield Panel', matching=True)
+    shield_panels.extend(openmc_geometry.get_cells_by_name('NW Shield Panel', matching=True))
+    shield_panels.extend(openmc_geometry.get_cells_by_name('SE Shield Panel', matching=True))
+    shield_panels.extend(openmc_geometry.get_cells_by_name('SW Shield Panel', matching=True))
+    for shield_panel in shield_panels:
+        all_openmoc_cells[shield_panel.id].setNumSectors(0)
+
+    barrel = openmc_geometry.get_cells_by_name('Core Barrel', matching=True)
+    vessel = openmc_geometry.get_cells_by_name('RPV', matching=True)
+    vessel_liner = openmc_geometry.get_cells_by_name('RPV Liner', matching=True)
+    all_openmoc_cells[barrel.id].setNumSectors(0)
+    all_openmoc_cells[vessel.id].setNumSectors(0)
+    all_openmoc_cells[vessel_liner.id].setNumSectors(0)
 
 
 def discretize_geometry_standalone(mat_mgxslib, openmoc_geometry):
@@ -249,3 +268,4 @@ def discretize_geometry_standalone(mat_mgxslib, openmoc_geometry):
     for refl_cell in refl_cells:
         all_openmoc_cells[refl_cell.id].setFill(lattice)
         all_openmoc_cells[refl_cell.id].setNumSectors(0)
+
