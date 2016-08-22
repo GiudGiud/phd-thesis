@@ -49,8 +49,8 @@ elif batchwise.options.clusterizer_type == 'pinch':
 
 # Turn off MGXS plotting for speed
 batchwise.clusterizer.plot_mgxs = False
-batchwise.plot_materials = True
-batchwise.plot_cells = True
+batchwise.plot_materials = False
+batchwise.plot_cells = False
 
 # Execute OpenMOC simulations over all batches of clustered MGXS libraries
 batchwise.execute()
