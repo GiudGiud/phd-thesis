@@ -18,7 +18,7 @@ batchwise.mat_mgxslib_filename = 'material'
 batchwise.zcoord = 205.
 batchwise.log_level = 'INFO'
 
-# Initialize assembly-wise CMFD mesh
+# Initialize quarter pin-wise CMFD mesh
 batchwise.cmfd = openmoc.Cmfd()
 #batchwise.cmfd.setLatticeStructure(23*17, 23*17)
 batchwise.cmfd.setLatticeStructure(23, 23)
