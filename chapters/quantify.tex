@@ -252,10 +252,28 @@ Each type of pin cell is discretized in the same way for the quarter core \ac{BE
 \section{Analysis of Multi-Group Results}
 \label{sec:chap8-mg-results}
 
+first paragraph: motivate this section
+-ran calculations with MGXS in OpenMOC
+-compared to reference OpenMC results in Chap.~\ref{chap:benchmarks}
+-2-, 8- and 70-group structures; 40-groups for full core BEAVRS case
+
+-need to mention that only a quarter (top right quadrant) of the \ac{BEAVRS} core was modeled
+  -quadrant symmetric so this was fine
+
+second paragraph: outline
+-Sec.~\ref{subsec:chap8-eigenvalues} - eigenvalues
+-Sec.~\ref{subsec:chap8-fission-rates} - the pin-wise energy-integrated fission rates
+-Sec.~\ref{subsec:chap8-capt-rates} - the pin-wise energy-integrated U-238 capture rates
 
 %%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Eigenvalues}
 \label{subsec:chap8-eigenvalues}
+
+first paragraph:
+-eigenvalue bias tabulated in Tab.~\ref{table:chap8-openmoc-eigenvalues}
+-
+
+-obser
 
 \begin{table}[h!]
   \centering
@@ -293,9 +311,9 @@ Each type of pin cell is discretized in the same way for the quarter core \ac{BE
 & Null & 1481 & 479 & -112 \\
 & Degenerate & 1398 & 487 & -100 \\
   \midrule
-  \multirow{3}{*}{\parbox{2cm}{\ac{BEAVRS} Quarter Core}} & Infinite & 2569 & 1889 & \\
-  & Null & 362 & 400 & \\
-  & Degenerate & & & \\
+  \multirow{3}{*}{\parbox{2cm}{\ac{BEAVRS} Quarter Core}} & Infinite & 2773 & 889 & \\
+  & Null & 2097 & 917 & 229 \\
+  & Degenerate & 2076 & 921 & \\
   \bottomrule
 \end{tabular}
 \end{table}
@@ -384,7 +402,7 @@ Each type of pin cell is discretized in the same way for the quarter core \ac{BE
 & Null & 5.33E+00 & 1.14E+00 & 1.93E-01 \\
 & Degenerate & 4.35E+00 & 1.09E+00 & 1.61E-01 \\
   \midrule
-  \multirow{3}{*}{\parbox{2cm}{\ac{BEAVRS} Quarter Core}} & Infinite & 497 & 497 & \\
+  \multirow{3}{*}{\parbox{2cm}{\ac{BEAVRS} Quarter Core}} & Infinite & & & \\
   & Null & & & \\
   & Degenerate & & & \\
   \bottomrule
