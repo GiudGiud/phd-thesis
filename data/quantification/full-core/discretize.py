@@ -158,32 +158,61 @@ def discretize_geometry(self):
     all_openmoc_cells[outer_cell.id].setNumSectors(0)
 
     ###########################################################################
-    # Discretize the baffle cells using a lattice
+    # Discretize the baffle steel cells using a lattice
     ###########################################################################
 
-    # Discretize the baffle cells
+    # Discretize the baffle steel cells
     baffle_cells = openmc_geometry.get_cells_by_name('Baffle Steel', matching=False)
 
     # Create a SS304-filled reflector cell/universe to put in a lattice
     all_materials = self.openmoc_geometry.getAllMaterials()
     ss304 = openmc_geometry.get_materials_by_name('SS304', matching=True)[0]
     ss304 = all_materials[ss304.id]
-    ss304_cell = openmoc.Cell(name='Refined Baffle Cell')
+    ss304_cell = openmoc.Cell(name='Refined Baffle Steel Cell')
     ss304_cell.setFill(all_materials[ss304.getId()])
-    baffle = openmoc.Universe(name='Refined Baffle Universe')
+    baffle = openmoc.Universe(name='Refined Baffle Steel Universe')
     baffle.addCell(ss304_cell)
 
-    # Sliced up baffle cells with a lattice
+    # Sliced up baffle steel cells with a lattice
     mesh_per_pin = 5
-    lattice = openmoc.Lattice(name='{} x {} Spaced Baffle'.format(mesh_per_pin, mesh_per_pin))
+    lattice = openmoc.Lattice(name='{} x {} Spaced Baffle Steel'.format(mesh_per_pin, mesh_per_pin))
     lattice.setWidth(width_x=1.26492 / mesh_per_pin, width_y=1.26492 / mesh_per_pin)
     template = [[baffle] * 17 * mesh_per_pin] * 17 * mesh_per_pin
     lattice.setUniverses([template])
 
-    # Put the lattice in each of the SS304-filled baffle cells
+    # Put the lattice in each of the SS304-filled baffle steel cells
     for baffle_cell in baffle_cells:
         all_openmoc_cells[baffle_cell.id].setFill(lattice)
         all_openmoc_cells[baffle_cell.id].setNumSectors(0)
+
+    ###########################################################################
+    # Discretize the baffle water gap cells using a lattice
+    ###########################################################################
+
+    # Discretize the baffle water gap cells
+    baffle_cells = openmc_geometry.get_cells_by_name('Baffle Water', matching=False)
+
+    # Create a water-filled reflector cell/universe to put in a lattice
+    all_materials = self.openmoc_geometry.getAllMaterials()
+    h2o = openmc_geometry.get_materials_by_name('SS304', matching=True)[0]
+    h2o = all_materials[h2o.id]
+    h2o_cell = openmoc.Cell(name='Refined Baffle Water Gap Cell')
+    h2o_cell.setFill(all_materials[h2o.getId()])
+    baffle = openmoc.Universe(name='Refined Baffle Water Gap Universe')
+    baffle.addCell(h2o_cell)
+
+    # Sliced up baffle water gap cells with a lattice
+    mesh_per_pin = 5
+    lattice = openmoc.Lattice(name='{} x {} Spaced Baffle Water Gap'.format(mesh_per_pin, mesh_per_pin))
+    lattice.setWidth(width_x=1.26492 / mesh_per_pin, width_y=1.26492 / mesh_per_pin)
+    template = [[baffle] * 17 * mesh_per_pin] * 17 * mesh_per_pin
+    lattice.setUniverses([template])
+
+    # Put the lattice in each of the water-filled baffle water gap cells
+    for baffle_cell in baffle_cells:
+        if 'water' in baffle_cell.name:
+            all_openmoc_cells[baffle_cell.id].setFill(lattice)
+            all_openmoc_cells[baffle_cell.id].setNumSectors(0)
 
     ###########################################################################
     # Discretize the inter-assembly grid sleeve cells using lattices
