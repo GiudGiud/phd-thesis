@@ -144,12 +144,37 @@ def discretize_geometry(self):
     for shield_panel in shield_panels:
         all_openmoc_cells[shield_panel.id].setNumSectors(0)
 
-    barrel = openmc_geometry.get_cells_by_name('Core Barrel', matching=True)
-    vessel = openmc_geometry.get_cells_by_name('RPV', matching=True)
-    vessel_liner = openmc_geometry.get_cells_by_name('RPV Liner', matching=True)
+    barrel = openmc_geometry.get_cells_by_name('Core Barrel', matching=True)[0]
+    vessel = openmc_geometry.get_cells_by_name('RPV', matching=True)[0]
+    vessel_liner = openmc_geometry.get_cells_by_name('RPV Liner', matching=True)[0]
     all_openmoc_cells[barrel.id].setNumSectors(0)
     all_openmoc_cells[vessel.id].setNumSectors(0)
     all_openmoc_cells[vessel_liner.id].setNumSectors(0)
+
+    # FIXME: Discretize the baffle to hell
+    baffle_cells = openmc_geometry.get_cells_by_name('Baffle Steel', matching=False)
+    print('# Baffle Cells: {}'.format(len(baffle_cells)))
+
+    # Create a SS304-filled reflector cell/universe to put in a lattice
+    all_materials = self.openmoc_geometry.getAllMaterials()
+    ss304 = openmc_geometry.get_materials_by_name('SS304', matching=True)[0]
+    ss304 = all_materials[ss304.id]
+    ss304_cell = openmoc.Cell(name='Refined Baffle Cell')
+    ss304_cell.setFill(all_materials[ss304.getId()])
+    baffle = openmoc.Universe(name='Refined Baffle Universe')
+    baffle.addCell(ss304_cell)
+
+    # Sliced up baffle cells with a lattice
+    mesh_per_pin = 10
+    lattice = openmoc.Lattice(name='{} x {} Spaced Baffle'.format(mesh_per_pin, mesh_per_pin))
+    lattice.setWidth(width_x=1.26492 / mesh_per_pin, width_y=1.26492 / mesh_per_pin)
+    template = [[baffle] * 17 * mesh_per_pin] * 17 * mesh_per_pin
+    lattice.setUniverses([template])
+
+    # Put the lattice in each of the water-filled reflector cells
+    for baffle_cell in baffle_cells:
+        all_openmoc_cells[baffle_cell.id].setFill(lattice)
+        all_openmoc_cells[baffle_cell.id].setNumSectors(0)
 
 
 def discretize_geometry_standalone(mat_mgxslib, openmoc_geometry):
