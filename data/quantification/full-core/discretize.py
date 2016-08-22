@@ -133,10 +133,11 @@ def discretize_geometry(self):
         all_openmoc_cells[refl_cell.id].setFill(lattice)
         all_openmoc_cells[refl_cell.id].setNumSectors(0)
 
-    # FIXME: Cleanup
-    outer_cell = openmc_geometry.get_cells_by_name('outer borosilicate', matching=True)[0]
-    all_openmoc_cells[outer_cell.id].setNumSectors(0)
+    ###########################################################################
+    # Remove sectors from some outer cells (barrel, baffle, etc.)
+    ###########################################################################
 
+    # Remove sector discretization from the shield panels
     shield_panels = openmc_geometry.get_cells_by_name('NE Shield Panel', matching=True)
     shield_panels.extend(openmc_geometry.get_cells_by_name('NW Shield Panel', matching=True))
     shield_panels.extend(openmc_geometry.get_cells_by_name('SE Shield Panel', matching=True))
@@ -144,20 +145,24 @@ def discretize_geometry(self):
     for shield_panel in shield_panels:
         all_openmoc_cells[shield_panel.id].setNumSectors(0)
 
+    # Remove sector discretization from outermost cells
     barrel = openmc_geometry.get_cells_by_name('Core Barrel', matching=True)[0]
     vessel = openmc_geometry.get_cells_by_name('RPV', matching=True)[0]
     vessel_liner = openmc_geometry.get_cells_by_name('RPV Liner', matching=True)[0]
-    downcomer = openmc_geometry.get_cells_by_name('RPV Liner', matching=True)[0]
+    downcomer = openmc_geometry.get_cells_by_name('Downcomer', matching=True)[0]
+    outer_cell = openmc_geometry.get_cells_by_name('outer borosilicate', matching=True)[0]
     all_openmoc_cells[barrel.id].setNumSectors(0)
     all_openmoc_cells[vessel.id].setNumSectors(0)
     all_openmoc_cells[vessel_liner.id].setNumSectors(0)
     all_openmoc_cells[downcomer.id].setNumSectors(0)
+    all_openmoc_cells[outer_cell.id].setNumSectors(0)
 
+    ###########################################################################
+    # Discretize the baffle cells using a lattice
+    ###########################################################################
 
-
-    # FIXME: Discretize the baffle to hell
+    # Discretize the baffle cells
     baffle_cells = openmc_geometry.get_cells_by_name('Baffle Steel', matching=False)
-    print('# Baffle Cells: {}'.format(len(baffle_cells)))
 
     # Create a SS304-filled reflector cell/universe to put in a lattice
     all_materials = self.openmoc_geometry.getAllMaterials()
@@ -169,24 +174,25 @@ def discretize_geometry(self):
     baffle.addCell(ss304_cell)
 
     # Sliced up baffle cells with a lattice
-    mesh_per_pin = 10
+    mesh_per_pin = 5
     lattice = openmoc.Lattice(name='{} x {} Spaced Baffle'.format(mesh_per_pin, mesh_per_pin))
     lattice.setWidth(width_x=1.26492 / mesh_per_pin, width_y=1.26492 / mesh_per_pin)
     template = [[baffle] * 17 * mesh_per_pin] * 17 * mesh_per_pin
     lattice.setUniverses([template])
 
-    # Put the lattice in each of the water-filled reflector cells
+    # Put the lattice in each of the SS304-filled baffle cells
     for baffle_cell in baffle_cells:
         all_openmoc_cells[baffle_cell.id].setFill(lattice)
         all_openmoc_cells[baffle_cell.id].setNumSectors(0)
 
+    ###########################################################################
+    # Discretize the inter-assembly grid sleeve cells using lattices
+    ###########################################################################
 
-
-    # FIXME: Discretize the inter-assembly grid sleeves and water gaps
+    # Discretize the inter-assembly grid sleeves and water gaps
     grid_sleeve_cells = openmc_geometry.get_cells_by_name('Grid sleeve axial universe axial', matching=False)
-    print('# Grid sleeve Cells: {}'.format(len(baffle_cells)))
 
-    # Create a SS304-filled reflector cell/universe to put in a lattice
+    # Create a water-filled reflector cell/universe to put in a lattice
     all_materials = self.openmoc_geometry.getAllMaterials()
     h2o = openmc_geometry.get_materials_by_name('water', matching=True)[0]
     h2o = all_materials[h2o.id]
@@ -208,12 +214,10 @@ def discretize_geometry(self):
             all_openmoc_cells[grid_sleeve_cell.id].setFill(lattice)
             all_openmoc_cells[grid_sleeve_cell.id].setNumSectors(0)
 
-
-    # FIXME
+    # Discretize the inter-assembly grid sleeves and water gaps
     grid_sleeve_cells = openmc_geometry.get_cells_by_name('Intermediate grid sleeve pincell radial outer: water box', matching=True)
-    print('# Grid sleeve Outer Cells: {}'.format(len(baffle_cells)))
 
-    # Create a SS304-filled reflector cell/universe to put in a lattice
+    # Create a water-filled reflector cell/universe to put in a lattice
     all_materials = self.openmoc_geometry.getAllMaterials()
     h2o = openmc_geometry.get_materials_by_name('water', matching=True)[0]
     h2o = all_materials[h2o.id]
@@ -231,15 +235,14 @@ def discretize_geometry(self):
 
     # Put the lattice in each of the water-filled grid sleeve cells
     for grid_sleeve_cell in grid_sleeve_cells:
-        all_openmoc_cells[grid_sleeve_cell.id].setFill(lattice)
-        all_openmoc_cells[grid_sleeve_cell.id].setNumSectors(0)
+        if 'water' in grid_sleeve_cell.name:
+            all_openmoc_cells[grid_sleeve_cell.id].setFill(lattice)
+            all_openmoc_cells[grid_sleeve_cell.id].setNumSectors(0)
 
-
-    # FIXME
+    # Discretize the inter-assembly grid sleeves and water gaps
     grid_sleeve_cells = openmc_geometry.get_cells_by_name('Intermediate grid sleeve pincell radial 0: zirc', matching=True)
-    print('# Grid sleeve Zirc Cells: {}'.format(len(baffle_cells)))
 
-    # Create a SS304-filled reflector cell/universe to put in a lattice
+    # Create a zircaloy-filled reflector cell/universe to put in a lattice
     all_materials = self.openmoc_geometry.getAllMaterials()
     zirc = openmc_geometry.get_materials_by_name('zirc', matching=True)[0]
     zirc = all_materials[zirc.id]
@@ -255,16 +258,10 @@ def discretize_geometry(self):
     template = [[grid_sleeve] * 17 * mesh_per_pin] * 17 * mesh_per_pin
     lattice.setUniverses([template])
 
-    # Put the lattice in each of the water-filled grid sleeve cells
+    # Put the lattice in each of the zircaloy-filled grid sleeve cells
     for grid_sleeve_cell in grid_sleeve_cells:
-        if 'water' in grid_sleeve_cell.name:
-            all_openmoc_cells[grid_sleeve_cell.id].setFill(lattice)
-            all_openmoc_cells[grid_sleeve_cell.id].setNumSectors(0)
-
-    # FIXME 'Grid sleeve axial universe axial 4: water'
-    #        'Intermediate grid sleeve pincell radial 0: zirc'
-    #       'Intermediate grid sleeve pincell radial outer: water box'
-
+        all_openmoc_cells[grid_sleeve_cell.id].setFill(lattice)
+        all_openmoc_cells[grid_sleeve_cell.id].setNumSectors(0)
 
 
 def discretize_geometry_standalone(mat_mgxslib, openmoc_geometry):
