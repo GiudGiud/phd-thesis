@@ -20,8 +20,7 @@ batchwise.log_level = 'INFO'
 
 # Initialize quarter pin-wise CMFD mesh
 batchwise.cmfd = openmoc.Cmfd()
-#batchwise.cmfd.setLatticeStructure(23*17, 23*17)
-batchwise.cmfd.setLatticeStructure(23, 23)
+batchwise.cmfd.setLatticeStructure(23*17, 23*17)
 batchwise.cmfd.setKNearest(3)
 batchwise.with_cmfd = True
 
@@ -39,6 +38,27 @@ elif batchwise.options.clusterizer_type == 'null':
     batchwise.clusterizer = infermc.clusterizer.NullClusterizer()
 elif batchwise.options.clusterizer_type == 'degenerate':
     batchwise.clusterizer = infermc.clusterizer.DegenerateClusterizer()
+
+# FIXME                                                                                                
+import sklearn.cluster
+
+# Initialize a scikit-learn clustering estimator                                                       
+#estimator = sklearn.cluster.AgglomerativeClustering()
+#estimator.n_clusters = batchwise.options.num_clusters
+
+estimator = sklearn.cluster.KMeans(init='k-means++')
+estimator.n_clusters = batchwise.options.num_clusters
+
+# If a basic clusterizer type ('null', 'degenerate', 'lns') was not specified
+# as a command line argument initialize a clusterizer with scikit-learn
+if batchwise.options.clusterizer_type == 'combined':
+    clusterizer = infermc.clusterizer.CombinedClusterizer()
+    batchwise.clusterizer = clusterizer
+    batchwise.clusterizer.estimator = estimator
+elif batchwise.options.clusterizer_type == 'pinch':
+    clusterizer = infermc.clusterizer.PinchClusterizer(6e-6, 'U238', 'capture')
+    batchwise.clusterizer = clusterizer
+    batchwise.clusterizer.estimator = estimator
 
 # Turn off MGXS plotting for speed
 batchwise.clusterizer.plot_mgxs = False
