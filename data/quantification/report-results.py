@@ -39,7 +39,7 @@ directories = {'assm-1.6': '1.6\\% Assm',
                'reflector': '2$\\times$2 Colorset w/ Reflector',
                'full-core': 'BEAVRS Full Core'}
 
-groups = [2] #, 8, 70]
+groups = [8, 70]
 clusterizer_types = ['infinite', 'null', 'degenerate']
 
 print('EIGENVALUE BIAS')
@@ -63,7 +63,10 @@ for clusterizer_type in clusterizer_types:
     msg += '& {} '.format(clusterizer_type.capitalize())
     for num_groups in groups:
         f = h5py.File('{}-groups-{}.h5'.format(num_groups, clusterizer_type))
-        bias = f['{}-groups'.format(num_groups)][clusterizer_type]['fission'][hdf5_key]
+#        bias = f['{}-groups'.format(num_groups)][clusterizer_type]['fission'][hdf5_key]
+        bias = f['{}-groups'.format(num_groups)][clusterizer_type]['fission']['openmoc'][-1, ...] - \
+               f['{}-groups'.format(num_groups)][clusterizer_type]['fission']['openmc'][-1, ...]
+
         max_fiss = max(np.nanmax(np.ravel(bias)), max_fiss)
         min_fiss = min(np.nanmin(np.ravel(bias)), min_fiss)
         min_bias = np.nanmin(np.ravel(bias))
@@ -80,7 +83,10 @@ for clusterizer_type in clusterizer_types:
     msg += '& {} '.format(clusterizer_type.capitalize())
     for num_groups in groups:
         f = h5py.File('{}-groups-{}.h5'.format(num_groups, clusterizer_type))
-        bias = f['{}-groups'.format(num_groups)][clusterizer_type]['fission'][hdf5_key]
+#        bias = f['{}-groups'.format(num_groups)][clusterizer_type]['fission'][hdf5_key]
+        bias = f['{}-groups'.format(num_groups)][clusterizer_type]['fission']['openmoc'][-1, ...] - \
+               f['{}-groups'.format(num_groups)][clusterizer_type]['fission']['openmc'][-1, ...]
+
         bias = np.nanmean(np.fabs(np.ravel(bias)))
         msg += '& {:1.2E} '.format(bias)
         f.close()
@@ -96,9 +102,13 @@ for clusterizer_type in clusterizer_types:
     msg += '& {} '.format(clusterizer_type.capitalize())
     for num_groups in groups:
         f = h5py.File('{}-groups-{}.h5'.format(num_groups, clusterizer_type))
-        bias = f['{}-groups'.format(num_groups)][clusterizer_type]['capture'][hdf5_key]
-        max_capt = max(np.nanmax(np.ravel(bias)), max_fiss)
-        min_capt = min(np.nanmin(np.ravel(bias)), min_fiss)
+#        bias = f['{}-groups'.format(num_groups)][clusterizer_type]['capture'][hdf5_key]
+
+        bias = f['{}-groups'.format(num_groups)][clusterizer_type]['capture']['openmoc'][-1, ...] - \
+               f['{}-groups'.format(num_groups)][clusterizer_type]['capture']['openmc'][-1, ...]
+
+        max_capt = max(np.nanmax(np.ravel(bias)), max_capt)
+        min_capt = min(np.nanmin(np.ravel(bias)), min_capt)
         min_bias = np.nanmin(np.ravel(bias))
         max_bias = np.nanmax(np.ravel(bias))
         bias = max_bias if abs(max_bias) > abs(min_bias) else min_bias
@@ -113,7 +123,10 @@ for clusterizer_type in clusterizer_types:
     msg += '& {} '.format(clusterizer_type.capitalize())
     for num_groups in groups:
         f = h5py.File('{}-groups-{}.h5'.format(num_groups, clusterizer_type))
-        bias = f['{}-groups'.format(num_groups)][clusterizer_type]['capture'][hdf5_key]
+#        bias = f['{}-groups'.format(num_groups)][clusterizer_type]['capture'][hdf5_key]
+        bias = f['{}-groups'.format(num_groups)][clusterizer_type]['capture']['openmoc'][-1, ...] - \
+               f['{}-groups'.format(num_groups)][clusterizer_type]['capture']['openmc']
+
         bias = np.nanmean(np.fabs(np.ravel(bias)))
         msg += '& {:1.2E} '.format(bias)
         f.close()
@@ -135,7 +148,9 @@ cmap.set_bad(alpha=0.0)
 for i, clusterizer_type in enumerate(clusterizer_types):
     for j, num_groups in enumerate(groups):
         f = h5py.File('{}-groups-{}.h5'.format(num_groups, clusterizer_type))
-        bias = f['{}-groups'.format(num_groups)][clusterizer_type]['fission'][hdf5_key][-1, ...]
+#        bias = f['{}-groups'.format(num_groups)][clusterizer_type]['fission'][hdf5_key][-1, ...]
+        bias = f['{}-groups'.format(num_groups)][clusterizer_type]['fission']['openmoc'][-1, ...] - \
+               f['{}-groups'.format(num_groups)][clusterizer_type]['fission']['openmc'][-1, ...]
 
         # Extract the array and make it quarter core symmetric
         if quarter_symmetric:
@@ -189,7 +204,9 @@ fig.set_figwidth(8.5)
 for i, clusterizer_type in enumerate(clusterizer_types):
     for j, num_groups in enumerate(groups):
         f = h5py.File('{}-groups-{}.h5'.format(num_groups, clusterizer_type))
-        bias = f['{}-groups'.format(num_groups)][clusterizer_type]['capture'][hdf5_key][-1, ...]
+#        bias = f['{}-groups'.format(num_groups)][clusterizer_type]['capture'][hdf5_key][-1, ...]
+        bias = f['{}-groups'.format(num_groups)][clusterizer_type]['capture']['openmoc'][-1, ...] - \
+               f['{}-groups'.format(num_groups)][clusterizer_type]['capture']['openmc'][-1, ...]
 
         # Extract the array and make it quarter core symmetric
         if quarter_symmetric:
@@ -209,7 +226,7 @@ for i, clusterizer_type in enumerate(clusterizer_types):
         subplot_ctr = '{}{}{}'.format(len(clusterizer_types),len(groups),i*len(groups)+j+1)
         plt.subplot(int(subplot_ctr))
         im = plt.imshow(bias, interpolation='none',
-            cmap=cmap, vmin=min_fiss, vmax=max_fiss)
+            cmap=cmap, vmin=min_capt, vmax=max_capt)
 
         if num_groups == groups[0]:
             plt.ylabel(clusterizer_type.capitalize(), fontsize=16)

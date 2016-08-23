@@ -157,6 +157,8 @@ def discretize_geometry(self):
     all_openmoc_cells[downcomer.id].setNumSectors(0)
     all_openmoc_cells[outer_cell.id].setNumSectors(0)
 
+    return
+
     ###########################################################################
     # Discretize the baffle steel cells using a lattice
     ###########################################################################
