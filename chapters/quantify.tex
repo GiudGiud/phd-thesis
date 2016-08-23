@@ -15,9 +15,9 @@ Three different schemes for spatial homogenization of pin-wise \ac{MGXS} are int
 \section{Pin-wise Spatial Homogenization Schemes}
 \label{sec:chap8-pinwise-space-homogenize}
 
-This chapter employs three different spatial homogenization schemes to model spatial self-shielding effects in \ac{MGXS}. Although all spatial zones may experience spatial self-shielding, this chapter only models the impact of spatial self-shielding on \ac{MGXS} in fissile regions. The \textit{infinite}, \textit{null} and \textit{degenerate} spatial homogenization schemes are introduced in Secs.~\Crefrange{subsec:chap8-infinite}{subsec:chap8-degenerate}. These schemes model spatial self-shielding for each fuel pin with increasing granularity and complexity. The total number of materials (\textit{i.e.}, \ac{MGXS}) used to model each benchmark with each homogenization scheme is given in Tab.~\ref{table:chap8-num-materials}. A fuel assembly, 2$\times$2 colorset and part of the full core \ac{BEAVRS} model are color-coded by material and illustrated in Fig.~\ref{fig:chap8-homogenization-schemes} for each homogenization scheme.
+This chapter employs three different spatial homogenization schemes to model spatial self-shielding effects in \ac{MGXS}. Although all spatial zones may experience spatial self-shielding, this chapter only models the impact of spatial self-shielding on \ac{MGXS} in fissile regions. The \textit{infinite}, \textit{null} and \textit{degenerate} spatial homogenization schemes are introduced in Secs.~\Crefrange{subsec:chap8-infinite}{subsec:chap8-degenerate}. These schemes model spatial self-shielding for each fuel pin with increasing granularity and complexity. The total number of materials (\textit{i.e.}, \ac{MGXS}) used to model each benchmark with each homogenization scheme is given in Tab.~\ref{table:chap8-num-materials}. A fuel assembly, 2$\times$2 colorset and part of the quarter core \ac{BEAVRS} model are color-coded by material and illustrated in Fig.~\ref{fig:chap8-homogenization-schemes} for each homogenization scheme.
 
-The \texttt{openmc.mgxs} module (see Sec.~\ref{subsec:chap4-mgxs}) was used to compute 70-group \ac{MGXS} with OpenMC for each of the six heterogeneous benchmarks introduced in Chap.~\ref{chap:benchmarks}. The tallied \ac{MGXS} data was condensed to coarse 2-group and 8-group structures with downstream data processing as necessary. The OpenMC simulations were performed with the same runtime parameters as those used to generate the reference results (see Sec.~\ref{sec:chap7-ref-results}). In particular, 1000 batches with 10$^{6}$ particle histories per batch were simulated for each benchmark. The fission source was converged with 200 inactive batches for the full core \ac{BEAVRS} model, while 100 inactive batches were employed for the other five benchmarks (see Sec.~\ref{subsec:chap7-src-stationarity}). OpenMC's iso-in-lab feature (see Sec.~\ref{subsec:chap4-iso-in-lab}) was employed to enable consistent comparisons between OpenMC's reference results and OpenMOC's calculations with an isotropic in lab scattering source.
+The \texttt{openmc.mgxs} module (see Sec.~\ref{subsec:chap4-mgxs}) was used to compute 70-group \ac{MGXS} with OpenMC for each of the six heterogeneous benchmarks introduced in Chap.~\ref{chap:benchmarks}. The tallied \ac{MGXS} data was condensed to coarse 2-group and 8-group structures with downstream data processing as necessary. The OpenMC simulations were performed with the same runtime parameters as those used to generate the reference results (see Sec.~\ref{sec:chap7-ref-results}). In particular, 1000 batches with 10$^{6}$ particle histories per batch were simulated for each benchmark. The fission source was converged with 200 inactive batches for the quarter core \ac{BEAVRS} model, while 100 inactive batches were employed for the other five benchmarks (see Sec.~\ref{subsec:chap7-src-stationarity}). OpenMC's iso-in-lab feature (see Sec.~\ref{subsec:chap4-iso-in-lab}) was employed to enable consistent comparisons between OpenMC's reference results and OpenMOC's calculations with an isotropic in lab scattering source.
 
 \begin{table}[h!]
   \centering
@@ -126,9 +126,7 @@ The degenerate scheme generates \ac{MGXS} for each fuel pin instance using OpenM
 \section{\ac{MOC} Runtime Parameters}
 \label{sec:chap8-moc-params}
 
-The infinite, null and spatial homogenization schemes were used to prepare \ac{MGXS} libraries for OpenMOC simulations of each of the six heterogeneous \ac{PWR} benchmarks introduced in Chap.~\ref{chap:benchmarks}. This section briefly outlines the angular, spatial and \ac{CMFD} meshes used in the OpenMOC simulations. The total number of flat source regions, and \ac{MOC} tracks and segments are summarized for each benchmark in Tab.~\ref{table:chap8-num-fsrs-tracks-segments}. It was crucial to use an adequate discretization to accurately compare simulation results between the three spatial homogenization schemes, as well as to the reference OpenMC results.
-
-The OpenMOC simulations were performed using a version of the code compiled with double precision floating point arithmetic. Each of the simulations was converged to 10$^{-5}$ on the root mean square of the energy-integrated fission source in each \ac{FSR}. It should be noted that a convergence criterion of 10$^{-7}$ was employed for the OpenMOC simulations of simple benchmarks without \ac{CMFD} in Chap.~\ref{chap:biases}, but the looser convergence criterion of 10$^{-5}$ may be used for calculations with \ac{CMFD} acceleration (see Sec.~\ref{subsubsec:chap4-openmoc-cmfd})\footnote{The convergence criteria measures the residual between successive iterations. However, the metrics of interest should actually measure convergence to the asymptotic solution, which depends on both the residual between successive iterations and the dominance ratio (or convergence ratio). \ac{CMFD} significantly reduces the dominance ratio such that sufficient convergence to the asymptotic solution is achieved at a much lower successive iteration residual.} \ac{CMFD} used the same energy group structure as the corresponding \ac{MOC} calculations.
+The infinite, null and spatial homogenization schemes were used to prepare \ac{MGXS} libraries for OpenMOC simulations of each of the six heterogeneous \ac{PWR} benchmarks introduced in Chap.~\ref{chap:benchmarks}. This section briefly outlines the energy group structures and angular, spatial and \ac{CMFD} meshes used in the OpenMOC simulations. The total number of flat source regions, and \ac{MOC} tracks and segments are summarized for each benchmark in Tab.~\ref{table:chap8-num-fsrs-tracks-segments}. It was crucial to use an adequate discretization to accurately compare simulation results between the three spatial homogenization schemes, as well as to the reference OpenMC results.
 
 \begin{table}[h!]
   \centering
@@ -154,7 +152,40 @@ The OpenMOC simulations were performed using a version of the code compiled with
   \midrule
 2$\times$2 Colorset w/ Reflector & 276,052 & 104,788 & 63,891,381 \\
   \midrule
-\ac{BEAVRS} Quarter Core & 2,512,384 & 201,620 & 427,683,579 \\
+%\ac{BEAVRS} Quarter Core & 2,512,384 & 201,620 & 427,683,579 \\
+\ac{BEAVRS} Quarter Core & 2,512,384 & 806,480 & 1,710,734,316 \\
+  \bottomrule
+\end{tabular}
+\end{table}
+
+Each of the simulations was converged to 10$^{-5}$ on the root mean square of the energy-integrated fission source in each \ac{FSR}. It should be noted that a convergence criterion of 10$^{-7}$ was employed for the OpenMOC simulations of simple benchmarks without \ac{CMFD} in Chap.~\ref{chap:biases}, but the looser convergence criterion of 10$^{-5}$ may be used for calculations with \ac{CMFD} acceleration (see Sec.~\ref{subsubsec:chap4-openmoc-cmfd})\footnote{The convergence criteria measures the residual between successive iterations. However, the metrics of interest should actually measure convergence to the asymptotic solution, which depends on both the residual between successive iterations and the dominance ratio (or convergence ratio). \ac{CMFD} significantly reduces the dominance ratio such that sufficient convergence to the asymptotic solution is achieved at a much lower successive iteration residual.} \ac{CMFD} used the same energy group structure as the corresponding \ac{MOC} calculations.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Energy Group Structures}
+\label{subsec:chap8-energy-groups}
+
+The individual assembly and 2$\times$2 colorset benchmarks are modeled with \ac{MGXS} in 2, 8 and 70 energy groups; 2, 8, and 40 groups are used for the quarter core \ac{BEAVRS} benchmark due to memory constraints. The energy group structures are the same as those used in Chaps.~\ref{chap:biases} and~\ref{chap:sph} and are tabulated in App.~\ref{app:energy-groups}. The \ac{MOC} energy group structures were collapsed onto coarser group structures for \ac{CMFD} acceleration. The mapping from \ac{MOC} to \ac{CMFD} group structures is listed in Tab.~\ref{table:chap8-coarse-cmfd-groups}. The coarse \ac{CMFD} structures were derived to best approach equal lethargy spacing between coarse groups. The coarse \ac{CMFD} structures significantly improved the speed of the 40-group and 70-group OpenMOC calculations.
+
+\begin{table}[h!]
+  \centering
+  \caption[Coarse \ac{CMFD} energy group structures]{The coarse \ac{CMFD} energy group structures for each of the fine \ac{MOC} group structures.}
+  \small
+  \label{table:chap8-coarse-cmfd-groups}
+  \vspace{6pt}
+  \begin{tabular}{c c p{6.5cm}}
+  \toprule
+  \rowcolor{lightgray}
+  \multicolumn{1}{c}{\cellcolor{lightgray} \textbf{\# \ac{MOC} Groups}} &
+  \multicolumn{1}{c}{\cellcolor{lightgray} \textbf{\# \ac{CMFD} Groups}} &
+  \multicolumn{1}{c}{\cellcolor{lightgray} \textbf{\ac{CMFD} Fine-to-Coarse Structure}} \\
+  \midrule
+  2 & 2 & [1], [2] \\
+  \midrule
+  8 & 4 & [1 --2], [3], [4 -- 5], [6 -- 8] \\
+  \midrule
+  40 & 10 & [1 -- 3], [4 -- 7], [8], [9], [10], [11 -- 13], [14 -- 16], [17 -- 29], [30 -- 36], [37 -- 40] \\
+  \midrule
+  70 & 14 & [1 -- 2], [3 -- 6], [7 -- 9], [10 -- 12], [13 -- 16], [17 -- 19], [20 -- 21], [22 -- 24], [25 -- 27], [28 -- 33], [34 -- 53], [54 -- 61], [62 -- 68], [69 -- 70] \\ 
   \bottomrule
 \end{tabular}
 \end{table}
@@ -229,13 +260,13 @@ Flat source region spatial discretization meshes are applied to each of the six 
 \end{subfigure}
 \begin{subfigure}{0.45\textwidth}
   \centering
-  \includegraphics[width=0.87\linewidth]{figures/quantification/fsrs/fsrs-full-core-quarter-assm-cmfd}
+  \includegraphics[width=0.87\linewidth]{figures/quantification/fsrs/fsrs-full-core-quarter-pin-cmfd}
   \caption{}
   \label{fig:chap8-full-core-fsrs}
 \end{subfigure}%
 \begin{subfigure}{0.45\textwidth}
   \centering
-  \includegraphics[width=0.87\linewidth]{figures/quantification/cmfd/cmfd-cells-full-core-quarter-assm-cmfd}
+  \includegraphics[width=0.87\linewidth]{figures/quantification/cmfd/cmfd-cells-full-core-quarter-pin-cmfd}
   \caption{}
   \label{fig:chap8-full-core-cmfd-cells}
 \end{subfigure}
@@ -252,30 +283,17 @@ Each type of pin cell is discretized in the same way for the quarter core \ac{BE
 \section{Analysis of Multi-Group Results}
 \label{sec:chap8-mg-results}
 
-first paragraph: motivate this section
--ran calculations with MGXS in OpenMOC
--compared to reference OpenMC results in Chap.~\ref{chap:benchmarks}
--2-, 8- and 70-group structures; 40-groups for full core BEAVRS case
-
--need to mention that only a quarter (top right quadrant) of the \ac{BEAVRS} core was modeled
-  -quadrant symmetric so this was fine
-
-second paragraph: outline
--Sec.~\ref{subsec:chap8-eigenvalues} - eigenvalues
--Sec.~\ref{subsec:chap8-fission-rates} - the pin-wise energy-integrated fission rates
--Sec.~\ref{subsec:chap8-capt-rates} - the pin-wise energy-integrated U-238 capture rates
+Each of the six benchmarks is modeled with OpenMOC using \ac{MGXS} generated using the infinite, null and degenerate spatial homogenization schemes. The eigenvalues and pin-wise fission and U-238 capture rates computed by OpenMOC are compared to the reference OpenMC solutions in Secs.~\ref{subsec:chap8-eigenvalues},~\ref{subsec:chap8-fiss-rates} and~\ref{subsec:chap8-capt-rates}, respectively.
 
 %%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Eigenvalues}
 \label{subsec:chap8-eigenvalues}
 
-first paragraph:
--eigenvalue bias tabulated in Tab.~\ref{table:chap8-openmoc-eigenvalues}
--
+The OpenMOC eigenvalues were compared to the reference OpenMC eigenvaues in Tab.~\ref{table:chap7-ref-eigenvalues}. The eigenvalue bias $\Delta\rho$ was computed from Eqn.~\ref{eqn:chap5-delta-rho} in units of \ac{pcm}. The bias is listed for each benchmark, energy group structure and spatial homogenization scheme in Tab.~\ref{table:chap8-openmoc-eigenvalues}. It should be recalled that isotropic in lab scattering is used by OpenMC to compute both the reference solution and the \ac{MGXS}. If anisotropic scattering were employed in OpenMC, one would expect quite different biases without a robust implementation of a higher order scattering kernel in OpenMOC.
 
--obser
+As expected, the eigenvalue bias is highly dependent on energy group structure. In general, a positive bias is exhibited for 2 groups with an increasingly negative trend with more groups. The bias is remarkably consistent between -100 and -200 \ac{pcm} for 40 or 70 groups for all of the benchmarks. This slightly negative bias is reminiscent of the negative bias of -200 \ac{pcm} observed for the 1D slab and 2D pin cell \ac{PWR} benchmarks when modeled with 70 groups in Chap.~\ref{chap:biases}. The introduction of a reflector region in the 2$\times$2 colorset increases the bias to over 1000 \ac{pcm} for all homogenization schemes for 2-groups, but the bias is eliminated when modeled with more groups.
 
-\begin{table}[h!]
+\begin{table}[ht!]
   \centering
   \caption[OpenMOC eigenvalue bias for heterogeneous benchmarks]{OpenMOC eigenvalue bias $\Delta\rho$ for heterogeneous benchmarks with varying spatial homogenization schemes and energy group structures.}
   \small
@@ -289,7 +307,7 @@ first paragraph:
   \multirow{-2}{*}{\cellcolor{lightgray} \bf \ac{MGXS} Scheme} &
   \multicolumn{1}{c}{{\cellcolor{lightgray} \bf 2-Group}} &
   \multicolumn{1}{c}{{\cellcolor{lightgray} \bf 8-Group}} &
-  \multicolumn{1}{c}{{\cellcolor{lightgray} \bf 70-Group}} \\
+  \multicolumn{1}{c}{{\cellcolor{lightgray} \bf 40/70-Group\footnotemark{}}} \\
   \midrule
 \multirow{3}{*}{\parbox{2.5cm}{1.6\% Assm}} & Infinite & 213 & 3 & -170 \\
 & Null & 79 & -50 & -142 \\
@@ -311,21 +329,37 @@ first paragraph:
 & Null & 1481 & 479 & -112 \\
 & Degenerate & 1398 & 487 & -100 \\
   \midrule
-  \multirow{3}{*}{\parbox{2cm}{\ac{BEAVRS} Quarter Core}} & Infinite & 2773 & 889 & \\
-  & Null & 2097 & 917 & 229 \\
-  & Degenerate & 2076 & 921 & \\
+  \multirow{3}{*}{\parbox{2cm}{\ac{BEAVRS} Quarter Core}} & Infinite & 2574 & 360 & -101 \\
+  & Null & 1883 & 393 & -83 \\
+  & Degenerate & & & -75 \\
   \bottomrule
 \end{tabular}
 \end{table}
 
+\footnotetext{The \ac{BEAVRS} benchmark is modeled with 40 groups; all other benchmarks are modeled with 70 groups.\label{note1}}
+
+The eigenvalue bias is also dependent on the spatial homogenization scheme used to compute \ac{MGXS} in the fuel. It should first be noted that the eigenvalues are consistent for the null and degenerate schemes to within 10 \ac{pcm} for nearly all group structures and benchmarks. This is expected since the \ac{MGXS} for each scheme is homogenized from the same flux and should preserve globally integrated reaction rates. The infinite scheme also agrees with the null and degenerate schemes to within 50 \ac{pcm} for all of the benchmarks with 8 and 40/70 groups. However, the infinite scheme produces a markedly larger bias for the 2-group structure. The introduction of \acp{BP} to the 3.1\% enriched fuel assembly substantially increases the bias to over 1000 \ac{pcm} for the infinite scheme, while only increasing the magnitude by roughly 50 \ac{pcm} for the null and degenerate schemes. This disparity in the eigenvalue bias between the infinite and null/degenerate schemes is further increased with the introduction of a reflector to the 2$\times$2 colorset, and other heterogeneities in the quarter core \ac{BEAVRS} model.
+
+% PUT THIS IN ANALYSIS SECTION???
+%These results demonstrate the importance of using a relatively fine energy group structure -- in this case, 40 and 70 groups -- to accurately predict the eigenvalue in deterministic multi-group calculations. In addition, use of the spatially self-shielded flux from the heterogeneous geometry to collapse 2-group cross sections in the null and degenerate schemes enabled significantly more accurate eigenvalues than was possible with the infinite lattice flux. 
+
+\begin{emphbox}
+\textbf{A consistent eigenvalue bias between OpenMC and OpenMOC of less than 200 \ac{pcm} is observed for all benchmarks and homogenization schemes with 70 groups. The eigenvalues for the null and degenerate schemes are consistent to within 10 \ac{pcm} for eight or more groups due to reaction rate preservation.}
+\end{emphbox}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Fission Rates}
 \label{subsec:chap8-fiss-rates}
 
-\begin{table}[h!]
+The OpenMOC energy-integrated pin-wise fission rates were compared to the reference OpenMC fission rates in Figs.~\Crefrange{fig:chap7-fiss-rates-1.6-assm}{fig:chap7-fiss-rates-full-core}. The percent relative errors for each pin's fission rates were computed and the maximum and mean errors are listed for each benchmark, energy group structure and spatial homogenization scheme in Tabs.~\ref{table:chap8-openmoc-max-fiss-rates} and~\ref{table:chap8-openmoc-mean-fiss-rates}, respectively. In particular, the maximum errors are the maximum of the absolute values of the errors along with the appropriate sign, while the mean errors are the averages of the absolute error magnitudes.
+
+As was the case for the eigenvalues, the fission rate errors are highly dependent on energy group structure. As expected, the maximum and mean errors are substantially reduced with finer energy group structures for all benchmarks and spatial homogenization schemes. The maximum fission rates are 2 -- 10+\% in 2 groups for the individual fuel assembly and 2$\times$2 colorset benchmarks, respectively, but decrease to <0.5\% and <1\% when modeled with 70 groups. The mean fission rate errors likewise decrease with finer energy group structures, and are <0.2\% in magnitude for the assembly and colorset benchmarks for all homogenization schemes with 70 groups.
+
+The fission rate errors are somewhat dependent on the spatial homogenization scheme used to compute \ac{MGXS} in the fuel. In particular, the degenerate scheme produces slightly smaller maximum and mean errors than the null and infinite schemes. This reduction in error is largest in 2 groups -- where the maximum is reduced by nearly 50\% for each of the assembly benchmarks -- but is negligible with more groups. The null and infinite schemes exhibit even less of a difference in their maximum and mean fission rate errors, with no identifiable trend in the data.
+
+\begin{table}[ht!]
   \centering
-  \caption[Maximum OpenMOC fission rate errors]{Maximum fission rate errors for varying spatial homogenization schemes and energy group structures.}
+  \caption[Maximum OpenMOC fission rate errors]{OpenMOC maximum fission rate errors for heterogeneous benchmarks with varying spatial homogenization schemes and energy group structures.}
   \small
   \label{table:chap8-openmoc-max-fiss-rates}
   \vspace{6pt}
@@ -337,7 +371,7 @@ first paragraph:
   \multirow{-2}{*}{\cellcolor{lightgray} \bf \ac{MGXS} Scheme} &
   \multicolumn{1}{c}{{\cellcolor{lightgray} \bf 2-Group}} &
   \multicolumn{1}{c}{{\cellcolor{lightgray} \bf 8-Group}} &
-  \multicolumn{1}{c}{{\cellcolor{lightgray} \bf 70-Group}} \\
+  \multicolumn{1}{c}{{\cellcolor{lightgray} \bf 40/70-Group\textsuperscript{\ref{note1}}}} \\
   \midrule
 \multirow{3}{*}{\parbox{2.5cm}{1.6\% Assm}} & Infinite & 2.76E+00 & 7.52E-01 & 4.71E-01 \\
 & Null & 2.76E+00 & 7.43E-01 & 4.71E-01 \\
@@ -366,9 +400,9 @@ first paragraph:
 \end{tabular}
 \end{table}
 
-\begin{table}[h!]
+\begin{table}[ht!]
   \centering
-  \caption[Mean OpenMOC fission rate errors]{Mean absolute fission rate errors for varying spatial homogenization schemes and energy group structures.}
+  \caption[Mean OpenMOC fission rate errors]{OpenMOC mean absolute fission rate errors for heterogeneous benchmarks with varying spatial homogenization schemes and energy group structures.}
   \small
   \label{table:chap8-openmoc-mean-fiss-rates}
   \vspace{6pt}
@@ -380,7 +414,7 @@ first paragraph:
   \multirow{-2}{*}{\cellcolor{lightgray} \bf \ac{MGXS} Scheme} &
   \multicolumn{1}{c}{{\cellcolor{lightgray} \bf 2-Group}} &
   \multicolumn{1}{c}{{\cellcolor{lightgray} \bf 8-Group}} &
-  \multicolumn{1}{c}{{\cellcolor{lightgray} \bf 70-Group}} \\
+  \multicolumn{1}{c}{{\cellcolor{lightgray} \bf 40/70-Group\textsuperscript{\ref{note1}}}} \\
   \midrule
 \multirow{3}{*}{\parbox{2.5cm}{1.6\% Assm}} & Infinite & 1.15E+00 & 2.88E-01 & 9.25E-02 \\
 & Null & 1.15E+00 & 2.84E-01 & 9.25E-02 \\
@@ -409,59 +443,84 @@ first paragraph:
 \end{tabular}
 \end{table}
 
+The spatial distributions of fission rate errors are plotted as heatmaps for each benchmark in Figs.~\Crefrange{fig:chap8-assm-1.6-fiss-err}{fig:chap8-full-core-fiss-err}. The heatmaps illustrate systematic  error trends in the pin-wise fission errors which correlate with spatial heterogeneities in each benchmark. In particular, the fission rates are generally underpredicted for pins near \acp{CRGT}, but overpredicted for pins near \acp{BP} and in pins removed from \acp{CRGT}, such as those in the corners of each fuel assembly. The effects due to heterogeneities are further enhanced when differentiating pins which are facially adjacent to a \acp{CRGT}, facially and corner adjacent to two \acp{CRGT}, etc. In addition, the error magnitudes are large for pins along the interface between assemblies and near the reflector for the 2$\times$2 colorset benchmarks. For the \ac{PWR} benchmarks modeled here, the differential moderation provided by neighboring \acp{CRGT} and/or reflectors perturbs the local flux spectrum for nearby fuel pins and should modeled when collapsing pin-wise \ac{MGXS} for high-fidelity multi-group transport calculations.
+
+As noted previously, the energy group structure has a large impact on the error distributions as can be seen from the figures. In addition, the heatmaps illustrate how the degenerate spatial homogenization scheme effectively ``smooths'' the pin-wise errors as compared to the infinite and null schemes. This effect is most pronounced when the benchmarks are modeled with 2-group \ac{MGXS}. The differential of the errors for pins near \acp{CRGT}, \acp{BP}, and assembly and reflector interfaces is substantially reduced when degenerate homogenization is applied. The difference in the error spatial distributions for the infinite and null schemes is hardly noticeable except for pins near the assembly and reflector interfaces for the 2$\times$2 colorset benchmarks.
+
 \begin{figure}[h!]
 \centering
 \includegraphics[width=\linewidth]{figures/quantification/assm-16/fiss-err}
-\caption[Fission rate errors for a 1.6\% enriched assembly]{Fission rate errors for a 1.6\% enriched assembly.}
+\caption[Fission rate errors for a 1.6\% enriched assembly]{Fission rate percent relative errors for a 1.6\% enriched assembly corresponding to the reference in Fig.~\ref{fig:chap7-fiss-rates-1.6-assm}.}
 \label{fig:chap8-assm-1.6-fiss-err}
 \end{figure}
+
+\clearpage
 
 \begin{figure}[h!]
 \centering
 \includegraphics[width=\linewidth]{figures/quantification/assm-31/fiss-err}
-\caption[Fission rate errors for a 3.1\% enriched assembly]{Fission rate errors for a 3.1\% enriched assembly.}
+\caption[Fission rate errors for a 3.1\% enriched assembly]{Fission rate percent relative errors for a 3.1\% enriched assembly corresponding to the reference in Fig.~\ref{fig:chap7-fiss-rates-3.1-assm}.}
 \label{fig:chap8-assm-3.1-fiss-err}
 \end{figure}
+
+\clearpage
 
 \begin{figure}[h!]
 \centering
 \includegraphics[width=\linewidth]{figures/quantification/assm-31-20BPs/fiss-err}
-\caption[Fission rate errors for a 3.1\% enriched assembly with 20 BPs]{Fission rate errors for a 3.1\% enriched assembly with 20 BPs.}
+\caption[Fission rate errors for a 3.1\% enriched assembly with 20 BPs]{Fission rate percent relative errors for a 3.1\% enriched assembly with 20 BPs corresponding to the reference in Fig.~\ref{fig:chap7-fiss-rates-3.1-assm-20BAs}.}
 \label{fig:chap8-assm-3.1-20BPs-fiss-err}
 \end{figure}
+
+\clearpage
 
 \begin{figure}[h!]
 \centering
 \includegraphics[width=\linewidth]{figures/quantification/2x2/fiss-err}
-\caption[Fission rate errors for a 2$\times$2 colorset]{Fission rate errors for a 2$\times$2 colorset.}
+\caption[Fission rate errors for a 2$\times$2 colorset]{Fission rate percent relative errors for a 2$\times$2 colorset corresponding to the reference in Fig.~\ref{fig:chap7-fiss-rates-2x2}.}
 \label{fig:chap8-2x2-fiss-err}
 \end{figure}
+
+\clearpage
 
 \begin{figure}[h!]
 \centering
 \includegraphics[width=\linewidth]{figures/quantification/reflector/fiss-err}
-\caption[Fission rate errors for a 2$\times$2 colorset with a reflector]{Fission rate errors for a 2$\times$2 colorset with a reflector.}
+\caption[Fission rate errors for a 2$\times$2 colorset with a reflector]{Fission rate percent relative errors for a 2$\times$2 colorset with a reflector corresponding to the reference in Fig.~\ref{fig:chap7-fiss-rates-reflector}.}
 \label{fig:chap8-reflector-fiss-err}
 \end{figure}
+
+\clearpage
 
 \begin{figure}[h!]
 \centering
 \includegraphics[width=\linewidth]{figures/quantification/full-core/fiss-err}
-\caption[Fission rate errors for the 2D quarter core \ac{BEAVRS} model]{Fission rate errors for the 2D quarter core \ac{BEAVRS} model.}
+\caption[Fission rate errors for the 2D quarter core \ac{BEAVRS} model]{Fission rate percent relative errors for the quarter core \ac{BEAVRS} model corresponding to the reference in Fig.~\ref{fig:chap7-fiss-rates-full-core}.}
 \label{fig:chap8-full-core-fiss-err}
 \end{figure}
 
-\begin{itemize}[noitemsep]
-  \item convergence rates for max/mean rel. err. for each benchmark
-  \begin{itemize}[noitemsep]
-    \item infinite vs. null vs. degenerate
-    \item by energy group structure?
-  \end{itemize}
-\end{itemize}
+\clearpage
+
+These results quantify and illustrate the impact of capturing heterogeneous spatial self-shielding effects in \ac{MGXS} for fuel pins in \ac{PWR} geometries. The pin-wise fission rates are better predicted when these effects are incorporated into \ac{MGXS} used in multi-group transport calculations. Alternatively, non-negligible systematic approximation errors in the fission rates arise when using \ac{MGXS} collapsed with an infinite lattice or other flux which does not differentiate pins based on neighboring spatial heterogeities (as is the case for many current approaches for \ac{MGXS} generation). Finally, it should be noted that other approximation errors due to spatial, angular and energy discretization in \ac{MOC} are still present in these calculations, and may complicate the generality of the conclusions drawn in this section.
+
+% colorset with reflector:
+%  -more complicated distribution of errors that aligns with the symmetry of the problem along $y = -x$
+%  -errors peak in pins along assembly (positive) and reflector interfaces (negative)
+
+%final paragraph: analysis, conclusions
+%-looking at impact of capturing spatial self-shielding effects in \ac{MGXS} for fuel only
+%-recall there are still approximation errors due to spatial, angular and energy discretization in \ac{MOC}
+
+\begin{emphbox}
+\textbf{The use of degenerate spatial homogenization ``smooths'' the spatial distribution of pin-wise fission rate errors for 2-group \ac{MGXS}. However, the fission rates computed with \ac{MGXS} generated from the infinite, null and degenerate homogenization schemes are very similar with fine 40/70 group structures.}
+\end{emphbox}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{U-238 Capture Rate Distributions}
 \label{subsec:chap8-capt-rates}
+
+-need to explain what the maximum and mean absolute errors mean
+-reference give in Figs.~\Crefrange{fig:chap7-capt-rates-1.6-assm}{fig:chap7-capt-rates-full-core}
 
 \begin{table}[h!]
   \centering
@@ -477,7 +536,7 @@ first paragraph:
   \multirow{-2}{*}{\cellcolor{lightgray} \bf \ac{MGXS} Scheme} &
   \multicolumn{1}{c}{{\cellcolor{lightgray} \bf 2-Group}} &
   \multicolumn{1}{c}{{\cellcolor{lightgray} \bf 8-Group}} &
-  \multicolumn{1}{c}{{\cellcolor{lightgray} \bf 70-Group}} \\
+  \multicolumn{1}{c}{{\cellcolor{lightgray} \bf 40/70-Group\textsuperscript{\ref{note1}}}} \\
   \midrule
 \multirow{3}{*}{\parbox{2.5cm}{1.6\% Assm}} & Infinite & -2.86E+00 & -1.61E+00 & -1.17E+00 \\
 & Null & -2.86E+00 & -1.60E+00 & -1.17E+00 \\
@@ -520,7 +579,7 @@ first paragraph:
   \multirow{-2}{*}{\cellcolor{lightgray} \bf \ac{MGXS} Scheme} &
   \multicolumn{1}{c}{{\cellcolor{lightgray} \bf 2-Group}} &
   \multicolumn{1}{c}{{\cellcolor{lightgray} \bf 8-Group}} &
-  \multicolumn{1}{c}{{\cellcolor{lightgray} \bf 70-Group}} \\
+  \multicolumn{1}{c}{{\cellcolor{lightgray} \bf 40/70-Group\textsuperscript{\ref{note1}}}} \\
   \midrule
 \multirow{3}{*}{\parbox{2.5cm}{1.6\% Assm}} & Infinite & 1.33E+00 & 6.85E-01 & 4.93E-01 \\
 & Null & 1.33E+00 & 6.84E-01 & 4.94E-01 \\
@@ -553,42 +612,42 @@ first paragraph:
 \begin{figure}[h!]
 \centering
 \includegraphics[width=\linewidth]{figures/quantification/assm-16/capt-err}
-\caption[U-238 capture rate errors for a 1.6\% enriched assembly]{U-238 capture rate errors for a 1.6\% enriched assembly.}
+\caption[U-238 capture rate errors for a 1.6\% enriched assembly]{U-238 capture rate errors for a 1.6\% enriched assembly corresponding to the reference in Fig.~\ref{fig:chap7-capt-rates-1.6-assm}.}
 \label{fig:chap8-assm-1.6-capt-err}
 \end{figure}
 
 \begin{figure}[h!]
 \centering
 \includegraphics[width=\linewidth]{figures/quantification/assm-31/capt-err}
-\caption[U-238 capture rate errors for a 3.1\% enriched assembly]{U-238 capture rate errors for a 3.1\% enriched assembly.}
+\caption[U-238 capture rate errors for a 3.1\% enriched assembly]{U-238 capture rate errors for a 3.1\% enriched assembly corresponding to the reference in Fig.~\ref{fig:chap7-capt-rates-3.1-assm}.}
 \label{fig:chap8-assm-3.1-capt-err}
 \end{figure}
 
 \begin{figure}[h!]
 \centering
 \includegraphics[width=\linewidth]{figures/quantification/assm-31-20BPs/capt-err}
-\caption[U-238 capture rate errors for a 3.1\% enriched assembly with 20 BPs]{U-238 capture rate errors for a 3.1\% enriched assembly with 20 BPs.}
+\caption[U-238 capture rate errors for a 3.1\% enriched assembly with 20 BPs]{U-238 capture rate errors for a 3.1\% enriched assembly with 20 \acp{BP} corresponding to the reference in Fig.~\ref{fig:chap7-capt-rates-3.1-assm-20BAs}.}
 \label{fig:chap8-assm-3.1-20BPs-capt-err}
 \end{figure}
 
 \begin{figure}[h!]
 \centering
 \includegraphics[width=\linewidth]{figures/quantification/2x2/capt-err}
-\caption[U-238 capture rate errors for a 2$\times$2 colorset]{U-238 capture rate errors for a 2$\times$2 colorset.}
+\caption[U-238 capture rate errors for a 2$\times$2 colorset]{U-238 capture rate errors for a 2$\times$2 colorset corresponding to the reference in Fig.~\ref{fig:chap7-capt-rates-2x2}.}
 \label{fig:chap8-2x2-capt-err}
 \end{figure}
 
 \begin{figure}[h!]
 \centering
 \includegraphics[width=\linewidth]{figures/quantification/reflector/capt-err}
-\caption[U-238 capture rate errors for a 2$\times$2 colorset with a reflector]{U-238 capture rate errors for a 2$\times$2 colorset with a reflector.}
+\caption[U-238 capture rate errors for a 2$\times$2 colorset with a reflector]{U-238 capture rate errors for a 2$\times$2 colorset with a reflector corresponding to the reference in Fig.~\ref{fig:chap7-capt-rates-reflector}.}
 \label{fig:chap8-reflector-capt-err}
 \end{figure}
 
 \begin{figure}[h!]
 \centering
 \includegraphics[width=\linewidth]{figures/quantification/full-core/capt-err}
-\caption[U-238 capture rate errors for the 2D quarter core \ac{BEAVRS} model]{U-238 capture rate errors for the 2D quarter core \ac{BEAVRS} model.}
+\caption[U-238 capture rate errors for the 2D quarter core \ac{BEAVRS} model]{U-238 capture rate errors for the 2D quarter core \ac{BEAVRS} model corresponding to the reference in Fig.~\ref{fig:chap7-capt-rates-full-core}.}
 \label{fig:chap8-full-core-capt-err}
 \end{figure}
 

@@ -195,19 +195,17 @@ Two benchmarks were constructed from 2$\times$2 colorsets of fuel assemblies fro
 
 The first 2$\times$2 colorset model shown in Fig.~\ref{fig:chap7-2x2} is composed of a checkerboard pattern of the fuel assemblies of 1.6\% enriched UO$_2$ without \acp{BP} (Fig.~\ref{fig:chap7-assm-16}) and 3.1\% enriched UO$_2$ with 20 \acp{BP} (Fig.~\ref{fig:chap7-assm-31-20BPs}). The first benchmark model is designed to investigate the effects of inter-assembly spatial heterogeneities on the spatially self-shielded \ac{MGXS} of fuel pins of different enrichments (\textit{i.e.}, from different fuel assemblies) placed adjacent to one another. The second benchmark illustrated in Fig.~\ref{fig:chap7-reflector} is the same 2$\times$2 colorset of fuel assemblies, but is surrounded by a water reflector. This benchmark is designed to quantify the impact of the moderation provided by the reflector, as well as the leakage of neutrons through the reflector, on spatially self-shielded \ac{MGXS}.
 
-% -add baffle to benchmark
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{BEAVRS Full Core}
+\subsection{BEAVRS Quarter Core}
 \label{subsec:chap7-full-core}
 
-The sixth and final benchmark is a 2D planar slice of the full core \ac{BEAVRS} model at the axial mid-plane as shown in Fig.~\ref{fig:chap7-full-core}. The 193 fuel assemblies in the full core model are configured according to the cycle 1 loading pattern detailed in the \ac{BEAVRS} specifications~\cite{horelik2013beavrs}. The full core model includes assemblies with 1.6\%, 2.4\% and 3.1\% enriched UO$_2$ fuel depicted as red, blue and yellow in Fig.~\ref{fig:chap7-full-core}, respectively. All of the radial heterogeneities in the \ac{BEAVRS} specifications are included in this model, including the inter-assembly stainless steel grid sleeves and water gaps, stainless steel baffle surrounding the fuel assemblies, core barrel, neutron shield panels and pressure vessel. The space outside of the pressure vessel is filled with air with vacuum \acp{BC} applied to planar surfaces on the top, bottom, left and right. The 2D full core \ac{BEAVRS} model builds upon the preceding five simpler benchmarks to explore the impact of radial heterogeneities in a realistic core configuration on spatially self-shielded \ac{MGXS}.
+The sixth and final benchmark is a 2D planar slice of the top right quadrant of the quadrant symmetric \ac{BEAVRS} core model at the axial mid-plane as shown in Fig.~\ref{fig:chap7-full-core}. The fuel assemblies in the model are configured according to the cycle 1 loading pattern detailed in the \ac{BEAVRS} specifications~\cite{horelik2013beavrs}. The quarter core model includes assemblies with 1.6\%, 2.4\% and 3.1\% enriched UO$_2$ fuel depicted as red, blue and yellow in Fig.~\ref{fig:chap7-full-core}, respectively. All of the radial heterogeneities in the \ac{BEAVRS} specifications are included in this model, including the inter-assembly stainless steel grid sleeves and water gaps, stainless steel baffle surrounding the fuel assemblies, core barrel, neutron shield panels and pressure vessel. The space outside of the pressure vessel is filled with air with vacuum \acp{BC} applied to planar surfaces on the top, bottom, left and right. The 2D quarter core \ac{BEAVRS} model builds upon the preceding five simpler benchmarks to explore the impact of radial heterogeneities in a realistic core configuration on spatially self-shielded \ac{MGXS}.
 
 \begin{figure}[h!]
   \centering
-  \includegraphics[width=0.9\linewidth]{figures/benchmarks/full-core}
+  \includegraphics[width=0.9\linewidth]{figures/benchmarks/quarter-core}
 \vspace{2mm}
-\caption[The 2D full core \ac{BEAVRS} model]{The 2D full core \ac{BEAVRS} model.}
+\caption[The 2D quarter core \ac{BEAVRS} model]{The 2D quarter core \ac{BEAVRS} model.}
 \label{fig:chap7-full-core}
 \end{figure}
 
@@ -241,18 +239,18 @@ The Shannon entropy was computed using a rectilinear pin-wise mesh for each of t
 
 \begin{figure}[h!]
   \centering
-  \includegraphics[width=0.9\linewidth]{figures/benchmarks/entropy/entropy-all}
+  \includegraphics[width=0.7\linewidth]{figures/benchmarks/entropy/entropy-all}
 \caption[Shannon entropy source convergence for BEAVRS geometries]{Shannon entropy source convergence for BEAVRS geometries.}
 \label{fig:chap7-entropy}
 \end{figure}
 
-As expected, the number of batches required to reach source stationarity increases with the benchmark size and heterogeneity, and the corresponding increase in the dominance ratio. This analysis of the Shannon entropy for each benchmark was used to determine an appropriately conservative number of inactive batches to employ in all subsequent OpenMC simulations of each benchmark model. In particular, all OpenMC simulations of the single assembly and 2$\times$2 colorsets use 100 inactive batches prior to tallying the eigenvalue, reference reaction rate distributions and \ac{MGXS}. Similarly, 200 inactive batches are used for the full core \ac{BEAVRS} model.
+As expected, the number of batches required to reach source stationarity increases with the benchmark size and heterogeneity, and the corresponding increase in the dominance ratio. This analysis of the Shannon entropy for each benchmark was used to determine an appropriately conservative number of inactive batches to employ in all subsequent OpenMC simulations of each benchmark model. In particular, all OpenMC simulations of the single assembly and 2$\times$2 colorsets use 100 inactive batches prior to tallying the eigenvalue, reference reaction rate distributions and \ac{MGXS}. Similarly, 200 inactive batches are used for the quarter core \ac{BEAVRS} model.
 
 %%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Eigenvalues}
 \label{subsec:chap7-eigenvalues}
 
-The reference eigenvalues were computed for each of the six benchmarks and are listed in Tab.~\ref{table:chap7-ref-eigenvalues}. The OpenMC ``combined'' eigenvalue estimator is reported along with the associated one sigma uncertainty of 3 \ac{pcm} for each of the benchmarks. A total of 900,000,000 particle histories (900 active batches of 10$^6$ particle histories per batch) were simulated for the individual fuel assembly and 2$\times$2 colorset benchmarks, while 800,000,000 total particle histories (800 active batches) were simulated for the full core \ac{BEAVRS} model. The total runtimes required for the OpenMC simulations to generate the reference eigenvalues are also reported in the table. 
+The reference eigenvalues were computed for each of the six benchmarks and are listed in Tab.~\ref{table:chap7-ref-eigenvalues}. The OpenMC ``combined'' eigenvalue estimator is reported along with the associated one sigma uncertainty of 3 \ac{pcm} for each of the benchmarks. A total of 900,000,000 particle histories (900 active batches of 10$^6$ particle histories per batch) were simulated for the individual fuel assembly and 2$\times$2 colorset benchmarks, while 800,000,000 total particle histories (800 active batches) were simulated for the quarter core \ac{BEAVRS} model. The total runtimes required for the OpenMC simulations to generate the reference eigenvalues are also reported in the table. 
 
 \begin{table}[h!]
   \centering
@@ -270,7 +268,7 @@ The reference eigenvalues were computed for each of the six benchmarks and are l
   3.1\% Enriched Assembly (20 \ac{BP}s) & 1.04530 $\pm$ 0.00003 & 331 \\
   2$\times$2 Colorset & 1.03196 $\pm$ 0.00003 & 345 \\
   2$\times$2 Colorset w/ Reflector & 0.95462 $\pm$ 0.00003 & 337 \\
-  \ac{BEAVRS} Full Core & 1.02494 $\pm$ 0.00003 & 387 \\
+  \ac{BEAVRS} Quarter Core & 1.02494 $\pm$ 0.00003 & 387 \\
   \bottomrule
 \end{tabular}
 \end{table}
@@ -281,13 +279,13 @@ As expected, the eigenvalues increase with enrichment and decrease with the pres
 \subsection{Fission Rate Spatial Distributions}
 \label{subsec:chap7-pin-powers}
 
-The reference energy-integrated fission rate spatial distributions for each of the six benchmarks were computed using rectilinear, pin-wise tally meshes in OpenMC. The fission rates were volume-integrated across each fuel pin and include fission from all nuclides (only U-235 and U-238 for the fresh \ac{PWR} UO$_2$ fuel in the benchmarks). The fission rates were normalized to the mean of all non-zero fission rates in each benchmark. The percent relative errors for the tallied fission rates was computed from the ratio of the sample standard deviation to the mean fission rate in each fuel pin.
+The reference energy-integrated fission rate spatial distributions for each of the six benchmarks were computed using rectilinear, pin-wise tally meshes in OpenMC. The fission rates were volume-integrated across each fuel pin and include fission from all nuclides (only U-235 and U-238 for the fresh \ac{PWR} UO$_2$ fuel in the benchmarks). The fission rates were normalized to the mean of all non-zero fission rates in each benchmark. The percent relative errors for the tallied fission rates was computed from the ratio of the sample standard deviation to the mean fission rate in each fuel pin. The fission rates for the quarter core \ac{BEAVRS} model were appropriately tiled to display the equivalent distribution across the quadrant symmetric full core.
 
 The fission rate spatial distributions and percent relative errors for each of the six benchmarks are presented as heatmaps in Figs.~\Crefrange{fig:chap7-fiss-rates-1.6-assm}{fig:chap7-fiss-rates-full-core}. The fission rates in the instrument tubes, \acp{CRGT} and \acp{BP} are all zero and are illustrated in white. The color bars for each of the heatmaps range from the minimum non-zero fission rate to the maximum fission rate for all fuel pins in each benchmark geometry. The maximum relative error at the final 1000$^{\text{th}}$ batch is less than or equal to 0.0001\% for all of the benchmarks. These reference fission rate spatial distributions are used to validate the OpenMOC simulations with \ac{MGXS} generated by OpenMC throughout the following chapters.
 
 %The batch-wise convergence rates of the fission rates is shown for the maximum and mean percent relative errors for each of the benchmarks in Fig.~\ref{fig:chap7-fiss-rates-conv}.
 
-As illustrated in the figures, the fission rate distributions are strongly dependent on the spatially heterogeneous features in each benchmark geometry. For example, the \acp{CRGT} provide additional moderation and increase the fission rates in nearby fuel pins. The presence of \acp{BP} reduces the neutron population and therefore the fission rates for the surrounding fuel pins, while increasing the variation between the minimum and maximum fission rates. The presence of a reflector with a mixture of vacuum and reflective \acp{BC} induces a tilt in the fission rates across the assemblies in the 2$\times$2 colorset, with the maximum fission rates located in the interior fuel pins and the minimum fission rates occurring near the reflector due to neutron leakage. The fission rates for the full core \ac{BEAVRS} model in Fig.~\ref{fig:chap7-fiss-rates-full-core} form a highly complex spatial distribution due to the convolution of many different interacting spatial self-shielding effects.
+As illustrated in the figures, the fission rate distributions are strongly dependent on the spatially heterogeneous features in each benchmark geometry. For example, the \acp{CRGT} provide additional moderation and increase the fission rates in nearby fuel pins. The presence of \acp{BP} reduces the neutron population and therefore the fission rates for the surrounding fuel pins, while increasing the variation between the minimum and maximum fission rates. The presence of a reflector with a mixture of vacuum and reflective \acp{BC} induces a tilt in the fission rates across the assemblies in the 2$\times$2 colorset, with the maximum fission rates located in the interior fuel pins and the minimum fission rates occurring near the reflector due to neutron leakage. The fission rates for the quarter core \ac{BEAVRS} model in Fig.~\ref{fig:chap7-fiss-rates-full-core} form a highly complex spatial distribution due to the convolution of many different interacting spatial self-shielding effects.
 
 \begin{figure}[h!]
 \centering
@@ -376,7 +374,7 @@ As illustrated in the figures, the fission rate distributions are strongly depen
   \label{fig:chap7-fiss-rate-conv}
 \end{subfigure}%
 \caption[Fission rates for a 2$\times$2 colorset with a reflector]{Fission rates for a 2$\times$2 colorset with a reflector.}
-\label{fig:chap7-fiss-rates-2x2}
+\label{fig:chap7-fiss-rates-reflector}
 \end{figure}
 
 \begin{figure}[h!]
@@ -393,7 +391,7 @@ As illustrated in the figures, the fission rate distributions are strongly depen
   \caption{}
   \label{fig:chap7-fiss-rate-rel-err-full-core}
 \end{subfigure}%
-\caption[Fission rates for the full 2D BEAVRS core]{Fission rates for the 2D full core \ac{BEAVRS} model.}
+\caption[Fission rates for the full 2D BEAVRS core]{Fission rates for the 2D quarter core \ac{BEAVRS} model.}
 \label{fig:chap7-fiss-rates-full-core}
 \end{figure}
 
@@ -421,7 +419,7 @@ As illustrated in the figures, the fission rate distributions are strongly depen
 \subsection{U-238 Capture Rate Spatial Distributions}
 \label{subsec:chap7-capture-rates}
 
-The reference energy-integrated U-238 capture rate spatial distributions for each of the six benchmarks were computed using rectilinear, pin-wise tally meshes in OpenMC. The U-238 capture rates were volume-integrated across each fuel pin. The capture rates were normalized to the mean of all non-zero capture rates in each benchmark. The percent relative errors for the tallied capture rates was computed from the ratio of the sample standard deviation to the mean capture rate in each fuel pin.
+The reference energy-integrated U-238 capture rate spatial distributions for each of the six benchmarks were computed using rectilinear, pin-wise tally meshes in OpenMC. The U-238 capture rates were volume-integrated across each fuel pin. The capture rates were normalized to the mean of all non-zero capture rates in each benchmark. The percent relative errors for the tallied capture rates was computed from the ratio of the sample standard deviation to the mean capture rate in each fuel pin. The capture rates for the quarter core \ac{BEAVRS} model were appropriately tiled to display the equivalent distribution across the quadrant symmetric full core.
 
 The U-238 capture rate spatial distributions and percent relative errors for each of the six benchmarks are presented as heatmaps in Figs.~\Crefrange{fig:chap7-capt-rates-1.6-assm}{fig:chap7-capt-rates-full-core}. The capture rates in the instrument tubes, \acp{CRGT} and \acp{BP} are all zero and are illustrated in white. The color bars for each of the heatmaps range from the minimum non-zero capture rate to the maximum capture rate for all fuel pins in each benchmark geometry. The maximum relative error at the final 1000$^{\text{th}}$ batch is less than 0.0001\% for all of the benchmarks. These reference U-238 capture rate spatial distributions are used to validate the OpenMOC simulations with \ac{MGXS} generated by from OpenMC throughout the following chapters.
 
@@ -516,7 +514,7 @@ The impacts of \acp{CRGT}, \acp{BP}, reflectors and vacuum \acp{BC} on the U-238
   \label{fig:chap7-capt-rate-rel-err-reflector}
 \end{subfigure}%
 \caption[U-238 capture rates for a 2$\times$2 colorset with a reflector]{U-238 capture rates for a 2$\times$2 colorset with a reflector.}
-\label{fig:chap7-capt-rates-2x2}
+\label{fig:chap7-capt-rates-reflector}
 \end{figure}
 
 \begin{figure}[h!]
@@ -533,7 +531,7 @@ The impacts of \acp{CRGT}, \acp{BP}, reflectors and vacuum \acp{BC} on the U-238
   \caption{}
   \label{fig:chap7-capt-rate-rel-err-full-core}
 \end{subfigure}%
-\caption[U-238 capture rates for the full 2D BEAVRS core]{U-238 capture rates for the 2D full core \ac{BEAVRS} model.}
+\caption[U-238 capture rates for the full 2D BEAVRS core]{U-238 capture rates for the 2D quarter core \ac{BEAVRS} model.}
 \label{fig:chap7-capt-rates-full-core}
 \end{figure}
 
@@ -561,7 +559,7 @@ The impacts of \acp{CRGT}, \acp{BP}, reflectors and vacuum \acp{BC} on the U-238
 \begin{highlightsbox}[frametitle=Highlights]
 \begin{itemize}
   \item A series of six 2D heterogeneous benchmark models were derived from the full core \ac{BEAVRS} model to explore spatial self-shielding effects on \ac{MGXS}.
-  \item The benchmarks include individual fuel assemblies with different \ac{CRGT} and \ac{BP} configurations, 2$\times$2 fuel assembly colorsets with and without a water reflector, and the full core \ac{BEAVRS} model.
+  \item The benchmarks include individual fuel assemblies with different \ac{CRGT} and \ac{BP} configurations, 2$\times$2 fuel assembly colorsets with and without a water reflector, and the quarter core \ac{BEAVRS} model.
   \item The Shannon entropy was computed to determine the number of inactive batches needed when modeling each benchmark with OpenMC.
   \item Reference results for the eigenvalues, pin-wise fission rates and pin-wise U-238 capture rates were computed using OpenMC.
   \item The benchmarks and reference results are used in the following chapters to validate the use of statistical clustering methods to capture spatial self-shielding effects in \ac{MGXS} generated by OpenMC for OpenMOC.
