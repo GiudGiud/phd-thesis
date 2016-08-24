@@ -19,7 +19,7 @@ plt.ioff()
 benchmark = str(input('Benchmark: '))
 quarter_symmetric = str(input('Quarter Core Symmetric: '))
 code = str(input('openmc or openmoc: '))
-metric = str(input('mean or rel. err.: '))
+metric = str(input('mean, rel. err. or magnitude: '))
 
 if metric == 'rel. err.':
     hdf5_key = '{} {}'.format(code.lower(), metric.lower())
@@ -63,9 +63,12 @@ for clusterizer_type in clusterizer_types:
     msg += '& {} '.format(clusterizer_type.capitalize())
     for num_groups in groups:
         f = h5py.File('{}-groups-{}.h5'.format(num_groups, clusterizer_type))
-#        bias = f['{}-groups'.format(num_groups)][clusterizer_type]['fission'][hdf5_key]
-        bias = f['{}-groups'.format(num_groups)][clusterizer_type]['fission']['openmoc'][-1, ...] - \
-               f['{}-groups'.format(num_groups)][clusterizer_type]['fission']['openmc'][-1, ...]
+
+        if metric == 'magnitude':
+            bias = f['{}-groups'.format(num_groups)][clusterizer_type]['fission']['openmoc'][-1, ...] - \
+                   f['{}-groups'.format(num_groups)][clusterizer_type]['fission']['openmc'][-1, ...]
+        else:
+            bias = f['{}-groups'.format(num_groups)][clusterizer_type]['fission'][hdf5_key]
 
         max_fiss = max(np.nanmax(np.ravel(bias)), max_fiss)
         min_fiss = min(np.nanmin(np.ravel(bias)), min_fiss)
@@ -83,9 +86,12 @@ for clusterizer_type in clusterizer_types:
     msg += '& {} '.format(clusterizer_type.capitalize())
     for num_groups in groups:
         f = h5py.File('{}-groups-{}.h5'.format(num_groups, clusterizer_type))
-#        bias = f['{}-groups'.format(num_groups)][clusterizer_type]['fission'][hdf5_key]
-        bias = f['{}-groups'.format(num_groups)][clusterizer_type]['fission']['openmoc'][-1, ...] - \
-               f['{}-groups'.format(num_groups)][clusterizer_type]['fission']['openmc'][-1, ...]
+
+        if metric == 'magnitude':
+            bias = f['{}-groups'.format(num_groups)][clusterizer_type]['fission']['openmoc'][-1, ...] - \
+                   f['{}-groups'.format(num_groups)][clusterizer_type]['fission']['openmc'][-1, ...]
+        else:
+            bias = f['{}-groups'.format(num_groups)][clusterizer_type]['fission'][hdf5_key]
 
         bias = np.nanmean(np.fabs(np.ravel(bias)))
         msg += '& {:1.2E} '.format(bias)
@@ -102,10 +108,12 @@ for clusterizer_type in clusterizer_types:
     msg += '& {} '.format(clusterizer_type.capitalize())
     for num_groups in groups:
         f = h5py.File('{}-groups-{}.h5'.format(num_groups, clusterizer_type))
-#        bias = f['{}-groups'.format(num_groups)][clusterizer_type]['capture'][hdf5_key]
 
-        bias = f['{}-groups'.format(num_groups)][clusterizer_type]['capture']['openmoc'][-1, ...] - \
-               f['{}-groups'.format(num_groups)][clusterizer_type]['capture']['openmc'][-1, ...]
+        if metric == 'magnitude':
+            bias = f['{}-groups'.format(num_groups)][clusterizer_type]['capture']['openmoc'][-1, ...] - \
+                   f['{}-groups'.format(num_groups)][clusterizer_type]['capture']['openmc'][-1, ...]
+        else:
+            bias = f['{}-groups'.format(num_groups)][clusterizer_type]['capture'][hdf5_key]
 
         max_capt = max(np.nanmax(np.ravel(bias)), max_capt)
         min_capt = min(np.nanmin(np.ravel(bias)), min_capt)
@@ -123,9 +131,12 @@ for clusterizer_type in clusterizer_types:
     msg += '& {} '.format(clusterizer_type.capitalize())
     for num_groups in groups:
         f = h5py.File('{}-groups-{}.h5'.format(num_groups, clusterizer_type))
-#        bias = f['{}-groups'.format(num_groups)][clusterizer_type]['capture'][hdf5_key]
-        bias = f['{}-groups'.format(num_groups)][clusterizer_type]['capture']['openmoc'][-1, ...] - \
-               f['{}-groups'.format(num_groups)][clusterizer_type]['capture']['openmc']
+
+        if metric == 'magnitude':
+            bias = f['{}-groups'.format(num_groups)][clusterizer_type]['capture']['openmoc'][-1, ...] - \
+                   f['{}-groups'.format(num_groups)][clusterizer_type]['capture']['openmc']
+        else:
+            bias = f['{}-groups'.format(num_groups)][clusterizer_type]['capture'][hdf5_key]
 
         bias = np.nanmean(np.fabs(np.ravel(bias)))
         msg += '& {:1.2E} '.format(bias)
@@ -148,9 +159,12 @@ cmap.set_bad(alpha=0.0)
 for i, clusterizer_type in enumerate(clusterizer_types):
     for j, num_groups in enumerate(groups):
         f = h5py.File('{}-groups-{}.h5'.format(num_groups, clusterizer_type))
-#        bias = f['{}-groups'.format(num_groups)][clusterizer_type]['fission'][hdf5_key][-1, ...]
-        bias = f['{}-groups'.format(num_groups)][clusterizer_type]['fission']['openmoc'][-1, ...] - \
-               f['{}-groups'.format(num_groups)][clusterizer_type]['fission']['openmc'][-1, ...]
+
+        if metric == 'magnitude':
+            bias = f['{}-groups'.format(num_groups)][clusterizer_type]['fission']['openmoc'][-1, ...] - \
+                   f['{}-groups'.format(num_groups)][clusterizer_type]['fission']['openmc'][-1, ...]
+        else:
+            bias = f['{}-groups'.format(num_groups)][clusterizer_type]['fission'][hdf5_key][-1, ...]
 
         # Extract the array and make it quarter core symmetric
         if quarter_symmetric:
@@ -165,6 +179,10 @@ for i, clusterizer_type in enumerate(clusterizer_types):
                 full_bias[:,bias.shape[1]-1] *= 2.
 
             bias = full_bias
+
+        # Make quarter core BEAVRS appear in top right quadrant
+        if quarter_symmetric and benchmark == 'full core':
+            bias = bias[::-1, ::-1]
 
         # Plot a colormap of the fission rate percent rel. err.
         subplot_ctr = '{}{}{}'.format(len(clusterizer_types),len(groups),i*len(groups)+j+1)
@@ -204,9 +222,12 @@ fig.set_figwidth(8.5)
 for i, clusterizer_type in enumerate(clusterizer_types):
     for j, num_groups in enumerate(groups):
         f = h5py.File('{}-groups-{}.h5'.format(num_groups, clusterizer_type))
-#        bias = f['{}-groups'.format(num_groups)][clusterizer_type]['capture'][hdf5_key][-1, ...]
-        bias = f['{}-groups'.format(num_groups)][clusterizer_type]['capture']['openmoc'][-1, ...] - \
-               f['{}-groups'.format(num_groups)][clusterizer_type]['capture']['openmc'][-1, ...]
+
+        if metric == 'magnitude':
+            bias = f['{}-groups'.format(num_groups)][clusterizer_type]['capture']['openmoc'][-1, ...] - \
+                   f['{}-groups'.format(num_groups)][clusterizer_type]['capture']['openmc'][-1, ...]
+        else:
+            bias = f['{}-groups'.format(num_groups)][clusterizer_type]['capture'][hdf5_key][-1, ...]
 
         # Extract the array and make it quarter core symmetric
         if quarter_symmetric:
@@ -216,11 +237,15 @@ for i, clusterizer_type in enumerate(clusterizer_types):
             full_bias[:bias.shape[0], bias.shape[1]-1:] = bias[::-1,::-1]     # bottom left
             full_bias[bias.shape[0]-1:, bias.shape[1]-1:] = bias[:,::-1]     # bottom right
 
+            # Make quarter core BEAVRS appear in top right quadrant
             if metric == 'mean':
                 full_bias[bias.shape[0]-1,:] *= 2.
                 full_bias[:,bias.shape[1]-1] *= 2.
 
             bias = full_bias
+
+        if quarter_symmetric and benchmark == 'full core':
+            bias = bias[::-1, ::-1]
 
         # Plot a colormap of the fission rate percent rel. err.
         subplot_ctr = '{}{}{}'.format(len(clusterizer_types),len(groups),i*len(groups)+j+1)
