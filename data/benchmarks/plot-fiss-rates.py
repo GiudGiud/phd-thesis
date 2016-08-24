@@ -26,6 +26,10 @@ for directory in directories:
     # Extract OpenMC fission rate mesh tally from StatePoint
     fiss = sp.get_tally(name='fission rates')
 
+    # Normalize the fission rates to sum to unity
+    fiss_mean = copy.deepcopy(fiss.mean)
+    fiss /= np.nanmean(np.ravel(fiss_mean[fiss_mean != 0]))
+
     # Copy and reshape the NumPy array of mean values
     fiss_mean = copy.deepcopy(fiss.mean)
     fiss_mean.shape = tuple(openmc_mesh.dimension)
@@ -37,9 +41,6 @@ for directory in directories:
     fiss_std_dev.shape = tuple(openmc_mesh.dimension)
     fiss_std_dev = np.squeeze(fiss_std_dev)
     fiss_std_dev = np.fliplr(fiss_std_dev)
-
-    # Normalize the fission rates to sum to unity
-    fiss_mean /= np.nanmean(np.ravel(fiss_mean[fiss_mean != 0]))
 
     # Set zero fission rates to NaN for transparency in plots
     zero_indices = np.where(fiss_mean < 1E-3)

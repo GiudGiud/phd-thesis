@@ -29,6 +29,10 @@ for directory in directories:
     fission = capt.get_slice(scores=['fission'])
     capt = absorb - fission
 
+    # Normalize the capture rates to sum to unity
+    capt_mean = copy.deepcopy(capt.mean)
+    capt /= np.mean(np.ravel(capt_mean[capt_mean != 0.]))
+    
     # Copy and reshape the NumPy array of mean values
     capt_mean = copy.deepcopy(capt.mean)
     capt_mean.shape = tuple(openmc_mesh.dimension)
@@ -40,9 +44,6 @@ for directory in directories:
     capt_std_dev.shape = tuple(openmc_mesh.dimension)
     capt_std_dev = np.squeeze(capt_std_dev)
     capt_std_dev = np.fliplr(capt_std_dev)
-
-    # Normalize the capture rates to sum to unity
-    capt_mean /= np.mean(np.ravel(capt_mean[capt_mean != 0.]))
 
     # Set zero capture rates to NaN for transparency in plots
     zero_indices = np.where(capt_mean < 1E-5)
