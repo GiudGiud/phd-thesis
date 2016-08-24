@@ -39,8 +39,8 @@ directories = {'assm-1.6': '1.6\\% Assm',
                'reflector': '2$\\times$2 Colorset w/ Reflector',
                'full-core': 'BEAVRS Full Core'}
 
-groups = [2, 8, 40]
-clusterizer_types = ['infinite', 'null', 'degenerate']
+groups = [8, 40] #[2, 8, 40]
+clusterizer_types = ['null', 'degenerate'] #['infinite', 'null', 'degenerate']
 
 print('EIGENVALUE BIAS')
 msg = '\multirow{3}{*}{\parbox{2.5cm}{%s}} ' % directories[benchmark]
@@ -181,7 +181,7 @@ for i, clusterizer_type in enumerate(clusterizer_types):
             bias = full_bias
 
         # Make quarter core BEAVRS appear in top right quadrant
-        if not quarter_symmetric and benchmark == 'full core':
+        if not quarter_symmetric and benchmark == 'full-core':
             bias = bias[::-1, ::-1]
 
         # Plot a colormap of the fission rate percent rel. err.
@@ -244,7 +244,7 @@ for i, clusterizer_type in enumerate(clusterizer_types):
 
             bias = full_bias
 
-        if not quarter_symmetric and benchmark == 'full core':
+        if not quarter_symmetric and benchmark == 'full-core':
             bias = bias[::-1, ::-1]
 
         # Plot a colormap of the fission rate percent rel. err.
