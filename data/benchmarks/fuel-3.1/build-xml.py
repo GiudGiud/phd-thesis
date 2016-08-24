@@ -10,10 +10,6 @@ batches = 1000
 inactive = 100
 particles = 1000000
 
-# Construct list of batches for which to store statepoints
-statepoints = np.linspace(1, batches, batches, dtype=np.int)
-
-
 #########   Exporting to OpenMC geometry.xml and materials.xml Files  ##########
 
 # Write all BEAVRS materials to materials.xml file
@@ -38,7 +34,6 @@ settings_file = openmc.Settings()
 settings_file.batches = batches
 settings_file.inactive = inactive
 settings_file.particles = particles
-settings_file.statepoint_batches = statepoints
 settings_file.ptables = True
 settings_file.output = {'tallies': False}
 settings_file.source = source
