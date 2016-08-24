@@ -24,10 +24,9 @@ openmc_geometry = opencg_compatible.get_openmc_geometry(full_core)
 openmc_geometry.export_to_xml()
 
 
-##################   Exporting to OpenMC settings.xml File  ###################
-
-# Construct uniform initial source distribution over fissionable zones
-lower_left = [-200., -200., full_core.bounds[2]]
+##################   Exporting to OpenMC settings.xml File  ###################                               
+# Construct uniform initial source distribution over fissionable zones                                       
+lower_left = [0., 0., full_core.bounds[2]]
 upper_right = [+200., +200., full_core.bounds[5]]
 source = openmc.source.Source(space=openmc.stats.Box(lower_left, upper_right))
 source.space.only_fissionable = True
@@ -73,23 +72,23 @@ plot_file.export_to_xml()
 
 ###################  Create Mesh Tallies for Verification  ####################
 
-# Instantiate a tally Mesh
+# Instantiate a tally Mesh                                                                                   
 mesh = openmc.Mesh(name='assembly mesh')
 mesh.type = 'regular'
-mesh.dimension = [15*17, 15*17, 1]
-mesh.lower_left = [-15*17*1.26492/2., -15*17*1.26492/2., 203.]
+mesh.dimension = [int(np.ceil(15./2.*17)), int(np.ceil(15./2.*17)), 1]
+mesh.lower_left = [-1.26492/2., -1.26492/2., 203.]
 mesh.width = (1.26492, 1.26492, 10)
 
-# Instantiate tally Filter
+# Instantiate tally Filter                                                                                   
 mesh_filter = openmc.Filter()
 mesh_filter.mesh = mesh
 
-# Instantiate energy-integrated fission rate mesh Tally
+# Instantiate energy-integrated fission rate mesh Tally                                                      
 fission_rates = openmc.Tally(name='fission rates')
 fission_rates.filters = [mesh_filter]
 fission_rates.scores = ['fission']
 
-# Instantiate energy-wise U-238 capture rate mesh Tally
+# Instantiate energy-wise U-238 capture rate mesh Tally                                                      
 capture_rates = openmc.Tally(name='u-238 capture')
 capture_rates.filters = [mesh_filter]
 capture_rates.nuclides = ['U238']

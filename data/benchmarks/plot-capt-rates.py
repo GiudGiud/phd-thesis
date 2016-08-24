@@ -1,9 +1,23 @@
 import os
 import copy
-import openmc
+
+import h5py
 import numpy as np
-import matplotlib.pyplot as plt
+import matplotlib
 from _collections import OrderedDict
+
+import openmc
+
+# force headless backend, or set 'backend' to 'Agg'                                                          # in your ~/.matplotlib/matplotlibrc                                                                         
+matplotlib.use('Agg')
+
+import matplotlib.pyplot as plt
+
+# Force non-interactive mode, or set 'interactive' to False                                                  # in your ~/.matplotlib/matplotlibrc                                                                         
+plt.ioff()
+
+import matplotlib.pyplot as plt
+
 
 ###############################################################################
 # SINGLE FUEL ASSEMBLIES
@@ -13,8 +27,8 @@ directories = OrderedDict({'fuel-1.6': '1.6% Enr. (no BPs)',
                            'fuel-3.1':'3.1% Enr. (no BPs)',
                            'fuel-3.1-20BPs': '3.1% Enr. (20 BPs)',
                            '2x2': '2x2 Colorset',
-                           'reflector': '2x2 Colorset w/ Reflector',
-                           'full-core': 'Full Core'})
+                           'reflector': '2x2 Colorset w/ Reflector'})
+#                           'full-core': 'Full Core'})
 
 for directory in directories:
     sp = openmc.StatePoint(os.path.join(directory, 'statepoint.1000.h5'))
@@ -38,12 +52,14 @@ for directory in directories:
     capt_mean.shape = tuple(openmc_mesh.dimension)
     capt_mean = np.squeeze(capt_mean)
     capt_mean = np.fliplr(capt_mean)
+    capt_mean = capt_mean[::-1, ::-1]
 
     # Copy and reshape the NumPy array of standard deviation values
     capt_std_dev = copy.deepcopy(capt.std_dev)
     capt_std_dev.shape = tuple(openmc_mesh.dimension)
     capt_std_dev = np.squeeze(capt_std_dev)
     capt_std_dev = np.fliplr(capt_std_dev)
+    capt_std_dev = capt_std_dev[::-1, ::-1]
 
     # Set zero capture rates to NaN for transparency in plots
     zero_indices = np.where(capt_mean < 1E-5)
