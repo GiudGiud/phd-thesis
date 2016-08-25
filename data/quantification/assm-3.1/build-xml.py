@@ -10,7 +10,7 @@ from infermc.energy_groups import group_structures
 
 batches = 1000
 inactive = 100
-particles = 10000000
+particles = 1000000
 
 
 #########   Exporting to OpenMC geometry.xml and materials.xml Files  ##########

@@ -9,7 +9,7 @@ import infermc.beavrs
 
 batches = 1000
 inactive = 200
-particles = 1000000
+particles = 10000000
 
 
 #########   Exporting to OpenMC geometry.xml and materials.xml Files  ##########

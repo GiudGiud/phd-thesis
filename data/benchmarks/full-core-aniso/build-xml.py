@@ -8,8 +8,8 @@ import infermc.beavrs
 ####################   User-specified Simulation Parameters  ###################
 
 batches = 1000
-inactive = 100
-particles = 10000000
+inactive = 200
+particles = 1000000
 
 
 #########   Exporting to OpenMC geometry.xml and materials.xml Files  ##########
@@ -19,16 +19,15 @@ infermc.beavrs.make_iso_in_lab()
 infermc.beavrs.write_materials_file()
 
 # Extract reflected geometry from InferMC's pre-built assembly Geometries
-two_by_two = infermc.beavrs.build_two_by_two('Fuel 1.6% enr instr no BAs',
-                                             'Fuel 3.1% enr instr 20')
-openmc_geometry = opencg_compatible.get_openmc_geometry(two_by_two)
+full_core = infermc.beavrs.build_2d_core()
+openmc_geometry = opencg_compatible.get_openmc_geometry(full_core)
 openmc_geometry.export_to_xml()
 
-##################   Exporting to OpenMC settings.xml File  ###################
 
-# Construct uniform initial source distribution over fissionable zones
-lower_left = two_by_two.bounds[:3]
-upper_right = two_by_two.bounds[3:]
+##################   Exporting to OpenMC settings.xml File  ###################                               
+# Construct uniform initial source distribution over fissionable zones                                       
+lower_left = [0., 0., full_core.bounds[2]]
+upper_right = [+200., +200., full_core.bounds[5]]
 source = openmc.source.Source(space=openmc.stats.Box(lower_left, upper_right))
 source.space.only_fissionable = True
 
@@ -41,11 +40,12 @@ settings_file.output = {'tallies': False}
 settings_file.source = source
 settings_file.sourcepoint_write = False
 
-settings_file.entropy_dimension = [34,34,1]
-settings_file.entropy_upper_right = upper_right
-settings_file.entropy_lower_left = lower_left
+settings_file.entropy_dimension = [15*17, 15*17, 1]
+settings_file.entropy_upper_right = [+15*17*1.26492/2., +15*17*1.26492/2., 208.]
+settings_file.entropy_lower_left = [-15*17*1.26492/2., -15*17*1.26492/2., 203.]
 
 settings_file.export_to_xml()
+
 
 
 ##################   Exporting to OpenMC plots.xml File  ######################
@@ -54,18 +54,17 @@ settings_file.export_to_xml()
 b = infermc.beavrs.beavrs
 b.write_openmc_plots()
 
-# Complete assembly
 plot = openmc.Plot(plot_id=1)
-bounds = two_by_two.bounds
-plot.width = [two_by_two.max_x-two_by_two.min_x,
-              two_by_two.max_y-two_by_two.min_y]
+bounds = full_core.bounds
+plot.width = [full_core.max_x - full_core.min_x,
+              full_core.max_y - full_core.min_y]
 plot.origin = [bounds[0] + (bounds[3] - bounds[0]) / 2.,
-                bounds[1] + (bounds[4] - bounds[1]) / 2.,
-                bounds[2] + (bounds[5] - bounds[2]) / 2.]
+               bounds[1] + (bounds[4] - bounds[1]) / 2.,
+               bounds[2] + (bounds[5] - bounds[2]) / 2.]
 plot.color = 'mat'
-plot.filename = '2x2'
+plot.filename = 'full-core'
 plot.col_spec = b.plots.colspec_mat
-plot.pixels = [2000, 2000]
+plot.pixels = [5000, 5000]
 
 plot_file = openmc.Plots([plot])
 plot_file.export_to_xml()
@@ -73,24 +72,23 @@ plot_file.export_to_xml()
 
 ###################  Create Mesh Tallies for Verification  ####################
 
-# Instantiate a tally Mesh
+# Instantiate a tally Mesh                                                                                   
 mesh = openmc.Mesh(name='assembly mesh')
 mesh.type = 'regular'
-mesh.dimension = [34, 34, 1]
-mesh.lower_left = lower_left
-mesh.width = (np.array(upper_right) - np.array(lower_left))
-mesh.width[:2] /= 34
+mesh.dimension = [int(np.ceil(15./2.*17)), int(np.ceil(15./2.*17)), 1]
+mesh.lower_left = [-1.26492/2., -1.26492/2., 203.]
+mesh.width = (1.26492, 1.26492, 10)
 
-# Instantiate tally Filter
+# Instantiate tally Filter                                                                                   
 mesh_filter = openmc.Filter()
 mesh_filter.mesh = mesh
 
-# Instantiate energy-integrated fission rate mesh Tally
+# Instantiate energy-integrated fission rate mesh Tally                                                      
 fission_rates = openmc.Tally(name='fission rates')
 fission_rates.filters = [mesh_filter]
 fission_rates.scores = ['fission']
 
-# Instantiate energy-wise U-238 capture rate mesh Tally
+# Instantiate energy-wise U-238 capture rate mesh Tally                                                      
 capture_rates = openmc.Tally(name='u-238 capture')
 capture_rates.filters = [mesh_filter]
 capture_rates.nuclides = ['U238']
