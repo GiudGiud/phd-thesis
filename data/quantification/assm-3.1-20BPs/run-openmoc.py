@@ -1,5 +1,7 @@
 import glob
 import types
+
+import openmc
 import infermc
 from discretize import discretize_geometry
 
@@ -14,6 +16,7 @@ batchwise.cell_mgxslib_filename = 'distribcell'
 batchwise.mat_mgxslib_filename = 'material'
 batchwise.zcoord = 205.
 batchwise.log_level = 'INFO'
+batchwise.reference_sp = openmc.StatePoint('../../benchmarks/assm-3.1-20BPs/statepoint.1000.h5')
 
 # Attach a method to discretize this geometry to the Batchwise instance
 batchwise._discretize_geometry = types.MethodType(discretize_geometry, batchwise)

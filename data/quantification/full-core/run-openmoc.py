@@ -1,9 +1,9 @@
 import glob
 import types
 
+import openmc
 import openmoc
 import infermc
-
 from discretize import discretize_geometry
 
 
@@ -17,6 +17,7 @@ batchwise.cell_mgxslib_filename = 'distribcell'
 batchwise.mat_mgxslib_filename = 'material'
 batchwise.zcoord = 205.
 batchwise.log_level = 'INFO'
+batchwise.reference_sp = openmc.StatePoint('../../benchmarks/full-core/statepoint.1000.h5')
 
 # Initialize quarter pin-wise CMFD mesh
 batchwise.cmfd = openmoc.Cmfd()

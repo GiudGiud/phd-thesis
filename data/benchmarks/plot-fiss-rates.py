@@ -23,9 +23,9 @@ import matplotlib.pyplot as plt
 # SINGLE FUEL ASSEMBLIES
 ###############################################################################
 
-directories = OrderedDict({'fuel-1.6': '1.6% Enr. (no BPs)',
-                           'fuel-3.1':'3.1% Enr. (no BPs)',
-                           'fuel-3.1-20BPs': '3.1% Enr. (20 BPs)',
+directories = OrderedDict({'assm-1.6': '1.6% Enr. (no BPs)',
+                           'assm-3.1':'3.1% Enr. (no BPs)',
+                           'assm-3.1-20BPs': '3.1% Enr. (20 BPs)',
                            '2x2': '2x2 Colorset',
                            'reflector': '2x2 Colorset w/ Reflector'})
 directories = OrderedDict({'full-core': 'Full Core'})
