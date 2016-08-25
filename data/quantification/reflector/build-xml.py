@@ -41,7 +41,6 @@ settings_file = openmc.Settings()
 settings_file.batches = batches
 settings_file.inactive = inactive
 settings_file.particles = particles
-settings_file.statepoint_interval = 10
 settings_file.ptables = True
 settings_file.output = {'tallies': False}
 settings_file.source = source

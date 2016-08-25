@@ -8,7 +8,7 @@ import infermc.beavrs
 ####################   User-specified Simulation Parameters  ###################
 
 batches = 1000
-inactive = 100
+inactive = 200
 particles = 1000000
 
 
