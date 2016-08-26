@@ -1,8 +1,30 @@
 \chapter{Structural Patterns in Pin-wise MGXS}
 \label{chap:spatial}
 
+first paragraph: 
+-
+
+second paragraph:
+-
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{MGXS Clustering}
+
+first paragraph:
+-
+
+second paragraph:
+-
+
+-want to look at all five benchmarks in succession with different MGXS clusters
+  -plots of U-238 capture (group 27/1); U-235 fission (group 65/2)
+    -octo plots
+    -histrogram/rug/kde
+    -QQ plots
+-need to plot for both assemblies in colorsets
+-need to plot for all three enrichments for BEAVRS
+  
+-look at slides 66-71 in ORNL presentation
 
 \begin{itemize}[noitemsep]
   \item show that clustering exists in MGXS
@@ -16,6 +38,10 @@
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Pin-Wise Population Variance}
+
+-plot the convergence of null MGXS by batch along with max for distribcell MGXS
+-plot the pop. var. convergence of the distribcell MGXS and show that they don't go to zero
+-plot the convergence of the distribcell MGXS for 1.6\% enr. assm, 3.1\% assm w/ BPs, 2x2 colorset w/ reflector???
 
 \begin{itemize}[noitemsep]
   \item table of population variance of distribcell MGXS
@@ -31,9 +57,120 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Clustering MGXS with Local Neighbor Symmetry}
 
+-need to define \ac{LNS} spatial homogenization
+-refer back to workflow chapter and OpenCG
+
+-boxplots / violin plots of MGXS for each???
+-keff with LNS
+-fission error w/ LNS
+-U-238 error w/ LNS
+-improved errors wrt. null homogenization
+
 \begin{itemize}[noitemsep]
   \item objective is to capture clustering effects in MGXS
   \item introduce LNS algorithm, or reference from section on OpenCG
   \item present results -- keff, pin powers, etc. -- with LNS
   \item LNS isn't adaptable -- segue to next chapter
 \end{itemize}
+
+
+\begin{table}[ht!]
+  \centering
+  \caption[OpenMOC eigenvalue bias with LNS homogenization]{OpenMOC eigenvalue bias $\Delta\rho$ for heterogeneous benchmarks with \ac{LNS} homogenization and varying energy group structures.}
+  \small
+  \label{table:chap9-lns-eigenvalues}
+  \vspace{6pt}
+  \begin{tabular}{l S[table-format=6.0] S[table-format=6.0] S[table-format=6.0]}
+  \toprule
+  \rowcolor{lightgray}
+  & \multicolumn{3}{S[table-format=6.1]}{\cellcolor{lightgray} {$\bm{\Delta\rho}$ \textbf{[pcm]}}} \\
+  \multirow{-2}{*}{\cellcolor{lightgray} \bf Benchmark} &
+  \multicolumn{1}{c}{{\cellcolor{lightgray} \bf 2-Group}} &
+  \multicolumn{1}{c}{{\cellcolor{lightgray} \bf 8-Group}} &
+  \multicolumn{1}{c}{{\cellcolor{lightgray} \bf 40/70-Group\textsuperscript{\ref{note1}}}} \\
+  \midrule
+1.6\% Assm & & & \\
+3.1\% Assm & & & \\
+3.1\% Assm w/ 20 BPs & & & \\
+2$\times$2 Colorset & & & \\
+2$\times$2 Colorset w/ Reflector & & & \\
+BEAVRS Full Core & & & \\
+  \bottomrule
+\end{tabular}
+\end{table}
+
+
+\begin{table}[ht!]
+  \centering
+  \caption[OpenMOC fission rate errors with LNS homogenization]{OpenMOC max and mean absolute fission rate percent relative errors for heterogeneous benchmarks with \ac{LNS} spatial homogenization and energy group structures.}
+  \small
+  \label{table:chap9-lns-fiss-rates}
+  \vspace{6pt}
+  \begin{tabular}{l l c c c}
+  \toprule
+  \rowcolor{lightgray}
+  & & \multicolumn{3}{c}{\cellcolor{lightgray} \textbf{Mean Error [\%]}} \\
+  \multirow{-2}{*}{\cellcolor{lightgray} \bf Benchmark} &
+  \multirow{-2}{*}{\cellcolor{lightgray} \bf Error Metric} &
+  \multicolumn{1}{c}{{\cellcolor{lightgray} \bf 2-Group}} &
+  \multicolumn{1}{c}{{\cellcolor{lightgray} \bf 8-Group}} &
+  \multicolumn{1}{c}{{\cellcolor{lightgray} \bf 40/70-Group\textsuperscript{\ref{note1}}}} \\
+  \midrule
+\multirow{2}{*}{\parbox{2.5cm}{1.6\% Assm}} & Max & & & \\
+& Mean & & & \\
+\midrule
+\multirow{2}{*}{\parbox{2.5cm}{3.1\% Assm}} & Max & & & \\
+& Mean & & & \\
+\midrule
+\multirow{2}{*}{\parbox{2.5cm}{3.1\% Assm w/ 20 BPs}} & Max & & & \\
+& Mean & & & \\
+\midrule
+\multirow{2}{*}{\parbox{2.5cm}{2$\times$2 Colorset}} & Max & & & \\
+& Mean & & & \\
+\midrule
+\multirow{2}{*}{\parbox{2.5cm}{2$\times$2 Colorset w/ Reflector}} & Max & & & \\
+& Mean & & & \\
+\midrule
+\multirow{2}{*}{\parbox{2.5cm}{BEAVRS Full Core}} & Max & & & \\
+& Mean & & & \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+
+\begin{table}[ht!]
+  \centering
+  \caption[OpenMOC U-238 capture rate errors with LNS homogenization]{OpenMOC max and mean absolute U-238 capture rate percent relative errors for heterogeneous benchmarks with \ac{LNS} spatial homogenization and energy group structures.}
+  \small
+  \label{table:chap9-lns-capture-rates}
+  \vspace{6pt}
+  \begin{tabular}{l l c c c}
+  \toprule
+  \rowcolor{lightgray}
+  & & \multicolumn{3}{c}{\cellcolor{lightgray} \textbf{Mean Error [\%]}} \\
+  \multirow{-2}{*}{\cellcolor{lightgray} \bf Benchmark} &
+  \multirow{-2}{*}{\cellcolor{lightgray} \bf Error Metric} &
+  \multicolumn{1}{c}{{\cellcolor{lightgray} \bf 2-Group}} &
+  \multicolumn{1}{c}{{\cellcolor{lightgray} \bf 8-Group}} &
+  \multicolumn{1}{c}{{\cellcolor{lightgray} \bf 40/70-Group\textsuperscript{\ref{note1}}}} \\
+  \midrule
+\multirow{2}{*}{\parbox{2.5cm}{1.6\% Assm}} & Max & & & \\
+& Mean & & & \\
+\midrule
+\multirow{2}{*}{\parbox{2.5cm}{3.1\% Assm}} & Max & & & \\
+& Mean & & & \\
+\midrule
+\multirow{2}{*}{\parbox{2.5cm}{3.1\% Assm w/ 20 BPs}} & Max & & & \\
+& Mean & & & \\
+\midrule
+\multirow{2}{*}{\parbox{2.5cm}{2$\times$2 Colorset}} & Max & & & \\
+& Mean & & & \\
+\midrule
+\multirow{2}{*}{\parbox{2.5cm}{2$\times$2 Colorset w/ Reflector}} & Max & & & \\
+& Mean & & & \\
+\midrule
+\multirow{2}{*}{\parbox{2.5cm}{BEAVRS Full Core}} & Max & & & \\
+& Mean & & & \\
+\bottomrule
+\end{tabular}
+\end{table}
