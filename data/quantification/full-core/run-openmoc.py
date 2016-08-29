@@ -15,13 +15,15 @@ batchwise.type = '{}-groups'.format(batchwise.num_fine_groups)
 batchwise.sp_start = len(statepoints) - 1
 batchwise.cell_mgxslib_filename = 'distribcell'
 batchwise.mat_mgxslib_filename = 'material'
-batchwise.zcoord = 205.
+batchwise.zcoord = 195.
 batchwise.log_level = 'INFO'
-batchwise.reference_sp = openmc.StatePoint('../../benchmarks/full-core/statepoint.1000.h5')
+batchwise.reference_sp = openmc.StatePoint('statepoint.1000.h5')
+#batchwise.reference_sp = openmc.StatePoint('../../benchmarks/full-core/statepoint.1000.h5')
 
 # Initialize quarter pin-wise CMFD mesh
 batchwise.cmfd = openmoc.Cmfd()
-batchwise.cmfd.setLatticeStructure(23*17, 23*17)
+#batchwise.cmfd.setLatticeStructure(23*17, 23*17)
+batchwise.cmfd.setLatticeStructure(23, 23)
 batchwise.cmfd.setKNearest(3)
 batchwise.with_cmfd = True
 
@@ -63,7 +65,7 @@ elif batchwise.options.clusterizer_type == 'pinch':
 
 # Turn off MGXS plotting for speed
 batchwise.clusterizer.plot_mgxs = False
-batchwise.plot_materials = False
+batchwise.plot_materials = True
 batchwise.plot_cells = False
 batchwise.plot_fsrs = False
 
