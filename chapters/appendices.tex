@@ -303,8 +303,13 @@ The energy groups structures are those used in the CASMO-4 lattice physics code~
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\chapter{BEAVRS Isotopic Compositions}
-\label{app:beavrs-isotopes}
+\chapter{Heterogeneous BEAVRS Model Parameters}
+\label{app:beavrs-benchmarks}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Material Isotopic Compositions}
+\label{sec:beavrs-materials}
 
 The isotopic compositions used in the \ac{PWR} benchmark models in Part IV were identical to those in the \ac{BEAVRS} \ac{PWR} model v1.1.1~\cite{horelik2013beavrs} and are reproduced in the tables below for clarity.
 
@@ -511,6 +516,59 @@ The isotopic compositions used in the \ac{PWR} benchmark models in Part IV were 
   \bottomrule
 \end{tabular}
 \end{table}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Geometric Configuration}
+\label{sec:beavrs-geometry}
+
+The geometric pin cell parameters for the \ac{PWR} benchmark models in Part IV were identical to those in the \ac{BEAVRS} \ac{PWR} model v1.1.1~\cite{horelik2013beavrs} at the core axial mid-plane. The pin cell radii are reproduced in the table below for clarity.
+
+\renewcommand{\arraystretch}{0.9}
+\begin{table}[h!]
+  \centering
+  \caption[BEAVRS pin cell radii]{Pin cell radii for the \ac{BEAVRS} model.}
+  \small
+  \label{table:app-pin-cell-radii} 
+  \vspace{6pt}
+  \begin{tabular}{l c}
+  \toprule
+  \rowcolor{lightgray}
+  \multicolumn{1}{c}{\bf Material} &
+  \multicolumn{1}{c}{\bf Radius [cm]} \\
+  \midrule
+  \multicolumn{2}{c}{\bf Fuel Pin} \\
+  \midrule
+  Fuel &  0.39218 \\
+  Helium & 0.40005 \\
+  Zircaloy & 0.45720 \\
+  \midrule
+  \multicolumn{2}{c}{\bf Control Rod Guide Tube} \\
+  \midrule
+  Borated Water & 0.56134 \\
+  Zircaloy & 0.60198 \\
+  \midrule
+  \multicolumn{2}{c}{\bf Instrument Tube} \\
+  \midrule
+  Air & 0.43688 \\
+  Zircaloy & 0.48387 \\
+  Borated Water & 0.56134 \\
+  Zircaloy & 0.60198 \\
+  \midrule
+  \multicolumn{2}{c}{\bf Burnable Poison} \\
+  \midrule
+  Air & 0.21400 \\
+  Stainless Steel & 0.23051 \\
+  Air & 0.24130 \\
+  Borosilicate Glass & 0.42672 \\
+  Air & 0.43688 \\
+  Stainless Steel & 0.48387 \\
+  Borated Water & 0.56134 \\
+  Zircaloy & 0.60198 \\
+  \bottomrule
+\end{tabular}
+\end{table}
+
 
 
 \end{appendices}

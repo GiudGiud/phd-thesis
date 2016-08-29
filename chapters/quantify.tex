@@ -142,15 +142,15 @@ The infinite, null and spatial homogenization schemes were used to prepare \ac{M
   \multicolumn{1}{c}{\cellcolor{lightgray} \textbf{\# Tracks}} &
   \multicolumn{1}{c}{\cellcolor{lightgray} \textbf{\# Segments}} \\
   \midrule
-1.6\% Assm & 31,844 & 34,976 & 8,741,824 \\
+1.6\% Assm & 28,376 & 34,976 & 7,945,952 \\
   \midrule
-3.1\% Assm & 31,844 & 34,976 & 8,741,824 \\
+3.1\% Assm & 28,376 & 34,976 & 7,945,952 \\
   \midrule
-3.1\% Assm w/ 20 BPs & 32,964 & 34,976 & 8,906,064  \\
+3.1\% Assm w/ 20 BPs & 29,496 & 34,976 & 8,110,192  \\
   \midrule
-2$\times$2 Colorset & 188,128 & 69,892 & 44,477,312 \\
+2$\times$2 Colorset & 115,744 & 69,892 & 32,097,936 \\
   \midrule
-2$\times$2 Colorset w/ Reflector & 276,052 & 104,788 & 63,891,381 \\
+2$\times$2 Colorset w/ Reflector & 203,220 & 104,788 & 51,122,228 \\
   \midrule
 %\ac{BEAVRS} Quarter Core & 2,512,384 & 201,620 & 427,683,579 \\
 \ac{BEAVRS} Quarter Core & 2,512,384 & 403,240 & 855,367,158 \\
@@ -200,7 +200,7 @@ The OpenMOC simulations of each of the six heterogenous benchmarks used the same
 \subsection{\ac{FSR} Discretization}
 \label{subsec:chap8-fsr-discretizations}
 
-Flat source region spatial discretization meshes were applied to each of the six heterogeneous benchmarks in the OpenMOC simulations. The total number of \ac{FSR}s is itemized in Tab.~\ref{table:chap8-num-fsrs-tracks-segments} for each benchmark analyzed in this thesis. The \ac{FSR} meshes applied to the fuel pin, control rod guide tube, instrument tube and burnable poison pin cells are shown in Fig.~\ref{fig:chap8-pin-cell-fsrs}. As shown in the figures, eight equal angle subdivisions were used in all material zones, including the grid spacers surrounding each pin cell. The UO$_2$ fuel was further subdivided into five equal volume radial rings, while ten radial rings were employed in the water-filled \acp{CRGT} and instrument tubes. The borosilicate glass and borated water material zones filling the \acp{BP} were each discretized into five equal volume radial rings. Finally, five equally spaced rings were used in the moderator zones surrounding each pin.
+Flat source region spatial discretization meshes were applied to each of the six heterogeneous benchmarks in the OpenMOC simulations. The total number of \ac{FSR}s is itemized in Tab.~\ref{table:chap8-num-fsrs-tracks-segments} for each benchmark analyzed in this thesis. The \ac{FSR} meshes applied to the fuel pin, control rod guide tube, instrument tube and burnable poison pin cells are shown in Fig.~\ref{fig:chap8-pin-cell-fsrs}. As shown in the figures, eight equal angle subdivisions were used in all material zones. The UO$_2$ fuel was further subdivided into five equal volume radial rings, while ten radial rings were employed in the water-filled \acp{CRGT} and instrument tubes. The borosilicate glass and borated water material zones filling the \acp{BP} were each discretized into five equal volume radial rings. Finally, five equally spaced rings were used in the moderator zones surrounding each pin.
 
 \begin{figure}[h!]
 \centering
@@ -309,25 +309,25 @@ As expected, the eigenvalue bias is highly dependent on energy group structure. 
   \multicolumn{1}{c}{{\cellcolor{lightgray} \bf 8-Group}} &
   \multicolumn{1}{c}{{\cellcolor{lightgray} \bf 40/70-Group\footnotemark{}}} \\
   \midrule
-\multirow{3}{*}{\parbox{2.5cm}{1.6\% Assm}} & Infinite & 213 & 3 & -170 \\
-& Null & 79 & -50 & -142 \\
-& Degenerate & 84 & -50 & -142 \\
+\multirow{3}{*}{\parbox{2.5cm}{1.6\% Assm}} & Infinite & -60 & -26 & 47 \\
+& Null & 88 & -57 & -156 \\
+& Degenerate & 91 & -57 & -156 \\
   \midrule
-\multirow{3}{*}{\parbox{2.5cm}{3.1\% Assm}} & Infinite & 175 & -35 & -203 \\
-& Null & 87 & -55 & -167 \\
-& Degenerate & 94 & -55 & -167 \\
+\multirow{3}{*}{\parbox{2.5cm}{3.1\% Assm}} & Infinite & -134 & -69 & 36 \\
+& Null & 85 & -66 & -193 \\
+& Degenerate & 90 & -67 & -193 \\
   \midrule
-\multirow{3}{*}{\parbox{2.5cm}{3.1\% Assm w/ 20 BPs}} & Infinite & 1057 & 150 & -279 \\
-& Null & -148 & -151 & -231 \\
-& Degenerate & -195 & -154 & -227 \\
+\multirow{3}{*}{\parbox{2.5cm}{3.1\% Assm w/ 20 BPs}} & Infinite & 412 & 29 & -67 \\
+& Null & -112 & -162 & -248 \\
+& Degenerate & -149 & -161 & -244 \\
   \midrule
-\multirow{3}{*}{\parbox{2.5cm}{2$\times$2 Colorset}} & Infinite & 1021 & -13 & -221 \\
-& Null & 16 & -69 & -175 \\
-& Degenerate & -12 & -70 & -173 \\
+\multirow{3}{*}{\parbox{2.5cm}{2$\times$2 Colorset}} & Infinite & 523 & -101 & -8 \\
+& Null & 65 & -77 & -191 \\
+& Degenerate & 43 & -76 & -188 \\
   \midrule
-\multirow{3}{*}{\parbox{2.5cm}{2$\times$2 Colorset w/ Reflector}} & Infinite & 2947 & 394 & -129 \\
-& Null & 1481 & 479 & -112 \\
-& Degenerate & 1398 & 487 & -100 \\
+\multirow{3}{*}{\parbox{2.5cm}{2$\times$2 Colorset w/ Reflector}} & Infinite & 2474 & 400 & 149 \\
+& Null & 1640 & 524 & -44 \\
+& Degenerate & 1571 & 531 & -34 \\
   \midrule
 \multirow{3}{*}{\parbox{2.5cm}{BEAVRS Full Core}} & Infinite & 2574 & 360 & -101 \\
 & Null & 1883 & 393 & -82 \\
@@ -373,21 +373,21 @@ The fission rate errors are somewhat dependent on the spatial homogenization sch
   \multicolumn{1}{c}{{\cellcolor{lightgray} \bf 8-Group}} &
   \multicolumn{1}{c}{{\cellcolor{lightgray} \bf 40/70-Group\textsuperscript{\ref{note1}}}} \\
   \midrule
-\multirow{3}{*}{\parbox{2.5cm}{1.6\% Assm}} & Infinite & 2.76E+00 & 7.52E-01 & 4.71E-01 \\
-& Null & 2.76E+00 & 7.43E-01 & 4.71E-01 \\
-& Degenerate & 1.89E+00 & 8.08E-01 & 3.90E-01 \\
+\multirow{3}{*}{\parbox{2.5cm}{1.6\% Assm}} & Infinite & 2.71E+00 & 7.74E-01 & 4.14E-01 \\
+& Null & 2.69E+00 & 7.67E-01 & 4.19E-01 \\
+& Degenerate & 1.95E+00 & 8.33E-01 & 3.41E-01 \\
   \midrule
-\multirow{3}{*}{\parbox{2.5cm}{3.1\% Assm}} & Infinite & 3.10E+00 & 8.26E-01 & 5.41E-01 \\
-& Null & 3.08E+00 & 8.13E-01 & 5.42E-01 \\
-& Degenerate & 2.10E+00 & 8.79E-01 & 4.51E-01 \\
+\multirow{3}{*}{\parbox{2.5cm}{3.1\% Assm}} & Infinite & 2.94E+00 & 7.51E-01 & 5.06E-01 \\
+& Null & 2.91E+00 & 7.39E-01 & 5.10E-01 \\
+& Degenerate & 2.10E+00 & 8.39E-01 & 4.43E-01 \\
   \midrule
-\multirow{3}{*}{\parbox{2.5cm}{3.1\% Assm w/ 20 BPs}} & Infinite & -3.99E+00 & -9.73E-01 & 4.33E-01 \\
-& Null & -4.05E+00 & -9.63E-01 & 4.35E-01 \\
-& Degenerate & -1.90E+00 & -7.99E-01 & 3.71E-01 \\
+\multirow{3}{*}{\parbox{2.5cm}{3.1\% Assm w/ 20 BPs}} & Infinite & -3.50E+00 & -7.51E-01 & 3.75E-01 \\
+& Null & -3.54E+00 & -7.46E-01 & 3.82E-01 \\
+& Degenerate & 2.01E+00 & 6.92E-01 & -3.30E-01 \\
   \midrule
-\multirow{3}{*}{\parbox{2.5cm}{2$\times$2 Colorset}} & Infinite & 6.47E+00 & -1.53E+00 & 5.14E-01 \\
-& Null & 6.18E+00 & -1.55E+00 & 5.48E-01 \\
-& Degenerate & -4.61E+00 & -1.47E+00 & 5.45E-01 \\
+\multirow{3}{*}{\parbox{2.5cm}{2$\times$2 Colorset}} & Infinite & -5.77E+00 & -1.57E+00 & -5.48E-01 \\
+& Null & -5.84E+00 & -1.54E+00 & -5.67E-01 \\
+& Degenerate & -4.75E+00 & -1.46E+00 & -5.51E-01 \\
   \midrule
 \multirow{3}{*}{\parbox{2.5cm}{2$\times$2 Colorset w/ Reflector}} & Infinite & 1.25E+01 & 3.31E+00 & 1.07E+00 \\
 & Null & -1.31E+01 & 3.02E+00 & 9.95E-01 \\
@@ -416,25 +416,25 @@ The fission rate errors are somewhat dependent on the spatial homogenization sch
   \multicolumn{1}{c}{{\cellcolor{lightgray} \bf 8-Group}} &
   \multicolumn{1}{c}{{\cellcolor{lightgray} \bf 40/70-Group\textsuperscript{\ref{note1}}}} \\
   \midrule
-\multirow{3}{*}{\parbox{2.5cm}{1.6\% Assm}} & Infinite & 1.15E+00 & 2.88E-01 & 9.25E-02 \\
-& Null & 1.15E+00 & 2.84E-01 & 9.25E-02 \\
-& Degenerate & 6.86E-01 & 2.55E-01 & 9.50E-02 \\
+\multirow{3}{*}{\parbox{2.5cm}{1.6\% Assm}} & Infinite & 1.10E+00 & 2.64E-01 & 8.58E-02 \\
+& Null & 1.08E+00 & 2.59E-01 & 8.65E-02 \\
+& Degenerate & 7.01E-01 & 2.57E-01 & 9.18E-02 \\
   \midrule
-\multirow{3}{*}{\parbox{2.5cm}{3.1\% Assm}} & Infinite & 1.39E+00 & 3.49E-01 & 1.00E-01 \\
-& Null & 1.38E+00 & 3.42E-01 & 1.00E-01 \\
-& Degenerate & 8.04E-01 & 3.07E-01 & 1.03E-01 \\
+\multirow{3}{*}{\parbox{2.5cm}{3.1\% Assm}} & Infinite & 1.32E+00 & 3.18E-01 & 9.28E-02 \\
+& Null & 1.29E+00 & 3.10E-01 & 9.36E-02 \\
+& Degenerate & 8.09E-01 & 3.00E-01 & 9.86E-02 \\
   \midrule
-\multirow{3}{*}{\parbox{2.5cm}{3.1\% Assm w/ 20 BPs}} & Infinite & 1.08E+00 & 2.32E-01 & 9.89E-02 \\
-& Null & 1.10E+00 & 2.30E-01 & 9.82E-02 \\
-& Degenerate & 6.34E-01 & 2.26E-01 & 9.44E-02 \\
+\multirow{3}{*}{\parbox{2.5cm}{3.1\% Assm w/ 20 BPs}} & Infinite & 1.00E+00 & 2.08E-01 & 1.05E-01 \\
+& Null & 1.01E+00 & 2.07E-01 & 1.08E-01 \\
+& Degenerate & 6.72E-01 & 2.17E-01 & 9.70E-02 \\
   \midrule
-\multirow{3}{*}{\parbox{2.5cm}{2$\times$2 Colorset}} & Infinite & 3.15E+00 & 6.78E-01 & 1.31E-01 \\
-& Null & 3.12E+00 & 6.95E-01 & 1.38E-01 \\
-& Degenerate & 2.59E+00 & 6.93E-01 & 1.41E-01 \\
+\multirow{3}{*}{\parbox{2.5cm}{2$\times$2 Colorset}} & Infinite & 3.02E+00 & 6.61E-01 & 1.37E-01 \\
+& Null & 3.06E+00 & 6.65E-01 & 1.44E-01 \\
+& Degenerate & 2.66E+00 & 6.73E-01 & 1.42E-01 \\
   \midrule
-\multirow{3}{*}{\parbox{2.5cm}{2$\times$2 Colorset w/ Reflector}} & Infinite & 4.83E+00 & 1.08E+00 & 1.87E-01 \\
-& Null & 5.33E+00 & 1.14E+00 & 1.93E-01 \\
-& Degenerate & 4.35E+00 & 1.09E+00 & 1.61E-01 \\
+\multirow{3}{*}{\parbox{2.5cm}{2$\times$2 Colorset w/ Reflector}} & Infinite & 4.61E+00 & 1.19E+00 & 4.28E-01 \\
+& Null & 5.37E+00 & 1.18E+00 & 4.59E-01 \\
+& Degenerate & 4.44E+00 & 1.15E+00 & 4.18E-01 \\
   \midrule
 \multirow{3}{*}{\parbox{2.5cm}{BEAVRS Full Core}} & Infinite & 3.56E+01 & 1.20E+01 & 4.05E+00 \\
 & Null & 4.21E+01 & 1.35E+01 & 3.85E+00 \\
@@ -533,25 +533,25 @@ The OpenMOC energy-integrated U-238 capture rates were compared to the reference
   \multicolumn{1}{c}{{\cellcolor{lightgray} \bf 8-Group}} &
   \multicolumn{1}{c}{{\cellcolor{lightgray} \bf 40/70-Group\textsuperscript{\ref{note1}}}} \\
   \midrule
-\multirow{3}{*}{\parbox{2.5cm}{1.6\% Assm}} & Infinite & -2.86E+00 & -1.61E+00 & -1.17E+00 \\
-& Null & -2.86E+00 & -1.60E+00 & -1.17E+00 \\
-& Degenerate & 1.09E+00 & 4.65E-01 & 3.68E-01 \\
+\multirow{3}{*}{\parbox{2.5cm}{1.6\% Assm}} & Infinite & -2.87E+00 & -1.62E+00 & -1.22E+00 \\
+& Null & -2.84E+00 & -1.61E+00 & -1.22E+00 \\
+& Degenerate & 1.03E+00 & 4.33E-01 & 3.53E-01 \\
   \midrule
-\multirow{3}{*}{\parbox{2.5cm}{3.1\% Assm}} & Infinite & -3.25E+00 & -1.91E+00 & -1.44E+00 \\
-& Null & -3.24E+00 & -1.90E+00 & -1.44E+00 \\
-& Degenerate & 9.02E-01 & 4.44E-01 & -3.70E-01 \\
+\multirow{3}{*}{\parbox{2.5cm}{3.1\% Assm}} & Infinite & -3.08E+00 & -1.73E+00 & -1.32E+00 \\
+& Null & -3.04E+00 & -1.72E+00 & -1.32E+00 \\
+& Degenerate & 9.07E-01 & 6.25E-01 & 4.88E-01 \\
   \midrule
-\multirow{3}{*}{\parbox{2.5cm}{3.1\% Assm w/ 20 BPs}} & Infinite & 3.01E+00 & -1.26E+00 & -1.02E+00 \\
-& Null & 3.02E+00 & -1.26E+00 & -1.02E+00 \\
-& Degenerate & 1.45E+00 & 6.81E-01 & 4.04E-01 \\
+\multirow{3}{*}{\parbox{2.5cm}{3.1\% Assm w/ 20 BPs}} & Infinite & 3.31E+00 & -1.45E+00 & -1.14E+00 \\
+& Null & 3.27E+00 & -1.42E+00 & -1.11E+00 \\
+& Degenerate & 1.64E+00 & 7.41E-01 & -4.04E-01 \\
   \midrule
-\multirow{3}{*}{\parbox{2.5cm}{2$\times$2 Colorset}} & Infinite & -4.93E+00 & -2.10E+00 & -1.66E+00 \\
-& Null & -4.53E+00 & -1.91E+00 & -1.59E+00 \\
-& Degenerate & 2.35E+00 & -1.10E+00 & 8.61E-01 \\
+\multirow{3}{*}{\parbox{2.5cm}{2$\times$2 Colorset}} & Infinite & -5.02E+00 & -1.88E+00 & -1.45E+00 \\
+& Null & -4.66E+00 & -1.74E+00 & -1.45E+00 \\
+& Degenerate & -2.74E+00 & -9.39E-01 & 7.69E-01 \\
   \midrule
-\multirow{3}{*}{\parbox{2.5cm}{2$\times$2 Colorset w/ Reflector}} & Infinite & 1.27E+01 & 5.32E+00 & -2.12E+00 \\
-& Null & 1.16E+01 & 4.21E+00 & -2.18E+00 \\
-& Degenerate & 9.65E+00 & 3.67E+00 & 1.08E+00 \\
+\multirow{3}{*}{\parbox{2.5cm}{2$\times$2 Colorset w/ Reflector}} & Infinite & 1.27E+01 & 5.20E+00 & 2.74E+00 \\
+& Null & 1.21E+01 & 4.56E+00 & 2.70E+00 \\
+& Degenerate & 9.59E+00 & 3.74E+00 & 1.95E+00 \\
   \midrule
 \multirow{3}{*}{\parbox{2.5cm}{BEAVRS Full Core}} & Infinite & -7.62E+01 & -3.16E+01 & 1.31E+01 \\
 & Null & 8.90E+01 & -3.52E+01 & 1.28E+01 \\
@@ -576,25 +576,25 @@ The OpenMOC energy-integrated U-238 capture rates were compared to the reference
   \multicolumn{1}{c}{{\cellcolor{lightgray} \bf 8-Group}} &
   \multicolumn{1}{c}{{\cellcolor{lightgray} \bf 40/70-Group\textsuperscript{\ref{note1}}}} \\
   \midrule
-\multirow{3}{*}{\parbox{2.5cm}{1.6\% Assm}} & Infinite & 1.33E+00 & 6.85E-01 & 4.93E-01 \\
-& Null & 1.33E+00 & 6.84E-01 & 4.94E-01 \\
-& Degenerate & 3.39E-01 & 1.08E-01 & 9.98E-02 \\
+\multirow{3}{*}{\parbox{2.5cm}{1.6\% Assm}} & Infinite & 1.31E+00 & 6.58E-01 & 4.85E-01 \\
+& Null & 1.30E+00 & 6.55E-01 & 4.85E-01 \\
+& Degenerate & 3.61E-01 & 1.05E-01 & 9.80E-02 \\
   \midrule
-\multirow{3}{*}{\parbox{2.5cm}{3.1\% Assm}} & Infinite & 1.44E+00 & 7.61E-01 & 5.59E-01 \\
-& Null & 1.43E+00 & 7.59E-01 & 5.59E-01 \\
-& Degenerate & 3.12E-01 & 1.26E-01 & 1.09E-01 \\
+\multirow{3}{*}{\parbox{2.5cm}{3.1\% Assm}} & Infinite & 1.43E+00 & 7.40E-01 & 5.60E-01 \\
+& Null & 1.41E+00 & 7.36E-01 & 5.60E-01 \\
+& Degenerate & 3.30E-01 & 1.24E-01 & 1.06E-01 \\
   \midrule
-\multirow{3}{*}{\parbox{2.5cm}{3.1\% Assm w/ 20 BPs}} & Infinite & 1.19E+00 & 5.50E-01 & 4.27E-01 \\
-& Null & 1.19E+00 & 5.50E-01 & 4.28E-01 \\
-& Degenerate & 3.89E-01 & 1.61E-01 & 1.06E-01 \\
+\multirow{3}{*}{\parbox{2.5cm}{3.1\% Assm w/ 20 BPs}} & Infinite & 1.26E+00 & 5.53E-01 & 4.26E-01 \\
+& Null & 1.25E+00 & 5.46E-01 & 4.16E-01 \\
+& Degenerate & 4.54E-01 & 1.69E-01 & 1.14E-01 \\
   \midrule
-\multirow{3}{*}{\parbox{2.5cm}{2$\times$2 Colorset}} & Infinite & 2.14E+00 & 6.49E-01 & 4.78E-01 \\
-& Null & 1.86E+00 & 6.65E-01 & 4.73E-01 \\
-& Degenerate & 1.18E+00 & 2.14E-01 & 1.87E-01 \\
+\multirow{3}{*}{\parbox{2.5cm}{2$\times$2 Colorset}} & Infinite & 2.14E+00 & 6.23E-01 & 4.59E-01 \\
+& Null & 1.92E+00 & 6.30E-01 & 4.55E-01 \\
+& Degenerate & 1.31E+00 & 1.99E-01 & 1.76E-01 \\
   \midrule
-\multirow{3}{*}{\parbox{2.5cm}{2$\times$2 Colorset w/ Reflector}} & Infinite & 4.18E+00 & 1.03E+00 & 5.17E-01 \\
-& Null & 3.81E+00 & 9.25E-01 & 5.17E-01 \\
-& Degenerate & 3.75E+00 & 8.56E-01 & 2.21E-01 \\
+\multirow{3}{*}{\parbox{2.5cm}{2$\times$2 Colorset w/ Reflector}} & Infinite & 3.86E+00 & 1.06E+00 & 5.09E-01 \\
+& Null & 3.80E+00 & 9.88E-01 & 5.13E-01 \\
+& Degenerate & 3.58E+00 & 9.29E-01 & 3.36E-01 \\
   \midrule
 \multirow{3}{*}{\parbox{2.5cm}{BEAVRS Full Core}} & Infinite & 3.59E+01 & 1.16E+01 & 3.86E+00 \\
 & Null & 4.26E+01 & 1.32E+01 & 3.69E+00 \\
