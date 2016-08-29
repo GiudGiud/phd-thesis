@@ -325,9 +325,9 @@ As expected, the eigenvalue bias is highly dependent on energy group structure. 
 & Null & 65 & -77 & -191 \\
 & Degenerate & 43 & -76 & -188 \\
   \midrule
-\multirow{3}{*}{\parbox{2.5cm}{2$\times$2 Colorset w/ Reflector}} & Infinite & 2474 & 400 & 149 \\
-& Null & 1640 & 524 & -44 \\
-& Degenerate & 1571 & 531 & -34 \\
+\multirow{3}{*}{\parbox{2.5cm}{2$\times$2 Colorset w/ Reflector}} & Infinite & 2448 & 337 & 59 \\
+& Null & 1607 & 458 & -134 \\
+& Degenerate & 1537 & 465 & -124 \\
   \midrule
 \multirow{3}{*}{\parbox{2.5cm}{BEAVRS Full Core}} & Infinite & 2574 & 360 & -101 \\
 & Null & 1883 & 393 & -82 \\
@@ -389,9 +389,9 @@ The fission rate errors are somewhat dependent on the spatial homogenization sch
 & Null & -5.84E+00 & -1.54E+00 & -5.67E-01 \\
 & Degenerate & -4.75E+00 & -1.46E+00 & -5.51E-01 \\
   \midrule
-\multirow{3}{*}{\parbox{2.5cm}{2$\times$2 Colorset w/ Reflector}} & Infinite & 1.25E+01 & 3.31E+00 & 1.07E+00 \\
-& Null & -1.31E+01 & 3.02E+00 & 9.95E-01 \\
-& Degenerate & 1.01E+01 & 2.70E+00 & 9.02E-01 \\
+\multirow{3}{*}{\parbox{2.5cm}{2$\times$2 Colorset w/ Reflector}} & Infinite & 1.10E+01 & 2.87E+00 & 9.95E-01 \\
+& Null & -1.51E+01 & 2.71E+00 & 1.08E+00 \\
+& Degenerate & 9.87E+00 & 2.53E+00 & 9.00E-01 \\
   \midrule
 \multirow{3}{*}{\parbox{2.5cm}{BEAVRS Full Core}} & Infinite & -7.53E+01 & -3.09E+01 & 1.64E+01 \\
 & Null & 8.57E+01 & -3.46E+01 & 1.62E+01 \\
@@ -432,9 +432,9 @@ The fission rate errors are somewhat dependent on the spatial homogenization sch
 & Null & 3.06E+00 & 6.65E-01 & 1.44E-01 \\
 & Degenerate & 2.66E+00 & 6.73E-01 & 1.42E-01 \\
   \midrule
-\multirow{3}{*}{\parbox{2.5cm}{2$\times$2 Colorset w/ Reflector}} & Infinite & 4.61E+00 & 1.19E+00 & 4.28E-01 \\
-& Null & 5.37E+00 & 1.18E+00 & 4.59E-01 \\
-& Degenerate & 4.44E+00 & 1.15E+00 & 4.18E-01 \\
+\multirow{3}{*}{\parbox{2.5cm}{2$\times$2 Colorset w/ Reflector}} & Infinite & 4.54E+00 & 1.00E+00 & 1.84E-01 \\
+& Null & 5.38E+00 & 1.07E+00 & 2.07E-01 \\
+& Degenerate & 4.41E+00 & 1.04E+00 & 1.76E-01 \\
   \midrule
 \multirow{3}{*}{\parbox{2.5cm}{BEAVRS Full Core}} & Infinite & 3.56E+01 & 1.20E+01 & 4.05E+00 \\
 & Null & 4.21E+01 & 1.35E+01 & 3.85E+00 \\
@@ -442,6 +442,8 @@ The fission rate errors are somewhat dependent on the spatial homogenization sch
   \bottomrule
 \end{tabular}
 \end{table}
+
+Further heat maps can be found in App.~\ref{sec:quantify-fiss-rates}.
 
 The spatial distributions of fission rate errors are plotted as heatmaps for each benchmark in Figs.~\Crefrange{fig:chap8-assm-1.6-fiss-err}{fig:chap8-full-core-fiss-err}. The heatmaps illustrate systematic  error trends in the pin-wise fission errors which correlate with spatial heterogeneities in each benchmark. In particular, the fission rates are generally underpredicted for pins near \acp{CRGT}, but overpredicted for pins near \acp{BP} and in pins removed from \acp{CRGT}, such as those in the corners of each fuel assembly. The effects due to heterogeneities are further enhanced when differentiating pins which are facially adjacent to \acp{CRGT}, facially and corner adjacent to two \acp{CRGT}, etc. In addition, the error magnitudes are large for pins along the inter-assembly and assembly-reflector interfaces for the 2$\times$2 colorset benchmarks. For the \ac{PWR} benchmarks modeled here, the differential moderation provided by neighboring \acp{CRGT} and/or reflectors softens the flux spectrum for nearby fuel pins and should be modeled when collapsing pin-wise \ac{MGXS} for high-fidelity multi-group transport calculations.
 
@@ -497,15 +499,15 @@ As noted previously, the energy group structure has a large impact on the error 
 
 \clearpage
 
-\begin{figure}[h!]
-\centering
-\includegraphics[width=\linewidth]{figures/quantification/full-core/fiss-err}
-\vspace{2mm}
-\caption[Fission rate errors for the 2D quarter core \ac{BEAVRS} model]{Fission rate percent relative errors for the quarter core \ac{BEAVRS} model corresponding to the reference in Fig.~\ref{fig:chap7-fiss-rates-full-core}.}
-\label{fig:chap8-full-core-fiss-err}
-\end{figure}
+%\begin{figure}[h!]
+%\centering
+%\includegraphics[width=\linewidth]{figures/quantification/full-core/fiss-err}
+%\vspace{2mm}
+%\caption[Fission rate errors for the 2D quarter core \ac{BEAVRS} model]{Fission rate percent relative errors for the quarter core \ac{BEAVRS} model corresponding to the reference in Fig.~\ref{fig:chap7-fiss-rates-full-core}.}
+%\label{fig:chap8-full-core-fiss-err}
+%\end{figure}
 
-\clearpage
+%\clearpage
 
 \begin{emphbox}
 \textbf{The use of degenerate spatial homogenization ``smooths'' the spatial distribution of pin-wise fission rate errors for 2-group \ac{MGXS}. However, the fission rates computed with \ac{MGXS} generated from the infinite, null and degenerate homogenization schemes are very similar with fine 40/70 group structures.}
@@ -549,9 +551,9 @@ The OpenMOC energy-integrated U-238 capture rates were compared to the reference
 & Null & -4.66E+00 & -1.74E+00 & -1.45E+00 \\
 & Degenerate & -2.74E+00 & -9.39E-01 & 7.69E-01 \\
   \midrule
-\multirow{3}{*}{\parbox{2.5cm}{2$\times$2 Colorset w/ Reflector}} & Infinite & 1.27E+01 & 5.20E+00 & 2.74E+00 \\
-& Null & 1.21E+01 & 4.56E+00 & 2.70E+00 \\
-& Degenerate & 9.59E+00 & 3.74E+00 & 1.95E+00 \\
+\multirow{3}{*}{\parbox{2.5cm}{2$\times$2 Colorset w/ Reflector}} & Infinite & 1.24E+01 & 4.03E+00 & -2.18E+00 \\
+& Null & 1.17E+01 & 3.78E+00 & -2.20E+00 \\
+& Degenerate & 9.21E+00 & 3.17E+00 & -1.29E+00 \\
   \midrule
 \multirow{3}{*}{\parbox{2.5cm}{BEAVRS Full Core}} & Infinite & -7.62E+01 & -3.16E+01 & 1.31E+01 \\
 & Null & 8.90E+01 & -3.52E+01 & 1.28E+01 \\
@@ -592,9 +594,9 @@ The OpenMOC energy-integrated U-238 capture rates were compared to the reference
 & Null & 1.92E+00 & 6.30E-01 & 4.55E-01 \\
 & Degenerate & 1.31E+00 & 1.99E-01 & 1.76E-01 \\
   \midrule
-\multirow{3}{*}{\parbox{2.5cm}{2$\times$2 Colorset w/ Reflector}} & Infinite & 3.86E+00 & 1.06E+00 & 5.09E-01 \\
-& Null & 3.80E+00 & 9.88E-01 & 5.13E-01 \\
-& Degenerate & 3.58E+00 & 9.29E-01 & 3.36E-01 \\
+\multirow{3}{*}{\parbox{2.5cm}{2$\times$2 Colorset w/ Reflector}} & Infinite & 3.72E+00 & 9.07E-01 & 4.95E-01 \\
+& Null & 3.72E+00 & 8.47E-01 & 4.93E-01 \\
+& Degenerate & 3.41E+00 & 7.58E-01 & 2.22E-01 \\
   \midrule
 \multirow{3}{*}{\parbox{2.5cm}{BEAVRS Full Core}} & Infinite & 3.59E+01 & 1.16E+01 & 3.86E+00 \\
 & Null & 4.26E+01 & 1.32E+01 & 3.69E+00 \\
@@ -606,6 +608,8 @@ The OpenMOC energy-integrated U-238 capture rates were compared to the reference
 As was the case for the other metrics, the U-238 capture rate errors are highly dependent on energy group structure. The maximum and mean errors are substantially reduced with finer energy group structures for all benchmarks and spatial homogenization schemes. The maximum capture rate errors are 2 -- 10+\% in 2 groups for the individual fuel assembly and 2$\times$2 colorset benchmarks, respectively, but decrease to 1 -- 2\% when modeled with 40/70 groups. The mean capture rate errors likewise decrease with finer energy group structures, and are <0.6\% in magnitude for the assembly and colorset benchmarks for all homogenization schemes with 40/70 groups.
 
 The capture rate errors are more highly dependent on the spatial homogenization scheme used to compute \ac{MGXS} in the fuel than are the fission rate errors. In particular, the degenerate scheme produces much smaller maximum and mean errors than the null and infinite schemes. The maximum error is >1\% for all benchmarks with the infinite and null schemes even with 40/70 energy groups. The maximum error is reduced by 2 -- 5$\times$ for all benchmarks with the use of degenerate homogenization scheme. In addition, the degenerate scheme consistently reduces the error for all energy group structures, with the most substantial improvement over the infinite and null schemes observed for 40/70 groups. This stands in contrast to the fission rate errors where the degenerate scheme was only signficantly better for 2 group \ac{MGXS}. As was the case for the fission rate errors, the null and infinite schemes exhibit a negligible difference in their maximum and mean capture rate errors, with no identifiable trend in the data.
+
+Further heat maps can be found in App.~\ref{sec:quantify-capt-rates}.
 
 The spatial distributions of capture rate errors are plotted as heatmaps for each benchmark in Figs.~\Crefrange{fig:chap8-assm-1.6-capt-err}{fig:chap8-full-core-capt-err}. The heatmaps illustrate systematic error trends in the pin-wise capture errors which correlate with spatial heterogeneities in each benchmark. As is observed for the fission rates, the capture rates are generally underpredicted for pins near \acp{CRGT}, but overpredicted for pins removed from \acp{CRGT}, such as those in the corners of the fuel assembly. Unlike the fission rates, the capture rates are also underpredicted for pins near \acp{BP}. The effects due to heterogeneities are further enhanced when differentiating pins which are facially adjacent to \acp{CRGT}, facially and corner adjacent to two \acp{CRGT}, etc. In addition, the error magnitudes are large for pins along the inter-assembly and assembly-reflector interfaces for the 2$\times$2 colorset benchmarks. For the \ac{PWR} benchmarks modeled here, the differential moderation provided by neighboring \acp{CRGT} and/or reflectors softens the local flux spectrum for nearby fuel pins and should be modeled when collapsing pin-wise \ac{MGXS} for high-fidelity multi-group transport calculations.
 
@@ -661,15 +665,15 @@ As noted previously, the energy group structure has a large impact on the error 
 
 \clearpage
 
-\begin{figure}[h!]
-\centering
-\includegraphics[width=\linewidth]{figures/quantification/full-core/capt-err}
-\vspace{2mm}
-\caption[U-238 capture rate errors for the 2D quarter core \ac{BEAVRS} model]{U-238 capture percent relative errors rate errors for the 2D quarter core \ac{BEAVRS} model corresponding to the reference in Fig.~\ref{fig:chap7-capt-rates-full-core}.}
-\label{fig:chap8-full-core-capt-err}
-\end{figure}
+%\begin{figure}[h!]
+%\centering
+%\includegraphics[width=\linewidth]{figures/quantification/full-core/capt-err}
+%\vspace{2mm}
+%\caption[U-238 capture rate errors for the 2D quarter core \ac{BEAVRS} model]{U-238 capture percent relative errors rate errors for the 2D quarter core \ac{BEAVRS} model corresponding to the reference in Fig.~\ref{fig:chap7-capt-rates-full-core}.}
+%\label{fig:chap8-full-core-capt-err}
+%\end{figure}
 
-\clearpage
+%\clearpage
 
 \begin{emphbox}
 \textbf{The use of degenerate spatial homogenization ``smooths'' the spatial distribution of pin-wise U-238 capture rate errors. Tthe improvement in accuracy with degenerate homogenization increases with more energy groups. This underscores the importance of accounting for spatial heterogeneities -- such as the differential moderation from \acp{CRGT} and reflectors -- when generating \ac{MGXS} to predict U-238 capture and Pu-239 production in \acp{LWR}.}
