@@ -122,7 +122,7 @@ def discretize_geometry(self):
     reflector.addCell(reflector_cell)
 
     # Sliced up water cells with a lattice
-    mesh_per_pin = 2
+    mesh_per_pin = 4
     lattice = openmoc.Lattice(name='{} x {} Spaced Reflector'.format(mesh_per_pin, mesh_per_pin))
     lattice.setWidth(width_x=1.26492 / mesh_per_pin, width_y=1.26492 / mesh_per_pin)
     template = [[reflector] * 17 * mesh_per_pin] * 17 * mesh_per_pin
@@ -156,6 +156,8 @@ def discretize_geometry(self):
     all_openmoc_cells[vessel_liner.id].setNumSectors(0)
     all_openmoc_cells[downcomer.id].setNumSectors(0)
     all_openmoc_cells[outer_cell.id].setNumSectors(0)
+
+    return
 
     ###########################################################################
     # Discretize the baffle steel cells using a lattice
