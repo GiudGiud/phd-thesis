@@ -48,9 +48,7 @@ for directory in directories:
 
     print('CAPTURE')
 
-    # FIXME: Loop over all fuel domains for each plot type
-    # FIXME: Plot histogram-kde-rug plot
-    # FIXME: QQ plot
+    # Loop over all fuel domains for each plot type
     for domain in mgxslib.domains:
         print('cell {}'.format(domain.id))
         mgxs = mgxslib.get_mgxs(domain, 'capture')
@@ -58,14 +56,61 @@ for directory in directories:
             xs_type='micro', nuclides=['U238'], 
             groups=[1], distribcell_paths=False)
         mgxs_df = mgxs_df[mgxs_df['mean'] > 0]
-        hist_kde_rug(mgxs_df, domain, 'U238', 'capture', 1, directory)
-        normal_qq(mgxs_df, domain, 'U238', 'capture', 1, False, directory)
+
+        # Make title
+        suptitle = 'U-238 Capture MGXS (Group 1/2)'
+        title = directories[directory]
+        if directory in ['2x2', 'reflector', 'full-core']:
+            if '1.6' in domain.fill.name:
+                title += ' - 1.6% Enr. Fuel'
+                filename = '1.6-enr-capt-1.png'
+            elif '2.4' in domain.fill.name:
+                title += ' - 2.4% Enr. Fuel'
+                filename = '2.4-enr-capt-1.png'
+            elif '3.1' in domain.fill.name:
+                title += ' - 3.1% Enr. Fuel'
+                filename = '3.1-enr-capt-1.png'
+
+        # Make directory if it does not exist
+        subdirectory = os.path.join('plots', directory, 'hist-kde-rug/')
+        try:
+            os.makedirs(subdirectory)
+        except OSError:
+            pass
+
+        # Make filename
+#        filename = subdirectory + '{}-capt-1.png'.format(directory)
+
+        fig = hist_kde_rug(mgxs_df, domain, 'U238',
+                           'capture', 1, directory, get_figure=True)
+        axes = fig.get_axes()[0]
+        axes.set_title(title, fontsize=16)
+        fig.suptitle(suptitle, fontsize=16)
+        fig.savefig(subdirectory + filename, bbox_inches='tight')
+        plt.close(fig)
+
+        # Make directory if it does not exist
+        subdirectory = os.path.join('plots', directory, 'quantile/')
+        try:
+            os.makedirs(subdirectory)
+        except OSError:
+            pass
+
+        # Make filename
+#        filename = subdirectory + '{}-qq-capt-1.png'.format(directory)
+
+        fig = normal_qq(mgxs_df, domain, 'U238',
+                        'capture', 1, True, directory, get_figure=True)
+        fig = fig.figure
+        axes = fig.get_axes()[0]
+        axes.set_title(title, fontsize=16)
+        fig.suptitle(suptitle, fontsize=16)
+        fig.savefig(subdirectory + filename, bbox_inches='tight')
+        plt.close(fig)
 
     print('FISSION')
 
-    # FIXME: Loop over all fuel domains for each plot type
-    # FIXME: Plot histogram-kde-rug plot
-    # FIXME: QQ plot             
+    # Loop over all fuel domains for each plot type           
     for domain in mgxslib.domains:
         print('cell {}'.format(domain.id))
         mgxs = mgxslib.get_mgxs(domain, 'fission')
@@ -73,5 +118,54 @@ for directory in directories:
             xs_type='micro', nuclides=['U235'],
             groups=[2], distribcell_paths=False)
         mgxs_df = mgxs_df[mgxs_df['mean'] > 0]
-        hist_kde_rug(mgxs_df, domain, 'U235', 'fission', 2, directory)
-        normal_qq(mgxs_df, domain, 'U235', 'fission', 2, False, directory)
+
+        # Make title
+        suptitle = 'U-235 Fission MGXS (Group 2/2)'
+        title = directories[directory]
+        if directory in ['2x2', 'reflector', 'full-core']:
+            if '1.6' in domain.fill.name:
+                title += ' - 1.6% Enr. Fuel'
+                filename = '1.6-enr-fiss-2.png'
+            elif '2.4' in domain.fill.name:
+                title += ' - 2.4% Enr. Fuel'
+                filename = '2.4-enr-fiss-2.png'
+            elif '3.1' in domain.fill.name:
+                title += ' - 3.1% Enr. Fuel'
+                filename = '3.1-enr-fiss-2.png'
+
+        # Make directory if it does not exist
+        subdirectory = os.path.join('plots', directory, 'hist-kde-rug/')
+        try:
+            os.makedirs(subdirectory)
+        except OSError:
+            pass
+
+        # Make filename
+#        filename = subdirectory + '{}-fiss-2.png'.format(directory)
+
+        fig = hist_kde_rug(mgxs_df, domain, 'U235',
+                           'fission', 2, directory, get_figure=True)
+        axes = fig.get_axes()[0]
+        axes.set_title(title, fontsize=16)
+        fig.suptitle(suptitle, fontsize=16)
+        fig.savefig(subdirectory + filename, bbox_inches='tight')
+        plt.close(fig)
+
+        # Make directory if it does not exist
+        subdirectory = os.path.join('plots', directory, 'quantile/')
+        try:
+            os.makedirs(subdirectory)
+        except OSError:
+            pass
+
+        # Make filename
+#        filename = subdirectory + '{}-fiss-2.png'.format(directory)
+
+        fig = normal_qq(mgxs_df, domain, 'U235',
+                        'fission', 2, True, directory, get_figure=True)
+        fig = fig.figure
+        axes = fig.get_axes()[0]
+        axes.set_title(title, fontsize=16)
+        fig.suptitle(suptitle, fontsize=16)
+        fig.savefig(subdirectory + filename, bbox_inches='tight')
+        plt.close(fig)
