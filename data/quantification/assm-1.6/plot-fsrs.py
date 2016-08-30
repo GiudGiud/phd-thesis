@@ -42,7 +42,7 @@ openmoc_geometry.setCmfd(cmfd)
 
 # Generate tracks
 track_generator = openmoc.TrackGenerator(openmoc_geometry, 32, 0.01)
-track_generator.setZCoord(205.0)
+track_generator.setZCoord(195.)
 track_generator.setNumThreads(opts.num_omp_threads)
 track_generator.generateTracks()
 
@@ -51,19 +51,19 @@ max_x = openmoc_geometry.getMaxX()
 max_y = openmoc_geometry.getMaxY()
 xlim = (max_x-1.25984, max_x)
 ylim = (max_y-1.25984, max_y)
-openmoc.plotter.plot_cells(openmoc_geometry, zcoord=205., gridsize=2000,
+openmoc.plotter.plot_cells(openmoc_geometry, zcoord=195., gridsize=2000,
                            xlim=xlim, ylim=ylim, library='pil')
 
 # Setup plot for discretized instrument tube
 xlim = (-1.25984/2., +1.25984/2.)
 ylim = (-1.25984/2., +1.25984/2.)
-openmoc.plotter.plot_cells(openmoc_geometry, zcoord=205., gridsize=2000,
+openmoc.plotter.plot_cells(openmoc_geometry, zcoord=195., gridsize=2000,
                            xlim=xlim, ylim=ylim, library='pil')
 
 # Setup plot for discretized burnable poison
 xlim = (6.2992-1.25984/2., 6.2992+1.25984/2.)
 ylim = (6.2992-1.25984/2., 6.2992+1.25984/2.)
-openmoc.plotter.plot_cells(openmoc_geometry, zcoord=205., gridsize=2000,
+openmoc.plotter.plot_cells(openmoc_geometry, zcoord=195., gridsize=2000,
                            xlim=xlim, ylim=ylim, library='pil')
 
 # Plot all FSRs in the geometry

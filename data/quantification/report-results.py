@@ -39,7 +39,7 @@ directories = {'assm-1.6': '1.6\\% Assm',
                'reflector': '2$\\times$2 Colorset w/ Reflector',
                'full-core': 'BEAVRS Full Core'}
 
-groups = [8, 40] #[2, 8, 40]
+groups = [8, 70] #[2, 8, 70]
 clusterizer_types = ['null', 'degenerate'] #['infinite', 'null', 'degenerate']
 
 print('EIGENVALUE BIAS')

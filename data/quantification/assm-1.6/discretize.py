@@ -60,6 +60,7 @@ def discretize_geometry(self):
     for cell in burn_abs2:
         all_openmoc_cells[cell.id].setNumRings(5)
     for cell in mod:
+        print('moderator cell: {}'.format(mod))
         all_openmoc_cells[cell.id].setNumRings(5)
         all_openmoc_cells[cell.id].addSurface(surface=fuel_or, halfspace=+1)
 
@@ -84,6 +85,17 @@ def discretize_geometry(self):
             if all_cells[cell_id].getType() == openmoc.MATERIAL:
                 if 'fuel' in all_cells[cell_id].getFillMaterial().getName().lower():
                     all_cells[cell_id].setNumRings(5)
+
+    ###########################################################################
+    # Discretize the moderator around each pin
+    ###########################################################################
+
+    mod_name = 'Grids axial universe axial 8: water'
+    mod = openmc_geometry.get_cells_by_name(mod_name)
+
+    for cell in mod:
+        all_openmoc_cells[cell.id].addSurface(surface=fuel_or, halfspace=+1)
+        all_openmoc_cells[cell.id].setNumRings(5)
 
 
 def discretize_geometry_standalone(mat_mgxslib, openmoc_geometry):
@@ -156,3 +168,15 @@ def discretize_geometry_standalone(mat_mgxslib, openmoc_geometry):
             if all_cells[cell_id].getType() == openmoc.MATERIAL:
                 if 'fuel' in all_cells[cell_id].getFillMaterial().getName().lower():
                     all_cells[cell_id].setNumRings(5)
+
+    ###########################################################################
+    # Discretize the moderator around each pin
+    ###########################################################################
+
+    mod_name = 'Grids axial universe axial 8: water'
+    mod = openmc_geometry.get_cells_by_name(mod_name)
+
+    for cell in mod:
+        all_openmoc_cells[cell.id].addSurface(surface=fuel_or, halfspace=+1)
+        all_openmoc_cells[cell.id].setNumRings(5)
+

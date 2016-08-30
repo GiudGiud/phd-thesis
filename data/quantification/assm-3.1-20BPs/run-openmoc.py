@@ -14,7 +14,7 @@ batchwise.type = '{}-groups'.format(batchwise.num_fine_groups)
 batchwise.sp_start = len(statepoints) - 1
 batchwise.cell_mgxslib_filename = 'distribcell'
 batchwise.mat_mgxslib_filename = 'material'
-batchwise.zcoord = 205.
+batchwise.zcoord = 195.
 batchwise.log_level = 'INFO'
 batchwise.reference_sp = openmc.StatePoint('../../benchmarks/assm-3.1-20BPs/statepoint.1000.h5')
 
@@ -35,6 +35,7 @@ elif batchwise.options.clusterizer_type == 'degenerate':
 batchwise.clusterizer.plot_mgxs = False
 batchwise.plot_materials = False
 batchwise.plot_cells = False
+batchwise.plot_fsrs = True
 
 # Execute OpenMOC simulations over all batches of clustered MGXS libraries
 batchwise.execute()

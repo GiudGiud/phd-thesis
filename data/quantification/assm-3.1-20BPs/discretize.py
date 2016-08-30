@@ -85,6 +85,17 @@ def discretize_geometry(self):
                 if 'fuel' in all_cells[cell_id].getFillMaterial().getName().lower():
                     all_cells[cell_id].setNumRings(5)
 
+    ###########################################################################
+    # Discretize the moderator around each pin
+    ###########################################################################
+
+    mod_name = 'Grids axial universe axial 8: water'
+    mod = openmc_geometry.get_cells_by_name(mod_name)
+
+    for cell in mod:
+        all_openmoc_cells[cell.id].addSurface(surface=fuel_or, halfspace=+1)
+        all_openmoc_cells[cell.id].setNumRings(5)
+
 
 def discretize_geometry_standalone(mat_mgxslib, openmoc_geometry):
     """Discretize the BEAVRS assembly with 3.1% enriched fuel pins, 4 guide tubes
@@ -156,3 +167,14 @@ def discretize_geometry_standalone(mat_mgxslib, openmoc_geometry):
             if all_cells[cell_id].getType() == openmoc.MATERIAL:
                 if 'fuel' in all_cells[cell_id].getFillMaterial().getName().lower():
                     all_cells[cell_id].setNumRings(5)
+
+    ###########################################################################
+    # Discretize the moderator around each pin
+    ###########################################################################
+
+    mod_name = 'Grids axial universe axial 8: water'
+    mod = openmc_geometry.get_cells_by_name(mod_name)
+
+    for cell in mod:
+        all_openmoc_cells[cell.id].addSurface(surface=fuel_or, halfspace=+1)
+        all_openmoc_cells[cell.id].setNumRings(5)

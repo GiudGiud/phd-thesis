@@ -8,15 +8,12 @@ from _collections import OrderedDict
 
 import openmc
 
-# force headless backend, or set 'backend' to 'Agg'                                                          # in your ~/.matplotlib/matplotlibrc                                                                         
+# force headless backend, or set 'backend' to 'Agg'
+# in your ~/.matplotlib/matplotlibrc
+
 matplotlib.use('Agg')
-
 import matplotlib.pyplot as plt
-
-# Force non-interactive mode, or set 'interactive' to False                                                  # in your ~/.matplotlib/matplotlibrc                                                                         
 plt.ioff()
-
-import matplotlib.pyplot as plt
 
 
 ###############################################################################
@@ -27,8 +24,8 @@ directories = OrderedDict({'assm-1.6': '1.6% Enr. (no BPs)',
                            'assm-3.1':'3.1% Enr. (no BPs)',
                            'assm-3.1-20BPs': '3.1% Enr. (20 BPs)',
                            '2x2': '2x2 Colorset',
-                           'reflector': '2x2 Colorset w/ Reflector'})
-directories = OrderedDict({'full-core': 'Full Core'})
+                           'reflector': '2x2 Colorset w/ Reflector',
+                           'full-core': 'BEAVRS Quarter Core'})
 
 for directory in directories:
     sp = openmc.StatePoint(os.path.join(directory, 'statepoint.1000.h5'))

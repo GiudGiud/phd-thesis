@@ -1,9 +1,19 @@
 import os
-import openmc
+import copy
+
+import h5py
 import numpy as np
-import matplotlib.pyplot as plt
 import matplotlib
 from _collections import OrderedDict
+
+import openmc
+
+# Force non-interactive mode, or set 'interactive' to False
+# in your ~/.matplotlib/matplotlibrc
+
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
+plt.ioff()
 
 
 ###############################################################################

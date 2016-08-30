@@ -86,6 +86,17 @@ def discretize_geometry(self):
                     all_cells[cell_id].setNumRings(5)
 
     ###########################################################################
+    # Discretize the moderator around each pin
+    ###########################################################################
+
+    mod_name = 'Grids axial universe axial 8: water'
+    mod = openmc_geometry.get_cells_by_name(mod_name)
+
+    for cell in mod:
+        all_openmoc_cells[cell.id].addSurface(surface=fuel_or, halfspace=+1)
+        all_openmoc_cells[cell.id].setNumRings(5)
+
+    ###########################################################################
     # Discretize the reflector cells using same methodology as for C5G7
     ###########################################################################
 

@@ -4,7 +4,7 @@ import openmoc
 import openmoc.plotter
 from openmoc.opencg_compatible import get_openmoc_geometry
 from infermc.energy_groups import group_structures
-from discretize import discretize_geometry
+from discretize import discretize_geometry_standalone
 
 
 openmoc.log.set_log_level('NORMAL')
@@ -42,14 +42,14 @@ openmoc_geometry.setCmfd(cmfd)
 
 # Generate tracks
 track_generator = openmoc.TrackGenerator(openmoc_geometry, 32, 0.01)
-track_generator.setZCoord(205.0)
+track_generator.setZCoord(195.0)
 track_generator.setNumThreads(opts.num_omp_threads)
 track_generator.generateTracks()
 
 # Setup plot for discretized burnable poison
 xlim = (6.2992-1.25984/2., 6.2992+1.25984/2.)
 ylim = (6.2992-1.25984/2., 6.2992+1.25984/2.)
-openmoc.plotter.plot_cells(openmoc_geometry, zcoord=205., gridsize=2000,
+openmoc.plotter.plot_cells(openmoc_geometry, zcoord=195., gridsize=2000,
                            xlim=xlim, ylim=ylim, library='pil')
 
 # Plot all FSRs in the geometry
