@@ -107,8 +107,8 @@ mat_mgxs_lib.build_library()
 mesh = openmc.Mesh(name='assembly mesh')
 mesh.type = 'regular'
 mesh.dimension = [int(np.ceil(15./2.*17)), int(np.ceil(15./2.*17)), 1]
-mesh.lower_left = [-1.26492/2., -1.26492/2., 203.]
-mesh.width = (1.26492, 1.26492, 10)
+mesh.lower_left = [-1.26492/2., -1.26492/2., 192.5]
+mesh.width = (1.26492, 1.26492, 5)
 
 # Instantiate tally Filter
 mesh_filter = openmc.Filter()

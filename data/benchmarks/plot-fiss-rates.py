@@ -25,7 +25,9 @@ directories = OrderedDict({'assm-1.6': '1.6% Enr. (no BPs)',
                            'assm-3.1-20BPs': '3.1% Enr. (20 BPs)',
                            '2x2': '2x2 Colorset',
                            'reflector': '2x2 Colorset w/ Reflector',
-                           'full-core': 'BEAVRS Quarter Core'})
+                           'full-core': 'BEAVRS Quarter Core',
+                           'full-core-aniso': 'BEAVRS Quarter Core (Aniso)',
+                           'full-core-aniso-3d': 'BEAVRS Quarter Core (Aniso 3D)'})
 
 for directory in directories:
     sp = openmc.StatePoint(os.path.join(directory, 'statepoint.1000.h5'))
@@ -59,6 +61,29 @@ for directory in directories:
     zero_indices = np.where(fiss_mean < 1E-3)
     fiss_mean[zero_indices] = np.nan
     fiss_std_dev[zero_indices] = np.nan
+
+    # Extract the array and make it quarter core symmetric                  
+    if 'full-core' in directory:
+        full_mean = np.zeros((2*fiss_mean.shape[0]-1, 2*fiss_mean.shape[0]-1), \
+dtype=np.float)
+        full_mean[:fiss_mean.shape[0], :fiss_mean.shape[1]] = fiss_mean[:,::-1]
+        full_mean[fiss_mean.shape[0]-1:, :fiss_mean.shape[1]] = fiss_mean[::-1,::-1]
+        full_mean[:fiss_mean.shape[0], fiss_mean.shape[1]-1:] = fiss_mean[:,:]
+        full_mean[fiss_mean.shape[0]-1:, fiss_mean.shape[1]-1:] = fiss_mean[::-1,:]  
+        full_mean[fiss_mean.shape[0]-1,:] *= 2.
+        full_mean[:,fiss_mean.shape[1]-1] *= 2.
+
+        full_std_dev = np.zeros((2*fiss_std_dev.shape[0]-1, 2*fiss_std_dev.shape[0]-1), \
+dtype=np.float)
+        full_std_dev[:fiss_std_dev.shape[0], :fiss_std_dev.shape[1]] = fiss_std_dev[:,::-1]
+        full_std_dev[fiss_std_dev.shape[0]-1:, :fiss_std_dev.shape[1]] = fiss_std_dev[::-1,::-1]
+        full_std_dev[:fiss_std_dev.shape[0], fiss_std_dev.shape[1]-1:] = fiss_std_dev[:,:]
+        full_std_dev[fiss_std_dev.shape[0]-1:, fiss_std_dev.shape[1]-1:] = fiss_std_dev[::-1,:]  
+        full_std_dev[fiss_std_dev.shape[0]-1,:] *= 1.26492**2
+        full_std_dev[:,fiss_std_dev.shape[1]-1] *= 1.26492**2
+
+        fiss_mean = full_mean
+        fiss_std_dev = full_std_dev
 
     # Compute the OpenMC relative error from the non-normalized mean
     rel_err = fiss_std_dev / fiss_mean * 100.

@@ -18,15 +18,17 @@ particles = 10000000
 infermc.beavrs.write_materials_file()
 
 # Extract reflected geometry from InferMC's pre-built assembly Geometries
-full_core = infermc.beavrs.build_2d_core()
+full_core = infermc.beavrs.build_2d_core(quarter=False)
 openmc_geometry = opencg_compatible.get_openmc_geometry(full_core)
 openmc_geometry.export_to_xml()
 
 
 ##################   Exporting to OpenMC settings.xml File  ###################                               
 # Construct uniform initial source distribution over fissionable zones                                       
-lower_left = [0., 0., full_core.bounds[2]]
-upper_right = [+200., +200., full_core.bounds[5]]
+#lower_left = [0., 0., full_core.bounds[2]]
+#upper_right = [+200., +200., full_core.bounds[5]]
+lower_left = full_core.bounds[:3]
+upper_right = full_core.bounds[3:]
 source = openmc.source.Source(space=openmc.stats.Box(lower_left, upper_right))
 source.space.only_fissionable = True
 
@@ -38,13 +40,7 @@ settings_file.ptables = True
 settings_file.output = {'tallies': False}
 settings_file.source = source
 settings_file.sourcepoint_write = False
-
-settings_file.entropy_dimension = [15*17, 15*17, 1]
-settings_file.entropy_upper_right = [+15*17*1.26492/2., +15*17*1.26492/2., 208.]
-settings_file.entropy_lower_left = [-15*17*1.26492/2., -15*17*1.26492/2., 203.]
-
 settings_file.export_to_xml()
-
 
 
 ##################   Exporting to OpenMC plots.xml File  ######################
@@ -74,9 +70,9 @@ plot_file.export_to_xml()
 # Instantiate a tally Mesh                                                                                   
 mesh = openmc.Mesh(name='assembly mesh')
 mesh.type = 'regular'
-mesh.dimension = [int(np.ceil(15./2.*17)), int(np.ceil(15./2.*17)), 1]
-mesh.lower_left = [-1.26492/2., -1.26492/2., 192.5]
-mesh.width = (1.26492, 1.26492, 5)
+mesh.dimension = [int(np.ceil(15.*17)), int(np.ceil(15.*17)), 1]
+mesh.lower_left = [-15*17*1.26492/2., -15*17*1.26492/2., 0]
+mesh.width = (1.26492, 1.26492, 460)
 
 # Instantiate tally Filter                                                                                   
 mesh_filter = openmc.Filter()

@@ -24,7 +24,9 @@ directories = OrderedDict({'assm-1.6': '1.6% Enr. (no BPs)',
                            'assm-3.1-20BPs': '3.1% Enr. (20 BPs)',
                            '2x2': '2x2 Colorset',
                            'reflector': '2x2 Colorset w/ Reflector',
-                           'full-core': 'BEAVRS Quarter Core'})
+                           'full-core': 'BEAVRS Quarter Core',
+                           'full-core-aniso': 'BEAVRS Quarter Core (Aniso)',
+                           'full-core-aniso-3d': 'BEAVRS Quarter Core (Aniso 3d)'})
 
 for directory in directories:
     sp = openmc.StatePoint(os.path.join(directory, 'statepoint.1000.h5'))
@@ -61,6 +63,29 @@ for directory in directories:
     zero_indices = np.where(capt_mean < 1E-5)
     capt_mean[zero_indices] = np.nan
     capt_std_dev[zero_indices] = np.nan
+
+    # Extract the array and make it quarter core symmetric                  
+    if 'full-core' in directory:
+        full_mean = np.zeros((2*capt_mean.shape[0]-1, 2*capt_mean.shape[0]-1), \
+dtype=np.float)
+        full_mean[:capt_mean.shape[0], :capt_mean.shape[1]] = capt_mean[:,::-1]
+        full_mean[capt_mean.shape[0]-1:, :capt_mean.shape[1]] = capt_mean[::-1,::-1]
+        full_mean[:capt_mean.shape[0], capt_mean.shape[1]-1:] = capt_mean[:,:]
+        full_mean[capt_mean.shape[0]-1:, capt_mean.shape[1]-1:] = capt_mean[::-1,:]  
+        full_mean[capt_mean.shape[0]-1,:] *= 2.
+        full_mean[:,capt_mean.shape[1]-1] *= 2.
+
+        full_std_dev = np.zeros((2*capt_std_dev.shape[0]-1, 2*capt_std_dev.shape[0]-1), \
+dtype=np.float)
+        full_std_dev[:capt_std_dev.shape[0], :capt_std_dev.shape[1]] = capt_std_dev[:,::-1]
+        full_std_dev[capt_std_dev.shape[0]-1:, :capt_std_dev.shape[1]] = capt_std_dev[::-1,::-1]
+        full_std_dev[:capt_std_dev.shape[0], capt_std_dev.shape[1]-1:] = capt_std_dev[:,:]
+        full_std_dev[capt_std_dev.shape[0]-1:, capt_std_dev.shape[1]-1:] = capt_std_dev[::-1,:]  
+        full_std_dev[capt_std_dev.shape[0]-1,:] *= 1.26492**2
+        full_std_dev[:,capt_std_dev.shape[1]-1] *= 1.26492**2
+
+        capt_mean = full_mean
+        capt_std_dev = full_std_dev
 
     # Compute the OpenMC relative error from the non-normalized mean
     rel_err = capt_std_dev / capt_mean * 100.
