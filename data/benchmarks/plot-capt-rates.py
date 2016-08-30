@@ -10,7 +10,6 @@ import openmc
 
 # force headless backend, or set 'backend' to 'Agg'
 # in your ~/.matplotlib/matplotlibrc
-
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 plt.ioff()
