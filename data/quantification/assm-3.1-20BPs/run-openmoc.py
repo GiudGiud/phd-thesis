@@ -32,8 +32,10 @@ elif batchwise.options.clusterizer_type == 'degenerate':
     batchwise.clusterizer = infermc.clusterizer.DegenerateClusterizer()
 
 # Turn off MGXS plotting for speed
-batchwise.clusterizer.plot_mgxs = False
-batchwise.plot_materials = False
+if batchwise.clusterizer:
+    batchwise.clusterizer.plot_mgxs = False
+
+batchwise.plot_materials = True
 batchwise.plot_cells = False
 batchwise.plot_fsrs = True
 

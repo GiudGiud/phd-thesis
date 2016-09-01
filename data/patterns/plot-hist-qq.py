@@ -63,13 +63,15 @@ for directory in directories:
         if directory in ['2x2', 'reflector', 'full-core']:
             if '1.6' in domain.fill.name:
                 title += ' - 1.6% Enr. Fuel'
-                filename = '1.6-enr-capt-1.png'
+                filename = '16-enr-capt-1.png'
             elif '2.4' in domain.fill.name:
                 title += ' - 2.4% Enr. Fuel'
-                filename = '2.4-enr-capt-1.png'
+                filename = '24-enr-capt-1.png'
             elif '3.1' in domain.fill.name:
                 title += ' - 3.1% Enr. Fuel'
-                filename = '3.1-enr-capt-1.png'
+                filename = '31-enr-capt-1.png'
+        else:
+            filename = '{}-capt-1.png'.format(directory.replace('.', ''))
 
         # Make directory if it does not exist
         subdirectory = os.path.join('plots', directory, 'hist-kde-rug/')
@@ -84,8 +86,12 @@ for directory in directories:
         fig = hist_kde_rug(mgxs_df, domain, 'U238',
                            'capture', 1, directory, get_figure=True)
         axes = fig.get_axes()[0]
-        axes.set_title(title, fontsize=16)
-        fig.suptitle(suptitle, fontsize=16)
+        axes.set_title('', fontsize=16)
+        fig.suptitle(title, fontsize=20)
+        axes.tick_params(axis='both', which='major', labelsize=16)
+        axes.tick_params(axis='both', which='minor', labelsize=16)
+        axes.set_xlabel('Mean [barns]', fontsize=16)
+        axes.set_ylabel('# Samples', fontsize=16)
         fig.savefig(subdirectory + filename, bbox_inches='tight')
         plt.close(fig)
 
@@ -103,8 +109,12 @@ for directory in directories:
                         'capture', 1, True, directory, get_figure=True)
         fig = fig.figure
         axes = fig.get_axes()[0]
-        axes.set_title(title, fontsize=16)
-        fig.suptitle(suptitle, fontsize=16)
+        axes.set_title('', fontsize=20)
+        fig.suptitle(title, fontsize=20)
+        axes.tick_params(axis='both', which='major', labelsize=16)
+        axes.tick_params(axis='both', which='minor', labelsize=16)
+        axes.set_xlabel('Theoretical Quantiles', fontsize=16)
+        axes.set_ylabel('Sample Quantiles', fontsize=16)
         fig.savefig(subdirectory + filename, bbox_inches='tight')
         plt.close(fig)
 
@@ -125,13 +135,15 @@ for directory in directories:
         if directory in ['2x2', 'reflector', 'full-core']:
             if '1.6' in domain.fill.name:
                 title += ' - 1.6% Enr. Fuel'
-                filename = '1.6-enr-fiss-2.png'
+                filename = '16-enr-fiss-2.png'
             elif '2.4' in domain.fill.name:
                 title += ' - 2.4% Enr. Fuel'
-                filename = '2.4-enr-fiss-2.png'
+                filename = '24-enr-fiss-2.png'
             elif '3.1' in domain.fill.name:
                 title += ' - 3.1% Enr. Fuel'
-                filename = '3.1-enr-fiss-2.png'
+                filename = '31-enr-fiss-2.png'
+        else:
+            filename = '{}-fiss-2.png'.format(directory.replace('.', ''))
 
         # Make directory if it does not exist
         subdirectory = os.path.join('plots', directory, 'hist-kde-rug/')
@@ -146,8 +158,12 @@ for directory in directories:
         fig = hist_kde_rug(mgxs_df, domain, 'U235',
                            'fission', 2, directory, get_figure=True)
         axes = fig.get_axes()[0]
-        axes.set_title(title, fontsize=16)
-        fig.suptitle(suptitle, fontsize=16)
+        axes.set_title('', fontsize=16)
+        fig.suptitle(title, fontsize=20)
+        axes.tick_params(axis='both', which='major', labelsize=16)
+        axes.tick_params(axis='both', which='minor', labelsize=16)
+        axes.set_xlabel('Mean [barns]', fontsize=16)
+        axes.set_ylabel('# Samples', fontsize=16)
         fig.savefig(subdirectory + filename, bbox_inches='tight')
         plt.close(fig)
 
@@ -165,7 +181,11 @@ for directory in directories:
                         'fission', 2, True, directory, get_figure=True)
         fig = fig.figure
         axes = fig.get_axes()[0]
-        axes.set_title(title, fontsize=16)
-        fig.suptitle(suptitle, fontsize=16)
+        axes.set_title('', fontsize=16)
+        fig.suptitle(title, fontsize=20)
+        axes.tick_params(axis='both', which='major', labelsize=16)
+        axes.tick_params(axis='both', which='minor', labelsize=16)
+        axes.set_xlabel('Theoretical Quantiles', fontsize=16)
+        axes.set_ylabel('Sample Quantiles', fontsize=16)
         fig.savefig(subdirectory + filename, bbox_inches='tight')
         plt.close(fig)
