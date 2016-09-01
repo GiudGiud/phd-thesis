@@ -279,23 +279,12 @@ first paragraph:
 second paragraph:
 -
 
--want to look at all five benchmarks in succession with different MGXS clusters
-  -plots of U-238 capture (group 27/1); U-235 fission (group 65/2)
-    -octo plots
-    -histrogram/rug/kde
-    -QQ plots
--need to plot for both assemblies in colorsets
--need to plot for all three enrichments for BEAVRS
-  
--look at slides 66-71 in ORNL presentation
-
 \begin{itemize}[noitemsep]
   \item show that clustering exists in MGXS
   \begin{itemize}[noitemsep]
     \item leave ``features'' and ML discussion for next chapter
   \end{itemize}
-  \item histogram / rug plots of clustered MGXS
-  \item quantile-quantile plots  
+  \item look at slides 66-71 in ORNL presentation
 \end{itemize}
 
 
@@ -324,15 +313,11 @@ second paragraph:
 -refer back to workflow chapter and OpenCG
 
 -boxplots / violin plots of MGXS for each???
--keff with LNS
--fission error w/ LNS
--U-238 error w/ LNS
 -improved errors wrt. null homogenization
 
 \begin{itemize}[noitemsep]
   \item objective is to capture clustering effects in MGXS
   \item introduce LNS algorithm, or reference from section on OpenCG
-  \item present results -- keff, pin powers, etc. -- with LNS
   \item LNS isn't adaptable -- segue to next chapter
 \end{itemize}
 
@@ -385,14 +370,14 @@ second paragraph:
   \small
   \label{table:chap9-lns-eigenvalues}
   \vspace{6pt}
-  \begin{tabular}{l S[table-format=6.0] S[table-format=6.0] S[table-format=6.0]}
+  \begin{tabular}{l R{2.5cm} R{2.5cm} R{2.5cm}}
   \toprule
   \rowcolor{lightgray}
   & \multicolumn{3}{S[table-format=6.1]}{\cellcolor{lightgray} {$\bm{\Delta\rho}$ \textbf{[pcm]}}} \\
   \multirow{-2}{*}{\cellcolor{lightgray} \bf Benchmark} &
-  \multicolumn{1}{c}{{\cellcolor{lightgray} \bf 2-Group}} &
-  \multicolumn{1}{c}{{\cellcolor{lightgray} \bf 8-Group}} &
-  \multicolumn{1}{c}{{\cellcolor{lightgray} \bf 40/70-Group\textsuperscript{\ref{note1}}}} \\
+  \multicolumn{1}{r}{{\cellcolor{lightgray} \bf 2-Group}} &
+  \multicolumn{1}{r}{{\cellcolor{lightgray} \bf 8-Group}} &
+  \multicolumn{1}{r}{{\cellcolor{lightgray} \bf 40/70-Group\textsuperscript{\ref{note1}}}} \\
   \midrule
 1.6\% Assm & -21 & -68 & -177 \\
 3.1\% Assm & 33 & -67 & -211 \\
@@ -404,39 +389,38 @@ BEAVRS Full Core & & & \\
 \end{tabular}
 \end{table}
 
-
 \begin{table}[ht!]
   \centering
-  \caption[OpenMOC fission rate errors with LNS homogenization]{OpenMOC Fission rate percent relative errors for heterogeneous benchmarks with \ac{LNS} spatial homogenization and varying energy group structures.}
+  \caption[OpenMOC fission rate errors with LNS homogenization]{OpenMOC fission rate percent relative errors for heterogeneous benchmarks with \ac{LNS} spatial homogenization and varying energy group structures.}
   \small
   \label{table:chap9-lns-fiss-rates}
   \vspace{6pt}
-  \begin{tabular}{l l c c c}
+  \begin{tabular}{l l R{2.5cm} R{2.5cm} R{2.5cm}}
   \toprule
   \rowcolor{lightgray}
   & & \multicolumn{3}{c}{\cellcolor{lightgray} \textbf{Error [\%]}} \\
   \multirow{-2}{*}{\cellcolor{lightgray} \bf Benchmark} &
-  \multirow{-2}{*}{\cellcolor{lightgray} \bf Error Metric} &
-  \multicolumn{1}{c}{{\cellcolor{lightgray} \bf 2-Group}} &
-  \multicolumn{1}{c}{{\cellcolor{lightgray} \bf 8-Group}} &
-  \multicolumn{1}{c}{{\cellcolor{lightgray} \bf 40/70-Group\textsuperscript{\ref{note1}}}} \\
+  \multirow{-2}{*}{\cellcolor{lightgray} \bf Metric} &
+  \multicolumn{1}{r}{{\cellcolor{lightgray} \bf 2-Group}} &
+  \multicolumn{1}{r}{{\cellcolor{lightgray} \bf 8-Group}} &
+  \multicolumn{1}{r}{{\cellcolor{lightgray} \bf 40/70-Group\textsuperscript{\ref{note1}}}} \\
   \midrule
-\multirow{2}{*}{\parbox{2.5cm}{1.6\% Assm}} & Max & 2.048 & 0.735 & 0.353 \\
+\multirow{2}{*}{\parbox{2.2cm}{1.6\% Assm}} & Max & 2.048 & 0.735 & 0.353 \\
 & Mean & 0.698 & 0.233 & 0.084 \\
 \midrule
-\multirow{2}{*}{\parbox{2.5cm}{3.1\% Assm}} & Max & 2.415 & 0.936 & 0.417 \\
-& Mean & 0.298 & 0.094 \\
+\multirow{2}{*}{\parbox{2.2cm}{3.1\% Assm}} & Max & 2.415 & 0.936 & 0.417 \\
+& Mean & 0.826 & 0.298 & 0.094 \\
 \midrule
-\multirow{2}{*}{\parbox{2.5cm}{3.1\% Assm w/ 20 BPs}} & Max & -2.170 & -0.728 & 0.377 \\
+\multirow{2}{*}{\parbox{2.2cm}{3.1\% Assm w/ 20 BPs}} & Max & -2.170 & -0.728 & 0.377 \\
 & Mean & 0.785 & 0.219 & 0.096 \\
 \midrule
-\multirow{2}{*}{\parbox{2.5cm}{2$\times$2 Colorset}} & Max & -6.101 & -1.576 & 0.604 \\
+\multirow{2}{*}{\parbox{2.2cm}{2$\times$2 Colorset}} & Max & -6.101 & -1.576 & 0.604 \\
 & Mean & 3.283 & 0.751 & 0.163 \\
 \midrule
-\multirow{2}{*}{\parbox{2.5cm}{2$\times$2 Colorset w/ Reflector}} & Max & -14.515 & -2.937 & -0.785 \\
+\multirow{2}{*}{\parbox{2.2cm}{2$\times$2 Colorset w/ Reflector}} & Max & -14.515 & -2.937 & -0.785 \\
 & Mean & 5.290 & 1.009 & 0.201 \\
 \midrule
-\multirow{2}{*}{\parbox{2.5cm}{BEAVRS Full Core}} & Max & & & \\
+\multirow{2}{*}{\parbox{2.2cm}{BEAVRS Full Core}} & Max & & & \\
 & Mean & & & \\
 \bottomrule
 \end{tabular}
@@ -449,32 +433,32 @@ BEAVRS Full Core & & & \\
   \small
   \label{table:chap9-lns-capture-rates}
   \vspace{6pt}
-  \begin{tabular}{l l c c c}
+  \begin{tabular}{l l R{2.5cm} R{2.5cm} R{2.5cm}}
   \toprule
   \rowcolor{lightgray}
   & & \multicolumn{3}{c}{\cellcolor{lightgray} \textbf{Error [\%]}} \\
   \multirow{-2}{*}{\cellcolor{lightgray} \bf Benchmark} &
-  \multirow{-2}{*}{\cellcolor{lightgray} \bf Error Metric} &
-  \multicolumn{1}{c}{{\cellcolor{lightgray} \bf 2-Group}} &
-  \multicolumn{1}{c}{{\cellcolor{lightgray} \bf 8-Group}} &
-  \multicolumn{1}{c}{{\cellcolor{lightgray} \bf 40/70-Group\textsuperscript{\ref{note1}}}} \\
+  \multirow{-2}{*}{\cellcolor{lightgray} \bf Metric} &
+  \multicolumn{1}{r}{{\cellcolor{lightgray} \bf 2-Group}} &
+  \multicolumn{1}{r}{{\cellcolor{lightgray} \bf 8-Group}} &
+  \multicolumn{1}{r}{{\cellcolor{lightgray} \bf 40/70-Group\textsuperscript{\ref{note1}}}} \\
   \midrule
-\multirow{2}{*}{\parbox{2.5cm}{1.6\% Assm}} & Max & 1.088 & 0.450 & 0.304 \\
+\multirow{2}{*}{\parbox{2.2cm}{1.6\% Assm}} & Max & 1.088 & 0.450 & 0.304 \\
 & Mean & 0.371 & 0.105 & 0.105 \\
 \midrule
-\multirow{2}{*}{\parbox{2.5cm}{3.1\% Assm}} & Max & 1.040 & 0.535 & 0.317 \\
+\multirow{2}{*}{\parbox{2.2cm}{3.1\% Assm}} & Max & 1.040 & 0.535 & 0.317 \\
 & Mean & 0.389 & 0.120 & 0.104 \\
 \midrule
-\multirow{2}{*}{\parbox{2.5cm}{3.1\% Assm w/ 20 BPs}} & Max & 1.898 & 0.781 & 0.418 \\
+\multirow{2}{*}{\parbox{2.2cm}{3.1\% Assm w/ 20 BPs}} & Max & 1.898 & 0.781 & 0.418 \\
 & Mean & 0.510 & 0.176 & 0.105 \\
 \midrule
-\multirow{2}{*}{\parbox{2.5cm}{2$\times$2 Colorset}} & Max & 3.038 & -0.765 & -0.780 \\
+\multirow{2}{*}{\parbox{2.2cm}{2$\times$2 Colorset}} & Max & 3.038 & -0.765 & -0.780 \\
 & Mean & 1.541 & 0.202 & 0.193 \\
 \midrule
-\multirow{2}{*}{\parbox{2.5cm}{2$\times$2 Colorset w/ Reflector}} & Max & 8.766 & 3.733 & 2.592 \\
+\multirow{2}{*}{\parbox{2.2cm}{2$\times$2 Colorset w/ Reflector}} & Max & 8.766 & 3.733 & 2.592 \\
 & Mean & 3.444 & 0.558 & 0.301 \\
 \midrule
-\multirow{2}{*}{\parbox{2.5cm}{BEAVRS Full Core}} & Max & & & \\
+\multirow{2}{*}{\parbox{2.2cm}{BEAVRS Quarter Core}} & Max & & & \\
 & Mean & & & \\
 \bottomrule
 \end{tabular}
