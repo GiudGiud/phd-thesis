@@ -4,7 +4,7 @@
 \chapter{Energy Group Structures}
 \label{app:energy-groups}
 
-The energy groups structures are those used in the CASMO-4 lattice physics code~\cite{edenius1995casmo}. The author gratefully acknowledges Geoffrey Gunow for his assistance in obtaining the structures.
+The energy group structures are from the CASMO-4 lattice physics code~\cite{edenius1995casmo}. The author gratefully acknowledges Geoffrey Gunow for his assistance in obtaining the structures.
 
 \renewcommand{\arraystretch}{0.8}% Tighter
 
@@ -310,11 +310,11 @@ The energy groups structures are those used in the CASMO-4 lattice physics code~
 \section{Material Isotopic Compositions}
 \label{sec:beavrs-materials}
 
-The isotopic compositions used in the \ac{PWR} benchmark models in Part IV were identical to those in the \ac{BEAVRS} \ac{PWR} model v1.1.1~\cite{horelik2013beavrs} and are reproduced in the tables below for clarity.
+The isotopic compositions used in the \ac{PWR} benchmark models in Part IV were identical to those in the \ac{BEAVRS} \ac{PWR} model v1.1.1~\cite{horelik2013beavrs} and are reproduced in the tables below.
 
 \begin{table}[h!]
   \centering
-  \caption[BEAVRS isotopic composition for air]{BEAVRS isotopic composition for air (0.000616 g/cc).}
+  \caption[BEAVRS isotopic composition for air]{Composition of air (0.000616 g/cc).}
   \footnotesize
   \label{table:chap7-beavrs-isotopes-air}
   \vspace{6pt}
@@ -339,7 +339,7 @@ The isotopic compositions used in the \ac{PWR} benchmark models in Part IV were 
 
 \begin{table}[h!]
   \centering
-  \caption[BEAVRS isotopic composition for borated water]{BEAVRS isotopic composition for borated water (0.740582 g/cc).}
+  \caption[BEAVRS isotopic composition for borated water]{Composition of borated water (0.740582 g/cc).}
   \footnotesize
   \label{table:chap7-beavrs-isotopes-water}
   \vspace{6pt}
@@ -361,7 +361,7 @@ The isotopic compositions used in the \ac{PWR} benchmark models in Part IV were 
 
 \begin{table}[h!]
   \centering
-  \caption[BEAVRS isotopic composition for borosilicate glass]{BEAVRS isotopic composition for borosilicate glass (2.260000 g/cc).}
+  \caption[BEAVRS isotopic composition for borosilicate glass]{Composition of borosilicate glass (2.260000 g/cc).}
   \footnotesize
   \label{table:chap7-beavrs-isotopes-borosilicate}
   \vspace{6pt}
@@ -385,7 +385,7 @@ The isotopic compositions used in the \ac{PWR} benchmark models in Part IV were 
 
 \begin{table}[h!]
   \centering
-  \caption[BEAVRS isotopic composition for 1.6\% enriched UO$_2$]{BEAVRS isotopic composition for 1.6\% enriched UO$_2$ fuel (10.31341 g/cc).}
+  \caption[BEAVRS isotopic composition for 1.6\% enriched UO$_2$]{Composition of 1.6\% enriched UO$_2$ fuel (10.31341 g/cc).}
   \footnotesize
   \label{table:chap7-beavrs-isotopes-1.6-uo2}
   \vspace{6pt}
@@ -406,7 +406,7 @@ The isotopic compositions used in the \ac{PWR} benchmark models in Part IV were 
 
 \begin{table}[h!]
   \centering
-  \caption[BEAVRS isotopic composition for 3.1\% enriched UO$_2$]{BEAVRS isotopic composition for 3.1\% enriched UO$_2$ fuel (10.34115 g/cc).}
+  \caption[BEAVRS isotopic composition for 3.1\% enriched UO$_2$]{Composition of 3.1\% enriched UO$_2$ fuel (10.34115 g/cc).}
   \footnotesize
   \label{table:chap7-beavrs-isotopes-3.1-uo2}
   \vspace{6pt}
@@ -427,7 +427,7 @@ The isotopic compositions used in the \ac{PWR} benchmark models in Part IV were 
 
 \begin{table}[h!]
   \centering
-  \caption[BEAVRS isotopic composition for helium]{BEAVRS isotopic composition for helium (0.001598 g/cc).}
+  \caption[BEAVRS isotopic composition for helium]{Composition of helium (0.001598 g/cc).}
   \footnotesize
   \label{table:chap7-beavrs-isotopes-3.1-helium}
   \vspace{6pt}
@@ -444,7 +444,7 @@ The isotopic compositions used in the \ac{PWR} benchmark models in Part IV were 
 
 \begin{table}[h!]
   \centering
-  \caption[BEAVRS isotopic composition for stainless steel]{BEAVRS isotopic composition for SS304 stainless steel (8.03 g/cc).}
+  \caption[BEAVRS isotopic composition for stainless steel]{Composition of SS304 stainless steel (8.03 g/cc).}
   \footnotesize
   \label{table:chap7-beavrs-isotopes-3.1-stainless-steel}
   \vspace{6pt}
@@ -477,7 +477,7 @@ The isotopic compositions used in the \ac{PWR} benchmark models in Part IV were 
 
 \begin{table}[h!]
   \centering
-  \caption[BEAVRS isotopic composition for zircaloy]{BEAVRS isotopic composition for zircaloy 4 (6.55 g/cc).}
+  \caption[BEAVRS isotopic composition for zircaloy]{Composition of zircaloy 4 (6.55 g/cc).}
   \footnotesize
   \label{table:chap7-beavrs-isotopes-3.1-zircaloy}
   \vspace{6pt}
@@ -516,6 +516,7 @@ The isotopic compositions used in the \ac{PWR} benchmark models in Part IV were 
 \end{tabular}
 \end{table}
 
+\clearpage
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Geometric Configuration}
@@ -569,14 +570,42 @@ The geometric pin cell parameters for the \ac{PWR} benchmark models in Part IV w
 \end{table}
 
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{BEAVRS Reaction Rates}
+\label{sec:beavrs-rxn-rates}
+
+The \ac{BEAVRS} reference reaction rate distributions used in Chap.~\ref{sec:chap7-motivate} were computed using isotropic in lab scattering in OpenMC to enable comparisons between OpenMC and OpenMOC. The fission and U-238 capture rate spatial distributions are highly skewed with this approximation. In particular, the distributions are signficantly more peaked in assemblies the corner reflectors since the preferential streaming and leakage of neutrons through the reflector due to anisotropic scattering in water is not modeled. The ``true'' fission and U-238 capture rate spatial distributions computed using normal anisotropic scattering in OpenMC are illustrated below for comparison purpose, and as a reminder of the necessity for accurate models of higher order scattering in high-fidelity whole-core deterministic transport calculations.
+
+\begin{figure}[h!]
+\begin{subfigure}{\textwidth}
+  \centering
+  \includegraphics[width=0.75\linewidth]{figures/benchmarks/fission-rates/fiss-mean-full-core-aniso}
+  \caption{}
+  \label{fig:benchmarks-beavrs-fiss-aniso}
+\end{subfigure}
+\begin{subfigure}{\textwidth}
+  \centering
+  \includegraphics[width=0.75\linewidth]{figures/benchmarks/capture-rates/capt-mean-full-core-aniso}
+  \caption{}
+  \label{fig:benchmarks-beavrs-capt-aniso}
+\end{subfigure}
+\vspace{2mm}
+\caption[BEAVRS pin-wise reaction rates from OpenMC with anisotropic scattering]{Fission rates (a) and U-238 capture rates (b) for the 2D quarter core \ac{BEAVRS} model tallied using a pin-wise mesh in OpenMC with anisotropic scattering.}
+\label{fig:benchmarks-beavrs-aniso}
+\end{figure}
+	
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Quantification of Spatial Self-Shielding Effects}
 \label{app:quantify-mgxs-shielding}
 
+This section provides figures illustrating the impacts of the infinite, null and spatial homogenization as an addendum to Chap.~\ref{chap:quantify}. The percent relative fission and U-238 capture rate errors between OpenMC and OpenMOC for each homogenization scheme and benchmark for 2, 8 and 70 energy groups are illustrated in Sec.~\ref{sec:quantify-fiss-rates} and Sec.~\ref{sec:quantify-capt-rates}, respectively. Sec.~\ref{sec:quantify-capt-rates-absolute} illustrates the U-238 capture rate absolute errors for benchmarks with vacuum \acp{BC}.
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Fission Rates}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Fission Rate Relative Errors}
 \label{sec:quantify-fiss-rates}
+
+The percent relative fission rate errors between OpenMC and OpenMOC for each homogenization scheme and benchmark for 2, 8 and 70 energy groups are shown in the following figures. These heatmaps complement Figs.~\Crefrange{fig:chap8-assm-1.6-fiss-err}{fig:chap8-full-core-fiss-err} by illustrating the error distributions for solutions computed by OpenMOC with 2-group \ac{MGXS}.
 
 \begin{figure}[h!]
 \centering
@@ -639,9 +668,11 @@ The geometric pin cell parameters for the \ac{PWR} benchmark models in Part IV w
 \clearpage
 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{U-238 Capture Rates}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{U-238 Capture Rate Relative Errors}
 \label{sec:quantify-capt-rates}
+
+The percent relative U-238 capture rate errors between OpenMC and OpenMOC for each spatial homogenization scheme and benchmark for 2, 8 and 70 energy groups are shown in the following figures. These heatmaps complement Figs.~\Crefrange{fig:chap8-assm-1.6-capt-err}{fig:chap8-full-core-capt-err} by illustrating the error distributions for solutions computed by OpenMOC with 2-group \ac{MGXS}.
 
 \begin{figure}[h!]
 \centering
@@ -703,6 +734,33 @@ The geometric pin cell parameters for the \ac{PWR} benchmark models in Part IV w
 
 \clearpage
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Capture Rate Absolute Errors}
+\label{sec:quantify-capt-rates-absolute}
+
+The fission and U-238 reaction rates vary much more across pins for benchmarks with leakage due to vacuum boundary conditions, such as the 2$\times$2 colorset and quarter core \ac{BEAVRS} models. In these models, it can be useful to investigate the absolute reaction rate error in addition to the percent relative error (as shown in the preceding sections). The reason for this is that it is important to reduce the error in those pins in which the reaction rates are largest and hence the most limiting to reactor performance (\textit{i.e.}, the hottest fuel pins). The absolute error spatial distributions better illustrate improved reaction rate predictions in the pins that matter most in these benchmark models.
+
+Fig.~\ref{fig:quantify-reflector-capt-err-abs} shows the U-238 capture rate absolute errors between OpenMC and OpenMOC for the null and degenerate spatial homogenizations for 8 and 70 energy groups. Fig.~\ref{fig:quantify-full-core-capt-err-abs} shows the U-238 capture rate absolute errors for the null and degenerate schemes for 40 energy groups. These heatmaps complement the percent relative errors in Figs.~\Crefrange{fig:chap8-reflector-capt-err}{fig:chap8-full-core-capt-err}. The absolute errors are not shown for the four benchmark models with all reflective \acp{BC} since they very closely mirror the percent relative error distributions.
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=\linewidth]{figures/quantification/appendix/magnitude/reflector/capt-err}
+\vspace{2mm}
+\caption[U-238 capture rate absolute errors for 2$\times$2 colorset with a reflector]{U-238 capture rate absolute errors for a 2$\times$2 colorset with a reflector corresponding to the reference in Fig.~\ref{fig:chap7-capt-rates-reflector}.}
+\label{fig:quantify-reflector-capt-err-abs}
+\end{figure}
+
+\clearpage
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=\linewidth]{figures/quantification/appendix/magnitude/full-core/capt-err}
+\vspace{2mm}
+\caption[U-238 capture rate absolute errors for the 2D quarter core \ac{BEAVRS} model]{U-238 capture rate absolute errors for the 2D quarter core \ac{BEAVRS} model corresponding to the reference in Fig.~\ref{fig:chap7-capt-rates-full-core}.}
+\label{fig:quantify-full-core-capt-err-abs}
+\end{figure}
+
+\clearpage
 
 
 \end{appendices}
