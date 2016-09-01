@@ -15,7 +15,6 @@ particles = 10000000
 #########   Exporting to OpenMC geometry.xml and materials.xml Files  ##########
 
 # Write all BEAVRS materials to materials.xml file
-infermc.beavrs.make_iso_in_lab()
 infermc.beavrs.write_materials_file()
 
 # Extract reflected geometry from InferMC's pre-built assembly Geometries

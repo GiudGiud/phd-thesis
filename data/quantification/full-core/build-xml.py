@@ -75,9 +75,9 @@ for cell in mat_cells:
     if 'fuel' in cell.fill.name.lower():
         fuel_cells.append(cell)
 
-# Initialize a fine (40-) group "distribcell" MGXS Library for OpenMOC
+# Initialize a fine (70-) group "distribcell" MGXS Library for OpenMOC
 cell_mgxs_lib = openmc.mgxs.Library(openmc_geometry, by_nuclide=True)
-cell_mgxs_lib.energy_groups = group_structures['CASMO']['40-group']
+cell_mgxs_lib.energy_groups = group_structures['CASMO']['70-group']
 cell_mgxs_lib.mgxs_types = ['total', 'fission', 'nu-fission', 'nu-scatter matrix',
                             'chi', 'absorption', 'capture']
 cell_mgxs_lib.domain_type = 'distribcell'
@@ -91,9 +91,9 @@ for domain in cell_mgxs_lib.domains:
         mgxs = cell_mgxs_lib.get_mgxs(domain.id, mgxs_type)
         mgxs.nuclides = ['U235', 'U238', 'total']
 
-# Initialize a fine (40-) group "material" MGXS Library for OpenMOC
+# Initialize a fine (70-) group "material" MGXS Library for OpenMOC
 mat_mgxs_lib = openmc.mgxs.Library(openmc_geometry, by_nuclide=True)
-mat_mgxs_lib.energy_groups = group_structures['CASMO']['40-group']
+mat_mgxs_lib.energy_groups = group_structures['CASMO']['70-group']
 mat_mgxs_lib.mgxs_types = ['total', 'fission', 'nu-fission', 'nu-scatter matrix',
                            'chi', 'absorption', 'capture']
 mat_mgxs_lib.domain_type = 'material'

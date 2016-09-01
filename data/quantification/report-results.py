@@ -39,8 +39,12 @@ directories = {'assm-1.6': '1.6\\% Assm',
                'reflector': '2$\\times$2 Colorset w/ Reflector',
                'full-core': 'BEAVRS Full Core'}
 
-groups = [8, 70] #[2, 8, 70]
-clusterizer_types = ['null', 'degenerate'] #['infinite', 'null', 'degenerate']
+groups = [2, 8, 70]
+#groups = [8]
+clusterizer_types = ['lns']
+#clusterizer_types = ['null', 'lns', 'degenerate']
+#clusterizer_types = ['null', 'degenerate']
+#clusterizer_types = ['infinite', 'null', 'degenerate']
 
 print('EIGENVALUE BIAS')
 msg = '\multirow{3}{*}{\parbox{2.5cm}{%s}} ' % directories[benchmark]
@@ -75,7 +79,7 @@ for clusterizer_type in clusterizer_types:
         min_bias = np.nanmin(np.ravel(bias))
         max_bias = np.nanmax(np.ravel(bias))
         bias = max_bias if abs(max_bias) > abs(min_bias) else min_bias
-        msg += '& {:1.2E} '.format(bias)
+        msg += '& {:.3f} '.format(bias)
         f.close()
     msg += '\\\\\n'
 print(msg)
@@ -94,7 +98,7 @@ for clusterizer_type in clusterizer_types:
             bias = f['{}-groups'.format(num_groups)][clusterizer_type]['fission'][hdf5_key]
 
         bias = np.nanmean(np.fabs(np.ravel(bias)))
-        msg += '& {:1.2E} '.format(bias)
+        msg += '& {:.3f} '.format(bias)
         f.close()
     msg += '\\\\\n'
 print(msg)
@@ -120,7 +124,7 @@ for clusterizer_type in clusterizer_types:
         min_bias = np.nanmin(np.ravel(bias))
         max_bias = np.nanmax(np.ravel(bias))
         bias = max_bias if abs(max_bias) > abs(min_bias) else min_bias
-        msg += '& {:1.2E} '.format(bias)
+        msg += '& {:.3f} '.format(bias)
         f.close()
     msg += '\\\\\n'
 print(msg)
@@ -139,7 +143,7 @@ for clusterizer_type in clusterizer_types:
             bias = f['{}-groups'.format(num_groups)][clusterizer_type]['capture'][hdf5_key]
 
         bias = np.nanmean(np.fabs(np.ravel(bias)))
-        msg += '& {:1.2E} '.format(bias)
+        msg += '& {:.3f} '.format(bias)
         f.close()
     msg += '\\\\\n'
 print(msg)
