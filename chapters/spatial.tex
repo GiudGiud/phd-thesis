@@ -264,8 +264,6 @@ second paragraph:
 \end{figure}
 
 
-
-
 first paragraph:
 -
 
@@ -315,6 +313,37 @@ second paragraph:
 \end{itemize}
 
 
+\begin{table}[h!]
+  \centering
+  \caption[Number of materials for LNS spatial homogenization]{Number of materials modeled with unique \ac{MGXS} in each heterogeneous benchmark for \ac{LNS} spatial homogenization.}
+  \small
+  \label{table:chap9-num-materials-lns}
+  \vspace{6pt}
+  \begin{tabular}{l r r r}
+  \toprule
+  \rowcolor{lightgray}
+  & \multicolumn{3}{c}{\cellcolor{lightgray} \bf \# Materials} \\
+  \multirow{-2}{*}{\cellcolor{lightgray} \bf Benchmark} &
+  \multicolumn{1}{c}{\cellcolor{lightgray} \bf Null/Infinite} &
+  \multicolumn{1}{c}{\cellcolor{lightgray} \bf \ac{LNS}} \\
+  \multicolumn{1}{c}{\cellcolor{lightgray} \bf Degenerate} \\
+  \midrule
+1.6\% Assm & 5 & & 268 \\
+  \midrule
+3.1\% Assm & 5 & & 268 \\
+  \midrule
+3.1\% Assm w/ 20 BPs & 7 & & 270  \\
+  \midrule
+2$\times$2 Colorset & 8 & & 1,062 \\
+  \midrule
+2$\times$2 Colorset w/ Reflector & 8 & & 1,062 \\
+  \midrule
+\ac{BEAVRS} Quarter Core & 10 & & 13,000 \\ % 193 * 264 / 4. + 128 + 127 + 7 % 50,964
+  \bottomrule
+\end{tabular}
+\end{table}
+
+
 \begin{figure}[h!]
 \centering
 \begin{subfigure}{.47\textwidth}
@@ -341,7 +370,7 @@ second paragraph:
   \caption{}
   \label{fig:chap9-reflector-lns-materials}
 \end{subfigure}
-\caption[Depiction of \ac{LNS} spatially homogenized materials]{OpenMOC materials with \ac{LNS} spatial homogenization for a 1.6/3.1\% enriched fuel assembly (a), a 3.1\% enriched assembly with 20 \acp{BP} (b), a 2$\times$2 colorset without (c) and with (d) a reflector. Each uniquely colored material represents a unique set of \ac{MGXS}.}
+\caption[Depiction of LNS spatially homogenized materials]{OpenMOC materials with \ac{LNS} spatial homogenization for a 1.6/3.1\% enriched fuel assembly (a), a 3.1\% enriched assembly with 20 \acp{BP} (b), a 2$\times$2 colorset without (c) and with (d) a reflector. Each uniquely colored material represents a unique set of \ac{MGXS}.}
 \label{fig:chap9-lns-materials}
 \end{figure}
 
@@ -349,7 +378,7 @@ second paragraph:
 \centering
 \includegraphics[width=\linewidth]{figures/patterns/lns/full-core/materials}
 \caption{}
-\caption[Depiction of \ac{LNS} spatially homogenized materials for quarter core BEAVRS]{OpenMOC materials with \ac{LNS} spatial homogenization for the 2D quarter core \ac{BEAVRS} model. Each uniquely colored material represents a unique set of \ac{MGXS}.}
+\caption[Depiction of LNS spatially homogenized materials for quarter core BEAVRS]{OpenMOC materials with \ac{LNS} spatial homogenization for the 2D quarter core \ac{BEAVRS} model. Each uniquely colored material represents a unique set of \ac{MGXS}.}
 \label{fig:chap9-lns-materials-beavrs}
 \end{figure}
 
@@ -526,10 +555,10 @@ BEAVRS Full Core & & & \\
 \end{subfigure}
 \begin{subfigure}{.87\textwidth}
   \centering
-  \includegraphics[width=\linewidth]{figures/patterns/convergence/reflector/16-enr-capt}
+  \includegraphics[width=\linewidth]{figures/patterns/convergence/full-core/16-enr-capt}
   \caption{}
   \label{fig:chap9-reflector-converge}
 \end{subfigure}
-\caption[Convergence of pin-wise U-238 capture MGXS]{The batchwise change of pin-wise U-238 capture \ac{MGXS} (group 27 of 70) for 1.6\% enriched fuel pins in a single assembly (a) and a 2$\times$2 colorset with a reflector (b). The convergence of both the maximum and mean absolute percent change are shown for the degenerate and \ac{LNS} homogenization schemes.}
+\caption[Convergence of pin-wise U-238 capture MGXS]{The batch-wise change of pin-wise U-238 capture \ac{MGXS} (group 27 of 70) for 1.6\% enriched fuel pins in a single assembly (a) and the quarter core \ac{BEAVRS} model (b). The convergence of both the maximum and mean absolute percent change are shown for the degenerate and \ac{LNS} homogenization schemes.}
 \label{fig:chap9-converge}
 \end{figure}
