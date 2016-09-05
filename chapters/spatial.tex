@@ -312,19 +312,60 @@ second paragraph:
 \end{figure}
 
 
+\begin{table}[h!]
+  \centering
+  \caption[Population variance for pin-wise MGXS]{The population variance for pin-wise fission and U-238 capture \ac{MGXS}.}
+  \small
+  \label{table:chap9-pop-var-mgxs}
+  \vspace{6pt}
+  \begin{tabular}{C{2.5cm} l C{2.5cm} C{2.5cm}}
+  \toprule
+  \rowcolor{lightgray}
+  \multicolumn{1}{C{2.5cm}}{\textbf{Fuel Enrichment}} & \multicolumn{1}{c}{\textbf{Benchmark}} & \boldmath$\mathrm{Var}\left[\sigma_{c}^{U-238}\right]$ \textbf{[barns]} & \boldmath$\mathrm{Var}\left[\sigma_{f}\right]$ \textbf{[barns]} \\
+  \toprule
+%  \multicolumn{3}{c}{\cellcolor{lightgray} \bf 1.6\% Enr. Fuel} \\
+%\midrule
+\multirow{5}{*}{1.6\%} & Assm. (no \acp{CRGT}, no \acp{BP}) & 6.29E-07 & 5.06E--03 \\
+%\midrule
+& Assm. (no \acp{BP}) & 1.61E-04 & 1.81E+00 \\
+%\midrule
+& 2$\times$2 Colorset & 1.89E-04 & 1.18E+01 \\
+%\midrule
+& 2$\times$2 Colorset w/ Reflector & 2.03E-04 & 1.93E+01 \\
+%\midrule
+& \ac{BEAVRS} Quarter Core & 1.64E-04 & 6.78E+00 \\
+%\midrule
+%\multicolumn{3}{c}{\cellcolor{lightgray} \bf 3.1\% Enr. Fuel} \\
+\midrule
+\multirow{6}{*}{3.1\%} & Assm. (no \acp{CRGT}, no \acp{BP}) & 5.83E-07 & 6.12E--03 \\
+% \midrule
+& Assm. (no \acp{BP}) & 1.53E-04 & 4.22E+00 \\
+% \midrule
+& Assm. (20 \acp{BP}) & 1.37E-04 & 1.11E+01 \\
+% \midrule
+& 2$\times$2 Colorset & 1.53E-04 & 2.15E+01 \\
+% \midrule
+& 2$\times$2 Colorset w/ Reflector & 1.79E-04 & 4.78E+01 \\
+% \midrule
+& \ac{BEAVRS} Quarter Core & 2.34E-04 & 1.68E+01 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+
 first paragraph:
 -
 
 second paragraph:
 -
 
-\begin{itemize}[noitemsep]
-  \item show that clustering exists in MGXS
-  \begin{itemize}[noitemsep]
-    \item leave ``features'' and ML discussion for next chapter
-  \end{itemize}
-  \item look at slides 66-71 in ORNL presentation
-\end{itemize}
+%\begin{itemize}[noitemsep]
+%  \item show that clustering exists in MGXS
+%  \begin{itemize}[noitemsep]
+%    \item leave ``features'' and ML discussion for next chapter
+%  \end{itemize}
+%  \item look at slides 66-71 in ORNL presentation
+%\end{itemize}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
