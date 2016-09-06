@@ -49,11 +49,53 @@ second paragraph: intro to visualizations
   -even if the clusters in those \ac{MGXS} don't make as much of an impact for their respective reaction types (e.g., fission vs. capture)
 
 third paragraph: outline
+-Sec.~\ref{subsec:chap9-pop-var} - population variance of \ac{MGXS} in each benchmark
 -Sec.~\ref{subsec:chap9-histograms} - histograms plots of pin-wise \ac{MGXS}
   -for both U-238 capture and U-235 fission
   -although 
 -Sec.~\ref{subsec:chap9-qq-plots} - quantile-quantile plots of pin-wise \ac{MGXS}
--Sec.~\ref{subsec:chap9-clustering} - population variance of \ac{MGXS} in each benchmark
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Pin-Wise MGXS Population Variance}
+\label{subsec:chap9-pop-var}
+
+first paragraph:
+-Tab.~\ref{table:chap9-pop-var-mgxs}
+
+second paragraph:
+-
+
+-make this the first subsection
+-plot the convergence of null MGXS by batch along with max for distribcell MGXS
+-plot the pop. var. convergence of the distribcell MGXS and show that they don't go to zero
+-plot the convergence of the distribcell MGXS for 1.6\% enr. assm, 3.1\% assm w/ BPs, 2x2 colorset w/ reflector???
+
+\begin{table}[h!]
+  \centering
+  \caption[Population variance for pin-wise MGXS]{The population variance for pin-wise fission and U-238 capture \ac{MGXS}.}
+  \small
+  \label{table:chap9-pop-var-mgxs}
+  \vspace{6pt}
+  \begin{tabular}{C{2.5cm} l C{2.5cm} C{2.5cm}}
+  \toprule
+  \rowcolor{lightgray}
+  \multicolumn{1}{C{2.5cm}}{\textbf{Fuel Enrichment}} & \multicolumn{1}{c}{\textbf{Benchmark}} & \boldmath$\mathrm{Var}\left[\sigma_{c}^{U-238}\right]$ \textbf{[barns]} & \boldmath$\mathrm{Var}\left[\sigma_{f}\right]$ \textbf{[barns]} \\
+  \toprule
+\multirow{5}{*}{1.6\%} & Assm. (no \acp{CRGT}, no \acp{BP}) & 6.29E-07 & 5.06E--03 \\
+& Assm. (no \acp{BP}) & 1.61E-04 & 1.81E+00 \\
+& 2$\times$2 Colorset & 1.89E-04 & 1.18E+01 \\
+& 2$\times$2 Colorset w/ Reflector & 2.03E-04 & 1.93E+01 \\
+& \ac{BEAVRS} Quarter Core & 1.64E-04 & 6.78E+00 \\
+\midrule
+\multirow{6}{*}{3.1\%} & Assm. (no \acp{CRGT}, no \acp{BP}) & 5.83E-07 & 6.12E--03 \\
+& Assm. (no \acp{BP}) & 1.53E-04 & 4.22E+00 \\
+& Assm. (20 \acp{BP}) & 1.37E-04 & 1.11E+01 \\
+& 2$\times$2 Colorset & 1.53E-04 & 2.15E+01 \\
+& 2$\times$2 Colorset w/ Reflector & 1.79E-04 & 4.78E+01 \\
+& \ac{BEAVRS} Quarter Core & 2.34E-04 & 1.68E+01 \\
+\bottomrule
+\end{tabular}
+\end{table}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Histograms of Pin-Wise MGXS}
@@ -394,6 +436,11 @@ first paragraph: qq plots
   -could have selected data from more groups, but it is ``noisier''
     -the trends are not as easy to identify as they are for 2-group data
 
+second paragraph: normality tests
+-explain what a p-value is
+-reference shannon wilkes test or whatever in scipy
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{U-238 Capture MGXS}
 \label{subsubsec:chap9-qq-plots-capt}
@@ -404,67 +451,23 @@ first paragraph: intro U-238 capture \ac{MGXS} qq plots
   -in each of the heterogeneous benchmarks, respectively
 -recall the inf. lattice case
 
-second paragraph: trends w/ enrichment:
--generally 1.6\% enr. is 0.01-0.02 barns larger
-  -micros for inf. lattice are $\sim$ 0.01 barns larger for 1.6\% than 3.1\% enr.
-  -micros for lattice w/ \acp{CRGT} are $\sim$ 0.01 barns larger for 1.6\% than 3.1\% enr.
-  -micros for 2$\times$2 colorsets are $\sim$0.01-0.02 barns larger for 1.6\% than 3.1\% enr.
-  -micros for full core vary over wider range for 3.1\% enr.
-    -extend to over 0.9 barns for a few pins
-    -while 0.87 is the highest of any 1.6\% enr. pin in the full core
-    -the micros for the 3.1\% enriched pins are typically a few hundredths of a barn larger 
+-second paragraph:
+  -the qq plot shows that data for the inf. lattices very nearly normal (p-values well above 0.05, closer to 0.7)
+  -clear deviation from normality with addition of \acp{CRGT}
+  -structure is more challenging to understand for more complex benchmarks
+    -addition of \acp{BP} for 3.1\% enr. assembly makes clusters/shoulders ``sharper'' steps
+    -more data points (e.g., fuel pins) for each benchmark clouds the structure
+	  -generally with more data points the trends are ``smoother''
+	    -does NOT necessarily indicate better approx. to normality however!!
+	    -``slow'' and ``smooth'' trends can still deviate widely from that expected for normal samples, e.g., 3.1\% enr. full core pin
+  -p-value is very clearly smallest for the full core (1e-22 and 1e-39 for 1.6\% and 3.1\% enr fuel)
 
-third paragraph: analyze trends
--trends w/ \acp{CRGT}
-  -addition of \acp{CRGT} induces four clearly discernible clusters
-  -separated by $\sim$0.1-0.15 barns for both 1.6\% and 3.1\% enriched pins
-  -potentially may be sub-clusters, especially b/w smallest two clusters
-    -in range of 0.8-0.81 barns and 0.79-0.8 barns for 1.6\%/3.1\% enriched pins, respectively
-  -four cases in order of increasing degree of flux softening due to differential moderation:
-    -not adjacent to \ac{CRGT}
-    -corner adjacent to \ac{CRGT}
-    -facially adjacent to \ac{CRGT}
-    -facially and corner adjacent to two separate \acp{CRGT}
-
--trends w/ \acp{BP}
-  -addition of \acp{BP} for 3.1\% enr. assm ``smears'' clusters
-  -seems to shift \ac{MGXS} down by $\sim$0.005 barns wrt case w/o \acp{BP}
-  -still seem to be four distinct clusters, but more liklely 6+ clusters
+-mention that tails above and below on lower/upper range indicate that tails of distribution are not as wide as would be expected for normal samples -- e.g., a ``tighter'' or ``narrower'' distribution
+-3.1\% enr pins in full core are tighter on bottom edge, but wider on upper edge
+  -indicative of those few ``outlier'' pins with \ac{MGXS} near 0.9 barns in Fig.~\ref{fig:chap9-hist-3.1-capt}
   
--trends w/ inter-assembly interface (2$\times$2 colorset w/o reflector)
-  -``smearing'' of clusters
-  -important to recognize that there are now 264 times 2 = 528 samples
-    -expect it to be more difficult to discern clusters from rug plot with more samples
-  -still seem to be four distinct clusters for 1.6\% enriched fuel pins
-    -largest cluster is $\sim$0.01 barn higher at 0.85 barns
-  -more difficult to discern clusters for 3.1\% enr. pins, but appears to be at least 3
-    -all \ac{MGXS} shifted down by $\sim$0.0075 barns 
-
--trends w/ reflector
-  -recall which assm is where in the configuration
-    -3.1\% w/ 20 \acp{BP} are adjacent to reflector
-    -1.6\% w/o \acp{BP} are on the interior and corner adjacent to reflector
-  -still 3 strong clusters for 1.6\% enr. pins
-    -more ``smeared'', especially on the low side where
-    -a few pins have \ac{MGXS} as low as $\sim$0.76 barns
-  -similar trends for the 3.1\% enr. pins
-    -pins with smallest \ac{MGXS} shifted down by $\sim$0.025 barns
-  
--trends with full core
-  -recall how many pins of each type are in the full core
-    -4236 3.1\% enriched
-    -4332 1.6\% enriched
-    -4260 2.4\% enriched
-  -1.6\% enr. seems to have two peaks at 0.815 and 0.83 barns
-  -3.1\% enr. seems to have two peaks at 0.785 and 0.805 barns
-    -with a much smaller shoulder centered 0.83 barns
-    -a few pins with much higher \ac{MGXS} b/w 0.86 and 0.9 barns
-  -\ac{MGXS} are not generally dispersed any more than they were for the colorsets
-  
-
 SUMMARY BOX
 
--think about shifts in \ac{MGXS} in terms of percentages
 -add ``Assm.'' to titles of plots for individual fuel assemblies
 -add group 1/2 to captions
 
@@ -546,6 +549,31 @@ SUMMARY BOX
 \subsubsection{U-235 Fission MGXS}
 \label{subsubsec:chap9-qq-plots-fiss}
 
+first paragraph: intro U-235 fission \ac{MGXS} qq plots
+-Fig.~\ref{fig:chap9-qq-1.6-fiss} and ~\ref{fig:chap9-qq-3.1-fiss}
+  -U-235 fission \ac{MGXS} for 1.6\% and 3.1\% enriched fuel pins
+  -in each of the heterogeneous benchmarks, respectively
+-recall the inf. lattice case
+
+-second paragraph:
+  -the qq plot shows that data for the inf. lattices very nearly normal (p-values well above 0.05, closer to 0.35)
+  -clear deviation from normality with addition of \acp{CRGT}
+    -more complicated and less distinct structure than was seen for U-238 capture
+  -crazy piecewise step-like structure with addition of \acp{BP}
+    -much more fragmented than for U-238 capture
+  -colorsets indicate sharper steps than for U-238 capture which ``smoothed'' out with more complexity
+  -p-value is very clearly smallest for the full core (1e-22 and 1e-39 for 1.6\% and 3.1\% enr fuel)
+
+-mention that tails above and below on lower/upper range indicate that tails of distribution are not as wide as would be expected for normal samples -- e.g., a ``tighter'' or ``narrower'' distribution
+-3.1\% enr pins in full core are tighter on bottom edge, but wider on upper edge
+  -indicative of those few ``outlier'' pins with \ac{MGXS} near 0.9 barns in Fig.~\ref{fig:chap9-hist-3.1-capt}
+
+SUMMARY BOX
+
+-what are key differences with U-238 capture plots?
+-add ``Assm.'' to titles of plots for individual fuel assemblies
+-add group 1/2 to captions
+
 \begin{figure}[h!]
 \centering
 \begin{subfigure}{0.5\textwidth}
@@ -619,66 +647,6 @@ SUMMARY BOX
 \caption[Q-Q plots of U-235 fission MGXS 3.1\% enriched fuel]{Q-Q plots of U-235 fission \ac{MGXS} for 3.1\% enriched fuel.}
 \label{fig:chap9-qq-3.1-fiss}
 \end{figure}
-
-
-first paragraph:
--
-
-second paragraph:
--
-
-\begin{itemize}[noitemsep]
-  \item show that clustering exists in MGXS
-  \begin{itemize}[noitemsep]
-    \item leave ``features'' and ML discussion for next chapter
-  \end{itemize}
-  \item look at slides 66-71 in ORNL presentation
-\end{itemize}
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Pin-Wise MGXS Population Variance}
-\label{subsec:chap9-pop-var}
-
--plot the convergence of null MGXS by batch along with max for distribcell MGXS
--plot the pop. var. convergence of the distribcell MGXS and show that they don't go to zero
--plot the convergence of the distribcell MGXS for 1.6\% enr. assm, 3.1\% assm w/ BPs, 2x2 colorset w/ reflector???
-
-\begin{table}[h!]
-  \centering
-  \caption[Population variance for pin-wise MGXS]{The population variance for pin-wise fission and U-238 capture \ac{MGXS}.}
-  \small
-  \label{table:chap9-pop-var-mgxs}
-  \vspace{6pt}
-  \begin{tabular}{C{2.5cm} l C{2.5cm} C{2.5cm}}
-  \toprule
-  \rowcolor{lightgray}
-  \multicolumn{1}{C{2.5cm}}{\textbf{Fuel Enrichment}} & \multicolumn{1}{c}{\textbf{Benchmark}} & \boldmath$\mathrm{Var}\left[\sigma_{c}^{U-238}\right]$ \textbf{[barns]} & \boldmath$\mathrm{Var}\left[\sigma_{f}\right]$ \textbf{[barns]} \\
-  \toprule
-\multirow{5}{*}{1.6\%} & Assm. (no \acp{CRGT}, no \acp{BP}) & 6.29E-07 & 5.06E--03 \\
-& Assm. (no \acp{BP}) & 1.61E-04 & 1.81E+00 \\
-& 2$\times$2 Colorset & 1.89E-04 & 1.18E+01 \\
-& 2$\times$2 Colorset w/ Reflector & 2.03E-04 & 1.93E+01 \\
-& \ac{BEAVRS} Quarter Core & 1.64E-04 & 6.78E+00 \\
-\midrule
-\multirow{6}{*}{3.1\%} & Assm. (no \acp{CRGT}, no \acp{BP}) & 5.83E-07 & 6.12E--03 \\
-& Assm. (no \acp{BP}) & 1.53E-04 & 4.22E+00 \\
-& Assm. (20 \acp{BP}) & 1.37E-04 & 1.11E+01 \\
-& 2$\times$2 Colorset & 1.53E-04 & 2.15E+01 \\
-& 2$\times$2 Colorset w/ Reflector & 1.79E-04 & 4.78E+01 \\
-& \ac{BEAVRS} Quarter Core & 2.34E-04 & 1.68E+01 \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-\begin{itemize}[noitemsep]
-  \item plots of convergence of pop. var. of distribell MGXS
-  \begin{itemize}[noitemsep]
-    \item MGXS in moderator and fuel
-    \item pop. var. in fuel converges to non-zero value
-    \item pop. var. in moderator is negligible
-  \end{itemize}
-\end{itemize}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
