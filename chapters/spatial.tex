@@ -59,16 +59,47 @@ third paragraph: outline
 \subsection{Pin-Wise MGXS Population Variance}
 \label{subsec:chap9-pop-var}
 
-first paragraph:
--Tab.~\ref{table:chap9-pop-var-mgxs}
+first paragraph: heterogeneities induce a dispersion of pin-wise \ac{MGXS}
+-hypothesize that 
+  -evidence from degenerate scheme in preceding chapter backs this up
+-Tab.~\ref{table:chap9-pop-var-mgxs} shows the population variance of pin-wise \ac{MGXS}
+  -each sample in the population represents a single fuel pin
+    -used OpenMC distributed cell tallies
+  -for each benchmark, for both 1.6\% and 3.1\% enriched fuel pins
+  	-note that there are 2.4\% enriched fuel pins in the \ac{BEAVRS} quarter core model
+  -for group 1/2 U-238 capture \ac{MGXS}
+  -for group 2/2 U-235 fission \ac{MGXS}
 
-second paragraph:
--
+second paragraph: identify trends
+-following sections seek to characterize structure in the dispersion of \ac{MGXS}
+-inf lattice vs. not
+  -dispersion / variance is over two orders of magnitude larger with the presence of heterogeneities
+    -for same \ac{MC} track density and uncertainties for each pin's \ac{MGXS}
+    -for both fission and capture 
+-by fission vs. capture rxns
+-by GTs
+  -presence of GTS increases dispersion by two orders of magnitude
+-by BPs
+  -adding BPs actually slightly reduces dispersion of both capture \ac{MGXS}
+  -increases dispersion by nearly 3$\times$ for fission \ac{MGXS}
+-by enrichment
+  -dispersion is greater for 3.1\% enr. pins - esp. for fission - over 2$\times$ larger!! 
+    -e.g., 6.78 vs. 16.8 barns for 1.6\% and 3.1\% enr. pins in the \ac{BEAVRS} quarter core)
+    -fission \ac{MGXS} is more sensitive to self-shielding
+    -BUT fission rxn rates were not improved with degenerate homogenization
+      -perhaps fission is still useful to identify clusters to improve U-238 capture predictions
+-inter-assembly
+  -increases capture dispersion by 10--20\%
+  -increases fission dispersion by 5$\times$ (wrt assms w/o BPs) 
+-by reflector
+  -increases capture dispersion 5--15\%
+  -increases fission dispersion by 60\% and over 100\% for 1.6\% and 3.1\% enr. fuel 
+-by BEAVRS
+  -dispersion decreases for BEAVRS wrt colorset w/ reflector by 1/2 -- 1/3 
+  -dispersion increases slightly for U-238 capture in 3.1\% enr. fuel
 
--make this the first subsection
--plot the convergence of null MGXS by batch along with max for distribcell MGXS
--plot the pop. var. convergence of the distribcell MGXS and show that they don't go to zero
--plot the convergence of the distribcell MGXS for 1.6\% enr. assm, 3.1\% assm w/ BPs, 2x2 colorset w/ reflector???
+%-plot the convergence of null MGXS by batch along with max for distribcell MGXS
+%-plot the pop. var. convergence of the distribcell MGXS and show that they don't go to zero
 
 \begin{table}[h!]
   \centering
