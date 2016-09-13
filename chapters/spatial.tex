@@ -684,18 +684,45 @@ SUMMARY BOX
 \section{LNS Spatial Homogenization}
 \label{sec:chap9-lns-homogenize}
 
--need to define \ac{LNS} spatial homogenization
--refer back to workflow chapter and OpenCG
--look back to sections on null/infinite/degenerate homogenization
+first paragraph: 
+-recall geometric templates used in traditional lattice physics codes
+  -CASMO~\cite{rhodes2006casmo}
+-recall OpenCG's \ac{LNS} algorithm from Sec.~\ref{sec:chap4-lns}
+  -used as a proxy for geometric templates
+-this section applies it as a deterministic atttempt to ``cluster'' like \ac{MGXS}
+-aim is to predict U-238 capture rates better than is possible with null/infinite homogenization
+  -approach degenerate homogenization's accuracy
+  -accelerate tally convergence rate by averaging \ac{MGXS} across many pin instances
+    -refer to last section of this chapter
 
--boxplots / violin plots of MGXS for each???
--improved errors wrt. null homogenization
+second paragraph: describe \ac{LNS} spatial homogenization
+-tally \ac{MGXS} for each fuel pin instance across the core
+  -as is done for degenerate homogenization
+-use OpenCG \ac{LNS} algorithm to assign an \ac{LNS} identifier to each unique pin instance in \ac{CG}
+  -pins with like neighboring pins will receive the same \ac{LNS} identifier
+-average \ac{MGXS} for each ``family'' of pin instances with like \ac{LNS} identifiers
+  -mention what this means - sum up flux and reaction rate tallies
+    -effectively an average weighted by track density in each pin
+    -equivalent to defining flux/rxn rate tallies specifically for those fuel pin intances
+    -perhaps use an equation for this???
+-\ac{MGXS} for all other materials are averaged across the complete heterogeneous geometry
+  -take wording from last chapter for this
 
-\begin{itemize}[noitemsep]
-  \item objective is to capture clustering effects in MGXS
-  \item introduce LNS algorithm, or reference from section on OpenCG
-  \item LNS isn't adaptable -- segue to next chapter
-\end{itemize}
+third paragraph: point out materials for the six benchmarks
+-Tab.~\ref{table:chap9-num-materials-lns} 
+  -number of materials for each of the six benchmarks with \ac{LNS} homogenization
+-Fig.~\ref{fig:chap9-lns-materials}
+  -materials configurations for individual assembly and 2$\times$2 colorset benchmarks with \ac{LNS} spatial homogenization
+-Fig.~\ref{fig:chap9-lns-materials-beavrs}
+  -materials configuration for 2D quarter core \ac{BEAVRS} model with \ac{LNS} spatial homogenization
+
+fourth paragraph: segue to next chapter
+-objective is to capture clustering effects in MGXS
+-LNS isn't adaptable
+  -point out pins along assembly-assembly and assembly-reflector interfaces treated the same
+  -point out large number of materials in full core - may be more than necessary
+  -algorithm must be customized to specific types of core geometries
+-following section will highlight the results with \ac{LNS} spatial homogenization
 
 \begin{table}[h!]
   \centering
@@ -726,7 +753,6 @@ SUMMARY BOX
   \bottomrule
 \end{tabular}
 \end{table}
-
 
 \begin{figure}[h!]
 \centering
@@ -771,10 +797,26 @@ SUMMARY BOX
 \section{Multi-Group Results with LNS}
 \label{subsec:chap9-lns-results}
 
+first paragraph: introduce / outline results
+-ran simulations with 2, 8 and 70 groups as in Chap.~\ref{chap:quantify} for each of the six benchmarks
+-used \ac{LNS} spatial homogenization in each one with same OpenMOC simulation parameters
+  -128 azimuthal angles, 0.05 cm track spacing
+-Sec.~\ref{subsec:chap9-lns-eigenvalues} - eigenvalues
+-Sec.~\ref{subsec:chap9-lns-fiss-rates} - pin-wise energy-integrated fission rates
+-Sec.~\ref{subsec:chap9-lns-capt-rates} - pin-wise energy-integrated capture rates
 
 %%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Eigenvalues}
 \label{subsec:chap9-lns-eigenvalues}
+
+first paragraph: eigenvalues
+-as was observed when comparing null to degenerate homogenization in Chap.~\ref{chap:quantify}, spatial homogenization cannot be expected to systematically improve the eigenvalue wrt OpenMC
+-but these results are presented here to ensure that \ac{LNS} homogenization was properly implemented
+  -and results simply reinforce this notion
+-Tab.~\ref{table:chap9-lns-eigenvalues} tabulates eigenvalues for 2, 8, and 70 groups
+-eigenvalues closely match null and degenerate homogenization from Chap.~\ref{chap:quantify}
+  -match to within less than 10 \ac{pcm} for nearly all cases
+  -due to reaction rate preservation
 
 \begin{table}[ht!]
   \centering
@@ -791,12 +833,12 @@ SUMMARY BOX
   \multicolumn{1}{r}{{\cellcolor{lightgray} \bf 8-Group}} &
   \multicolumn{1}{r}{{\cellcolor{lightgray} \bf 70-Group}} \\
   \midrule
-1.6\% Assm  & 56 & -79 & -161 \\
-3.1\% Assm & 97 & -80 & -194 \\
-3.1\% Assm w/ 20 BPs & -160 & -160 & -240 \\
-2$\times$2 Colorset & 8 & -94 & -166 \\
-2$\times$2 Colorset w/ Reflector & 1820 & 462 & -127 \\
-BEAVRS Full Core & & & \\
+1.6\% Assm & 56 & -79 & -168 \\
+3.1\% Assm & 97 & -80 & -202 \\
+3.1\% Assm w/ 20 BPs & -157 & -161 & -247 \\
+2$\times$2 Colorset & 10 & -94 & -195 \\
+2$\times$2 Colorset w/ Reflector & 1792 & 476 & -143 \\
+BEAVRS Full Core & 2225 & 448 & -81 \\
   \bottomrule
 \end{tabular}
 \end{table}
@@ -804,6 +846,29 @@ BEAVRS Full Core & & & \\
 %%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Fission Rates}
 \label{subsec:chap9-lns-fiss-rates}
+
+first paragraph: overview of error trends
+-Tab.~\ref{table:chap9-lns-fiss-rates} - max and mean fission rate errors
+  -compare to Tabs.~\ref{table:chap8-openmoc-max-fiss-rates} and~\ref{table:chap8-openmoc-mean-fiss-rates}
+  -recall that degenerate homogenization provided little improvement in fission rates
+-max rates - observations
+  -assm 1.6 - very nearly the same as degenerate
+  -assm 3.1 - similar to degenerate (better than null)
+  -assm 3.1 w/ BPs - slightly better than degenerate for 8 and 70 groups
+  -2x2 - similar to degenerate, but they all perform the same for 70 groups
+  -2x2 w/ reflector - significantly worse with 2 groups, and over 0.12\% worse than degenerate w/ 70 groups
+  -largest deviation with degenerate is for 2 groups
+-mean rates - observations
+  -assm 1.6 - slightly better than degenerate for 8 and 70 groups (0.02\%)
+  -assm 3.1 - slightly better than degenerate for 8 and 70 groups (0.02\%)
+  -assm 3.1 w/ BPs - slightly better than degenerate for 70 groups (0.02\%)
+  -2x2 - slightly better than degenerate for 8 and 70 groups (0.02\%)
+  -2x2 w/ reflector - worse than degenerate, but better than null
+-GENERAL TAKEWAWAY: generally better than null but approaches accuracy of degenerate case
+  -except for reflector and full core
+-depictions of spatial distributions of errors not shown here since it was shown in Chap.~\ref{chap:quantify} that spatial homogenization has little impact on fission rates
+
+-SUMMARY BOX
 
 \begin{table}[ht!]
   \centering
@@ -821,23 +886,23 @@ BEAVRS Full Core & & & \\
   \multicolumn{1}{r}{{\cellcolor{lightgray} \bf 8-Group}} &
   \multicolumn{1}{r}{{\cellcolor{lightgray} \bf 70-Group}} \\
   \midrule
-\multirow{2}{*}{\parbox{2.2cm}{1.6\% Assm}} & Max & 2.131 & 0.764 & 0.312 \\
+\multirow{2}{*}{\parbox{2.2cm}{1.6\% Assm}} & Max & 2.131 & 0.764 & 0.313 \\
 & Mean & 0.714 & 0.239 & 0.083 \\
 \midrule
-\multirow{2}{*}{\parbox{2.2cm}{3.1\% Assm}} & Max & 2.476 & 0.920 & 0.428 \\
+\multirow{2}{*}{\parbox{2.2cm}{3.1\% Assm}} & Max & 2.476 & 0.919 & 0.429 \\
 & Mean & 0.832 & 0.287 & 0.091 \\
 \midrule
-\multirow{2}{*}{\parbox{2.2cm}{3.1\% Assm w/ 20 BPs}} & Max & -2.009 & -0.715 & 0.368 \\
+\multirow{2}{*}{\parbox{2.2cm}{3.1\% Assm w/ 20 BPs}} & Max & -2.009 & -0.715 & 0.369 \\
 & Mean & 0.719 & 0.216 & 0.095 \\
 \midrule
 \multirow{2}{*}{\parbox{2.2cm}{2$\times$2 Colorset}} & Max & -5.517 & -1.490 & 0.584 \\
-& Mean & 2.939 & 0.701 & 0.137 \\
+& Mean & 2.940 & 0.701 & 0.138 \\
 \midrule
-\multirow{2}{*}{\parbox{2.2cm}{2$\times$2 Colorset w/ Reflector}} & Max & -14.073 & -2.872 & 0.935 \\
-& Mean & 5.181 & 1.072 & 0.186 \\
+\multirow{2}{*}{\parbox{2.2cm}{2$\times$2 Colorset w/ Reflector}} & Max & -15.714 & -2.894 & 0.887 \\
+& Mean & 5.170 & 1.076 & 0.178 \\
 \midrule
-\multirow{2}{*}{\parbox{2.2cm}{BEAVRS Full Core}} & Max & & & \\
-& Mean & & & \\
+\multirow{2}{*}{\parbox{2.2cm}{BEAVRS Full Core}} & Max & -86.166 & -35.548 & 12.330 \\
+& Mean & 40.190 & 11.465 & 1.454 \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -845,6 +910,55 @@ BEAVRS Full Core & & & \\
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{U-238 Capture Rate Distributions}
 \label{subsec:chap9-lns-capt-rates}
+
+first paragraph:
+-Tab.~\ref{table:chap9-lns-capt-rates} - max and mean U-238 capture rate errors
+  -compare to Tabs.~\ref{table:chap8-openmoc-max-capt-rates} and~\ref{table:chap8-openmoc-mean-capt-rates}
+  -recall that degenerate homogenization significantly reduced U-238 capture rate errors 
+-max rates - observations
+  -assm 1.6 - better than degenerate w/ 70 groups (0.04\%), but worse with 2 and 8 groups
+  -assm 3.1 - better than degenerate w/ 70 groups (0.07\%), but worse with 2 and 8 groups
+  -assm 3.1 w/ BPs - worse than degenerate w/ 70 groups (0.06\%)
+  -2x2 - significantly better than degenerate w/ 70 groups (0.16\%)
+  -2x2 w/ reflector - significantly worse than degenerate (and null) w/ 70 groups (0.8\%)
+    -and with opposite sign since the errors are under-predicted near reflector
+  -generally worse with 2 and 8 groups
+-mean rates - observations
+  -assm 1.6 - better than degenerate w/ 70 groups (0.01\%)
+  -assm 3.1 - better than degenerate w/ 70 groups (0.01\%)
+  -assm 3.1 w/ BPs - better than degenerate w/ 70 groups (0.01\%)
+  -2x2 - better than degenerate w/ 70 groups (0.04\%)
+  -2x2 w/ reflector - worse than degenerate w/ 70 groups (0.07\%)
+    -though still much better than null/infinite
+-GENERAL TAKEWAWAY: generally better than null but approaches accuracy of degenerate case
+  -even slightly beats accuracy of degenerate case in most cases
+  -except for reflector and full core
+
+second paragraph: spatial distributions
+-Figs.~\Crefrange{fig:chap9-assm-1.6-lns-capt-err}{fig:chap9-reflector-lns-capt-err}
+  -U-238 capture rate error distributions with respect to OpenMC reference results
+  -akin to Figs.~\Crefrange{fig:chap8-assm-1.6-capt-err}{fig:chap8-full-core-capt-err}
+  -compare null, \ac{LNS} and degenerate homogenization for 8 and 70 groups
+  -shows the error distributions for degenerate and \ac{LNS} spatial homogenization are very nearly the same for the individual fuel assemblies and 2$\times$2 colorset
+  -error distributions deviate for the 2$\times$2 colorset with a reflector
+
+third paragraph: observations with reflector?? w/ 70 groups
+  -NULL
+    -largest errors along assembly-assembly / assembly-reflector interfaces, and pins near \acp{CRGT}
+  -DEGENERATE
+    -errors randomly distributed across pins
+  -LNS
+    -largest errors along assembly-reflector interface, and lesser extent assembly-reflector interface
+    -as shown in table, largest errors are larger than those for null case
+    -reason is that LNS averages \ac{MGXS} pins along both interfaces rather than differentiating b/w them
+    -this is actually a worse approx. than averaging across ALL pins as is done by null case
+    -highlights sensitivity to how \ac{MGXS} averaging is performed
+      -if averaged in the wrong way, errors may actually increase in some pins
+      -worthwhile to note that errors will generally improve in those pins with the largest reaction rates since the averaging is done as a weighted average
+
+-SUMMARY BOX
+
+-put magnitude plots in appendices
 
 \begin{table}[ht!]
   \centering
@@ -865,20 +979,20 @@ BEAVRS Full Core & & & \\
 \multirow{2}{*}{\parbox{2.2cm}{1.6\% Assm}} & Max & 1.095 & 0.441 & 0.358 \\
 & Mean & 0.387 & 0.097 & 0.090 \\
 \midrule
-\multirow{2}{*}{\parbox{2.2cm}{3.1\% Assm}} & Max& 1.128 & 0.477 & 0.330 \\
+\multirow{2}{*}{\parbox{2.2cm}{3.1\% Assm}} & Max & 1.128 & 0.477 & 0.331 \\
 & Mean & 0.362 & 0.115 & 0.102 \\
 \midrule
-\multirow{2}{*}{\parbox{2.2cm}{3.1\% Assm w/ 20 BPs}} & Max & 2.088 & 0.676 & 0.454 \\
-& Mean & 0.526 & 0.163 & 0.104 \\
+\multirow{2}{*}{\parbox{2.2cm}{3.1\% Assm w/ 20 BPs}} & Max & 2.085 & 0.676 & 0.454 \\
+& Mean & 0.525 & 0.163 & 0.104 \\
 \midrule
-\multirow{2}{*}{\parbox{2.2cm}{2$\times$2 Colorset}} & Max & 2.941 & -0.957 & 0.641 \\
-& Mean & 1.515 & 0.173 & 0.149 \\
+\multirow{2}{*}{\parbox{2.2cm}{2$\times$2 Colorset}} & Max & 2.939 & -0.956 & 0.643 \\
+& Mean & 1.514 & 0.173 & 0.151 \\
 \midrule
-\multirow{2}{*}{\parbox{2.2cm}{2$\times$2 Colorset w/ Reflector}} & Max & 10.870 & 3.285 & -1.697 \\
-& Mean & 3.642 & 0.662 & 0.298 \\
+\multirow{2}{*}{\parbox{2.2cm}{2$\times$2 Colorset w/ Reflector}} & Max & 10.373 & 2.981 & -1.893 \\
+& Mean & 3.501 & 0.636 & 0.280 \\
 \midrule
-\multirow{2}{*}{\parbox{2.2cm}{BEAVRS Quarter Core}} & Max & & & \\
-& Mean & & & \\
+\multirow{2}{*}{\parbox{2.2cm}{BEAVRS Quarter Core}} & Max & -85.623 & -35.604 & -7.765 \\
+& Mean & 39.911 & 11.013 & 1.375 \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -934,13 +1048,46 @@ BEAVRS Full Core & & & \\
 
 \clearpage
 
-%\begin{figure}[h!]
-%\centering
-%\includegraphics[width=\linewidth]{figures/patterns/lns/full-core/capt-err}
-%\vspace{2mm}
-%\caption[U-238 capture rate errors for the 2D quarter core \ac{BEAVRS} model]{U-238 capture percent relative errors rate errors for the 2D quarter core \ac{BEAVRS} model corresponding to the reference in Fig.~\ref{fig:chap7-capt-rates-full-core}.}
-%\label{fig:chap8-full-core-capt-err}
-%\end{figure}
+\begin{figure}[h!]
+\centering
+\begin{subfigure}{.5\textwidth}
+  \centering
+  \includegraphics[width=0.9\linewidth]{figures/patterns/lns/full-core/capt-err-null}
+  \caption{}
+  \label{fig:chap9-full-core-null}
+\end{subfigure}%
+\begin{subfigure}{.5\textwidth}
+  \centering
+  \includegraphics[width=0.9\linewidth]{figures/patterns/lns/full-core/capt-err-null-magnitude}
+  \caption{}
+  \label{fig:chap9-full-core-null-magnitude}
+\end{subfigure}
+\begin{subfigure}{.5\textwidth}
+  \centering
+  \includegraphics[width=0.9\linewidth]{figures/patterns/lns/full-core/capt-err-lns}
+  \caption{}
+  \label{fig:chap9-full-core-lns}
+\end{subfigure}%
+\begin{subfigure}{.5\textwidth}
+  \centering
+  \includegraphics[width=0.9\linewidth]{figures/patterns/lns/full-core/capt-err-lns-magnitude}
+  \caption{}
+  \label{fig:chap9-full-core-lns-magnitude}
+\end{subfigure}
+%\begin{subfigure}{.5\textwidth}
+%  \centering
+%  \includegraphics[width=0.9\linewidth]{figures/patterns/lns/full-core/capt-err-degenerate}
+%  \caption{}
+%  \label{fig:chap7-pin-1.6}
+%\end{subfigure}%
+%\begin{subfigure}{.5\textwidth}
+%  \centering
+%  \includegraphics[width=0.9\linewidth]{figures/patterns/lns/full-core/capt-err-degenerate-magnitude}
+%  \caption{}
+%  \label{fig:chap7-pin-crgt}
+%\end{subfigure}
+\caption[U-238 capture rate errors for the \ac{BEAVRS} quarter core model]{U-238 capture percent relative errors rate errors for the \ac{BEAVRS} quarter core model with \ac{LNS} spatial homogenization.}\label{fig:chap9-full-core-lns-capt-err}
+\end{figure}
 
 \clearpage
 
@@ -948,6 +1095,34 @@ BEAVRS Full Core & & & \\
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{MGXS Convergence Rate Analysis}
 \label{sec:chap9-convergence}
+
+first paragraph: 
+-Fig.~\ref{fig:chap9-converge}
+  -batch-wise percentage change for \ac{MGXS} with null, degenerate and \ac{LNS} spatial homogenization
+  -explain what ``batch-wise change'' means
+-\ac{MGXS} for null changes the least from batch to batch
+  -track density in each tally volume (in this case, all pins taken together) is greatest
+-\ac{MGXS} for degenerate changes the most from batch to batch
+  -track density in each tally volume (in this case, each unique fuel pin instance) is least
+-\ac{MGXS} for \ac{LNS} changes less than degenerate but more than null
+  -track density is in between since \ac{MGXS} are averaged across groups of like fuel pin instance
+
+second paragraph: key takeaways
+-convergence rate (slope) is same for all schemes
+-averaging across pins shifts convergence curves to right
+-the size/magnitude of the leftward shift depends on the number of pins being averaged across
+-hence, the more pins we can average across, the faster we can compute \ac{MGXS} with \ac{MC}
+
+third paragraph: segue into next chapter
+-goal should be to best identify groups of pins with like \ac{MGXS}
+-\ac{LNS} was used as one scheme
+  -demonstrated promise for simple benchmarks
+  -illustrated shortcomings for benchmarks with complicated heterogeneties
+    -assembly-assembly and assembly-reflector interfaces
+  -algorithm could be tweaked to pick up on these effects
+    -customizations highly reactor dependent - NOT reactor agnostic
+-would be nice to identify adequate pin groupings directly from structural patterns in the \ac{MGXS} data
+-will do this in the following chapter
 
 \begin{figure}[h!]
 \centering
