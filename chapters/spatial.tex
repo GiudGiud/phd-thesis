@@ -1,30 +1,14 @@
 \chapter{Structural Patterns in Pin-Wise MGXS}
 \label{chap:spatial}
 
-first paragraph: segue from preceding chapter
--previous chapter showed the benefit of using degenerate homogenization to best predict reaction rates sensitive to spatial self-shielding, most notably U-238 capture
--also highlighted issues of degenerate homognenization
-  -large number of materials / large \ac{MGXS} datasets for deterministic multi-group codes
-  -slow \ac{MC} convergence rate of \ac{MGXS} - low track density
--previous chapter noted that the error spatial distributions had structure - e.g., pins with similar neighbors generally had similar errors
-  -this is an opportunity!!!
+The preceding chapter quantified the benefit of using degenerate spatial homogenization to best predict the spatial distribution of reaction rates -- most notably, pin-wise U-238 capture rates -- with high-fidelity multi-group transport methods. However, it was also noted that the degenerate scheme requires far more Monte Carlo particle histories to converge \ac{MGXS} tallies than are necessary for the simpler null or infinite schemes. In addition, orders of magnitude more memory is needed to store \ac{MGXS} libraries produced from degenerate homogenization. This observations motivate the need for a more sophisticated approach to pin-wise spatial homogenization which can simultaneously achieve nearly the accuracy of degenerate homogenization and the convergence rate of null homogenization.
 
-second paragraph: chapter objectives
--state chapter objectives:
-  -analyze \ac{MGXS} data to identify structure -- namely, clustering -- of \ac{MGXS}
-  -apply deterministic clustering technique for spatial homogenization
-    -based on OpenCG \ac{LNS} algorithm - akin to a ``geometric template''
-  -analyze the impact of \ac{LNS} homogenization with respect to the null and degenerate approaches from the last Chapter
-  -motivate the need for a more flexible unsupervised approach
+This chapter seeks to accomplish this by leveraging the finding from Chap.~\ref{chap:quantify} that pins with similar neighboring heterogeneities generally have similar reaction rate errors. For example, null homogenization led to a structured spatial distribution of errors with systematically similar errors in pins facially adjacent to one or two \acp{CRGT}, \acp{BP}, along assemby-assembly or assembly-reflector interfaces, and so on. Since degenerate homogenization largely erased this structural error distribution, it follows that pins with similar errors likely experience similar spatial self-shielding effects due to neighboring heterogeneities. As a result, this and the following chapters develop the hypothesis that \textbf{pins with similar neighboring heterogeneities have similar microscopic \ac{MGXS}}. If pins with similar microscopic \ac{MGXS} can be identified, the \ac{MGXS} tallied in these pin instances may be \textit{averaged} to compute an estimate which is nearly as accurate as the \ac{MGXS} from degenerate homogenization, and nearly as converged as the \ac{MGXS} from null homogenization. 
 
-third paragraph: outline
--Sec.~\ref{sec:chap9-clustering} presents visualizations of clustering patterns in \ac{MGXS}
-  -includes histograms in Sec.~\ref{subsec:chap9-histograms} and quantile-quantile plots in Sec.~\ref{subsec:chap9-qq-plots}
-  -Sec.~\ref{subsec:chap9-clustering} shows the population variance for pin-wise \ac{MGXS}
--Sec.~\ref{sec:chap9-lns-homogenize} introduces \ac{LNS} spatial homogenization scheme
--Sec.~\ref{sec:chap9-lns-results} presents eigenvalues, fission rates and U-238 capture rates with \ac{LNS} spatial homogenization
--Sec.~\ref{sec:chap9-convergence} highlights the convergence rate of \ac{MGXS} computed using null, degenerate and \ac{LNS} spatial homogenization
--this chapter informs/motivates the need for an unsupervised approach to pin-wise spatial homogenization as discussed in the following chapter
+This chapter investigates this hypothesis by analyzing the pin-wise \ac{MGXS} tallied with OpenMC to identify structural patterns -- namely, clustering -- for pins with similar neighbors. Furthermore, this chapter develops and quantifies a new spatial homogenization technique which analyzes a core geometry to predict which fuel pin instances have similar microscopic \ac{MGXS} due to neighboring heterogeneities. This technique applies OpenCG's Local Neighbor Symmetry algorithm to generate a ``geometric template'' of fuel pins and averages the \ac{MGXS} for pins across a core geometry with the same \ac{LNS} identifiers. The impact of using \ac{LNS} homogenization is compared to the null and degenerate schemes with respect to both general predictive accuracy as well as convergence rate. The results presented for \ac{LNS} homogenization underscore the promise for an approach which combines the benefits of the null and degenerate schemes. However, the results also highlight some notable shortcomings to \ac{LNS} which motivates the need for an unsupervised approach to \ac{MGXS} clustering, as developed in the following chapter.
+
+This chapter begins by analyzing structural patterns in visualizations of pin-wise \ac{MGXS} in Sec.~\ref{sec:chap9-clustering}. This includes a case study of the population variance of pin-wise \ac{MGXS} in Sec.~\ref{subsec:chap9-pop-var}, and an analysis of the distributions of U-235 fission and U-238 capture \ac{MGXS} for each of the six heterogeneous benchmarks with histograms and quantile-quantile plots in Secs.~\ref{subsec:chap9-histograms} and ~\ref{subsec:chap9-qq-plots}, respectively. A new spatial homogenization scheme based upon OpenCG's \ac{LNS} algorithm is introduced in Sec.~\ref{sec:chap9-lns-homogenize}. The OpenMOC eigenvalues and pin-wise fission and U-238 capture rates with \ac{LNS} spatial homogenization are presented in Sec.~\ref{subsec:chap9-lns-results}. Finally, the convergence rate for \ac{MGXS} generated with the null, degenerate and \ac{LNS} schemes are compared in Sec.~\ref{sec:chap9-convergence}.
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Clustering of Pin-Wise MGXS}
