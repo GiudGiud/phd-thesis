@@ -216,8 +216,6 @@ third paragraph: analyze trends
 SUMMARY BOX
 
 -think about shifts in \ac{MGXS} in terms of percentages
--add ``Assm.'' to titles of plots for individual fuel assemblies
--add group 1/2 to captions
 
 \begin{figure}[h!]
 \centering
@@ -249,7 +247,7 @@ SUMMARY BOX
   \includegraphics[width=\linewidth]{figures/patterns/full-core/hist-kde-rug/16-enr-capt-1} \caption{}
   \label{fig:chap9-hist-full-core-1.6-capt}
 \end{subfigure}
-\caption[Histogram of U-238 capture MGXS for 1.6\% enriched fuel]{Histograms of U-238 capture \ac{MGXS} for 1.6\% enriched fuel.}
+\caption[Histogram of U-238 capture MGXS for 1.6\% enriched fuel]{Histograms of U-238 capture \ac{MGXS} (group 1 of 2) for 1.6\% enriched fuel.}
 \label{fig:chap9-hist-1.6-capt}
 \end{figure}
 
@@ -289,7 +287,7 @@ SUMMARY BOX
   \includegraphics[width=\linewidth]{figures/patterns/full-core/hist-kde-rug/31-enr-capt-1} \caption{}
   \label{fig:chap9-hist-full-core-3.1-capt}
 \end{subfigure}
-\caption[Histogram of U-238 capture MGXS for 3.1\% enriched fuel]{Histograms of U-238 capture \ac{MGXS} for 3.1\% enriched fuel.}
+\caption[Histogram of U-238 capture MGXS for 3.1\% enriched fuel]{Histograms of U-238 capture \ac{MGXS} (group 2 of 2) for 3.1\% enriched fuel.}
 \label{fig:chap9-hist-3.1-capt}
 \end{figure}
 
@@ -374,8 +372,6 @@ third paragraph: analyze trends
 SUMMARY BOX
 
 -think about shifts in \ac{MGXS} in terms of percentages
--add ``Assm.'' to titles of plots for individual fuel assemblies
--add group 2/2 to captions
 
 \begin{figure}[h!]
 \centering
@@ -407,7 +403,7 @@ SUMMARY BOX
   \includegraphics[width=\linewidth]{figures/patterns/full-core/hist-kde-rug/16-enr-fiss-2} \caption{}
   \label{fig:chap9-hist-full-core-1.6-fiss}
 \end{subfigure}
-\caption[Histogram of U-235 fission MGXS for 1.6\% enriched fuel]{Histograms of U-235 fission \ac{MGXS} for 1.6\% enriched fuel.}
+\caption[Histogram of U-235 fission MGXS for 1.6\% enriched fuel]{Histograms of U-235 fission \ac{MGXS} (group 1 of 2) for 1.6\% enriched fuel.}
 \label{fig:chap9-hist-1.6-fiss}
 \end{figure}
 
@@ -447,7 +443,7 @@ SUMMARY BOX
   \includegraphics[width=\linewidth]{figures/patterns/full-core/hist-kde-rug/31-enr-fiss-2} \caption{}
   \label{fig:chap9-hist-full-core-3.1-fiss}
 \end{subfigure}
-\caption[Histogram of U-235 fission MGXS 3.1\% enriched fuel]{Histograms of U-235 fission \ac{MGXS} for 3.1\% enriched fuel.}
+\caption[Histogram of U-235 fission MGXS 3.1\% enriched fuel]{Histograms of U-235 fission \ac{MGXS} (group 2 of 2) for 3.1\% enriched fuel.}
 \label{fig:chap9-hist-3.1-fiss}
 \end{figure}
 
@@ -935,7 +931,7 @@ first paragraph:
   -except for reflector and full core
 
 second paragraph: spatial distributions
--Figs.~\Crefrange{fig:chap9-assm-1.6-lns-capt-err}{fig:chap9-reflector-lns-capt-err}
+-Figs.~\Crefrange{fig:chap9-assm-1.6-lns-capt-err}{fig:chap9-full-core-capt-err-degenerate}
   -U-238 capture rate error distributions with respect to OpenMC reference results
   -akin to Figs.~\Crefrange{fig:chap8-assm-1.6-capt-err}{fig:chap8-full-core-capt-err}
   -compare null, \ac{LNS} and degenerate homogenization for 8 and 70 groups
@@ -1050,30 +1046,58 @@ third paragraph: observations with reflector?? w/ 70 groups
 
 \begin{figure}[h!]
 \centering
-\begin{subfigure}{.5\textwidth}
-  \centering
-  \includegraphics[width=0.9\linewidth]{figures/patterns/lns/full-core/capt-err-null}
-  \caption{}
-  \label{fig:chap9-full-core-null}
-\end{subfigure}%
-\begin{subfigure}{.5\textwidth}
-  \centering
-  \includegraphics[width=0.9\linewidth]{figures/patterns/lns/full-core/capt-err-null-magnitude}
-  \caption{}
-  \label{fig:chap9-full-core-null-magnitude}
-\end{subfigure}
-\begin{subfigure}{.5\textwidth}
-  \centering
-  \includegraphics[width=0.9\linewidth]{figures/patterns/lns/full-core/capt-err-lns}
-  \caption{}
-  \label{fig:chap9-full-core-lns}
-\end{subfigure}%
-\begin{subfigure}{.5\textwidth}
-  \centering
-  \includegraphics[width=0.9\linewidth]{figures/patterns/lns/full-core/capt-err-lns-magnitude}
-  \caption{}
-  \label{fig:chap9-full-core-lns-magnitude}
-\end{subfigure}
+\includegraphics[width=\linewidth]{figures/patterns/lns/full-core/capt-err-null}
+\vspace{2mm}
+\caption[U-238 capture rate errors for \ac{BEAVRS} with null homogenization]{U-238 capture rate absolute errors for the 2D quarter core \ac{BEAVRS} model with null spatial homogenization.}
+\label{fig:chap9-full-core-capt-err-null}
+\end{figure}
+
+\clearpage
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=\linewidth]{figures/patterns/lns/full-core/capt-err-lns}
+\vspace{2mm}
+\caption[U-238 capture rate absolute errors for \ac{BEAVRS} with LNS homogenization]{U-238 capture rate absolute errors for the 2D quarter core \ac{BEAVRS} model with \ac{LNS} spatial homogenization.}
+\label{fig:chap9-full-core-capt-err-lns}
+\end{figure}
+
+\clearpage
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=\linewidth]{figures/patterns/lns/full-core/capt-err-degenerate}
+\vspace{2mm}
+\caption[U-238 capture rate absolute errors for \ac{BEAVRS} with degenerate homogenization]{U-238 capture rate absolute errors for the 2D quarter core \ac{BEAVRS} model with degenerate spatial homogenization.}
+\label{fig:chap9-full-core-capt-err-degenerate}
+\end{figure}
+
+%\begin{figure}[h!]
+%\centering
+%\begin{subfigure}{.5\textwidth}
+%  \centering
+%  \includegraphics[width=0.9\linewidth]{figures/patterns/lns/full-core/capt-err-null}
+%  \caption{}
+%  \label{fig:chap9-full-core-null}
+%\end{subfigure}%
+%\begin{subfigure}{.5\textwidth}
+%  \centering
+%  \includegraphics[width=0.9\linewidth]{figures/patterns/lns/full-core/capt-err-null-magnitude}
+%  \caption{}
+%  \label{fig:chap9-full-core-null-magnitude}
+%\end{subfigure}
+%\begin{subfigure}{.5\textwidth}
+%  \centering
+%  \includegraphics[width=0.9\linewidth]{figures/patterns/lns/full-core/capt-err-lns}
+%  \caption{}
+%  \label{fig:chap9-full-core-lns}
+%\end{subfigure}%
+%\begin{subfigure}{.5\textwidth}
+%  \centering
+%  \includegraphics[width=0.9\linewidth]{figures/patterns/lns/full-core/capt-err-lns-magnitude}
+%  \caption{}
+%  \label{fig:chap9-full-core-lns-magnitude}
+%\end{subfigure}
 %\begin{subfigure}{.5\textwidth}
 %  \centering
 %  \includegraphics[width=0.9\linewidth]{figures/patterns/lns/full-core/capt-err-degenerate}
@@ -1086,10 +1110,10 @@ third paragraph: observations with reflector?? w/ 70 groups
 %  \caption{}
 %  \label{fig:chap7-pin-crgt}
 %\end{subfigure}
-\caption[U-238 capture rate errors for the \ac{BEAVRS} quarter core model]{U-238 capture percent relative errors rate errors for the \ac{BEAVRS} quarter core model with \ac{LNS} spatial homogenization.}\label{fig:chap9-full-core-lns-capt-err}
-\end{figure}
+%\caption[U-238 capture rate errors for the \ac{BEAVRS} quarter core model]{U-238 capture percent relative errors rate errors for the \ac{BEAVRS} quarter core model with \ac{LNS} spatial homogenization.}\label{fig:chap9-full-core-lns-capt-err}
+%\end{figure}
 
-\clearpage
+%\clearpage
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
