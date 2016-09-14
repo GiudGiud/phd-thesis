@@ -14,30 +14,16 @@ This chapter begins by analyzing structural patterns in visualizations of pin-wi
 \section{Clustering of Pin-Wise MGXS}
 \label{sec:chap9-clustering}
 
-first paragraph: postulate existence of clusters
--use infinite lattice example as ``thought experiment''
-  -the \ac{MGXS} estimates for each pin from \ac{MC} tallies for an inf. lattice will be samples from a normal distribution
--spatial self-shielding experienced by different fuel pins induces clustering in pin-wise MGXS
-  -i.e., differential moderation from \acp{CRGT} perturbs/softens flux in nearby pins
-  -this affects the \ac{MGXS} in certain energy groups for certain nuclides
--explain why clustering only occurs for micro xs rather than macro
-  -only way to compare differential impact of self-shielding on different pins is with micros
-  -the macros will necessarily ``cluster'' according to nuclide density
-  
-second paragraph: intro to visualizations
--can be informative to illustrate \ac{MGXS} clusters with an exploration of the data through visualizations
--introduce infinite lattice geometries w/o \acp{CRGT} and w/o \acp{BP}
--section looks at different types of visualizations to understand
--note that although we identified U-238 capture \ac{MGXS} as being more impacted by pin-wise spatial homogenization in the last chapter, we present visualizations of U-235 fission here
-  -other reaction rates may also be used to identify clustering in \ac{MGXS}
-  -even if the clusters in those \ac{MGXS} don't make as much of an impact for their respective reaction types (e.g., fission vs. capture)
+This section investigates the clustering of pin-wise \ac{MGXS} due to spatial self-shielding effects induced by neighboring heterogeneities. As a thought experiment, consider the pin-wise \ac{MGXS} in an infinite lattice\footnote{An infinitely repeating lattice of identical fuel pins.}. Although the pin-wise \ac{MGXS} in such a uniform geometry are identical, due to the stochastic nature of \ac{MC}, the population of pin-wise \ac{MGXS} estimates from \ac{MC} will have a non-zero variance and will represent random variates drawn from a normal distribution. When heterogeneities such as \acp{CRGT} and \acp{BP} are introduced into the geometry, they will induce local spatial self-shielding effects on nearby pins. As a result, the population of pin-wise \ac{MGXS} will no longer be drawn from a simple normal distribution, but rather some mixture of potentially more complicated distributions. As shown in this section, such deviations may be observed from the population of pin-wise microscopic \acp{MGXS} tallied with \ac{MC}.
 
-third paragraph: outline
--Sec.~\ref{subsec:chap9-pop-var} - population variance of \ac{MGXS} in each benchmark
--Sec.~\ref{subsec:chap9-histograms} - histograms plots of pin-wise \ac{MGXS}
-  -for both U-238 capture and U-235 fission
-  -although 
--Sec.~\ref{subsec:chap9-qq-plots} - quantile-quantile plots of pin-wise \ac{MGXS}
+It is important to note that self-shielding effects induce clustering of \textit{microscopic} rather than macroscopic \ac{MGXS}. The pin-wise macroscopic \ac{MGXS} cluster (or disperse) due to the different densities of nuclides in each fuel pin and give no indication of the similarity of the spectra experienced by each fuel pin. Since all of the benchmarks in this thesis use an isotopic vector for fresh \ac{PWR} fuel, the clustering effects investigated here are necessarily the same for both micro and macro \ac{MGXS}. However, the spatial homogenization methods developed in this thesis are intended to be used for more general applications with fuels of various burnups. Hence this section analyzes the microscopic \ac{MGXS} since this is most appropriate for general purpose \ac{MGXS} generation.
+
+%-spatial self-shielding experienced by different fuel pins induces clustering in pin-wise MGXS
+%  -i.e., differential moderation from \acp{CRGT} perturbs/softens flux in nearby pins
+%  -this affects the \ac{MGXS} in certain energy groups for certain nuclides
+
+This section quantifies and visualizes the impact of heterogeneities on pin-wise \ac{MGXS}. Sec.~\ref{subsec:chap9-pop-var} begins by investigating the population variance of \ac{MGXS} for each of the heterogeneous benchmarks and compares it to data for an infinite lattice. Secs.~\ref{subsec:chap9-histograms} and~\ref{subsec:chap9-qq-plots} analyze histograms and quantile-quantile plots of the distribution of pin-wise \ac{MGXS} for each of the benchmarks, respectively. Although the preceding chapter identified U-238 capture rates as being more sensitive to the pin-wise spatial homogenization model than the fission rates, this section explores both U-238 capture and U-235 fission \ac{MGXS} data. As observed in the following chapters, the clustering of one nuclide or reaction type's \ac{MGXS} may not have a sizable impact on the corresponding reaction rate distribution (\textit{e.g.}, fission), but may still reflect spatial self-shielding effects which can be modeled to better predict other reaction rate distributions (\textit{e.g.}, U-238 capture).
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Pin-Wise MGXS Population Variance}
@@ -87,7 +73,7 @@ second paragraph: identify trends
 
 \begin{table}[h!]
   \centering
-  \caption[Population variance for pin-wise MGXS]{The population variance for pin-wise fission and U-238 capture \ac{MGXS}.}
+  \caption[Population variance for pin-wise MGXS]{The population variance for pin-wise U-235 fission and U-238 capture \ac{MGXS}.}
   \small
   \label{table:chap9-pop-var-mgxs}
   \vspace{6pt}
