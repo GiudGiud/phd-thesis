@@ -76,6 +76,15 @@ This section expounds upon the preceding quantitative analysis of the dipsersive
 
 The pin-wise microscopic U-238 capture \ac{MGXS} for 1.6\% and 3.1\% enriched fuel pins are illustrated with histograms and rug plots in Fig.~\ref{fig:chap9-hist-1.6-capt} and~\ref{fig:chap9-hist-3.1-capt}, respectively. Each of the plots corresponds to an infinite lattice configuration or one of the six heterogeneous benchmarks. The trends observed in the plots can be attributed to the presence of \acp{CRGT}, \acp{BP}, assembly-assembly and/or assembly-reflector interfaces or fuel enrichment. 
 
+As expected based on the population variances, the empirical distributions of pin-wise \ac{MGXS} for the infinite lattices are narrow and symmetric unlike the distributions for each of the heterogeneous benchmarks. The introduction of \acp{CRGT} to the individual fuel assemblies induces four clearly discernible clusters of \ac{MGXS} which are separated by approximately 0.01 -- 0.015 barns (or 1 -- 2\%) for both fuel enrichments. There may be further sub-clusters as evidenced by the dispersion of the rug plot ticks between the two lowest-lying clusters. These clusters are attributed to the softening of the flux due to differential moderation from neighboring \acp{CRGT} in increasing order for the following four groupings of fuel pins:
+
+\begin{itemize}[noitemsep, itemsep=-0.75em]
+  \item Pins not adjacent to a \ac{CRGT}
+  \item Pins corner adjacent to a \ac{CRGT}
+  \item Pins facially adjacent to a \ac{CRGT}
+  \item Pins facially and corner adjacent to separate \ac{CRGT}
+\end{itemize}
+
 \begin{figure}[h!]
 \centering
 \begin{subfigure}{0.5\textwidth}
@@ -150,57 +159,29 @@ The pin-wise microscopic U-238 capture \ac{MGXS} for 1.6\% and 3.1\% enriched fu
 \label{fig:chap9-hist-3.1-capt}
 \end{figure}
 
-First, the microscopic U-238 capture \ac{MGXS} are generally 0.01 -- 0.02 barns (or 1.25 -- 2.5\%) larger for the 1.6\% than the 3.1\% enriched fuel pins for each respective benchmark, including the infinite lattice. This is counter-intuitive to what one might expect -- namely, that the removal of neutrons in U-238 capture resonances would shield the flux in energy intervals where the U-238 capture cross section is greatest, reducing the flux-weighted energy-integrated \ac{MGXS}. However, these results indicate that the flux is less shielded at resonance energies for the lesser enriched fuel, perhaps due to a slightly larger fraction of neutrons up-scattering from group two to one due to the smaller probability of fission. This variation of U-238 capture \ac{MGXS} with fuel enrichment remains true even for the quarter core \ac{BEAVRS} model. However, the single largest U-238 capture \ac{MGXS} is in a 3.1\% enriched fuel pin corner adjacent to the baffle, which likely has the softest spectrum of any pin due to the nearby reflector.
+\noindent The further addition of \acp{BP} to the 3.1\% enriched fuel assembly ``smears'' or disperses the four clusters of U-238 capture \ac{MGXS}. In addition, the \ac{MGXS} are generally shifted downwards by $\sim$0.005 barns (or $\sim$0.5\%) with respect to the assembly without \acp{BP}.
+
+The inter-assembly interfaces in the 2$\times$2 colorset benchmark results in a further ``smearing'' of the clusters for both enrichments. It should be noted that there are twice as many samples (\textit{e.g.}, 528 fuel pin instances for each enrichment) in the colorsets than the individual fuel assemblies. Hence, it is more challenging to distinguish clusters from the rug plots for the larger colorset benchmarks. Nonetheless, the histograms indicate the continuing presence of four distinct clusters for both enrichments, though they are easier to identify for the 1.6\% enriched fuel pins (in assemblies without \acp{BP}). The \ac{MGXS} are generally shifted higher by $\sim$0.01 barns for the 1.6\% enriched pins, and down by $\sim$0.0075 barns for the 3.1\% enriched pins, with respect to the individual fuel assemblies.
+
+The introduction of a reflector to the 2$\times$2 colorset leads to very different empirical distributions for the two fuel enrichments. The reason for this is that symmetry is broken with the inclusion of the reflector. In particular, both of the 3.1\% enriched assemblies are symmetrically adjacent to the reflector, and therefore have identical pin-wise \ac{MGXS}. However, one of the 1.6\% enriched assemblies is corner adjacent to the reflector while the other is located within the interior of the colorset. Nevertheless, some general observations can be made from the data. First, the \ac{MGXS} are generally even more ``smeared'' for both enrichments than is the case for the colorset without a reflector. The histogram indicates the existence of at least three clusters for the 1.6\% enriched pins, with a similar but less concentrated three-way clustering for the 3.1\% enriched pins. Finally, the lowest pin-wise \ac{MGXS} for both enrichments are $\sim$0.025 barns (or $\sim$3\%) less than those in the colorset without a reflector. This may be due to a harder spectrum in fuel pins along the left and top boundaries which have periodic \acp{BC} in the colorset without a reflector, but reflective \acp{BC} for the reflected benchmark.
+
+%-trends w/ reflector
+%  -pins with smallest \ac{MGXS} shifted down by $\sim$0.025 barns
+%  -perhaps the uncertainties are just larger for the reflector and those pins are outliers??
+
+The quarter core \ac{BEAVRS} model has the smoothest varying empirical distributions of any of the benchmarks. This is due in part to the fact that there are over 8$\times$ more samples for each fuel enrichment than are present for the colorsets\footnote{There are 4,332 1.6\% enriched pins, 4,260 2.4\% enriched pins and 4,236 3.1\% enriched pins in the quarter core \ac{BEAVRS} model.}. The most notable observation is that the distributions appear to first order to be bimodal with large peaks centered at approximately 0.815 and 0.83 barns, and 0.785 and 0.805 barns, for the 1.6\% and 3.1\% enriched pins, respectively. The distribution for the 3.1\% enriched fuel pins has an additional smaller shoulder centered at 0.83 barns. Additionally, a few 3.1\% enriched pins have significantly greater \ac{MGXS} between 0.86 and 0.9 barns. This is likely due to the fact that the 3.1\% enriched assemblies surround the exterior of the core configuration. As a result, the flux is more strongly shielded in the U-238 resonance energies for 3.1\% enriched pins adjacent to the baffle/reflector than the 1.6\% enriched pins in the interior, resulting in some larger ``outlier'' pin-wise \ac{MGXS}.
+
+Finally, it should be noted that the microscopic U-238 capture \ac{MGXS} are generally 0.01 -- 0.02 barns (or 1.25 -- 2.5\%) larger for the 1.6\% than the 3.1\% enriched fuel pins for each respective benchmark, including the infinite lattice. These results indicate that the flux is less shielded at resonance energies for the lesser enriched fuel, perhaps due to a slightly larger fraction of neutrons up-scattering from group two to one due to the smaller probability of fission. This variation of U-238 capture \ac{MGXS} with fuel enrichment remains true even for the quarter core \ac{BEAVRS} model. However, the single largest U-238 capture \ac{MGXS} is in a 3.1\% enriched fuel pin corner adjacent to the baffle, which likely has the softest spectrum of any pin due to the nearby reflector.
+
+%This is counter-intuitive to what one might expect -- namely, that the removal of neutrons in U-238 capture resonances would shield the flux in energy intervals where the U-238 capture cross section is greatest, reducing the flux-weighted energy-integrated \ac{MGXS}. However, 
 
 %This may be due to a more strongly peaked ``rim effect'' of U-238 capture along the pin-moderator interface in the 1.6\% enriched pins. As a result, the flux at the interior of the lesser enriched pins may be less shielded  at resonance energies, leading to a slightly larger 
 
 %This effect is likely due to the removal of neutrons in U-238 capture resonances as they traverse each fuel pin. As a result, the flux in those energy intervals where the U-238 capture cross section is greatest and hence reducing the flux-weighted energy-integrated \ac{MGXS}. Interestingly, this impact  
 
-As expected based on the population variances, the empirical distributions of pin-wise \ac{MGXS} for the infinite lattices are narrow and symmetric unlike the distributions for each of the heterogeneous benchmarks. The introduction of \acp{CRGT} to the individual fuel assemblies induces four clearly discernible clusters of \ac{MGXS} which are separated by approximately 0.01 -- 0.015 barns (or 1 -- 2\%) for both fuel enrichments. There may be further sub-clusters as evidenced by the dispersion of the rug plot ticks between the two lowest-lying clusters. These clusters are attributed to the softening of the flux due to differential moderation from neighboring \acp{CRGT} in increasing order for the following four groupings of fuel pins:
-
-\begin{itemize}[noitemsep]
-  \item Pins not adjacent to a \ac{CRGT}
-  \item Pins corner adjacent to a \ac{CRGT}
-  \item Pins facially adjacent to a \ac{CRGT}
-  \item Pins facially and corner adjacent to separate \ac{CRGT}
-\end{itemize}
-
-\noindent The further addition of \acp{BP} to the 3.1\% enriched fuel assembly ``smears'' or disperses the four clusters of U-238 capture \ac{MGXS}. In addition, the \ac{MGXS} are generally shifted downwards by $\sim$0.005 barns (or $\sim$0.5\%) with respect to the assembly without \acp{BP}.
-  
--trends w/ inter-assembly interface (2$\times$2 colorset w/o reflector)
-  -``smearing'' of clusters
-  -important to recognize that there are now 264 times 2 = 528 samples
-    -expect it to be more difficult to discern clusters from rug plot with more samples
-  -still seem to be four distinct clusters for 1.6\% enriched fuel pins
-    -largest cluster is $\sim$0.01 barn higher at 0.85 barns
-  -more difficult to discern clusters for 3.1\% enr. pins, but appears to be at least 3
-    -all \ac{MGXS} shifted down by $\sim$0.0075 barns 
-
--trends w/ reflector
-  -recall which assm is where in the configuration
-    -3.1\% w/ 20 \acp{BP} are adjacent to reflector
-    -1.6\% w/o \acp{BP} are on the interior and corner adjacent to reflector
-  -still 3 strong clusters for 1.6\% enr. pins
-    -more ``smeared'', especially on the low side where
-    -a few pins have \ac{MGXS} as low as $\sim$0.76 barns
-  -similar trends for the 3.1\% enr. pins
-    -pins with smallest \ac{MGXS} shifted down by $\sim$0.025 barns
-  
--trends with full core
-  -recall how many pins of each type are in the full core
-    -4236 3.1\% enriched
-    -4332 1.6\% enriched
-    -4260 2.4\% enriched
-  -1.6\% enr. seems to have two peaks at 0.815 and 0.83 barns
-  -3.1\% enr. seems to have two peaks at 0.785 and 0.805 barns
-    -with a much smaller shoulder centered 0.83 barns
-    -a few pins with much higher \ac{MGXS} b/w 0.86 and 0.9 barns
-  -\ac{MGXS} are not generally dispersed any more than they were for the colorsets
-  
-SUMMARY BOX
-
--think about shifts in \ac{MGXS} in terms of percentages
-
+\begin{emphbox}
+\textbf{The dispersion of pin-wise \ac{MGXS} is highly uneven and structured. Core heterogeneities such as \acp{CRGT}, \acp{BP} and reflectors induce clustering due to spatial self-shielding effects such as differential moderation, which are observed from empirical distributions of the pin-wise \ac{MGXS} tallied with \ac{MC}.}
+\end{emphbox}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{U-235 Fission MGXS}
