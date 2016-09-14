@@ -293,31 +293,7 @@ In this section, the theoretical quantiles for a normal distribution are plotted
 \subsubsection{U-238 Capture MGXS}
 \label{subsubsec:chap9-qq-plots-capt}
 
-first paragraph: intro U-238 capture \ac{MGXS} qq plots
--Fig.~\ref{fig:chap9-qq-1.6-capt} and ~\ref{fig:chap9-qq-3.1-capt}
-  -U-238 capture \ac{MGXS} for 1.6\% and 3.1\% enriched fuel pins
-  -in each of the heterogeneous benchmarks, respectively
--recall the inf. lattice case
-
--second paragraph:
-  -the qq plot shows that data for the inf. lattices very nearly normal (p-values well above 0.05, closer to 0.7)
-  -clear deviation from normality with addition of \acp{CRGT}
-  -structure is more challenging to understand for more complex benchmarks
-    -addition of \acp{BP} for 3.1\% enr. assembly makes clusters/shoulders ``sharper'' steps
-    -more data points (e.g., fuel pins) for each benchmark clouds the structure
-	  -generally with more data points the trends are ``smoother''
-	    -does NOT necessarily indicate better approx. to normality however!!
-	    -``slow'' and ``smooth'' trends can still deviate widely from that expected for normal samples, e.g., 3.1\% enr. full core pin
-  -p-value is very clearly smallest for the full core (1e-22 and 1e-39 for 1.6\% and 3.1\% enr fuel)
-
--mention that tails above and below on lower/upper range indicate that tails of distribution are not as wide as would be expected for normal samples -- e.g., a ``tighter'' or ``narrower'' distribution
--3.1\% enr pins in full core are tighter on bottom edge, but wider on upper edge
-  -indicative of those few ``outlier'' pins with \ac{MGXS} near 0.9 barns in Fig.~\ref{fig:chap9-hist-3.1-capt}
-  
-SUMMARY BOX
-
--add ``Assm.'' to titles of plots for individual fuel assemblies
--add group 1/2 to captions
+The pin-wise microscopic U-238 capture \ac{MGXS} for 1.6\% and 3.1\% enriched fuel pins are illustrated with histograms and rug plots in Fig.~\ref{fig:chap9-qq-1.6-capt} and~\ref{fig:chap9-qq-3.1-capt}, respectively. Each of the plots corresponds to an infinite lattice configuration or one of the six heterogeneous benchmarks. The trends observed in the plots can be attributed to the presence of \acp{CRGT}, \acp{BP}, assembly-assembly and/or assembly-reflector interfaces or fuel enrichment. 
 
 \begin{figure}[h!]
 \centering
@@ -349,7 +325,7 @@ SUMMARY BOX
   \includegraphics[width=\linewidth]{figures/patterns/full-core/quantile/16-enr-capt-1} \caption{}
   \label{fig:chap9-qq-full-core-1.6-capt}
 \end{subfigure}
-\caption[Q-Q plots of U-238 capture MGXS for 1.6\% enriched fuel]{Q-Q plots of U-238 capture \ac{MGXS} for 1.6\% enriched fuel.}
+\caption[Q-Q plots of U-238 capture MGXS for 1.6\% enriched fuel]{\ac{Q-Q} plots of U-238 capture \ac{MGXS} (group 1 of 2) for 1.6\% enriched fuel.}
 \label{fig:chap9-qq-1.6-capt}
 \end{figure}
 
@@ -389,9 +365,21 @@ SUMMARY BOX
   \includegraphics[width=\linewidth]{figures/patterns/full-core/quantile/31-enr-capt-1} \caption{}
   \label{fig:chap9-qq-full-core-3.1-capt}
 \end{subfigure}
-\caption[Q-Q plots of U-238 capture MGXS for 3.1\% enriched fuel]{Q-Q plots of U-238 capture \ac{MGXS} for 3.1\% enriched fuel.}
+\caption[Q-Q plots of U-238 capture MGXS for 3.1\% enriched fuel]{\ac{Q-Q} plots of U-238 capture \ac{MGXS} (group 1 of 2) for 3.1\% enriched fuel.}
 \label{fig:chap9-qq-3.1-capt}
 \end{figure}
+
+As was hypothesized earlier, the data for the infinite lattices in Figs.~\ref{fig:chap9-qq-assm-1.6-inf-capt} and~\ref{fig:chap9-qq-assm-3.1-inf-capt} appears to be from a normal distribution since it lies very close to the $y = x$ reference line. In addition, the $p$-values are greater than 0.7, well above commonly used significance levels, and thus one would not reject the null hypothesis that the data is from a normal distribution. The addition of \acp{CRGT} leads to a clear deviation from normality in Figs.~\ref{fig:chap9-qq-assm-1.6-capt} and~\ref{fig:chap9-qq-assm-3.1-capt}, with four ``shoulders'' representing the four clusters highlighted in Sec.~\ref{subsec:chap9-histograms} for these single assembly benchmarks. The presence of \acp{BP} seems to result in more shoulders in Fig.~\ref{fig:chap9-qq-assm-3.1-20BPs-capt} corresponding to the various clusters identified in Fig.~\ref{fig:chap9-hist-assm-3.1-20BPs-capt}. 
+
+At first glance, the larger number of data points (\textit{e.g.}, fuel pin instances) in the \ac{Q-Q} plots for the larger colorset and quarter core benchmarks appears to hide any underlying structure. Although the data points may appear to lie closer to the $y = x$ line for the larger benchmarks, this does not necessarily indicate that the data is more likely to have been drawn from a normal distribution. Indeed, smoothly varying deviations from $y = x$ exhibited in the larger datasets results in smaller $p$-values for the colorset and quarter core models. Of particular note, the smallest $p$-values on the order of 10$^{-22}$ and 10$^{-39}$ for the 1.6\% and 3.1\% enriched fuel pins, respectively, arise from the data for the \ac{BEAVRS} quarter core model. These results suggest that it is highly unlikely that the data arose from a normally distributed stochastic process.
+
+%-mention that tails above and below on lower/upper range indicate that tails of distribution are not as wide as would be expected for normal samples -- e.g., a ``tighter'' or ``narrower'' distribution
+%-3.1\% enr pins in full core are tighter on bottom edge, but wider on upper edge
+%  -indicative of those few ``outlier'' pins with \ac{MGXS} near 0.9 barns in Fig.~\ref{fig:chap9-hist-3.1-capt}
+
+\begin{emphbox}
+\textbf{The clustering of U-238 capture \ac{MGXS} manifests itself as ``shoulders'' in \ac{Q-Q} plots. The Shapiro-Wilks test rejects the null hypothesis that the \ac{MGXS} data is drawn from a normal distribution for all six heterogeneous benchmarks.}
+\end{emphbox}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{U-235 Fission MGXS}
