@@ -279,26 +279,15 @@ Finally, it should be noted that the microscopic U-235 fission \ac{MGXS} are gen
 \textbf{The presence of core heteorgeneities induce more clearly defined clustering of pin-wise U-235 fission \ac{MGXS} than is observed for U-238 capture (in 2-group data). However, the population of pin-wise U-235 fission \ac{MGXS} only disperse by 1 -- 2\%, while the U-238 capture \ac{MGXS} dispersion is $\sim$5\%.}
 \end{emphbox}
 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Quantile-Quantile Plots of Pin-Wise MGXS}
 \label{subsec:chap9-qq-plots}
 
-first paragraph: qq plots
--describe what a qq plot is
--construct plots for each benchmark
--construct plots of the U-238 capture (group 1/2) and U-235 fission (group 2/2) \ac{MGXS} in each pin
-  -the ``samples'' in the plots each correspond to a single fuel pin instance
-    -i.e., each blue data point represents a single fuel pin
--could clearly have looked at other reactions, groups, nuclides
-  -for brevity, selected just a few which largely govern reactor performance to present here
-  -could have selected data from more groups, but it is ``noisier''
-    -the trends are not as easy to identify as they are for 2-group data
+This section illustrates the deviation from normality of pin-wise \ac{MGXS} with \ac{Q-Q} plots. A \ac{Q-Q} plot is used to compare two datasets drawn from different probability distributions. In particular, the quantiles from one dataset are plotted against the quantiles of a second dataset in an $(x,y)$ scatter plot\footnote{A \textit{quantile} is the point at which some fraction of the data falls below a given value. For example, the 10\% quantile is the point at which 10\% of the data is below the point and 90\% is above it.}. If the two distributions are similar, the data points will lie along the $y = x$ reference line. Departures from $y = x$ indicate dis-similarities between the distributions, such as shifts in location or scale, changes in symmetry, and outliers. 
 
-second paragraph: normality tests
--explain what a p-value is
--reference shannon wilkes test or whatever in scipy
+\interfootnotelinepenalty=10000
 
+In this section, the theoretical quantiles for a normal distribution are plotted against empirical quantiles found from the empirical distribution of pin-wise U-238 capture and U-235 fission \ac{MGXS}. These \ac{Q-Q} plots illustrate the deviation from normality for the data as heterogeneities are introduced to the benchmark models. It should be noted that standardization is first applied to the \ac{MGXS} data so that it can be compared to theoretical quantiles from a standard normal distribution $\mathcal{N}(0,1)$ in the \ac{Q-Q} plots. The visualizations are presented for an infinite lattice as well as the six heterogeneous benchmarks for both 1.6\% and 3.1\% enriched fuel. The random samples in each visualization (\textit{e.g.}, each blue data point) correspond to a single fuel pin instance in the corresponding benchmark model. In addition, each plot highlights the $p$-value\footnote{The $p$-value is used in null hypothesis significance testing and measures the likelihood of an observation as or more extreme than the given one. In this section, the null hypothesis is that pin-wise \ac{MGXS} data is drawn from a normal distribution. To test this hypothesis, a significance level $\alpha$ is chosen (\textit{e.g.} 1\%) and compared with the $p$-value of the Shapiro-Wilk normality test. If $p < \alpha$ then the null hypothesis is rejected (\textit{i.e.}, the dataset was not drawn from a normal distribution); otherwise, it cannot be rejected.} for the Shapiro-Wilk test of normality~\cite{shapiro1965analysis} computed using the Python \texttt{scipy.stats} package~\cite{jones2011scipy}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{U-238 Capture MGXS}
