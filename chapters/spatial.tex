@@ -18,58 +18,13 @@ This section investigates the clustering of pin-wise \ac{MGXS} due to spatial se
 
 It is important to note that self-shielding effects induce clustering of \textit{microscopic} rather than macroscopic \ac{MGXS}. The pin-wise macroscopic \ac{MGXS} cluster (or disperse) due to the different densities of nuclides in each fuel pin and give no indication of the similarity of the spectra experienced by each fuel pin. Since all of the benchmarks in this thesis use an isotopic vector for fresh \ac{PWR} fuel, the clustering effects investigated here are necessarily the same for both micro and macro \ac{MGXS}. However, the spatial homogenization methods developed in this thesis are intended to be used for more general applications with fuels of various burnups. Hence this section analyzes the microscopic \ac{MGXS} since this is most appropriate for general purpose \ac{MGXS} generation.
 
-%-spatial self-shielding experienced by different fuel pins induces clustering in pin-wise MGXS
-%  -i.e., differential moderation from \acp{CRGT} perturbs/softens flux in nearby pins
-%  -this affects the \ac{MGXS} in certain energy groups for certain nuclides
-
 This section quantifies and visualizes the impact of heterogeneities on pin-wise \ac{MGXS}. Sec.~\ref{subsec:chap9-pop-var} begins by investigating the population variance of \ac{MGXS} for each of the heterogeneous benchmarks and compares it to data for an infinite lattice. Secs.~\ref{subsec:chap9-histograms} and~\ref{subsec:chap9-qq-plots} analyze histograms and quantile-quantile plots of the distribution of pin-wise \ac{MGXS} for each of the benchmarks, respectively. Although the preceding chapter identified U-238 capture rates as being more sensitive to the pin-wise spatial homogenization model than the fission rates, this section explores both U-238 capture and U-235 fission \ac{MGXS} data. As observed in the following chapters, the clustering of one nuclide or reaction type's \ac{MGXS} may not have a sizable impact on the corresponding reaction rate distribution (\textit{e.g.}, fission), but may still reflect spatial self-shielding effects which can be modeled to better predict other reaction rate distributions (\textit{e.g.}, U-238 capture).
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Pin-Wise MGXS Population Variance}
 \label{subsec:chap9-pop-var}
 
-first paragraph: heterogeneities induce a dispersion of pin-wise \ac{MGXS}
--hypothesize that 
-  -evidence from degenerate scheme in preceding chapter backs this up
--Tab.~\ref{table:chap9-pop-var-mgxs} shows the population variance of pin-wise \ac{MGXS}
-  -each sample in the population represents a single fuel pin
-    -used OpenMC distributed cell tallies
-  -for each benchmark, for both 1.6\% and 3.1\% enriched fuel pins
-  	-note that there are 2.4\% enriched fuel pins in the \ac{BEAVRS} quarter core model
-  -for group 1/2 U-238 capture \ac{MGXS}
-  -for group 2/2 U-235 fission \ac{MGXS}
-
-second paragraph: identify trends
--following sections seek to characterize structure in the dispersion of \ac{MGXS}
--inf lattice vs. not
-  -dispersion / variance is over two orders of magnitude larger with the presence of heterogeneities
-    -for same \ac{MC} track density and uncertainties for each pin's \ac{MGXS}
-    -for both fission and capture 
--by fission vs. capture rxns
--by GTs
-  -presence of GTS increases dispersion by two orders of magnitude
--by BPs
-  -adding BPs actually slightly reduces dispersion of both capture \ac{MGXS}
-  -increases dispersion by nearly 3$\times$ for fission \ac{MGXS}
--by enrichment
-  -dispersion is greater for 3.1\% enr. pins - esp. for fission - over 2$\times$ larger!! 
-    -e.g., 6.78 vs. 16.8 barns for 1.6\% and 3.1\% enr. pins in the \ac{BEAVRS} quarter core)
-    -fission \ac{MGXS} is more sensitive to self-shielding
-    -BUT fission rxn rates were not improved with degenerate homogenization
-      -perhaps fission is still useful to identify clusters to improve U-238 capture predictions
--inter-assembly
-  -increases capture dispersion by 10--20\%
-  -increases fission dispersion by 5$\times$ (wrt assms w/o BPs) 
--by reflector
-  -increases capture dispersion 5--15\%
-  -increases fission dispersion by 60\% and over 100\% for 1.6\% and 3.1\% enr. fuel 
--by BEAVRS
-  -dispersion decreases for BEAVRS wrt colorset w/ reflector by 1/2 -- 1/3 
-  -dispersion increases slightly for U-238 capture in 3.1\% enr. fuel
-
-%-plot the convergence of null MGXS by batch along with max for distribcell MGXS
-%-plot the pop. var. convergence of the distribcell MGXS and show that they don't go to zero
+The population variance of U-238 capture and U-235 fission pin-wise \ac{MGXS} for an infinite lattice and each of the heterogeneous benchmarks are presented in Tab.~\ref{table:chap9-pop-var-mgxs}. Each of the random samples in the variance calculation is the \ac{MGXS} in one fuel pin instance in the respective benchmark (using OpenMC distributed cell tallies). The table highlights the population variance for both 1.6\% and 3.1\% enriched fuel pins\footnote{Although the \ac{BEAVRS} model includes 2.4\% enriched fuel pins, they were not included in this analysis.}. The \ac{MGXS} data was computed in two energy groups. The U-238 capture \ac{MGXS} is analyzed for the first group since it encompasses the resonance region which is most sensitive to spatial self-shielding effects. The U-235 fission \ac{MGXS} is analyzed for the second group since it encompasses thermal energies which drives the majority of fission in \acp{LWR}.
 
 \begin{table}[h!]
   \centering
@@ -80,15 +35,15 @@ second paragraph: identify trends
   \begin{tabular}{C{2.5cm} l C{2.5cm} C{2.5cm}}
   \toprule
   \rowcolor{lightgray}
-  \multicolumn{1}{C{2.5cm}}{\textbf{Fuel Enrichment}} & \multicolumn{1}{c}{\textbf{Benchmark}} & \boldmath$\mathrm{Var}\left[\sigma_{c}^{U-238}\right]$ \textbf{[barns]} & \boldmath$\mathrm{Var}\left[\sigma_{f}\right]$ \textbf{[barns]} \\
+  \multicolumn{1}{C{2.5cm}}{\textbf{Fuel Enrichment}} & \multicolumn{1}{c}{\textbf{Benchmark}} & \boldmath$\mathrm{Var}\left[\sigma_{c,1}^{238}\right]$ \textbf{[barns]} & \boldmath$\mathrm{Var}\left[\sigma_{f,2}^{235}\right]$ \textbf{[barns]} \\
   \toprule
-\multirow{5}{*}{1.6\%} & Assm. (no \acp{CRGT}, no \acp{BP}) & 6.29E-07 & 5.06E--03 \\
+\multirow{5}{*}{1.6\%} & Infinite Lattice & 6.29E-07 & 5.06E--03 \\
 & Assm. (no \acp{BP}) & 1.61E-04 & 1.81E+00 \\
 & 2$\times$2 Colorset & 1.89E-04 & 1.18E+01 \\
 & 2$\times$2 Colorset w/ Reflector & 2.03E-04 & 1.93E+01 \\
 & \ac{BEAVRS} Quarter Core & 1.64E-04 & 6.78E+00 \\
 \midrule
-\multirow{6}{*}{3.1\%} & Assm. (no \acp{CRGT}, no \acp{BP}) & 5.83E-07 & 6.12E--03 \\
+\multirow{6}{*}{3.1\%} & Infinite Lattice & 5.83E-07 & 6.12E--03 \\
 & Assm. (no \acp{BP}) & 1.53E-04 & 4.22E+00 \\
 & Assm. (20 \acp{BP}) & 1.37E-04 & 1.11E+01 \\
 & 2$\times$2 Colorset & 1.53E-04 & 2.15E+01 \\
@@ -97,6 +52,17 @@ second paragraph: identify trends
 \bottomrule
 \end{tabular}
 \end{table}
+
+A number of key trends emerge from the population variance data which support the overarching premise of this chapter -- that spatial self-shielding effects from core heterogeneities induce clustering of pin-wise \ac{MGXS}. First, the variance is over two orders of magnitude larger for each of the six benchmarks as compared to an infinite lattice, clearly indicating that spatial self-shielding from local heterogeneities disperses pin-wise \ac{MGXS}. This dispersion is observed even for the individual fuel assemblies with only a mixture of fuel pins and \acp{CRGT}. The introduction of \acp{BP} slightly reduces the variance for U-238 capture, but increases the variance by nearly 3$\times$ for U-235 fission \ac{MGXS}. Inter-assembly effects in the 2$\times$2 colorset increase the dispersion of U-238 capture \ac{MGXS} by 10 -- 20\%, but dramatically increases the variance for the fission \ac{MGXS} by 5 -- 10$\times$ for the 1.6\% and 3.1\% enriched fuel pins, respectively. The introduction of a water reflector to the colorset further increases the dispersion by 5 -- 15\% and 65 -- 120\% for U-238 capture and U-235 fission in the 1.6\% and 3.1\% enriched pins, respectively. Interestingly, the population variances generally decrease by $\nicefrac{1}{3}$ -- $\nicefrac{1}{2}$ for the \ac{BEAVRS} quarter core with respect to the 2$\times$2 colorset with a reflector. This is likely due to the smaller ratio of fuel pins along the assembly-reflector interface -- which experience a dramatically softer flux spectrum than pins in the interior of the core -- to total number of pins for the \ac{BEAVRS} model.
+
+Lastly, the variance of the U-235 fission \ac{MGXS} is notably dependent on the enrichment. For example, the variance is more than 2$\times$ larger for the assembly with 3.1\% enriched fuel pins and \acp{CRGT} than the same assembly with 1.6\% enriched fuel. This trend remains true for the larger, more complicated benchmarks. This observation is interesting in light of the results in Chap.~\ref{chap:quantify} which demonstrated little improvement in the fission rate spatial distributions with degenerate homogenization. Notwithstanding, these results indicate that the sensitivity of U-235 fission \ac{MGXS} to spatial self-shielding as revealed through clustering may be leveraged to improve U-238 capture rate predictions. 
+
+%-plot the convergence of null MGXS by batch along with max for distribcell MGXS
+%-plot the pop. var. convergence of the distribcell MGXS and show that they don't go to zero
+
+\begin{emphbox}
+\textbf{Core heterogeneities such as \acp{CRGT}, \acp{BP} and reflectors increase the population variance of pin-wise \ac{MGXS} due to spatial self-shielding effects. The magnitude of the dispersion varies by nuclide and reaction type, and is generally larger for thermal U-235 fission than fast/epithermal U-238 capture \ac{MGXS}.}
+\end{emphbox}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Histograms of Pin-Wise MGXS}
