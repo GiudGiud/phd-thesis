@@ -480,32 +480,15 @@ As noted for the U-238 capture \ac{MGXS}, the $p$-values for the Shapiro-Wilks t
 
 The preceding sections quantified and visualized the dispersion and structural clustering of pin-wise \ac{MGXS} due to spatial self-shielding effects. The degenerate spatial homogenization scheme evaluated in Chap.~\ref{chap:quantify} is able to model the clustering of \ac{MGXS} by assigning a unique set of \ac{MGXS} to each fuel pin instance in a core geometry. However, the infinite and null schemes fail to account for \ac{MGXS} clustering since they each assign a single \ac{MGXS} to all instances of the same fuel pin type. As evidenced by the results in Chap.~\ref{chap:quantify}, it is important to adequately model clusters of pin-wise \ac{MGXS} in order to accurately predict U-238 capture rate spatial distributions. 
 
-This section introduces a new spatial homogenization scheme which use a deterministic  approach to cluster pin-wise \ac{MGXS} based on an analysis of the core geometry. The approach developed here is akin to geometric templates used by some commonly used lattice physics codes, such as CASMO~\cite{rhodes2006casmo}, to predict which groupings of pins which are likely to experience similar spatial self-shielding effects and hence have similar microscopic \ac{MGXS}. The new scheme is termed \textit{\ac{LNS} homogenization} since it is predicated upon OpenCG's Local Neighbor Symmetry (LNS) algorithm (see Sec.~\ref{sec:chap4-lns}). The \ac{LNS} algorithm analyzes the combinatorial geometry (CG) used to represent each benchmark model and groups pins together with based on neighboring spatial zones. The goal of \ac{LNS} homogenization is to achieve degenerate homogenization's predictive accuracy by representing \ac{MGXS} clustering, and approach null homogenization's tally convergence rate by averaging \ac{MGXS} across many pin instances.
+This section introduces a new spatial homogenization scheme which use a deterministic  approach to cluster pin-wise \ac{MGXS} based on an analysis of the core geometry. The approach developed here is akin to geometric templates employed by some commonly used lattice physics codes, such as CASMO~\cite{rhodes2006casmo}, to predict which groupings of pins are likely to experience similar spatial self-shielding effects and hence have similar microscopic \ac{MGXS}. The new scheme is termed \textit{\ac{LNS} homogenization} since it is predicated upon OpenCG's Local Neighbor Symmetry (LNS) algorithm (see Sec.~\ref{sec:chap4-lns}). The \ac{LNS} algorithm analyzes the combinatorial geometry (CG) used to represent each benchmark model and groups pins together based on their neighboring spatial zones. The goal of \ac{LNS} homogenization is to achieve degenerate homogenization's predictive accuracy by representing \ac{MGXS} clustering, and approach null homogenization's tally convergence rate by averaging \ac{MGXS} across many pin instances.
 
-%    -refer to last section of this chapter
+%%%%%%%%%%%%%%%%%%%%%
+\subsection{Overview}
+\label{sec:chap9-lns-overview}
 
-Like the degenerate scheme, \ac{LNS} homogenization generates \ac{MGXS} for each fuel pin instance using OpenMC's distributed cell tallies (see Sec.~\ref{subsec:chap4-distribcells}). The OpenCG \ac{LNS} algorithm assigns an integral \ac{LNS} identifier to each unique pin instance in the \ac{CG} based on an analysis of each pin's neighbors at each level of the \ac{CG} hierarchy. Pins with like neighboring pins, within assemblies with like neighboring assemblies, will receive the same \ac{LNS} identifier. The \ac{MGXS} are then \textit{averaged} across all pin instances with the same unique \ac{LNS} identifier. For example, all pins which are adjacent to a single \acp{CRGT} on one face are assigned the same \ac{MGXS} averaged across all OpenMC distributed cell tallies for those pin instances. The OpenCG region differentiation algorithm (see Sec.~\ref{sec:chap4-region-diff}) is used to build a new OpenMOC geometry with unique cells and materials for each fuel pin which mirrors the \ac{LNS} representation of the \ac{CG} model. Like the infinite, null and degenerate schemes, a single \ac{MC} calculation of the complete heterogeneous geometry is used to generate \ac{MGXS} for all materials.
+Like the degenerate spatial homogenization scheme (Sec.~\ref{subsec:chap8-degenerate}), a single \ac{MC} calculation of the complete heterogeneous geometry is used to generate \ac{MGXS} for all materials. The \ac{MGXS} are tallied separately for each instance of fissile material zones using OpenMC's distributed cell tallies (see Sec.~\ref{subsec:chap4-distribcells}). The OpenCG \ac{LNS} algorithm assigns an integral \ac{LNS} identifier to each unique pin instance in the \ac{CG} based on an analysis of each pin's neighbors at each level of the \ac{CG} hierarchy. Pins with like neighboring pins, within assemblies with like neighboring assemblies, will receive the same \ac{LNS} identifier\footnote{\ac{LNS} hashes a data structure representing a rotationally invariant form of each pin's neighbors.}. The \ac{MGXS} are averaged across all pin instances with the same unique \ac{LNS} identifier. For example, all pins adjacent to a single \ac{CRGT} on one face and fuel pins on all other faces are assigned the same \ac{MGXS} averaged across the OpenMC distributed cell tallies for all of those pin instances. The OpenCG region differentiation algorithm (see Sec.~\ref{sec:chap4-region-diff}) is used to build an OpenMOC geometry with unique cells and materials for each fuel pin which mirrors the \ac{LNS} representation of the \ac{CG} model. Like the infinite, null and degenerate schemes, spatial self-shielding effects experienced by different non-fissile spatial zones are averaged across the entire geometry for each non-fissile material.
 
-It is crucial to note that the average \ac{MGXS} are not simply the geometric average of the \ac{MGXS} in each pin instance. Instead, the total reaction rates and fluxes in each pin instance are summed together and then divided to compute an average \ac{MGXS} which is effectively weighted by the relative particle track density in each fuel pin instance. The track density-weighted average \ac{MGXS} preserve global reaction rates\\footnote{A simple geometric average of \ac{MGXS} across fuel pins will not preserve global reaction rates.} and is equivalent to defining specialized OpenMC ``cell'' reaction rate and flux tallies for each of the groups of pin instances with like \ac{LNS} identifiers. More formally, the track density-weighted average \ac{MGXS} may be expresssed as follows:
-
-second paragraph: describe \ac{LNS} spatial homogenization
-    -perhaps use an equation for this???
-
-third paragraph: point out materials for the six benchmarks
--Tab.~\ref{table:chap9-num-materials-lns} 
-  -number of materials for each of the six benchmarks with \ac{LNS} homogenization
--Fig.~\ref{fig:chap9-lns-materials}
-  -materials configurations for individual assembly and 2$\times$2 colorset benchmarks with \ac{LNS} spatial homogenization
--Fig.~\ref{fig:chap9-lns-materials-beavrs}
-  -materials configuration for 2D quarter core \ac{BEAVRS} model with \ac{LNS} spatial homogenization
-
-fourth paragraph: segue to next chapter
--objective is to capture clustering effects in MGXS
--LNS isn't adaptable
-  -point out pins along assembly-assembly and assembly-reflector interfaces treated the same
-  -point out large number of materials in full core - may be more than necessary
-  -algorithm must be customized to specific types of core geometries
--following section will highlight the results with \ac{LNS} spatial homogenization
+The total number of materials (\textit{i.e.}, \ac{MGXS}) used to model each benchmark with each homogenization scheme is given in Tab.~\ref{fig:chap9-lns-materials}. The fuel assemblies with \acp{CRGT} and \acp{BP} and 2$\times$2 colorset benchmark models are color-coded by material and illustrated in Fig.~\ref{fig:chap9-lns-materials} for the \ac{LNS} homogenization scheme. Likewise, the materials for the quarter core \ac{BEAVRS} model with \ac{LNS} homogenization is highlighted in Fig.~\ref{fig:chap9-lns-materials-beavrs}. 
 
 \begin{table}[h!]
   \centering
@@ -532,7 +515,7 @@ fourth paragraph: segue to next chapter
   \midrule
 2$\times$2 Colorset w/ Reflector & 8 & 35 & 1,062 \\
   \midrule
-\ac{BEAVRS} Quarter Core & 10 & 497 & 13,000 \\ % LNS = ceil(193 / 4) * 10 + 7
+\ac{BEAVRS} Quarter Core & 10 & 502 & 13,000 \\ % LNS = ceil(193 / 4) * 10 + 7 - actually just counted them up as 10 for assms with BPs and 8 otherwise
   \bottomrule
 \end{tabular}
 \end{table}
@@ -574,10 +557,45 @@ fourth paragraph: segue to next chapter
 \label{fig:chap9-lns-materials-beavrs}
 \end{figure}
 
+As quantified in the Tab.~\ref{table:chap9-num-materials-lns}, 8 -- 10 unique fissile materials are used for each fuel assembly with \ac{LNS}, far fewer than the 264 in degenerate homogenization. Consequently, the \ac{MC} tallies for \ac{LNS} homogenization will ``converge'' much more quickly than those for degenerate homogenization. In addition, as indicated by the figures, fuel pin types with neighboring heterogeneities are assigned unique \ac{MGXS} which generally reflect the clustering of \ac{MGXS} due to spatial self-shielding effects. As a result, \ac{LNS} homogenization would be expected to predict reaction rate distributions better than the null scheme. 
+
+However, it is clear from the figures that there are some notable shortcomings to the \ac{LNS} scheme. For example, the pins along the inter-assembly and assembly-reflector interfaces in the 2$\times$2 colorset and quarter core \ac{BEAVRS} models in Fig.~\Crefrange{fig:chap9-2x2-lns-materials}{fig:chap9-reflector-lns-materials} and~\ref{fig:chap9-lns-materials-beavrs} are treated the same (\textit{i.e.}, with the same \ac{MGXS}). As a result, \ac{LNS} may result in poor reaction rate predictions for these pins, as will be quantified in Sec.~\ref{sec:chap9-lns-results}. It is possible that the \ac{LNS} algorithm could be specialized in various ways to differentiate between the pin types on the outer edge of each assembly. However, such customizations would not be reactor agnostic and would be challenging to implement and generalize.
+
+Furthermore, the relative number of \ac{LNS} materials does not scale with the total number of fuel pins. In particular, there are 26 -- 33$\times$ fewer materials with the \ac{LNS} scheme as compared to the degenerate scheme for the individual fuel assembly benchmarks as well as the quarter core \ac{BEAVRS} model\footnote{This reflects the fact that neighboring assemblies are accounted for in the \ac{LNS} algorithm. The fuel assemblies in the quarter core \ac{BEAVRS} model do not exhibit any neighboring symmetries, and as a result, no two assemblies are assigned the same set of pin-wise \ac{MGXS}.}. It is likely that \ac{LNS} uses more materials than necessary to capture \ac{MGXS} clustering for large geometries, which will diminish its relative accelerated convergence rate with respect to degenerate homogenization.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Track Density-Weighted MGXS}
+\label{sec:chap9-lns-math}
+
+The \ac{LNS} spatially-homogenized \ac{MGXS} for each group of pin instances are not simply computed as the geometric average of the \ac{MGXS} in each pin instance. Instead, the total reaction rates and fluxes in each pin instance are first summed together and then divided to compute an average \ac{MGXS} which is effectively weighted by the relative particle track density in each fuel pin instance. The track density-weighted average \ac{MGXS} preserve global reaction rates\footnote{A simple geometric average of \ac{MGXS} across fuel pins will not preserve global reaction rates.} and are equivalent to defining specialized OpenMC ``cell'' reaction rate and flux tallies for each group of pin instances with like \ac{LNS} identifiers. 
+
+In order to formally express the track density weighted-average approach, it is useful to first recall Eqn.~\ref{eqn:chap3-general-micro} for a microscopic \ac{MGXS} estimated from \ac{MC} tallies for reaction $x$, nuclide $i$, spatial zone $k$ and energy group $g$:
+
+\begin{equation}
+\label{eqn:chap9-general-micro}
+\hat{\sigma}_{x,i,k,g} = \frac{\langle \sigma_{x,i}, \psi \rangle_{k,g}^{t\ell}}{\langle \psi \rangle_{k,g}^{t\ell}}
+\end{equation}
+
+\noindent In this context, the index $k$ of $K$ total spatial zones refers to a particular instance of a fuel pin within a core geometry. The \ac{LNS} algorithm represents a function $S(k)$ which assigns an identifier $m$ to each fuel pin instance based on its neighbors (\textit{i.e.}, pin instances with the same neighbors are assigned the same identifier). The set $\mathbb{S}_{m}$ encapsulates all instances $k$  with the same \ac{LNS} identifier:
+
+\begin{equation}
+\label{eqn:chap9-lns-set}
+\mathbb{S}_{m} = \left\{1 \le k \le K: S(k) = m\right\}
+\end{equation}
+
+\ac{LNS} homogenization then computes a single set of \ac{MGXS} for the fuel pin instances in each set $k \in \mathbb{S}_{m}$ classified by \ac{LNS}. This is equivalent to a specialization of Eqn.~\ref{eqn:chap9-general-micro} with track density-weighted averages of the reaction rates and flux tallies in each pin instance:
+
+\begin{equation}
+\label{eqn:chap9-lns-micro}
+\hat{\sigma}_{x,i,m,g} = \frac{\displaystyle\sum\limits_{k=1}^{K}\mathbb{1}_{\mathbb{S}_{m}} \langle \sigma_{x,i}, \psi \rangle_{k,g}^{t\ell}}{\displaystyle\sum\limits_{k=1}^{K}\mathbb{1}_{\mathbb{S}_{m}} \langle \psi \rangle_{k,g}^{t\ell}}
+\end{equation}
+
+\noindent where the indicator function $\mathbb{1}_{S(k)}$ is equal to 1 if $k \in \mathbb{S}_{m}$ and 0 otherwise. The track density-weighted average is similarly applied to the \ac{MC} tallies for each type of \ac{MGXS}, including scattering matrices and the fission spectrum.
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Multi-Group Results with LNS}
-\label{subsec:chap9-lns-results}
+\label{sec:chap9-lns-results}
 
 first paragraph: introduce / outline results
 -ran simulations with 2, 8 and 70 groups as in Chap.~\ref{chap:quantify} for each of the six benchmarks
