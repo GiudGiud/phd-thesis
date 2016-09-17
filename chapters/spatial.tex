@@ -18,13 +18,75 @@ This section investigates the clustering of pin-wise \ac{MGXS} due to spatial se
 
 It is important to note that self-shielding effects induce clustering of \textit{microscopic} rather than macroscopic \ac{MGXS}. The pin-wise macroscopic \ac{MGXS} cluster (or disperse) due to the different densities of nuclides in each fuel pin and give no indication of the similarity of the spectra experienced by each fuel pin. Since all of the benchmarks in this thesis use an isotopic vector for fresh \ac{PWR} fuel, the clustering effects investigated here are necessarily the same for both micro and macro \ac{MGXS}. However, the spatial homogenization methods developed in this thesis are intended to be used for more general applications with fuels of various burnups. Hence this section analyzes the microscopic \ac{MGXS} since this is most appropriate for general purpose \ac{MGXS} generation.
 
-This section quantifies and visualizes the impact of heterogeneities on pin-wise \ac{MGXS}. Sec.~\ref{subsec:chap9-pop-var} begins by investigating the population variance of \ac{MGXS} for each of the heterogeneous benchmarks and compares it to data for an infinite lattice. Secs.~\ref{subsec:chap9-histograms} and~\ref{subsec:chap9-qq-plots} analyze histograms and quantile-quantile plots of the distribution of pin-wise \ac{MGXS} for each of the benchmarks, respectively. Although the preceding chapter identified U-238 capture rates as being more sensitive to the pin-wise spatial homogenization model than the fission rates, this section explores both U-238 capture and U-235 fission \ac{MGXS} data. As observed in the following chapters, the clustering of one nuclide or reaction type's \ac{MGXS} may not have a sizable impact on the corresponding reaction rate distribution (\textit{e.g.}, fission), but may still reflect spatial self-shielding effects which can be modeled to better predict other reaction rate distributions (\textit{e.g.}, U-238 capture).
+This section quantifies and visualizes the impact of heterogeneities on pin-wise \ac{MGXS}. 
+Sec.~\ref{subsec:chap9-mgxs-uncertainty} begins by briefly quantifying the statistical uncertainties for the tallied \ac{MGXS} datasets. Sec.~\ref{subsec:chap9-pop-var} investigates the population variance of \ac{MGXS} for each of the heterogeneous benchmarks and compares it to data for an infinite lattice. Secs.~\ref{subsec:chap9-histograms} and~\ref{subsec:chap9-qq-plots} analyze histograms and quantile-quantile plots of the distribution of pin-wise \ac{MGXS} for each of the benchmarks, respectively. Although the preceding chapter identified U-238 capture rates as being more sensitive to the pin-wise spatial homogenization model than the fission rates, this section explores both U-238 capture and U-235 fission \ac{MGXS} data. As observed in the following chapters, the clustering of one nuclide or reaction type's \ac{MGXS} may not have a sizable impact on the corresponding reaction rate distribution (\textit{e.g.}, fission), but may still reflect spatial self-shielding effects which can be modeled to better predict other reaction rate distributions.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Pin-Wise MGXS Statistical Uncertainty}
+\label{subsec:chap9-mgxs-uncertainty}
+
+Before investigating \ac{MGXS} clustering, it is important to first quantify the statistical uncertainties of the tallied pin-wise \ac{MGXS} for each benchmark. The max and mean standard deviations of the pin-wise U-238 capture and U-235 fission \ac{MGXS} for an infinite lattice and each of the heterogeneous benchmarks are presented in Tab.~\ref{table:chap9-std-dev-mgxs}. The standard deviations were computed by propagating the statistical uncertainties of the corresponding reaction rate and flux tallies needed to compute each \ac{MGXS} as discussed in Sec.~\ref{subsec:chap3-uncertainty-prop}. The standard deviations were computed for all of the pins in each benchmark, and the max and mean values were selected for the table. The table highlights the population variance for both 1.6\% and 3.1\% enriched fuel pins\footnote{Although the \ac{BEAVRS} model includes 2.4\% enriched fuel pins, they were not included in this analysis.}. The \ac{MGXS} data was computed in two energy groups. The U-238 capture \ac{MGXS} is analyzed for the first group since it encompasses the resonance region which is most sensitive to spatial self-shielding effects. The U-235 fission \ac{MGXS} is analyzed for the second group since it encompasses thermal energies which drives the majority of fission in \acp{LWR}.
+
+There are a few key observations which can be made from the statistical uncertainties. First, the statistical uncertainties for both \ac{MGXS} are relatively small with respect to the means. In particular, the coefficients of variation\footnote{The coefficient of variation is the standard deviation divided by the mean.} are 0.1 -- 0.7\% and 0.05 -- 0.1\% for the U-238 capture and U-235 fission \ac{MGXS}, respectively. Furthermore, the reported standard deviations are likely overestimates since the reaction rate and flux tallies used to compute each \ac{MGXS} are positively correlated (see Sec.~\ref{table:chap9-std-dev-mgxs}). Therefore, the clustering of \ac{MGXS} demonstrated in the following sections results from variation in \ac{MC} sampling distributions with spatial heterogeneities rather than poor \ac{MC} sample statistics.
+
+In addition, it may be noted that the standard deviation increases with both the number of pins as well as the complexity of the heterogeneities in the benchmark. For example, there are 264 and 528 pins of a particular enrichment in the individual assembly benchmarks with \ac{CRGT} and \acp{BP}, respectively. The standard deviations for the pins in the 2$\times$2 colorset without a reflector are very nearly 2$\times$ greater than those for the individual assemblies. The 1.6\% and 3.1\% enriched pins in the reflected colorset have standard deviations which are approximately 3$\times$ and 1.7$\times$ greater than those in the unreflected colorset, respectively. This demonstrates the highly tilted distribution of particle track densities across the tally volumes in the reflected colorset, as evidenced by the power distributions in Figs.~\ref{fig:chap7-fiss-rates-2x2} and~\ref{fig:chap7-fiss-rates-reflector}.
+
+\begin{table}[h!]
+  \centering
+  \caption[Standard deviations for pin-wise MGXS]{The standard deviation for pin-wise U-235 fission and U-238 capture \ac{MGXS}.}
+  \small
+  \label{table:chap9-std-dev-mgxs}
+  \vspace{6pt}
+  \begin{tabular}{C{2.5cm} l l C{3cm} C{3cm}}
+  \toprule
+  \rowcolor{lightgray}
+  \multicolumn{1}{C{2.5cm}}{\textbf{Fuel Enrichment}} &
+  \multicolumn{1}{c}{\textbf{Benchmark}} &
+  \multicolumn{1}{l}{\textbf{Metric}} &
+  \boldmath$\mathrm{Var}\left[\hat{\sigma}_{f,2}^{235}\right]^{\nicefrac{1}{2}}$ \textbf{[barns]} &
+  \boldmath$\mathrm{Var}\left[\hat{\sigma}_{f,2}^{235}\right]^{\nicefrac{1}{2}}$ \textbf{[barns]} \\  
+  \toprule
+\multirow{10}{*}{1.6\%} & \multirow{2}{*}{Infinite Lattice} & Max & 0.000790 & 0.179 \\
+& & Mean & 0.000771 & 0.167 \\
+\cline{2-5}
+& \multirow{2}{*}{Assm. (no \acp{BP})} & Max & 0.000813 & 0.179 \\
+& & Mean & 0.000785 & 0.162 \\
+\cline{2-5}
+& \multirow{2}{*}{2$\times$2 Colorset} & Max & 0.001650 & 0.356 \\
+& & Mean & 0.001580 & 0.332 \\
+\cline{2-5}
+& \multirow{2}{*}{2$\times$2 Colorset w/ Reflector} & Max & 0.005670 & 0.832 \\
+& & Mean & 0.001910 & 0.387 \\
+\cline{2-5}
+& \multirow{2}{*}{\ac{BEAVRS} Quarter Core} & Max & & \\
+& & Mean & & \\
+\toprule
+\multirow{12}{*}{3.1\%} & \multirow{2}{*}{Infinite Lattice} & Max & 0.000797 & 0.202 \\
+& & Mean & 0.000774 & 0.190 \\
+\cline{2-5}
+& \multirow{2}{*}{Assm. (no \acp{BP})} & Max & 0.000813 & 0.203 \\
+& & Mean & 0.000789 & 0.184 \\
+\cline{2-5}
+& \multirow{2}{*}{Assm. (20 \acp{BP})} & Max & 0.000800 & 0.209 \\
+& & Mean & 0.000773 & 0.197 \\
+\cline{2-5}
+& \multirow{2}{*}{2$\times$2 Colorset} & Max & 0.001590 & 0.413 \\
+& & Mean & 0.001530 & 0.380 \\
+\cline{2-5}
+& \multirow{2}{*}{2$\times$2 Colorset w/ Reflector} & Max & 0.002650 & 0.557 \\
+& & Mean & 0.001670 & 0.422 \\
+\cline{2-5}
+& \multirow{2}{*}{\ac{BEAVRS} Quarter Core} & Max & & \\
+& & Mean & & \\
+\bottomrule
+\end{tabular}
+\end{table}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Pin-Wise MGXS Population Variance}
 \label{subsec:chap9-pop-var}
 
-The population variance of U-238 capture and U-235 fission pin-wise \ac{MGXS} for an infinite lattice and each of the heterogeneous benchmarks are presented in Tab.~\ref{table:chap9-pop-var-mgxs}. Each of the random samples in the variance calculation is the \ac{MGXS} in one fuel pin instance in the respective benchmark (using OpenMC distributed cell tallies). The table highlights the population variance for both 1.6\% and 3.1\% enriched fuel pins\footnote{Although the \ac{BEAVRS} model includes 2.4\% enriched fuel pins, they were not included in this analysis.}. The \ac{MGXS} data was computed in two energy groups. The U-238 capture \ac{MGXS} is analyzed for the first group since it encompasses the resonance region which is most sensitive to spatial self-shielding effects. The U-235 fission \ac{MGXS} is analyzed for the second group since it encompasses thermal energies which drives the majority of fission in \acp{LWR}.
+The population variance of U-238 capture and U-235 fission pin-wise \ac{MGXS} for an infinite lattice and each of the heterogeneous benchmarks are presented in Tab.~\ref{table:chap9-pop-var-mgxs}. Each of the random samples in the variance calculation is the \ac{MGXS} in one fuel pin instance in the respective benchmark (using OpenMC distributed cell tallies). The table highlights the population variance for both 1.6\% and 3.1\% enriched fuel pins. The \ac{MGXS} data was computed in two energy groups. The U-238 capture \ac{MGXS} is analyzed for the first group since it encompasses the resonance region which is most sensitive to spatial self-shielding effects. The U-235 fission \ac{MGXS} is analyzed for the second group since it encompasses thermal energies which drives the majority of fission in \acp{LWR}.
 
 \begin{table}[h!]
   \centering
@@ -42,7 +104,7 @@ The population variance of U-238 capture and U-235 fission pin-wise \ac{MGXS} fo
 & 2$\times$2 Colorset & 1.89E-04 & 1.18E+01 \\
 & 2$\times$2 Colorset w/ Reflector & 2.03E-04 & 1.93E+01 \\
 & \ac{BEAVRS} Quarter Core & 1.64E-04 & 6.78E+00 \\
-\midrule
+\toprule
 \multirow{6}{*}{3.1\%} & Infinite Lattice & 5.83E-07 & 6.12E--03 \\
 & Assm. (no \acp{BP}) & 1.53E-04 & 4.22E+00 \\
 & Assm. (20 \acp{BP}) & 1.37E-04 & 1.11E+01 \\
@@ -76,14 +138,7 @@ This section expounds upon the preceding quantitative analysis of the dipsersive
 
 The pin-wise microscopic U-238 capture \ac{MGXS} for 1.6\% and 3.1\% enriched fuel pins are illustrated with histograms and rug plots in Fig.~\ref{fig:chap9-hist-1.6-capt} and~\ref{fig:chap9-hist-3.1-capt}, respectively. Each of the plots corresponds to an infinite lattice configuration or one of the six heterogeneous benchmarks. The trends observed in the plots can be attributed to the presence of \acp{CRGT}, \acp{BP}, assembly-assembly and/or assembly-reflector interfaces or fuel enrichment. 
 
-As expected based on the population variances, the empirical distributions of pin-wise \ac{MGXS} for the infinite lattices in Figs.~\ref{fig:chap9-hist-assm-1.6-inf-capt} and~\ref{fig:chap9-hist-assm-3.1-inf-capt} are narrow and symmetric unlike the distributions for each of the heterogeneous benchmarks. The introduction of \acp{CRGT} to the individual fuel assemblies induces four clearly discernible clusters of \ac{MGXS} in Figs.~\ref{fig:chap9-hist-assm-1.6-capt} and~\ref{fig:chap9-hist-assm-3.1-capt} which are separated by approximately 0.01 -- 0.015 barns (or 1 -- 2\%) for both fuel enrichments. There may be further sub-clusters as evidenced by the dispersion of the rug plot ticks between the two lowest-lying clusters. These clusters are attributed to the softening of the flux due to differential moderation from neighboring \acp{CRGT} in increasing order for the following four groupings of fuel pins:
-
-\begin{itemize}[noitemsep, itemsep=-0.75em]
-  \item Pins not adjacent to a \ac{CRGT}
-  \item Pins corner adjacent to a \ac{CRGT}
-  \item Pins facially adjacent to a \ac{CRGT}
-  \item Pins facially and corner adjacent to separate \ac{CRGT}
-\end{itemize}
+As expected based on the population variances, the empirical distributions of pin-wise \ac{MGXS} for the infinite lattices in Figs.~\ref{fig:chap9-hist-assm-1.6-inf-capt} and~\ref{fig:chap9-hist-assm-3.1-inf-capt} are narrow and symmetric unlike the distributions for each of the heterogeneous benchmarks. The introduction of \acp{CRGT} to the individual fuel assemblies induces four clearly discernible clusters of \ac{MGXS} in Figs.~\ref{fig:chap9-hist-assm-1.6-capt} and~\ref{fig:chap9-hist-assm-3.1-capt} which are separated by approximately 0.01 -- 0.015 barns (or 1 -- 2\%) for both fuel enrichments. There may be further sub-clusters as evidenced by the dispersion of the rug plot ticks between the two lowest-lying clusters. These clusters are attributed to the softening of the flux due to differential moderation from neighboring \acp{CRGT} in increasing order for the following four groupings of fuel pins: (a) pins not adjacent to a \ac{CRGT}, (b) pins corner adjacent to a \ac{CRGT}, (c) pins facially adjacent to a \ac{CRGT} and (d) pins facially and corner adjacent to separate \ac{CRGT}.
 
 \begin{figure}[h!]
 \centering
@@ -506,15 +561,10 @@ The total number of materials (\textit{i.e.}, \ac{MGXS}) used to model each benc
   \multicolumn{1}{c}{\cellcolor{lightgray} \bf Degenerate} \\
   \midrule
 1.6\% Assm & 5 & 13 & 268 \\
-  \midrule
 3.1\% Assm & 5 & 13 & 268 \\
-  \midrule
 3.1\% Assm w/ 20 BPs & 7 & 17 & 270  \\
-  \midrule
 2$\times$2 Colorset & 8 & 25 & 1,062 \\
-  \midrule
 2$\times$2 Colorset w/ Reflector & 8 & 35 & 1,062 \\
-  \midrule
 \ac{BEAVRS} Quarter Core & 10 & 502 & 13,000 \\ % LNS = ceil(193 / 4) * 10 + 7 - actually just counted them up as 10 for assms with BPs and 8 otherwise
   \bottomrule
 \end{tabular}
