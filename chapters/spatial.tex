@@ -522,25 +522,25 @@ The total number of materials (\textit{i.e.}, \ac{MGXS}) used to model each benc
 
 \begin{figure}[h!]
 \centering
-\begin{subfigure}{.47\textwidth}
+\begin{subfigure}{.45\textwidth}
   \centering
   \includegraphics[width=0.9\linewidth]{figures/patterns/lns/assm-31/materials}
   \caption{}
   \label{fig:chap9-assm-31-lns-materials}
 \end{subfigure}%
-\begin{subfigure}{.47\textwidth}
+\begin{subfigure}{.45\textwidth}
   \centering
   \includegraphics[width=0.9\linewidth]{figures/patterns/lns/assm-31-20BPs/materials}
   \caption{}
   \label{fig:chap9-31-20BPs-lns-materials}
 \end{subfigure}
-\begin{subfigure}{.47\textwidth}
+\begin{subfigure}{.45\textwidth}
   \centering
   \includegraphics[width=0.9\linewidth]{figures/patterns/lns/2x2/materials}
   \caption{}
   \label{fig:chap9-2x2-lns-materials}
 \end{subfigure}%
-\begin{subfigure}{.47\textwidth}
+\begin{subfigure}{.45\textwidth}
   \centering
   \includegraphics[width=0.9\linewidth]{figures/patterns/lns/reflector/materials}
   \caption{}
@@ -553,15 +553,12 @@ The total number of materials (\textit{i.e.}, \ac{MGXS}) used to model each benc
 \begin{figure}[h!]
 \centering
 \includegraphics[width=\linewidth]{figures/patterns/lns/full-core/materials}
+\vspace{2mm}
 \caption[Depiction of LNS spatially homogenized materials for BEAVRS]{OpenMOC materials with \ac{LNS} spatial homogenization for the 2D quarter core \ac{BEAVRS} model. Each uniquely colored material represents a unique set of \ac{MGXS}.}
 \label{fig:chap9-lns-materials-beavrs}
 \end{figure}
 
 As quantified in the Tab.~\ref{table:chap9-num-materials-lns}, 8 -- 10 unique fissile materials are used for each fuel assembly with \ac{LNS}, far fewer than the 264 in degenerate homogenization. Consequently, the \ac{MC} tallies for \ac{LNS} homogenization will ``converge'' much more quickly than those for degenerate homogenization. In addition, as indicated by the figures, fuel pin types with neighboring heterogeneities are assigned unique \ac{MGXS} which generally reflect the clustering of \ac{MGXS} due to spatial self-shielding effects. As a result, \ac{LNS} homogenization would be expected to predict reaction rate distributions better than the null scheme. 
-
-However, it is clear from the figures that there are some notable shortcomings to the \ac{LNS} scheme. For example, the pins along the inter-assembly and assembly-reflector interfaces in the 2$\times$2 colorset and quarter core \ac{BEAVRS} models in Fig.~\Crefrange{fig:chap9-2x2-lns-materials}{fig:chap9-reflector-lns-materials} and~\ref{fig:chap9-lns-materials-beavrs} are treated the same (\textit{i.e.}, with the same \ac{MGXS}). As a result, \ac{LNS} may result in poor reaction rate predictions for these pins, as will be quantified in Sec.~\ref{sec:chap9-lns-results}. It is possible that the \ac{LNS} algorithm could be specialized in various ways to differentiate between the pin types on the outer edge of each assembly. However, such customizations would not be reactor agnostic and would be challenging to implement and generalize.
-
-Furthermore, the relative number of \ac{LNS} materials does not scale with the total number of fuel pins. In particular, there are 26 -- 33$\times$ fewer materials with the \ac{LNS} scheme as compared to the degenerate scheme for the individual fuel assembly benchmarks as well as the quarter core \ac{BEAVRS} model\footnote{This reflects the fact that neighboring assemblies are accounted for in the \ac{LNS} algorithm. The fuel assemblies in the quarter core \ac{BEAVRS} model do not exhibit any neighboring symmetries, and as a result, no two assemblies are assigned the same set of pin-wise \ac{MGXS}.}. It is likely that \ac{LNS} uses more materials than necessary to capture \ac{MGXS} clustering for large geometries, which will diminish its relative accelerated convergence rate with respect to degenerate homogenization.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Track Density-Weighted MGXS}
@@ -583,40 +580,39 @@ In order to formally express the track density weighted-average approach, it is 
 \mathbb{S}_{m} = \left\{1 \le k \le K: S(k) = m\right\}
 \end{equation}
 
-\ac{LNS} homogenization then computes a single set of \ac{MGXS} for the fuel pin instances in each set $k \in \mathbb{S}_{m}$ classified by \ac{LNS}. This is equivalent to a specialization of Eqn.~\ref{eqn:chap9-general-micro} with track density-weighted averages of the reaction rates and flux tallies in each pin instance:
+\ac{LNS} homogenization computes a single set of \ac{MGXS} for the fuel pin instances in each set $k \in \mathbb{S}_{m}$ classified by the \ac{LNS} algorithm. This is equivalent to a specialization of Eqn.~\ref{eqn:chap9-general-micro} with track density-weighted averages of the reaction rates and flux tallies in each pin instance:
 
 \begin{equation}
 \label{eqn:chap9-lns-micro}
-\hat{\sigma}_{x,i,m,g} = \frac{\displaystyle\sum\limits_{k=1}^{K}\mathbb{1}_{\mathbb{S}_{m}} \langle \sigma_{x,i}, \psi \rangle_{k,g}^{t\ell}}{\displaystyle\sum\limits_{k=1}^{K}\mathbb{1}_{\mathbb{S}_{m}} \langle \psi \rangle_{k,g}^{t\ell}}
+\hat{\sigma}_{x,i,m,g} = \frac{\displaystyle\sum\limits_{k=1}^{K}\mathbb{1}_{\mathbb{S}_{m}}(k) \langle \sigma_{x,i}, \psi \rangle_{k,g}^{t\ell}}{\displaystyle\sum\limits_{k=1}^{K}\mathbb{1}_{\mathbb{S}_{m}}(k) \langle \psi \rangle_{k,g}^{t\ell}}
 \end{equation}
 
-\noindent where the indicator function $\mathbb{1}_{S(k)}$ is equal to 1 if $k \in \mathbb{S}_{m}$ and 0 otherwise. The track density-weighted average is similarly applied to the \ac{MC} tallies for each type of \ac{MGXS}, including scattering matrices and the fission spectrum.
+\noindent where the indicator function $\mathbb{1}_{\mathbb{S}_{m}}(k)$ is equal to 1 if $k \in \mathbb{S}_{m}$ and 0 otherwise. The track density-weighted average is similarly applied to the \ac{MC} tallies for each type of \ac{MGXS}, including scattering matrices and the fission spectrum.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Potential Shortcomings}
+\label{sec:chap9-lns-shortcomings}
+
+Upon further inspection, it is clear from Figs.\ref{fig:chap9-lns-materials} and~\ref{fig:chap9-lns-materials-beavrs} that there are some notable shortcomings to the \ac{LNS} scheme. For example, the pins along the inter-assembly and assembly-reflector interfaces in the 2$\times$2 colorset and quarter core \ac{BEAVRS} models in Fig.~\Crefrange{fig:chap9-2x2-lns-materials}{fig:chap9-reflector-lns-materials} and~\ref{fig:chap9-lns-materials-beavrs} are treated the same (\textit{i.e.}, with the same \ac{MGXS}). As a result, \ac{LNS} may result in poor reaction rate predictions for these pins, as will be quantified in Sec.~\ref{sec:chap9-lns-results}. It is possible that the \ac{LNS} algorithm could be specialized in various ways to differentiate between the pin types on the outer edge of each assembly. However, such customizations would not be reactor agnostic and would be challenging to implement and generalize.
+
+Furthermore, the relative number of \ac{LNS} materials does not scale with the total number of fuel pins. In particular, there are 26 -- 33$\times$ fewer materials with the \ac{LNS} scheme as compared to the degenerate scheme for the individual fuel assembly benchmarks as well as the quarter core \ac{BEAVRS} model\footnote{This reflects the fact that neighboring assemblies are accounted for in the \ac{LNS} algorithm. The fuel assemblies in the quarter core \ac{BEAVRS} model do not exhibit any neighboring symmetries, and as a result, no two assemblies are assigned the same set of pin-wise \ac{MGXS}.}. It is likely that \ac{LNS} uses more materials than necessary to capture \ac{MGXS} clustering for large geometries, which will diminish its relative accelerated convergence rate with respect to degenerate homogenization.
+
+\begin{emphbox}
+\textbf{\ac{LNS} spatial homogenization applies a ``geometric template'' to homogenize \ac{MGXS} for pins with similar neighboring spatial zones. The scheme aims to improve the \ac{MC} tally convergence rate while capturing spatial self-shielding effects in clustered \ac{MGXS}. However, the number of materials scales poorly with the size and complexity of the core geometry. Furthermore, the algorithm fails to distinguish pins with very different spatial self-shielding effects at inter-assembly and assembly-reflector interfaces.}
+\end{emphbox}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Multi-Group Results with LNS}
 \label{sec:chap9-lns-results}
 
-first paragraph: introduce / outline results
--ran simulations with 2, 8 and 70 groups as in Chap.~\ref{chap:quantify} for each of the six benchmarks
--used \ac{LNS} spatial homogenization in each one with same OpenMOC simulation parameters
-  -128 azimuthal angles, 0.05 cm track spacing
--Sec.~\ref{subsec:chap9-lns-eigenvalues} - eigenvalues
--Sec.~\ref{subsec:chap9-lns-fiss-rates} - pin-wise energy-integrated fission rates
--Sec.~\ref{subsec:chap9-lns-capt-rates} - pin-wise energy-integrated capture rates
+Each of the six benchmarks was modeled with OpenMOC using \ac{MGXS} generated by the \ac{LNS} spatial homogenization scheme. Each of the six heterogeneous benchmarks was modeled with 2-, 8- and 70-group \ac{MGXS} using the same OpenMOC runtime parameters as those used in Chap.~\ref{chap:quantify} for infinite, null and degenerate homogenization. The eigenvalues and pin-wise fission and U-238 capture rates computed by OpenMOC are compared to the reference OpenMC solutions in Secs.~\ref{subsec:chap9-lns-eigenvalues},~\ref{subsec:chap9-lns-fiss-rates} and~\ref{subsec:chap9-lns-capt-rates}, respectively.
 
 %%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Eigenvalues}
 \label{subsec:chap9-lns-eigenvalues}
 
-first paragraph: eigenvalues
--as was observed when comparing null to degenerate homogenization in Chap.~\ref{chap:quantify}, spatial homogenization cannot be expected to systematically improve the eigenvalue wrt OpenMC
--but these results are presented here to ensure that \ac{LNS} homogenization was properly implemented
-  -and results simply reinforce this notion
--Tab.~\ref{table:chap9-lns-eigenvalues} tabulates eigenvalues for 2, 8, and 70 groups
--eigenvalues closely match null and degenerate homogenization from Chap.~\ref{chap:quantify}
-  -match to within less than 10 \ac{pcm} for nearly all cases
-  -due to reaction rate preservation
+The OpenMOC eigenvalues were compared to the reference OpenMC eigenvalues from Tab.~\ref{table:chap7-ref-eigenvalues}. The eigenvalue bias $\Delta\rho$ was computed from Eqn.~\ref{eqn:chap5-delta-rho} in units of \ac{pcm}. The bias is listed for each benchmark and energy group structure in Tab.~\ref{table:chap9-lns-eigenvalues}. The same trends highlighted in Sec.~\ref{subsec:chap8-eigenvalues} observed from the null and degenerate biasess in Tab.~\ref{table:chap8-openmoc-eigenvalues} remain true for \ac{LNS} spatial homogenization. In fact, the \ac{LNS} eigenvalues are within 10 \ac{pcm} of those computed with both null and degenerate homogenization with 8 or more groups for all benchmarks. As previously noted in Sec.~\ref{subsec:chap8-eigenvalues}, this is expected since the \ac{MGXS} for the null, degenerate and \ac{LNS} schemes is homogenized from the same flux and should preserve globally-integrated reaction rates. Hence, \ac{LNS} homogenization is not expected to improve OpenMOC's eigenvalue predictions.
 
 \begin{table}[ht!]
   \centering
@@ -638,10 +634,14 @@ first paragraph: eigenvalues
 3.1\% Assm w/ 20 BPs & -158 & -161 & -248 \\
 2$\times$2 Colorset & 12 & -93 & -194 \\
 2$\times$2 Colorset w/ Reflector & 1797 & 481 & -138 \\
-BEAVRS Full Core & 2225 & 448 & -81 \\
+BEAVRS Full Core & 2226 & 449 & -81 \\
   \bottomrule
 \end{tabular}
 \end{table}
+
+\begin{emphbox}
+\textbf{The OpenMOC eigenvalues for \ac{LNS} homogenization are consistent with the null and degenerate schemes to within 10 \ac{pcm} for eight or more groups due to global reaction rate preservation.}
+\end{emphbox}
 
 %%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Fission Rates}
@@ -701,8 +701,8 @@ first paragraph: overview of error trends
 \multirow{2}{*}{\parbox{2.2cm}{2$\times$2 Colorset w/ Reflector}} & Max & -15.785 & -2.976 & 0.709 \\
 & Mean & 5.169 & 1.076 & 0.155 \\
 \midrule
-\multirow{2}{*}{\parbox{2.2cm}{BEAVRS Full Core}} & Max & -86.166 & -35.548 & 12.330 \\
-& Mean & 40.190 & 11.465 & 1.454 \\
+\multirow{2}{*}{\parbox{2.2cm}{BEAVRS Full Core}} & Max & -86.132 & -34.863 & 11.988 \\
+& Mean & 40.218 & 11.539 & 1.650 \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -791,8 +791,8 @@ third paragraph: observations with reflector?? w/ 70 groups
 \multirow{2}{*}{\parbox{2.2cm}{2$\times$2 Colorset w/ Reflector}} & Max & 10.201 & 3.031 & -1.964 \\
 & Mean & 3.482 & 0.604 & 0.236 \\
 \midrule
-\multirow{2}{*}{\parbox{2.2cm}{BEAVRS Quarter Core}} & Max & -85.623 & -35.604 & -7.765 \\
-& Mean & 39.911 & 11.013 & 1.375 \\
+\multirow{2}{*}{\parbox{2.2cm}{BEAVRS Quarter Core}} & Max & -85.536 & -34.835 & 6.507 \\
+& Mean & 39.944 & 11.087 & 1.514 \\
 \bottomrule
 \end{tabular}
 \end{table}
