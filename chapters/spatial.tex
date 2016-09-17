@@ -484,7 +484,7 @@ This section introduces a new spatial homogenization scheme which use a determin
 
 %%%%%%%%%%%%%%%%%%%%%
 \subsection{Overview}
-\label{sec:chap9-lns-overview}
+\label{subsec:chap9-lns-overview}
 
 Like the degenerate spatial homogenization scheme (Sec.~\ref{subsec:chap8-degenerate}), a single \ac{MC} calculation of the complete heterogeneous geometry is used to generate \ac{MGXS} for all materials. The \ac{MGXS} are tallied separately for each instance of fissile material zones using OpenMC's distributed cell tallies (see Sec.~\ref{subsec:chap4-distribcells}). The OpenCG \ac{LNS} algorithm assigns an integral \ac{LNS} identifier to each unique pin instance in the \ac{CG} based on an analysis of each pin's neighbors at each level of the \ac{CG} hierarchy. Pins with like neighboring pins, within assemblies with like neighboring assemblies, will receive the same \ac{LNS} identifier\footnote{\ac{LNS} hashes a data structure representing a rotationally invariant form of each pin's neighbors.}. The \ac{MGXS} are averaged across all pin instances with the same unique \ac{LNS} identifier. For example, all pins adjacent to a single \ac{CRGT} on one face and fuel pins on all other faces are assigned the same \ac{MGXS} averaged across the OpenMC distributed cell tallies for all of those pin instances. The OpenCG region differentiation algorithm (see Sec.~\ref{sec:chap4-region-diff}) is used to build an OpenMOC geometry with unique cells and materials for each fuel pin which mirrors the \ac{LNS} representation of the \ac{CG} model. Like the infinite, null and degenerate schemes, spatial self-shielding effects experienced by different non-fissile spatial zones are averaged across the entire geometry for each non-fissile material.
 
@@ -562,7 +562,7 @@ As quantified in the Tab.~\ref{table:chap9-num-materials-lns}, 8 -- 10 unique fi
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Track Density-Weighted MGXS}
-\label{sec:chap9-lns-math}
+\label{subsec:chap9-lns-math}
 
 The \ac{LNS} spatially-homogenized \ac{MGXS} for each group of pin instances are not simply computed as the geometric average of the \ac{MGXS} in each pin instance. Instead, the total reaction rates and fluxes in each pin instance are first summed together and then divided to compute an average \ac{MGXS} which is effectively weighted by the relative particle track density in each fuel pin instance. The track density-weighted average \ac{MGXS} preserve global reaction rates\footnote{A simple geometric average of \ac{MGXS} across fuel pins will not preserve global reaction rates.} and are equivalent to defining specialized OpenMC ``cell'' reaction rate and flux tallies for each group of pin instances with like \ac{LNS} identifiers. 
 
@@ -591,7 +591,7 @@ In order to formally express the track density weighted-average approach, it is 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Potential Shortcomings}
-\label{sec:chap9-lns-shortcomings}
+\label{subsec:chap9-lns-shortcomings}
 
 Upon further inspection, it is clear from Figs.\ref{fig:chap9-lns-materials} and~\ref{fig:chap9-lns-materials-beavrs} that there are some notable shortcomings to the \ac{LNS} scheme. For example, the pins along the inter-assembly and assembly-reflector interfaces in the 2$\times$2 colorset and quarter core \ac{BEAVRS} models in Fig.~\Crefrange{fig:chap9-2x2-lns-materials}{fig:chap9-reflector-lns-materials} and~\ref{fig:chap9-lns-materials-beavrs} are treated the same (\textit{i.e.}, with the same \ac{MGXS}). As a result, \ac{LNS} may result in poor reaction rate predictions for these pins, as will be quantified in Sec.~\ref{sec:chap9-lns-results}. It is possible that the \ac{LNS} algorithm could be specialized in various ways to differentiate between the pin types on the outer edge of each assembly. However, such customizations would not be reactor agnostic and would be challenging to implement and generalize.
 
@@ -739,7 +739,7 @@ One of the key findings in Chap.~\ref{chap:quantify} was that degenerate homogen
 
 However, the errors for the 2$\times$2 colorset with a reflector are very nearly the same as those for null homogenization (about 2.5$\times$ larger errors than degenerate homogenization). As was previusly noted for the fission rate errors, the \ac{MGXS} for the fuel pins near the assembly-reflector interface are not separately homogenized and thus fail to account for the differential moderation from the reflector. Perhaps the most surprising observation is that the max and mean errors for the quarter core \ac{BEAVRS} model are actually 1.5\% and 0.1\% less, respectively than those for both null and degenerate homogenization. This is notable since degenerate homogenization actually has a slightly larger maximum error (8.296\%) than null homogenization (8.076\%), most likely due to the relatively larger tally uncertainties of the pin-wise \ac{MGXS} for the quarter core model as compared to the five smaller benchmarks. Based on these results, it appears that \ac{LNS} homogenization performs as intended and ``de-noises'' the statistical uncertainties by averaging the \ac{MGXS} across clusters with similar spatial self-shielding effects.
 
-The spatial distributions of capture rate errors are plotted as heatmaps for each benchmark in Figs.~\Crefrange{fig:chap9-assm-1.6-lns-capt-err}{fig:chap9-full-core-capt-err-degenerate}. These figures illustrate the capture rate errors for 8 and 70 energy group structures for the assembly and colorset benchmarks, and errors for 70 groups for the quarter core \ac{BEAVRS} model. The figures are corollaries to those comparing the infinite, null and degenerate schemes in Figs.~\Crefrange{fig:chap8-assm-1.6-capt-err}{fig:chap8-full-core-capt-err}. In addition, the U-238 capture absolute errors for the 2$\times$2 colorsets are illustrated in Figs.~\ref{fig:lns-2x2-capt-err-abs} and~\ref{fig:lns-reflector-capt-err-abs}, and for the full core in Fig.~\Crefrange{fig:null-full-core-capt-err-abs}{fig:lns-full-core-capt-err-abs} in App.~\ref{sec:quantify-capt-rates-absolute}. The heatmaps illustrate very nearly the same error distributions for degenerate and \ac{LNS} spatial homogenization for the individual fuel assemblies and 2$\times$2 colorset without a reflector, but systematic deviations for the reflected colorset and quarter core \ac{BEAVRS} model.
+The spatial distributions of capture rate errors are plotted as heatmaps for each benchmark in Figs.~\Crefrange{fig:chap9-assm-1.6-lns-capt-err}{fig:chap9-full-core-capt-err-degenerate}. These figures illustrate the capture rate errors for 8 and 70 energy group structures for the assembly and colorset benchmarks, and errors for 70 groups for the quarter core \ac{BEAVRS} model. The figures are corollaries to those comparing the infinite, null and degenerate schemes in Figs.~\Crefrange{fig:chap8-assm-1.6-capt-err}{fig:chap8-full-core-capt-err}. In addition, the U-238 capture absolute errors for the 2$\times$2 colorsets are illustrated in Figs.~\ref{fig:lns-2x2-capt-err-abs} and~\ref{fig:lns-reflector-capt-err-abs}, and for the full core in Fig.~\Crefrange{fig:null-full-core-capt-err-abs}{fig:lns-full-core-capt-err-abs} in App.~\ref{sec:quantify-capt-rates-absolute}. Furthermore, the OpenMOC reaction rate distributions computed from \ac{MGXS} libraries with different homogenization schemes (\textit{e.g.}, null-to-degenerate, null-to-\ac{LNS}) are compared in App.~\ref{sec:compare-schemes}.
 
 \begin{figure}[h!]
 \centering
@@ -819,25 +819,15 @@ The spatial distributions of capture rate errors are plotted as heatmaps for eac
 \label{fig:chap9-full-core-capt-err-degenerate}
 \end{figure}
 
-The heatmaps illustrate systematic error trends in the pin-wise capture errors which correlate with spatial heterogeneities in each benchmark. As is observed for the fission rates, the capture rates are generally underpredicted for pins near \acp{CRGT}, but overpredicted for pins removed from \acp{CRGT}, such as those in the corners of the fuel assembly. Unlike the fission rates, the capture rates are also underpredicted for pins near \acp{BP}. The effects due to heterogeneities are further enhanced when differentiating pins which are facially adjacent to \acp{CRGT}, facially and corner adjacent to two \acp{CRGT}, etc. In addition, the error magnitudes are large for pins along the inter-assembly and assembly-reflector interfaces for the 2$\times$2 colorset benchmarks. For the \ac{PWR} benchmarks modeled here, the differential moderation provided by neighboring \acp{CRGT} and/or reflectors softens the local flux for nearby fuel pins and should be modeled when collapsing pin-wise \ac{MGXS} for high-fidelity multi-group transport calculations.
+\clearpage
 
-third paragraph: observations with reflector?? w/ 70 groups
-  -NULL
-    -largest errors along assembly-assembly / assembly-reflector interfaces, and pins near \acp{CRGT}
-  -DEGENERATE
-    -errors randomly distributed across pins
-  -LNS
-    -largest errors along assembly-reflector interface, and lesser extent assembly-reflector interface
-    -as shown in table, largest errors are larger than those for null case
-    -reason is that LNS averages \ac{MGXS} pins along both interfaces rather than differentiating b/w them
-    -this is actually a worse approx. than averaging across ALL pins as is done by null case
-    -highlights sensitivity to how \ac{MGXS} averaging is performed
-      -if averaged in the wrong way, errors may actually increase in some pins
-      -worthwhile to note that errors will generally improve in those pins with the largest reaction rates since the averaging is done as a weighted average
+The heatmaps illustrate very nearly the same error distributions for degenerate and \ac{LNS} spatial homogenization for the individual fuel assemblies and 2$\times$2 colorset without a reflector, but systematic deviations for the reflected colorset and quarter core \ac{BEAVRS} model. As previously noted in Sec.~\ref{subsec:chap8-capt-rates}, the null scheme exhibited the largest errors for pins near \acp{CRGT} and along the inter-assembly and assembly-reflector interfaces, while the degenerate scheme produced a very nearly even error distribution across the pins in the reflected colorset (in 70 groups). The \ac{LNS} scheme largely ``smooths'' the error distribution for pins, but exhibits large errors for the single outermost row of pins adjacent to the reflector, and to a lesser extent, the pins along the inter-assembly interfaces. More specifically, the U-238 capture rates are under-predicted near the reflector and over-predicted for interior pins. This result is indicative of the collective homogenization of all pins along the exterior of each assembly irregardless of the neighboring spatial zones. The flux at U-238 capture resonance energies is more shielded for pins adjacent to the reflector than for interior pins, resulting in larger U-238 capture \ac{MGXS}. \ac{LNS} homogenizes the larger \ac{MGXS} for pins along the reflector with the smaller capture \ac{MGXS} for interior pins, which leads to the respective under- and over-prediction for the outermost and interior pins. 
 
--SUMMARY BOX
+A couple of key conclusions can be drawn from these results. First, \ac{LNS} effectively models \ac{MGXS} clustering for pins in the interior of each fuel assembly (\textit{e.g.}, pins adjacent to \acp{CRGT} and/or \acp{BP}). However, the pins along the outer edges of each assembly are homogenized in a way that does not appropriately account for the spatial self-shielding effects of the neighboring materials zones. Nevertheless, track density-weighted spatial homogenization does ensure that the errors improve the most for those pins with the largest reaction rates, as illustrated by the absolute errors in App.~\ref{sec:quantify-capt-rates-absolute}.
 
--add null-to-degenerate, etc. plots
+\begin{emphbox}
+\textbf{\ac{LNS} spatial homogenization reduces the U-238 capture rate errors by 10 -- 30\% with respect to degenerate homogenization for the single assembly and periodic colorset benchmarks. However, the scheme does not improve the errors for the reflected colorset with respect to null homogenization since it fails to model the impact of inter-assembly and assembly-reflector interfaces.}
+\end{emphbox}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
