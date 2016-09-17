@@ -686,64 +686,17 @@ The OpenMOC energy-integrated pin-wise fission rates were compared to the refere
 \end{tabular}
 \end{table}
 
-One of the key findings in Chap.~\ref{chap:quantify} was that degenerate homogenization did not result in a substantial reduction in the fission rate spatial distribution error with respect to OpenMC. This result indicates that an accurate model of \ac{MGXS} clustering is not needed to predict fission rate spatial distributions. Hence, \ac{LNS} spatial homogenization would be expected to produce similar results to degenerate homogenization. Indeed, the fission rate errors for 8 and 70 groups with \ac{LNS} homogenization are very nearly the same as those for degenerate homogenization for the three individual fuel assemblies and the 2$\times$2 colorset. Although the errors are 0.1 -- 0.2\% worse for the 2$\times$2 colorset with a reflector and the quarter core \ac{BEAVRS} model, they remain slightly below those for null homogenization. This is due to the fact that the \ac{MGXS} for the fuel pins near the assembly-reflector interface are homogenized along with those at the inter-assembly interfaces for \ac{LNS} spatial homogenization.
+One of the key findings in Chap.~\ref{chap:quantify} was that degenerate homogenization did not result in a substantial reduction in the spatial distribution of fission rate errors with respect to OpenMC. This result indicates that an accurate model of \ac{MGXS} clustering \textit{is not} needed to predict fission rate spatial distributions. Hence, \ac{LNS} spatial homogenization would be expected to produce similar results to degenerate homogenization. Indeed, the fission rate errors for 8 and 70 groups with \ac{LNS} homogenization are very nearly the same as those for degenerate homogenization for the three individual fuel assemblies and the 2$\times$2 colorset. Although the errors are 0.1 -- 0.2\% worse for the 2$\times$2 colorset with a reflector and the quarter core \ac{BEAVRS} model, they remain slightly below those for null homogenization. This is due to the fact that the \ac{MGXS} for the fuel pins near the assembly-reflector interface are homogenized along with those at the inter-assembly interfaces for \ac{LNS} spatial homogenization, rather than separately homogenized due to the differential moderation from the reflector.
 
 \begin{emphbox}
-\textbf{\ac{LNS} spatial homogenization performs as well as or better than degenerate homogenization for simple benchmarks, but fails to model the impact of spatial self-shielding effects on pin-wise fission rates in more complicated geometries with inter-assembly and assembly-reflector interfaces.}
+\textbf{\ac{LNS} spatial homogenization performs as well as or slightly better than degenerate homogenization for simple benchmarks, but fails to model the impact of spatial self-shielding effects on pin-wise fission rates in more complicated geometries with inter-assembly and assembly-reflector interfaces.}
 \end{emphbox}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{U-238 Capture Rate Distributions}
 \label{subsec:chap9-lns-capt-rates}
 
-first paragraph:
--Tab.~\ref{table:chap9-lns-capt-rates} - max and mean U-238 capture rate errors
-  -compare to Tabs.~\ref{table:chap8-openmoc-max-capt-rates} and~\ref{table:chap8-openmoc-mean-capt-rates}
-  -recall that degenerate homogenization significantly reduced U-238 capture rate errors 
--max rates - observations
-  -assm 1.6 - better than degenerate w/ 70 groups (0.04\%), but worse with 2 and 8 groups
-  -assm 3.1 - better than degenerate w/ 70 groups (0.07\%), but worse with 2 and 8 groups
-  -assm 3.1 w/ BPs - worse than degenerate w/ 70 groups (0.06\%)
-  -2x2 - significantly better than degenerate w/ 70 groups (0.16\%)
-  -2x2 w/ reflector - significantly worse than degenerate (and null) w/ 70 groups (0.8\%)
-    -and with opposite sign since the errors are under-predicted near reflector
-  -generally worse with 2 and 8 groups
--mean rates - observations
-  -assm 1.6 - better than degenerate w/ 70 groups (0.01\%)
-  -assm 3.1 - better than degenerate w/ 70 groups (0.01\%)
-  -assm 3.1 w/ BPs - better than degenerate w/ 70 groups (0.01\%)
-  -2x2 - better than degenerate w/ 70 groups (0.04\%)
-  -2x2 w/ reflector - worse than degenerate w/ 70 groups (0.07\%)
-    -though still much better than null/infinite
--GENERAL TAKEWAWAY: generally better than null but approaches accuracy of degenerate case
-  -even slightly beats accuracy of degenerate case in most cases
-  -except for reflector and full core
-
-second paragraph: spatial distributions
--Figs.~\Crefrange{fig:chap9-assm-1.6-lns-capt-err}{fig:chap9-full-core-capt-err-degenerate}
-  -U-238 capture rate error distributions with respect to OpenMC reference results
-  -akin to Figs.~\Crefrange{fig:chap8-assm-1.6-capt-err}{fig:chap8-full-core-capt-err}
-  -compare null, \ac{LNS} and degenerate homogenization for 8 and 70 groups
-  -shows the error distributions for degenerate and \ac{LNS} spatial homogenization are very nearly the same for the individual fuel assemblies and 2$\times$2 colorset
-  -error distributions deviate for the 2$\times$2 colorset with a reflector
-
-third paragraph: observations with reflector?? w/ 70 groups
-  -NULL
-    -largest errors along assembly-assembly / assembly-reflector interfaces, and pins near \acp{CRGT}
-  -DEGENERATE
-    -errors randomly distributed across pins
-  -LNS
-    -largest errors along assembly-reflector interface, and lesser extent assembly-reflector interface
-    -as shown in table, largest errors are larger than those for null case
-    -reason is that LNS averages \ac{MGXS} pins along both interfaces rather than differentiating b/w them
-    -this is actually a worse approx. than averaging across ALL pins as is done by null case
-    -highlights sensitivity to how \ac{MGXS} averaging is performed
-      -if averaged in the wrong way, errors may actually increase in some pins
-      -worthwhile to note that errors will generally improve in those pins with the largest reaction rates since the averaging is done as a weighted average
-
--SUMMARY BOX
-
--put magnitude plots in appendices
+The OpenMOC energy-integrated pin-wise U-238 capture rates were compared to the reference OpenMC fission rates for \ac{LNS} homogenization. The percent relative errors for each pin's fission rates were computed and the maximum and mean errors are listed for each benchmark and energy group structure in Tab.~\ref{table:chap9-lns-capture-rates}, respectively. In particular, the maximum errors are the maximum of the absolute values of the errors along with the appropriate sign, while the mean errors are the averages of the absolute error magnitudes. The results in Tab.~\ref{table:chap9-lns-capture-rates} can be compared to the corresponding data for infinite, null and degenerate homogenization in Tabs.~\ref{table:chap8-openmoc-max-capt-rates} and~\ref{table:chap8-openmoc-mean-capt-rates}.
 
 \begin{table}[ht!]
   \centering
@@ -782,6 +735,11 @@ third paragraph: observations with reflector?? w/ 70 groups
 \end{tabular}
 \end{table}
 
+One of the key findings in Chap.~\ref{chap:quantify} was that degenerate homogenization enabled substantial reductions of the spatial distribution of U-238 capture rate errors with respect to OpenMC. In contrast to the fission rates, this result indicates that accurate model of \ac{MGXS} clustering \textit{is} needed to accurately predict U-238 capture rate spatial distributions. Hence, \ac{LNS} spatial homogenization would be expected to enable more accurate predictions than null homogenization, and to potentially approach the accuracy of degenerate homogenization. Upon investigation, the max and mean U-238 capture rate errors for 70 groups with \ac{LNS} homogenization are 0.1  -- 0.2\% and 0.01\% less, respectively, than degenerate homogenization for the three individual fuel assemblies and the 2$\times$2 colorset (relative reductions of 10 -- 30\%).
+
+However, the errors for the 2$\times$2 colorset with a reflector are very nearly the same as those for null homogenization (about 2.5$\times$ larger errors than degenerate homogenization). As was previusly noted for the fission rate errors, the \ac{MGXS} for the fuel pins near the assembly-reflector interface are not separately homogenized and thus fail to account for the differential moderation from the reflector. Perhaps the most surprising observation is that the max and mean errors for the quarter core \ac{BEAVRS} model are actually 1.5\% and 0.1\% less, respectively than those for both null and degenerate homogenization. This is notable since degenerate homogenization actually has a slightly larger maximum error (8.296\%) than null homogenization (8.076\%), most likely due to the relatively larger tally uncertainties of the pin-wise \ac{MGXS} for the quarter core model as compared to the five smaller benchmarks. Based on these results, it appears that \ac{LNS} homogenization performs as intended and ``de-noises'' the statistical uncertainties by averaging the \ac{MGXS} across clusters with similar spatial self-shielding effects.
+
+The spatial distributions of capture rate errors are plotted as heatmaps for each benchmark in Figs.~\Crefrange{fig:chap9-assm-1.6-lns-capt-err}{fig:chap9-full-core-capt-err-degenerate}. These figures illustrate the capture rate errors for 8 and 70 energy group structures for the assembly and colorset benchmarks, and errors for 70 groups for the quarter core \ac{BEAVRS} model. The figures are corollaries to those comparing the infinite, null and degenerate schemes in Figs.~\Crefrange{fig:chap8-assm-1.6-capt-err}{fig:chap8-full-core-capt-err}. In addition, the U-238 capture absolute errors for the 2$\times$2 colorsets are illustrated in Figs.~\ref{fig:lns-2x2-capt-err-abs} and~\ref{fig:lns-reflector-capt-err-abs}, and for the full core in Fig.~\Crefrange{fig:null-full-core-capt-err-abs}{fig:lns-full-core-capt-err-abs} in App.~\ref{sec:quantify-capt-rates-absolute}. The heatmaps illustrate very nearly the same error distributions for degenerate and \ac{LNS} spatial homogenization for the individual fuel assemblies and 2$\times$2 colorset without a reflector, but systematic deviations for the reflected colorset and quarter core \ac{BEAVRS} model.
 
 \begin{figure}[h!]
 \centering
@@ -837,7 +795,7 @@ third paragraph: observations with reflector?? w/ 70 groups
 \centering
 \includegraphics[width=\linewidth]{figures/patterns/lns/full-core/capt-err-null}
 \vspace{2mm}
-\caption[U-238 capture rate errors for \ac{BEAVRS} with null homogenization]{U-238 capture rate absolute errors for the 2D quarter core \ac{BEAVRS} model with null spatial homogenization.}
+\caption[U-238 capture rate errors for \ac{BEAVRS} with null homogenization]{U-238 capture rate percent relative errors for the 2D quarter core \ac{BEAVRS} model with null spatial homogenization.}
 \label{fig:chap9-full-core-capt-err-null}
 \end{figure}
 
@@ -847,7 +805,7 @@ third paragraph: observations with reflector?? w/ 70 groups
 \centering
 \includegraphics[width=\linewidth]{figures/patterns/lns/full-core/capt-err-lns}
 \vspace{2mm}
-\caption[U-238 capture rate absolute errors for \ac{BEAVRS} with LNS homogenization]{U-238 capture rate absolute errors for the 2D quarter core \ac{BEAVRS} model with \ac{LNS} spatial homogenization.}
+\caption[U-238 capture rate absolute errors for \ac{BEAVRS} with LNS homogenization]{U-238 capture rate percent relative errors for the 2D quarter core \ac{BEAVRS} model with \ac{LNS} spatial homogenization.}
 \label{fig:chap9-full-core-capt-err-lns}
 \end{figure}
 
@@ -857,52 +815,29 @@ third paragraph: observations with reflector?? w/ 70 groups
 \centering
 \includegraphics[width=\linewidth]{figures/patterns/lns/full-core/capt-err-degenerate}
 \vspace{2mm}
-\caption[U-238 capture rate absolute errors for \ac{BEAVRS} with degenerate homogenization]{U-238 capture rate absolute errors for the 2D quarter core \ac{BEAVRS} model with degenerate spatial homogenization.}
+\caption[U-238 capture rate absolute errors for \ac{BEAVRS} with degenerate homogenization]{U-238 capture rate percent relative errors for the 2D quarter core \ac{BEAVRS} model with degenerate spatial homogenization.}
 \label{fig:chap9-full-core-capt-err-degenerate}
 \end{figure}
 
-%\begin{figure}[h!]
-%\centering
-%\begin{subfigure}{.5\textwidth}
-%  \centering
-%  \includegraphics[width=0.9\linewidth]{figures/patterns/lns/full-core/capt-err-null}
-%  \caption{}
-%  \label{fig:chap9-full-core-null}
-%\end{subfigure}%
-%\begin{subfigure}{.5\textwidth}
-%  \centering
-%  \includegraphics[width=0.9\linewidth]{figures/patterns/lns/full-core/capt-err-null-magnitude}
-%  \caption{}
-%  \label{fig:chap9-full-core-null-magnitude}
-%\end{subfigure}
-%\begin{subfigure}{.5\textwidth}
-%  \centering
-%  \includegraphics[width=0.9\linewidth]{figures/patterns/lns/full-core/capt-err-lns}
-%  \caption{}
-%  \label{fig:chap9-full-core-lns}
-%\end{subfigure}%
-%\begin{subfigure}{.5\textwidth}
-%  \centering
-%  \includegraphics[width=0.9\linewidth]{figures/patterns/lns/full-core/capt-err-lns-magnitude}
-%  \caption{}
-%  \label{fig:chap9-full-core-lns-magnitude}
-%\end{subfigure}
-%\begin{subfigure}{.5\textwidth}
-%  \centering
-%  \includegraphics[width=0.9\linewidth]{figures/patterns/lns/full-core/capt-err-degenerate}
-%  \caption{}
-%  \label{fig:chap7-pin-1.6}
-%\end{subfigure}%
-%\begin{subfigure}{.5\textwidth}
-%  \centering
-%  \includegraphics[width=0.9\linewidth]{figures/patterns/lns/full-core/capt-err-degenerate-magnitude}
-%  \caption{}
-%  \label{fig:chap7-pin-crgt}
-%\end{subfigure}
-%\caption[U-238 capture rate errors for the \ac{BEAVRS} quarter core model]{U-238 capture percent relative errors rate errors for the \ac{BEAVRS} quarter core model with \ac{LNS} spatial homogenization.}\label{fig:chap9-full-core-lns-capt-err}
-%\end{figure}
+The heatmaps illustrate systematic error trends in the pin-wise capture errors which correlate with spatial heterogeneities in each benchmark. As is observed for the fission rates, the capture rates are generally underpredicted for pins near \acp{CRGT}, but overpredicted for pins removed from \acp{CRGT}, such as those in the corners of the fuel assembly. Unlike the fission rates, the capture rates are also underpredicted for pins near \acp{BP}. The effects due to heterogeneities are further enhanced when differentiating pins which are facially adjacent to \acp{CRGT}, facially and corner adjacent to two \acp{CRGT}, etc. In addition, the error magnitudes are large for pins along the inter-assembly and assembly-reflector interfaces for the 2$\times$2 colorset benchmarks. For the \ac{PWR} benchmarks modeled here, the differential moderation provided by neighboring \acp{CRGT} and/or reflectors softens the local flux for nearby fuel pins and should be modeled when collapsing pin-wise \ac{MGXS} for high-fidelity multi-group transport calculations.
 
-%\clearpage
+third paragraph: observations with reflector?? w/ 70 groups
+  -NULL
+    -largest errors along assembly-assembly / assembly-reflector interfaces, and pins near \acp{CRGT}
+  -DEGENERATE
+    -errors randomly distributed across pins
+  -LNS
+    -largest errors along assembly-reflector interface, and lesser extent assembly-reflector interface
+    -as shown in table, largest errors are larger than those for null case
+    -reason is that LNS averages \ac{MGXS} pins along both interfaces rather than differentiating b/w them
+    -this is actually a worse approx. than averaging across ALL pins as is done by null case
+    -highlights sensitivity to how \ac{MGXS} averaging is performed
+      -if averaged in the wrong way, errors may actually increase in some pins
+      -worthwhile to note that errors will generally improve in those pins with the largest reaction rates since the averaging is done as a weighted average
+
+-SUMMARY BOX
+
+-add null-to-degenerate, etc. plots
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
