@@ -24,7 +24,7 @@ This section quantifies and visualizes the impact of heterogeneities on pin-wise
 \subsection{Pin-Wise MGXS Statistical Uncertainty}
 \label{subsec:chap9-mgxs-uncertainty}
 
-Before investigating \ac{MGXS} clustering, it is important to first quantify the statistical uncertainties of the tallied pin-wise \ac{MGXS} for each benchmark. The max and mean standard deviations of the pin-wise U-238 capture and U-235 fission \ac{MGXS} for an infinite lattice and each of the heterogeneous benchmarks are presented in Tab.~\ref{table:chap9-std-dev-mgxs}. The standard deviations were computed by propagating the statistical uncertainties of the corresponding reaction rate and flux tallies needed to compute each \ac{MGXS} as discussed in Sec.~\ref{subsec:chap3-uncertainty-prop}. The standard deviations were computed for all of the pins in each benchmark, and the max and mean values were selected for the table. The table highlights the population variance for both 1.6\% and 3.1\% enriched fuel pins\footnote{Although the \ac{BEAVRS} model includes 2.4\% enriched fuel pins, they were not included in this analysis.}. The \ac{MGXS} data was computed in two energy groups. The U-238 capture \ac{MGXS} is analyzed for the first group since it encompasses the resonance region which is most sensitive to spatial self-shielding effects. The U-235 fission \ac{MGXS} is analyzed for the second group since it encompasses thermal energies which drives the majority of fission in \acp{LWR}.
+Before investigating \ac{MGXS} clustering, it is important to first quantify the statistical uncertainties of the tallied pin-wise \ac{MGXS} for each benchmark. The max and mean standard deviations of the pin-wise U-238 capture and U-235 fission \ac{MGXS} for an infinite lattice and each of the heterogeneous benchmarks are presented in Tab.~\ref{table:chap9-std-dev-mgxs}. The standard deviations were computed by propagating the standard deviations of the reaction rate and flux tallies (Eqn.~\ref{eqn:chap3-variance-mean}) needed to compute each \ac{MGXS} as discussed in Sec.~\ref{subsec:chap3-uncertainty-prop}. The standard deviations were computed for all of the pins in each benchmark, and the max and mean values were selected for the table. The table highlights the standard deviations for both 1.6\% and 3.1\% enriched fuel pins\footnote{Although the \ac{BEAVRS} model includes 2.4\% enriched fuel pins, they were not included in this analysis.}. The \ac{MGXS} data was computed in two energy groups. The U-238 capture \ac{MGXS} is analyzed for the first group since it encompasses the resonance region which is most sensitive to spatial self-shielding effects. The U-235 fission \ac{MGXS} is analyzed for the second group since it encompasses thermal energies which drives the majority of fission in \acp{LWR}.
 
 There are a few key observations which can be made from the statistical uncertainties. First, the statistical uncertainties for both \ac{MGXS} are relatively small with respect to the means. In particular, the relative uncertainties\footnote{The \textit{relative uncertainty} as used here is defined as the standard deviation of the sample mean divided by the sample mean.} are 0.1 -- 0.7\% and 0.05 -- 0.1\% for the U-238 capture and U-235 fission \ac{MGXS}, respectively. Furthermore, the reported standard deviations are likely overestimates since the reaction rate and flux tallies used to compute each \ac{MGXS} are positively correlated (see Sec.~\ref{table:chap9-std-dev-mgxs}). Therefore, the clustering of \ac{MGXS} demonstrated in the following sections results from variation in \ac{MC} sampling distributions with spatial heterogeneities rather than poor \ac{MC} sample statistics.
 
@@ -84,6 +84,13 @@ In addition, it may be noted that the standard deviation increases with both the
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Pin-Wise MGXS Population Variance}
 \label{subsec:chap9-pop-var}
+
+The population variance is a useful metric to quantify the degree of dispersion of a probability distribution. The metric is used in this section to compare the dispersive effects of heterogeneities on pin-wise \ac{MGXS}. The population variance $\sigma^2$ for a population of $N$ random variates $x_{i}$ drawn from a distribution with mean $\mu$\footnote{If the mean $\mu$ is unknown, it may be empirically estimated from the sample mean $\bar{x}$.} is computed as follows:
+
+\begin{equation}
+\label{eqn:chap9-pop-var}
+\sigma^2 = \frac{\displaystyle\sum\limits_{i=1}^{N}(x_{i} - \mu)^{2}}{N}
+\end{equation}
 
 The population variance of U-238 capture and U-235 fission pin-wise \ac{MGXS} for an infinite lattice and each of the heterogeneous benchmarks are presented in Tab.~\ref{table:chap9-pop-var-mgxs}. Each of the random samples in the variance calculation is the \ac{MGXS} in one fuel pin instance in the respective benchmark (using OpenMC distributed cell tallies). The table highlights the population variance for both 1.6\% and 3.1\% enriched fuel pins. The \ac{MGXS} data was computed in two energy groups. The U-238 capture \ac{MGXS} is analyzed for the first group since it encompasses the resonance region which is most sensitive to spatial self-shielding effects. The U-235 fission \ac{MGXS} is analyzed for the second group since it encompasses thermal energies which drives the majority of fission in \acp{LWR}.
 
@@ -916,13 +923,13 @@ As a result of the uneven assignment of pins to \ac{LNS} sets, the relation in E
 
 The \ac{MGXS} ``convergence rate'' as defined here refers to the reduction in the statistical uncertainties with the number of independent simulated realizations (\textit{i.e.}, \ac{MC} batches). Ideally, the \ac{MC} tally standard deviations will converge as $\nicefrac{1}{\sqrt{N}}$ for $N$ batches (see Sec.~\ref{subsec:chap3-mc-stats}). This ideal convergence is only true for \ac{MC} particle transport simulations if the tally realizations for each batch are i.i.d. Although this is the case for fixed source \ac{MC} simulations, it is not the case for eigenvalue simulations for reactor physics analysis. In particular, the correlation between the fission source distributions for successive batches is correlated in criticality calculations which breaks the independence assumption and dampens the convergence rate~\cite{herman2014correlation, miao2016correlation}. 
 
-Although the convergence rate of independent \ac{MC} tallis is dampened, it is not clear how the correlation of fission source distributions impacts the \ac{MGXS} convergence rate. Most \ac{MGXS} are computed as a reaction rate-to-flux ratio which may be less sensitive to correlation effects than the individual tallies themselves. While the individual flux and reaction rate tallies reflect the effects of correlations in their absolute magnitudes, these artificial deviations are positively correlated and should divide out in the \ac{MGXS}. A few empirical case studies of the \ac{MGXS} convergence rate are highlighted in the following section, but an in-depth analysis of the interplay between fission source correlations and \ac{MGXS} convergence remains an open question for future research.
+Although the convergence rate of independent \ac{MC} tallis is dampened, it is not clear how the correlation of fission source distributions impacts the \ac{MGXS} convergence rate. Most \ac{MGXS} are computed as a reaction rate-to-flux ratio which may be less sensitive to correlation effects than the individual tallies themselves. While the individual flux and reaction rate tallies reflect the effects of correlations in their absolute magnitudes, these artificial deviations are positively correlated and should divide out in the \ac{MGXS}. In fact, if the positve correlation between reaction rate and flux tallies were accounted for when computing \ac{MGXS}, it would reduce the standard deviations through the subtraction of the covariance between the two tallies (see Eqn.~\ref{eqn:chap3-div}). However, as discussed in Sec.~\ref{subsec:chap3-uncertainty-prop}, the tally covariance cannot be quantified without an ensemble of simulations, and therefore is not used here to reduce the \ac{MGXS} uncertainties. A few empirical case studies of the \ac{MGXS} convergence rate are highlighted in the following section, but an in-depth analysis of the interplay between fission source correlations and \ac{MGXS} convergence remains an open question for future research.
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Batchwise MGXS Statistical Uncertainties}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Batchwise Statistical Uncertainties}
 \label{subsec:chap9-batchwise-uncertainties}
 
-The statistical uncertainties for the pin-wise \ac{MGXS} were reported for the ``fully converged'' \ac{MGXS} in Sec.~\ref{subsec:chap9-mgxs-uncertainty}. The \ac{MGXS} uncertainties are computed with uncertainty propagation (see Sec.~\ref{subsec:chap3-uncertainty-prop}) of the standard deviations of the reaction rate and flux tally means (see Eqn.~\ref{eqn:chap3-variance-mean}). This section analyzes the evolution of the uncertainties with the number of particle histories simulated by OpenMC. The standard deviation of the pin-wise \ac{MGXS} for null, degenerate and \ac{LNS} homogenization were computed every 20 batches for U-235 fission and U-238 capture \ac{MGXS}. The standard deviations are plotted for the 1.6\% enriched assembly with \acp{CRGT} and the quarter core \ac{BEAVRS} model in Figs.~\Crefrange{fig:chap9-capt-27-var}{fig:chap9-fiss-2-var}.
+The statistical uncertainties for the pin-wise \ac{MGXS} were reported for the ``fully converged'' \ac{MGXS} in Sec.~\ref{subsec:chap9-mgxs-uncertainty}. The \ac{MGXS} uncertainties were computed with uncertainty propagation (see Sec.~\ref{subsec:chap3-uncertainty-prop}) of the standard deviations of the reaction rate and flux tally means (see Eqn.~\ref{eqn:chap3-variance-mean}). This section presents the evolution of those uncertainties with the number of particles simulated by OpenMC. The standard deviation of the pin-wise \ac{MGXS} for null, degenerate and \ac{LNS} homogenization were computed every 20 batches for U-235 fission and U-238 capture \ac{MGXS}. The standard deviations are plotted for the 1.6\% enriched assembly and the quarter core \ac{BEAVRS} models in Figs.~\Crefrange{fig:chap9-capt-27-var}{fig:chap9-fiss-2-var}. The evolution is shown for both the maximum and mean standard deviations of the population of \ac{MGXS} for \ac{LNS} and degenerate homogenization.
 
 \begin{figure}[h!]
 \centering
@@ -932,15 +939,17 @@ The statistical uncertainties for the pin-wise \ac{MGXS} were reported for the `
   \caption{}
   \label{fig:chap9-assm-16-var-capt-27}
 \end{subfigure}
-%\begin{subfigure}{.87\textwidth}
-%  \centering
-%  \includegraphics[width=\linewidth]{figures/patterns/convergence/full-core/16-enr-capt}
-%  \caption{}
-%  \label{fig:chap9-full-core-var-capt-27}
-%\end{subfigure}
+\begin{subfigure}{.87\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{figures/patterns/convergence/full-core/16-enr-var-capture-27}
+  \caption{}
+  \label{fig:chap9-full-core-var-capt-27}
+\end{subfigure}
 \caption[Convergence of U-238 capture MGXS standard deviation]{The standard deviation of pin-wise U-238 capture \ac{MGXS} (group 27 of 70) for 1.6\% enriched fuel pins in a single assembly (a) and the quarter core \ac{BEAVRS} model (b). The convergence of both the maximum and mean standard deviation are shown for the degenerate and \ac{LNS} homogenization schemes. The thin lines indicate the theoretical $\nicefrac{1}{\sqrt{N}}$ convergence for each homogenization scheme.}
 \label{fig:chap9-capt-27-var}
 \end{figure}
+
+\clearpage
 
 \begin{figure}[h!]
 \centering
@@ -950,15 +959,17 @@ The statistical uncertainties for the pin-wise \ac{MGXS} were reported for the `
   \caption{}
   \label{fig:chap9-assm-16-var-capt-1}
 \end{subfigure}
-%\begin{subfigure}{.87\textwidth}
-%  \centering
-%  \includegraphics[width=\linewidth]{figures/patterns/convergence/full-core/16-enr-capt}
-%  \caption{}
-%  \label{fig:chap9-full-core-var-capt-1}
-%\end{subfigure}
+\begin{subfigure}{.87\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{figures/patterns/convergence/full-core/16-enr-var-capture-1}
+  \caption{}
+  \label{fig:chap9-full-core-var-capt-1}
+\end{subfigure}
 \caption[Convergence of U-238 capture MGXS standard deviation]{The batch-wise change of pin-wise U-238 capture \ac{MGXS} (group 1 of 2) for 1.6\% enriched fuel pins in a single assembly (a) and the quarter core \ac{BEAVRS} model (b). The convergence of both the maximum and mean standard deviation are shown for the degenerate and \ac{LNS} homogenization schemes. The thin lines indicate the theoretical $\nicefrac{1}{\sqrt{N}}$ convergence for each homogenization scheme.}
 \label{fig:chap9-capt-1-var}
 \end{figure}
+
+\clearpage
 
 \begin{figure}[h!]
 \centering
@@ -968,48 +979,43 @@ The statistical uncertainties for the pin-wise \ac{MGXS} were reported for the `
   \caption{}
   \label{fig:chap9-assm-16-var-fiss-2}
 \end{subfigure}
-%\begin{subfigure}{.87\textwidth}
-%  \centering
-%  \includegraphics[width=\linewidth]{figures/patterns/convergence/full-core/16-enr-capt}
-%  \caption{}
-%  \label{fig:chap9-full-core-var-fiss-2}
-%\end{subfigure}
+\begin{subfigure}{.87\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{figures/patterns/convergence/full-core/16-enr-var-fission-2}
+  \caption{}
+  \label{fig:chap9-full-core-var-fiss-2}
+\end{subfigure}
 \caption[Convergence of U-235 fission MGXS standard deviation]{The batch-wise change of pin-wise U-235 fission \ac{MGXS} (group 2 of 2) for 1.6\% enriched fuel pins in a single assembly (a) and the quarter core \ac{BEAVRS} model (b). The convergence of both the maximum and mean standard deviation are shown for the degenerate and \ac{LNS} homogenization schemes. The thin lines indicate the theoretical $\nicefrac{1}{\sqrt{N}}$ convergence for each homogenization scheme.}
 \label{fig:chap9-fiss-2-var}
 \end{figure}
 
+\clearpage
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Batchwise MGXS Percent Deviation}
+As illustrated by the parallel lines in each plot, the convergence rate for all three homogenization schemes is very nearly the same for a given nuclide, reaction and energy group. However, the rates are all significantly less than the $\nicefrac{1}{\sqrt{N}}$ that would be expected for an ideal simulation. This likely results from the correlations present in the fission source distributions.
+
+-compare degenerate (mean) and null with the model
+-talk about why the gap b/w LNS max/mean is so much larger than degenerate max/mean
+
+\begin{emphbox}
+\textbf{The \ac{MGXS} statistical uncertainties converge at the same rate for null, degenerate and \ac{LNS} homogenization schemes. The uncertainties for null and \ac{LNS} homogenization are smaller than those for the degenerate scheme is reduced according to the number of fuel pins assigned to each spatial homogenization set.}
+\end{emphbox}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Batchwise Relative Percent Deviations}
 \label{subsec:chap9-batchwise-deviation}
 
-first paragraph: 
--Fig.~\ref{fig:chap9-converge}
-  -batch-wise percentage change for \ac{MGXS} with null, degenerate and \ac{LNS} spatial homogenization
-  -explain what ``batch-wise change'' means
--\ac{MGXS} for null changes the least from batch to batch
-  -track density in each tally volume (in this case, all pins taken together) is greatest
--\ac{MGXS} for degenerate changes the most from batch to batch
-  -track density in each tally volume (in this case, each unique fuel pin instance) is least
--\ac{MGXS} for \ac{LNS} changes less than degenerate but more than null
-  -track density is in between since \ac{MGXS} are averaged across groups of like fuel pin instance
+The statistical uncertainties presented in the preceding section estimate the amount by which \ac{MGXS} may vary from their tallied means. However, the uncertainties do little to indicate the degree by which one may expect the solutions from a multi-group calculation to change from batch-to-batch of the \ac{MC} simulation. This section seeks to quantify the impact of \ac{MGXS} convergence on downstream codes by presenting the batchwise relative percentage deviation for \ac{MGXS} with null, degenerate and \ac{LNS} spatial homogenization. 
 
-second paragraph: key takeaways
--convergence rate (slope) is same for all schemes
--averaging across pins shifts convergence curves to right
--the size/magnitude of the leftward shift depends on the number of pins being averaged across
--hence, the more pins we can average across, the faster we can compute \ac{MGXS} with \ac{MC}
+The batchwise relative percentage deviation quantifies the change in two cumulative \ac{MGXS} estimates between two batches. The absolute batchwise relative deviation as employed here is computed for the cumulatively estimated microscopic \ac{MGXS} $\hat{\sigma}_{x,i,k,g}^{b}$ and $\hat{\sigma}_{x,i,k,g}^{b+\Delta b}$ for batches $b$ and $b + \Delta b$ as follows:
 
-third paragraph: segue into next chapter
--goal should be to best identify groups of pins with like \ac{MGXS}
--\ac{LNS} was used as one scheme
-  -demonstrated promise for simple benchmarks
-  -illustrated shortcomings for benchmarks with complicated heterogeneties
-    -assembly-assembly and assembly-reflector interfaces
-  -algorithm could be tweaked to pick up on these effects
-    -customizations highly reactor dependent - NOT reactor agnostic
--would be nice to identify adequate pin groupings directly from structural patterns in the \ac{MGXS} data
--will do this in the following chapter
+\begin{equation}
+\label{eqn:chap9-batchwise-deviation}
+\Delta \hat{\sigma}_{x,i,k,g} [\%] = \left|\frac{\hat{\sigma}_{x,i,k,g}^{b} - \hat{\sigma}_{x,i,k,g}^{b+\Delta b}}{\hat{\sigma}_{x,i,k,g}^{b}}\right| \times 100
+\end{equation}
+
+\noindent The batchwise relative deviation indicates the degree by which the estimated \ac{MGXS} change with the number of \ac{MC} particle histories simulated. The \ac{MGXS} estimates from batch-to-batch follow a random walk with steps which are increasingly attentuated with the number of batches. The degree of change between batches depends on the particle track density within each tally volume, and therefore should be ordered from least to greatest for null, \ac{LNS} and degenerate homogenization.
+
+Due to computational resource constraints, the batchwise deviations were computed every $\Delta b$ = 20 batches for each \ac{MC} simulation. The absolute relative batchwise percentage deviations are plotted for the 1.6\% enriched assembly and quarter core \ac{BEAVRS} models in Figs.~\Crefrange{fig:chap9-capt-27-dev}{fig:chap9-fiss-2-dev}. The evolution is shown for both the maximum and mean deviations of the population of \ac{MGXS} for \ac{LNS} and degenerate homogenization.
 
 \begin{figure}[h!]
 \centering
@@ -1025,9 +1031,11 @@ third paragraph: segue into next chapter
   \caption{}
   \label{fig:chap9-full-core-dev-capt-27}
 \end{subfigure}
-\caption[Convergence of U-238 capture MGXS batchwise deviation]{The batch-wise change of pin-wise U-238 capture \ac{MGXS} (group 27 of 70) for 1.6\% enriched fuel pins in a single assembly (a) and the quarter core \ac{BEAVRS} model (b). The convergence of both the maximum and mean absolute percent change are shown for the degenerate and \ac{LNS} homogenization schemes. The thin lines indicate the theoretical $\nicefrac{1}{\sqrt{N}}$ convergence for each homogenization scheme.}
+\caption[Convergence of U-238 capture MGXS batchwise deviation]{The absolute relative batchwise percentage deviation of pin-wise U-238 capture \ac{MGXS} (group 27 of 70) for 1.6\% enriched fuel pins in a single assembly (a) and the quarter core \ac{BEAVRS} model (b). The convergence of both the maximum and mean deviations are shown for the degenerate and \ac{LNS} homogenization schemes.}
 \label{fig:chap9-capt-27-dev}
 \end{figure}
+
+\clearpage
 
 \begin{figure}[h!]
 \centering
@@ -1043,9 +1051,11 @@ third paragraph: segue into next chapter
   \caption{}
   \label{fig:chap9-full-core-dev-capt-1}
 \end{subfigure}
-\caption[Convergence of U-238 capture MGXS batchwise deviation]{The batch-wise change of pin-wise U-235 fission \ac{MGXS} (group 1 of 2) for 1.6\% enriched fuel pins in a single assembly (a) and the quarter core \ac{BEAVRS} model (b). The convergence of both the maximum and mean absolute percent change are shown for the degenerate and \ac{LNS} homogenization schemes. The thin lines indicate the theoretical $\nicefrac{1}{\sqrt{N}}$ convergence for each homogenization scheme.}
+\caption[Convergence of U-238 capture MGXS batchwise deviation]{The absolute relative batchwise percentage deviation of pin-wise U-235 fission \ac{MGXS} (group 1 of 2) for 1.6\% enriched fuel pins in a single assembly (a) and the quarter core \ac{BEAVRS} model (b). The convergence of both the maximum and mean deviations are shown for the degenerate and \ac{LNS} homogenization schemes.}
 \label{fig:chap9-capt-1-dev}
 \end{figure}
+
+\clearpage
 
 \begin{figure}[h!]
 \centering
@@ -1061,9 +1071,57 @@ third paragraph: segue into next chapter
 %  \caption{}
 %  \label{fig:chap9-full-core-dev-fiss-2}
 %\end{subfigure}
-\caption[Convergence of U-235 fission MGXS batchwise deviation]{The batch-wise change of pin-wise U-235 fission \ac{MGXS} (group 2 of 2) for 1.6\% enriched fuel pins in a single assembly (a) and the quarter core \ac{BEAVRS} model (b). The convergence of both the maximum and mean absolute percent change are shown for the degenerate and \ac{LNS} homogenization schemes. The thin lines indicate the theoretical $\nicefrac{1}{\sqrt{N}}$ convergence for each homogenization scheme.}
+\caption[Convergence of U-235 fission MGXS batchwise deviation]{The absolute relative batchwise percentage deviation of pin-wise U-235 fission \ac{MGXS} (group 2 of 2) for 1.6\% enriched fuel pins in a single assembly (a) and the quarter core \ac{BEAVRS} model (b). The convergence of both the maximum and mean  deviations are shown for the degenerate and \ac{LNS} homogenization schemes.}
 \label{fig:chap9-fiss-2-dev}
 \end{figure}
 
+\clearpage
 
-SUMMARY BOXES!!!
+A couple of observations can be made from the figures. First, the convergence rate (or log-log slope) of the batchwise deviations is very nearly the same for all three homogenization schemes. More importantly, however, the deviations are smallest for null homogenization and greatest for degenerate homogenization, as expected. This is manifested as a downward shift in the deviations for a given number of particle histories, and is due to the differential particle track density within each tally volume for the different homogenization schemes. The magnitude of the shift depends on the number of pins being averaged across, and is hence the greatest for the null and degenerate schemes for the quarter core \ac{BEAVRS} model, where nearly 4,500 pins of each enrichment are averaged together for the null case (as compared to only 264 pins for the assembly). In contrast, the degenerate and \ac{LNS} schemes are shifted by nearly the same amount for both benchmark models since the number of fuel pins averaged across for each \ac{LNS} set is the same in each. These observations confirm that the more fuel pins homogenized together for \ac{MGXS} clustering, the faster the resultant \ac{MGXS} tally estimates will ``converge'' for use in multi-group codes.
+
+These results point to the need for a scheme that can effectively model \ac{MGXS} clustering in a more scalable fashion than \ac{LNS} homogenization. \ac{LNS} homogenization achieves little relative improvement in convergence of the batchwise deviations relative to the null and degenerate schemes since the pins in each fuel assembly are homogenized separately. The analysis of \ac{MGXS} clustering in Sec.~\ref{sec:chap9-clustering} indicated that fuel pins in many different assemblies may be effectively homogenized together while still accounting for clustering due to spatial self-shielding effects. This would increase the number of pins within each homogenization set and improve the convergence rate beyond what is achievable with \ac{LNS}. The following chapter introduces a novel methodology based on unsupervised statistical clustering algorithms which seeks to outperform both the accuracy and the convergence of \ac{LNS} homogenization.
+
+\begin{emphbox}
+\textbf{As with the statistical uncertainties, the \ac{MGXS} batchwise deviations converge at the same rate for null, degenerate and \ac{LNS} homogenization schemes. In addition, the relative difference in deviations between schemes is reduced according to the number of fuel pins assigned to each spatial homogenization set.}
+\end{emphbox}
+
+%third paragraph: segue into next chapter
+%-goal should be to best identify groups of pins with like \ac{MGXS}
+%-\ac{LNS} was used as one scheme
+%  -demonstrated promise for simple benchmarks
+%  -illustrated shortcomings for benchmarks with complicated heterogeneties
+%    -assembly-assembly and assembly-reflector interfaces
+%  -algorithm could be tweaked to pick up on these effects
+%    -customizations highly reactor dependent - NOT reactor agnostic
+%-would be nice to identify adequate pin groupings directly from structural patterns in the \ac{MGXS} data
+%-will do this in the following chapter
+
+\clearpage
+
+\vfill
+\begin{highlightsbox}[frametitle=Highlights]
+\begin{itemize}
+  \item \ac{MGXS} data for each of the six heterogeneous benchmarks was analyzed to show that spatial heterogeneities induce \ac{MGXS} \textit{dispersion} and \textit{clustering}.
+%  \item It is hypothesized that \ac{MGXS} clustering must be appropriately modeled to accurately predict U-238 capture rates in heterogeneous geometries.
+  \item Degenerate homogenization accounts for \ac{MGXS} clustering, but requires a large number of \ac{MC} particle histories to converge \ac{MGXS}.
+  \item The \ac{LNS} spatial homogenization scheme is introduced which assigns fuel pins with similar neighbors to the same spatial homogenization set.
+%  \begin{itemize}
+%    \item \ac{LNS} homogenization assigns fuel pins with similar neighbors to the same spatial homogenization set.
+%    \item Unique \ac{MGXS} are homogenized for the pins comprising each set.
+% \end{itemize}
+  \item The six benchmarks are modeled with \ac{MGXS} generated by the \ac{LNS} scheme:
+  \begin{itemize}
+    \item \textit{Eigenvalues} -- \ac{LNS} has no systematic impact on the eigenvalues due to the preservation of global reactivity.
+    \item \textit{Fission Rates} -- \ac{LNS} performs slightly better than degenerate homogenization, which is only marginally better than the null scheme, since the fission rate predictions are largely insensitive to \ac{MGXS} clustering.
+    \item \textbf{\textit{U-238 Capture Rates} -- \ac{LNS} reduces the error by 10 -- 30\% as compared to degenerate homogenization} for assembly and periodic colorset benchmarks. However, \ac{LNS} fails to distinguish between pins at inter-assembly and assembly-reflector interfaces which results in a systematically large reaction rate error for these fuel pins.
+  \end{itemize}
+  \item A series of case studies illustrate the need to homogenize across as many fuel pins to reduce the \ac{MGXS} statistical uncertainties and batchwise deviations.
+%  \item \ac{LNS} only reduces the number of materials by $\sim$25$\times$.
+  \item An improved methodology is needed which can:
+  \begin{itemize}  
+     \item \textbf{Model arbitrary \ac{MGXS} clustering} from all spatial self-shielding effects.
+     \item \textbf{Minimize the \# of materials} to improve \ac{MGXS} statistical uncertainties.
+   \end{itemize}
+\end{itemize}
+\end{highlightsbox}
+\vfill
