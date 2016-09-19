@@ -993,8 +993,9 @@ The statistical uncertainties for the pin-wise \ac{MGXS} were reported for the `
 
 As illustrated by the parallel lines in each plot, the convergence rate for all three homogenization schemes is very nearly the same for a given nuclide, reaction and energy group. However, the rates are all significantly less than the $\nicefrac{1}{\sqrt{N}}$ that would be expected for an ideal simulation. This likely results from the correlations present in the fission source distributions.
 
--compare degenerate (mean) and null with the model
--talk about why the gap b/w LNS max/mean is so much larger than degenerate max/mean
+The relation in Eqn.~\ref{eqn:chap9-homogenize-std-dev} may be used to understand the relative difference (\textit{i.e.}, vertical offset) in statistical uncertainties for three homogenization schemes. First, the relation predicts a $\sim$16$\times$ reduction of the uncertainties for the 264 pins in the 1.6\% enriched assembly. This compares well to the empirically observed reduction of 18 -- 22$\times$ for the the different \ac{MGXS} types. Similarly, the relation predicts a $\sim$23$\times$ reduction in the uncertainties for the null homogenized \ac{MGXS} of the 549 1.6\% enriched fuel pins in the quarter core \ac{BEAVRS} model. The empirically observed reduction of 18 -- 20$\times$ is smaller, most likely due to the larger disparity in the standard deviations of the \ac{MGXS} for each of the fuel pins, which breaks the assumption made in Sec.~\ref{subsubsec:chap9-relative-uncertainties} that the standard deviations are identical for all samples.
+
+In addition, it is noteworth that the gap between max and mean uncertainties for the degenerate and \ac{LNS} schemes vary between the assembly and quarter core benchmarks. In particular, the max and mean uncertainties for the degenerate scheme differ by less than 10\% for the assembly, but by $\sim$2.5$\times$ for the quarter core model (this can also seen in Tab.~\ref{table:chap9-std-dev-mgxs}). This results from the highly uneven fission source distribution in the quarter core model, which results in a more uneven distribution of particle track densities across the fuel pins tally volumes than in the assembly. In contrast, the max and mean uncertainties for the \ac{LNS} scheme differ by 60 -- 70\% for the assembly but by 13 -- 16$\times$ for the quarter core model. The disparity between max and mean uncertainties for \ac{LNS} homogenization is more complicated since it reflects the number of fuel pins assigned to each spatial homogenization set in addition to the uncertainties of the \ac{MGXS} for each fuel pin. 
 
 \begin{emphbox}
 \textbf{The \ac{MGXS} statistical uncertainties converge at the same rate for null, degenerate and \ac{LNS} homogenization schemes. The uncertainties for null and \ac{LNS} homogenization are smaller than those for the degenerate scheme is reduced according to the number of fuel pins assigned to each spatial homogenization set.}
@@ -1027,7 +1028,7 @@ Due to computational resource constraints, the batchwise deviations were compute
 \end{subfigure}
 \begin{subfigure}{.87\textwidth}
   \centering
-  \includegraphics[width=\linewidth]{figures/patterns/convergence/full-core/16-enr-capt}
+  \includegraphics[width=\linewidth]{figures/patterns/convergence/full-core/16-enr-dev-capture-27}
   \caption{}
   \label{fig:chap9-full-core-dev-capt-27}
 \end{subfigure}
@@ -1047,7 +1048,7 @@ Due to computational resource constraints, the batchwise deviations were compute
 \end{subfigure}
 \begin{subfigure}{.87\textwidth}
   \centering
-  \includegraphics[width=\linewidth]{figures/patterns/convergence/full-core/16-enr-capt}
+  \includegraphics[width=\linewidth]{figures/patterns/convergence/full-core/16-enr-dev-capture-1}
   \caption{}
   \label{fig:chap9-full-core-dev-capt-1}
 \end{subfigure}
@@ -1065,12 +1066,12 @@ Due to computational resource constraints, the batchwise deviations were compute
   \caption{}
   \label{fig:chap9-assm-16-dev-fiss-2}
 \end{subfigure}
-%\begin{subfigure}{.87\textwidth}
-%  \centering
-%  \includegraphics[width=\linewidth]{figures/patterns/convergence/full-core/16-enr-capt}
-%  \caption{}
-%  \label{fig:chap9-full-core-dev-fiss-2}
-%\end{subfigure}
+\begin{subfigure}{.87\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{figures/patterns/convergence/full-core/16-enr-dev-fission-2}
+  \caption{}
+  \label{fig:chap9-full-core-dev-fiss-2}
+\end{subfigure}
 \caption[Convergence of U-235 fission MGXS batchwise deviation]{The absolute relative batchwise percentage deviation of pin-wise U-235 fission \ac{MGXS} (group 2 of 2) for 1.6\% enriched fuel pins in a single assembly (a) and the quarter core \ac{BEAVRS} model (b). The convergence of both the maximum and mean  deviations are shown for the degenerate and \ac{LNS} homogenization schemes.}
 \label{fig:chap9-fiss-2-dev}
 \end{figure}
