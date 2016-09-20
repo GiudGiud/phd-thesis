@@ -178,11 +178,11 @@ The intra-pin egg-crate grid spacer and grid sleeve separating each fuel assembl
 \section{Reference Results}
 \label{sec:chap7-ref-results}
 
-This section presents the reference results computed using OpenMC for each of the six benchmarks presented in the preceding section. As discussed in Sec.~\ref{subsec:chap7-src-stationarity}, OpenMC was employed to compute the Shannon entropy to determine the number of batches of particle histories needed to reach source stationarity. Sec.~\ref{subsec:chap7-eigenvalues} presents the converged $k_{eff}$ eigenvalue computed by OpenMC for each of the six benchmarks. Finally, Sec.~\ref{subsec:chap7-pin-powers} and Sec.~\ref{subsec:chap7-capture-rates} present the reference pin-wise spatial distributions of fission rates and U-238 capture rates in each benchmark as tallied in OpenMC, along with the associated uncertainties and batch-wise convergence for each reference solution.
+This section presents the reference results computed using OpenMC for each of the six benchmarks presented in the preceding section. As discussed in Sec.~\ref{subsec:chap7-src-stationarity}, OpenMC was employed to compute the Shannon entropy to determine the number of batches of particle histories needed to reach source stationarity. Sec.~\ref{subsec:chap7-eigenvalues} presents the converged $k_{eff}$ eigenvalue computed by OpenMC for each of the six benchmarks. Finally, Sec.~\ref{subsec:chap7-pin-powers} and Sec.~\ref{subsec:chap7-capture-rates} present the reference pin-wise spatial distributions of fission rates and U-238 capture rates in each benchmark as tallied in OpenMC along with their associated statistical uncertainties.
 
 The ENDF/B-VII.1 continuous energy cross section libraries evaluated at 600K provided by the MCNP code~\cite{mcnpx2003manual} were used by OpenMC for all simulations. It should be noted that isotropic in lab scattering was employed for all reference calculations with OpenMC's iso-in-lab feature (see Sec.~\ref{subsec:chap4-iso-in-lab}). Although isotropic in lab scattering is a poor approximation for \acp{LWR}, it eliminated scattering source anisotropy as one possible cause of approximation error between OpenMC and OpenMOC\footnote{At the time of this writing, OpenMOC employed an isotropic in lab neutron scattering kernel.} in order to isolate approximation errors resulting from spatially self-shielded \ac{MGXS}.
 
-The reference solution for each benchmark model was computed with 200 inactive and 800 active batches of 10$^7$ particle histories per batch. Each OpenMC simulation was performed in parallel on ten compute nodes on the Falcon supercomputer at Idaho National Laboratory. Each compute node contained two dual socket Intel Xeon E5-2680 CPUs with 12 cores and 132 gigabytes of DRAM\footnote{Dynamic Random Access Memory.}. Two MPI processes were launched on each node (one MPI process per CPU) with 12 OpenMP parallel threads per MPI process.
+The reference solutions for each assembly and colorset benchmark model was computed with 100 inactive and 900 active batches of 10$^7$ particle histories per batch. The reference solution for the quarter core \ac{BEAVRS} model was computed with 200 inactive and 800 active batches of 10$^8$ histories per batch. Each OpenMC simulation was performed in parallel on ten compute nodes on the Falcon supercomputer at Idaho National Laboratory. Each compute node contained two dual socket Intel Xeon E5-2680 CPUs with 12 cores and 132 gigabytes of DRAM\footnote{Dynamic Random Access Memory.}. Four MPI processes were launched on each node (two MPI processes per CPU) with 6 OpenMP parallel threads per MPI process.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Source Stationarity}
@@ -214,7 +214,7 @@ As expected, the number of batches required to reach source stationarity increas
 \subsection{Eigenvalues}
 \label{subsec:chap7-eigenvalues}
 
-The reference eigenvalues were computed for each of the six benchmarks and are listed in Tab.~\ref{table:chap7-ref-eigenvalues}. The OpenMC ``combined'' eigenvalue estimator is reported along with the associated one sigma uncertainty of 1 \ac{pcm} for each of the benchmarks. The total runtimes required for the OpenMC simulations to generate the reference eigenvalues are also reported in the table. 
+The reference eigenvalues were computed for each of the six benchmarks and are listed in Tab.~\ref{table:chap7-ref-eigenvalues}. The OpenMC ``combined'' eigenvalue estimator is reported along with the associated one sigma uncertainty of 1 \ac{pcm} or less for each of the benchmarks. The total runtimes required for the OpenMC simulations to generate the reference eigenvalues are also reported in the table. 
 
 %A total of 9,000,000,000 particle histories (900 active batches of 10$^7$ particle histories per batch) were simulated for the individual fuel assembly and 2$\times$2 colorset benchmarks, while 8,000,000,000 total particle histories (800 active batches) were simulated for the quarter core \ac{BEAVRS} model.
 
@@ -224,22 +224,22 @@ The reference eigenvalues were computed for each of the six benchmarks and are l
   \small
   \label{table:chap7-ref-eigenvalues}
   \vspace{6pt}
-  \begin{tabular}{l C{4cm} c}
+  \begin{tabular}{l C{4cm} r}
   \toprule
   \rowcolor{lightgray}
-  \textbf{Benchmark} & $\bm{k^{OpenMC}_{eff}}$ & \textbf{Runtime [CPU-hours]} \\
+  \textbf{Benchmark} & $\bm{k^{OpenMC}_{eff}}$ & \textbf{Runtime [core-hours]} \\
   \midrule
-  1.6\% Enriched Assembly (no \ac{BP}s) & 0.99326 $\pm$ 0.00001 & 1005 \\
+  1.6\% Enriched Assembly (no \ac{BP}s) & 0.99326 $\pm$ 0.00001 & 1,005 \\
   3.1\% Enriched Assembly (no \ac{BP}s) & 1.21657 $\pm$ 0.00001 & 891 \\
   3.1\% Enriched Assembly (20 \ac{BP}s) & 1.03315 $\pm$ 0.00001 & 879 \\
   2$\times$2 Colorset & 1.01814 $\pm$ 0.00001 & 903 \\
   2$\times$2 Colorset w/ Reflector & 0.94574 $\pm$ 0.00001 & 895 \\
-  \ac{BEAVRS} Quarter Core & 1.02448 $\pm$ 0.00001 & 1004 \\
+  \ac{BEAVRS} Quarter Core & 1.02446 $\pm$ 0.00000 & 10,892 \\
   \bottomrule
 \end{tabular}
 \end{table}
 
-As expected, the eigenvalues increase with enrichment and decrease with the presence of \acp{BP} for the single fuel assembly benchmarks. The eigenvalue for the 2$\times$2 colorset is reduced with the addition of a reflector due to leakage, and to a lesser extent, absorption in the reflector. Although the quarter core \ac{BEAVRS} model is a critical configuration, the eigenvalue is nearly 2500 pcm supercritical due to the iso-in-lab scattering approximation\footnote{An identical OpenMC simulation of the quarter core \ac{BEAVRS} model using normal anisotropic scattering produced an eigenvalue of 0.99922 $\pm$ 0.00001.}. The eigenvalues reported in Tab.~\ref{table:chap7-ref-eigenvalues} are used to validate the OpenMOC simulations with \ac{MGXS} generated by OpenMC throughout the following chapters.
+As expected, the eigenvalues increase with enrichment and decrease with the presence of \acp{BP} for the single fuel assembly benchmarks. The eigenvalue for the 2$\times$2 colorset is reduced with the addition of a reflector due to leakage, and to a lesser extent, absorption in the reflector. Although the quarter core \ac{BEAVRS} model is a critical configuration, the eigenvalue is nearly 2500 pcm supercritical due to the iso-in-lab scattering approximation\footnote{An identical OpenMC simulation of the  3D full core \ac{BEAVRS} model using normal anisotropic scattering produced an eigenvalue of 0.99922 $\pm$ 0.00000.}. The eigenvalues reported in Tab.~\ref{table:chap7-ref-eigenvalues} are used to validate the OpenMOC simulations with \ac{MGXS} generated by OpenMC throughout the following chapters.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Fission Rate Spatial Distributions}

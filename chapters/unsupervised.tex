@@ -1,50 +1,272 @@
 \chapter{Unsupervised Clustering for Spatial Homogenization}
 \label{chap:unsupervised}
 
+first paragraph: motivation
+-recall from previous chapter:
+  -found clusters in \ac{MGXS}
+  -must cluster \ac{MGXS} to reduce U-238 capture rate errors to level of fission
+-motivate chapter two-fold:
+  -simultaneously achieve degenerate's accuracy and null's convergence
+  -need to be more adapative than \ac{LNS} for arbitrary geometries
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{A Latent Variable Model for MGXS Clustering}
-\label{sec:chap6-latent-model}
+second paragraph: over-arching goal
+-achieve accuracy of \ac{MC} with efficient deterministic multi-group methods
+-recall motivation in chapter 1??
+-present flow chart figure Fig.~\ref{fig:chap10-flow-chart}
+-following chapter will evaluate methodology wrt eigenvalues, fission rates, U-238 capture reats
 
+third paragraph: outline chapter
+-
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Overview of Approach}
-\label{sec:chap6-overview}
+-need to say that chapter presents a general methodology, only part of which will be evaluated in the following chapter
 
 \begin{figure}
   \centering
   \includegraphics[width=\linewidth]{figures/pipeline/flow-chart}
   \caption{}
 \caption[flowchar]{flowchart}
-\label{fig:chap6-flow-chart}
+\label{fig:chap10-flow-chart}
 \end{figure}
+  
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Latent Spectral Index Model}
+\label{sec:chap10-latent-model}
+
+-\ac{LSIM} - latent variable model
+-three goals:
+  -infer number of points/pins in each set
+  -infer conditional probabilities?
+  -assign each region to the most likely set?
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Overview of Approach}
+\label{sec:chap10-overview}
+
+-competing paragidms:
+  -clustering
+  -input -> target (e.g., trees)
+  -some combination of the two
+
+-break apart diagram for machine learning piece into parts
+  -clustering
+    -flow chart: litmus tests, feature eng./selectiontransformation, clustering
+  -input -> target (e.g., regression)
+    -flow chart: litmus tests, target selection, feature eng./selection/transformation, model fitting, prediction
+     -can take outputs as inputs for clustering scheme
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Feature Engineering}
-\label{sec:chap6-feature-engineer}
+\label{sec:chap10-feature-engineer}
+
+first paragraph: motivation
+-need to define ``feature''
+-recall plots from preceding chapter with clusters
+-mention conflict:
+  -need 70+ groups for accurate solutions
+  -uncertainties / noise in few-group \ac{MGXS} is less, making it easier to identify clusters
+-cluster \ac{MGXS} directly
+  -simply draw 1D boundaries b/w \ac{MGXS} in histograms
+  -could cluster multiple microscopic \ac{MGXS} simultaneously - nuclides, reactions, groups
+  -multiple \ac{MGXS} may eliminate ``de-noise'' data, eliminate outliers
+    -good segue to next paragraph!!
+
+second paragraph: more generally
+-include non-\ac{MGXS} variables to cluster
+  -separation distance clusters may grow with more variables, making them easier to identify
+-goal: identify variables which reflect spatial self-shielding effects
+-can simply cluster multiple micro \ac{MGXS} simultaneously
+
+third paragraph: outline
+-
+
+-mention that some features may be 1) fuel pin specific (at the least), 2) nuclide specific, 3) reaction specific, 4) energy group specific
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Statistical Uncertainty}
+\label{subsec:chap10-stat-uncertainty}
+
+first paragraph: explain what it is
+-point to a few figures
+-explain why std. dev. may be higher for different pins
+-indicate that it may reflect the difference in track density in differen pins
+  -is this why we see rings in the \ac{MGXS} in the full core??
+-recall equation for std. dev.
+-recall uncertainty propagation
+-also relative error - normalize out the mean \ac{MGXS}
+
+\begin{equation}
+\label{eqn:chap10-rel-err}
+\eta_{x,i,k,g} = \frac{\sigma_{\hat{\sigma}_{x,i,k,g}}}{\hat{\sigma}_{x,i,k,g}}
+\end{equation}
+
+second paragraph: visualizations
+-look at single fuel assembly with GUI
+-three plots: full, two different clusters selected
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Fractional Reactivity}
+\label{subsec:chap10-frac-reactivity}
+
+first paragraph: explain what it is
+-divide each pin's energy-integrated nu-fission rxn rate by the total energy- and volume-integrated absorption rates across all fuel pins
+-Eqn.~\ref{eqn:chap10-frac-reactivity}
+  -multiply by 1E5 to get units of \ac{pcm}
+-explain what it indicates (differential moderation, adjacency to guide tubes, spectral hardening)
+-note that $k$ is ONLY for fuel regions!!!
+
+\begin{equation}
+\label{eqn:chap10-frac-reactivity}
+\alpha_{k} = \frac{\displaystyle\sum\limits_{g=1}^{G}\nu\hat{\sigma}_{f,i,k,g}\hat{\phi}_{k,g}}{\displaystyle\sum\limits_{k=1}^{K}\displaystyle\sum\limits_{g=1}^{G}\hat{\sigma}_{a,i,k,g}\hat{\phi}_{k,g}}
+\end{equation}
+
+second paragraph: visualizations
+-look at single fuel assembly with GUI
+-three plots: full, two different clusters selected
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Spectral Index}
+\label{subsec:chap10-spec-index}
+
+first paragraph: explain what it is
+-divide each pin's nu-fission and absorption \ac{MGXS} 
+-Eqn.~\ref{eqn:chap10-spec-index}
+-explain what it indicates (differential moderation, adjacency to guide tubes, spectral hardening)
+-note $i$ and $j$ may designate two difference nuclides
+-note $\gamma$ is radiative capture - need to change this in theory section???
+
+\begin{equation}
+\label{eqn:chap10-spec-index-general}
+\beta_{x,i,k,g} = \frac{\hat{\sigma}_{x,i,k,g}}{\hat{\sigma}_{f,k,g}^{235}}
+\end{equation}
+
+\begin{equation}
+\label{eqn:chap10-spec-index-u238-capt}
+\beta_{\gamma,k,g}^{238} = \frac{\hat{\sigma}_{\gamma,k,g}^{238}}{\hat{\sigma}_{f,k,g}^{235}}
+\end{equation}
+
+second paragraph: visualizations
+-look at single fuel assembly with GUI
+-three plots: full, two different clusters selected
+-indicate which energy group and nuclide
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Nuclide Fraction}
+\label{subsec:chap10-nuclide-frac}
+
+first paragraph: explain what it is
+-divide pin-wise micro \ac{MGXS} for each nuclide/reaction/group by the corresponding total \ac{MGXS} for that nuclide/reaction/group trio
+-Eqn.~\ref{eqn:chap10- nuclide-frac}
+-explain what it indicates...???
+-note $t$ designates the total collision reaction type
+
+\begin{equation}
+\label{eqn:chap10-nuclide-frac}
+\tau_{x,i,k,g} = \frac{\hat{\sigma}_{x,i,k,g}}{\hat{\sigma}_{t,i,k,g}}
+\end{equation}
+
+second paragraph: visualizations
+-look at single fuel assembly with GUI
+-three plots: full, two different clusters selected
+-indicate which energy group, nuclide, and reaction type
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Total Fraction}
+\label{subsec:chap10-tot-frac}
+
+first paragraph: explain what it is
+-divide pin-wise micro \ac{MGXS} for each nuclide/reaction/group by the corresponding total \ac{MGXS} for that nuclide/reaction/group trio
+-Eqn.~\ref{eqn:chap10-tot-frac}
+-explain what it indicates...???
+-note that $I$ designates the total number of nuclides in a fuel pin
+
+\begin{equation}
+\label{eqn:chap10-tot-frac}
+\omega_{x,i,k,g} = \frac{\hat{\sigma}_{x,i,k,g}}{\displaystyle\sum\limits_{i=1}^{I}\hat{\sigma}_{t,i,k,g}}
+\end{equation}
+
+second paragraph: visualizations
+-look at single fuel assembly with GUI
+-three plots: full, two different clusters selected
+-indicate which energy group, nuclide, and reaction type
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Possible Features}
-\label{subsec:chap6-feature-select}
+\section{Feature Selection}
+\label{sec:chap10-litmus}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Target Selection}
-\label{subsec:chap6-feature-select}
+\section{Target Selection}
+\label{sec:chap10-feature-select}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Feature Transformation}
-\label{subsec:chap6-feature-transform}
+\section{Feature Transformation}
+\label{sec:chap10-feature-transform}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Feature Selection}
-\label{subsec:chap6-litmus}
+-
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Litmus Tests}
+\label{sec:chap10-litmus}
+
+-which \ac{MGXS} need to be clustered
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Clustering Algorithms}
+\label{subsec:chap10-clustering}
+
+-very brief overview
+-refer to literature for more info
+-used canned algorithms in scikit-learn \texttt{sklearn.cluster}
+-while there are many, many algorithms out there, only a few selected for discussion here
+  -one concern is scalability to large number of samples
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{$k$-Means Clustering}
+\label{subsec:chap10-kmeans}
+
+-introduce scheme
+-algorithmic
+-initialization
+-model selection
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Hierarchical Clustering}
+\label{subsec:chap10-agglomerative}
+
+-introduce scheme
+-algorithmic
+-initialization
+-model selection
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{DBSCAN}
+\label{subsec:chap10-dbscan}
+
+-introduce scheme
+-algorithmic
+-initialization
+-model selection
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Gaussian Mixture Models}
+\label{sec:chap10-gmms}
+
+-introduce scheme
+-algorithmic
+-initialization
+-intro fact that it is not scalable - not evaluated here
+-mention dirichlet process mixture models
+-model selection criteria are nice
+-model selection
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Approaches to Clustering}
-\label{sec:chap6-cluster}
+\label{sec:chap10-cluster}
 
 \begin{itemize}[noitemsep]
   \item dataset restrictions
