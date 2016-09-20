@@ -157,7 +157,7 @@ It should be noted that the uncertainty propagation in tally arithmetic makes th
 \subsection{Distributed Cell Tallies}
 \label{subsec:chap4-distribcells}
 
-Many Monte Carlo codes, including OpenMC, use some variant of combinatorial geometry. because it can represent arbitrary, repeating geometries such as fuel pins and assemblies. However, the \ac{CG} approach is challenged by applications which require tallies in each instance of a repeated cell throughout a reactor geometry, such as the \ac{BEAVRS} benchmark model~\cite{horelik2013beavrs} depicted in Fig.~\ref{fig:beavrs}. The ``brute force'' solution is to instantiate a unique cell for each distinct tally zone. However, this defeats the purpose of using \ac{CG} for its compact representation, and it is not scalable to problems with large tally datasets such as those considered in this thesis.
+Many Monte Carlo codes, including OpenMC, use some variant of combinatorial geometry because it can represent arbitrary, repeating geometries such as fuel pins and assemblies. However, the \ac{CG} approach is challenged by applications which require tallies in each instance of a repeated cell throughout a reactor geometry, such as the \ac{BEAVRS} benchmark model~\cite{horelik2013beavrs} depicted in Fig.~\ref{fig:beavrs}. The ``brute force'' solution is to instantiate a unique cell for each distinct tally zone. However, this defeats the purpose of using \ac{CG} for its compact representation, and it is not scalable to problems with large tally datasets such as those considered in this thesis.
 
 \begin{figure}[h!]
 \begin{subfigure}{0.45\textwidth}
