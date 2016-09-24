@@ -545,29 +545,101 @@ second paragraph: visualizations
 -three plots: full, two different clusters selected
 -indicate which energy group, nuclide, and reaction type
 
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Feature Selection}
-\label{sec:chap10-litmus}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Target Selection}
 \label{sec:chap10-feature-select}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Feature Transformation}
 \label{sec:chap10-feature-transform}
 
+first paragraph: what is goal???
+-curse of dimensionality - dimensionality reduction
+-transform number of features to find new ones with more descriptive power than original set
+  -new features may be more easily ordered than original ones
+    -allowing for easier feature selection (Sec.~\ref{sec:chap10-litmus})
+-can account for correlations between features
+  -rather than treating each features independent
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Feature Decomposition}
+\label{subsec:chap10-feature-transform-decomp}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Principal Component Analysis}
+\label{subsec:chap10-feature-transform-pca}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Independent Component Analysis}
+\label{subsec:chap10-feature-transform-ica}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Feature -- Target Regression}
+\label{subsec:chap10-feature-transform-regression}
 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Feature Selection}
+\label{sec:chap10-litmus}
+
+-dimensionality reduction
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Litmus Tests}
 \label{sec:chap10-litmus}
 
+first paragraph: what are ``litmust tests''?
 -which \ac{MGXS} need to be clustered
+  -which nuclides
+  -which reaction type
+  -which energy group
+
+-first choose a reaction type for a nuclide, energy group
+-then run litmus tests to determine whether to cluster it
+
+-note that results in following chapter may not make full use of litmus tests
+  -instead, user will indicate wish to cluster individual MGXS like U-238 capture
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Nuclide Fraction}
+\label{subsec:chap10-litmus-nuc-frac}
+
+-used to choose reaction type
+-threshold on $\tau_{x,i,k,g}$
+-only choose reaction's which contribute at least some amount towards the total cross section
+  -assumes that reaction with little contribution are not important to cluster anyway
+  -but may mistakenly make approx that MGXS with small magnitudes don't disproportionately reflect self-shielding effects
+    -but this is a good assumption since larger MGXS will have smaller uncertainties anyway
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Nuclide Fraction Thresholding}
+\label{subsec:chap10-litmus-nuc-frac}
+
+-used to choose reaction type
+-threshold on the population variance divide by the population mean
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Total Fraction Thresholding}
+\label{subsec:chap10-litmus-tot-frac}
+
+-used to determine whether to cluster MGXS for a particular nuclide, group, rxn type
+-threshold on $\omega_{x,i,k,g}$
+  -only cluster if the MGXS makes up a substantial fraction of the MGXS for all nuclides
+  -otherwise, self-shielding of the nuclide won't matter anyway
+  -this must be of the macro not the micro MGXS btw!!!
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Normality Tests}
+\label{subsec:chap10-litmus-normality}
+
+-used to determine whether to cluster MGXS for a particular nuclide, group, rxn type
+-look at $p$-value for Shapiro-Wilks tests of normality
+-don't cluster data that may have come from a normal distribution!
+-if the $p$-value is below a threshold, then data may be rejected as non-normal and may be good candidate for clustering
 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Clustering Algorithms}
 \label{subsec:chap10-clustering}
 
