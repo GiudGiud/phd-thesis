@@ -7,7 +7,7 @@ first paragraph: motivation
   -must cluster \ac{MGXS} to reduce U-238 capture rate errors to level of fission
 -motivate chapter two-fold:
   -simultaneously achieve degenerate's accuracy and null's convergence
-  -need to be more adapative than \ac{LNS} for arbitrary geometries
+  -KEY: need to be more adapative than \ac{LNS} for arbitrary geometries
 
 second paragraph: over-arching goal
 -achieve accuracy of \ac{MC} with efficient deterministic multi-group methods
@@ -16,13 +16,13 @@ second paragraph: over-arching goal
 -following chapter will evaluate methodology wrt eigenvalues, fission rates, U-238 capture reats
 
 third paragraph: outline chapter
--
+-Sec.~\ref{}
 
 -need to say that chapter presents a general methodology, only part of which will be evaluated in the following chapter
 
 \begin{figure}
   \centering
-  \includegraphics[width=0.9\linewidth]{figures/pipeline/flow-chart}
+  \includegraphics[width=0.9\linewidth]{figures/unsupervised/flow-chart}
   \caption{}
 \caption[flowchar]{flowchart}
 \label{fig:chap10-flow-chart}
@@ -38,6 +38,7 @@ third paragraph: outline chapter
   -infer number of points/pins in each set
   -infer conditional probabilities?
   -assign each region to the most likely set?
+-is this section needed???
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -64,6 +65,7 @@ third paragraph: outline chapter
 first paragraph: motivation
 -need to define ``feature''
 -recall plots from preceding chapter with clusters
+-identify features which are only derived from tallied quantities
 -mention conflict:
   -need 70+ groups for accurate solutions
   -uncertainties / noise in few-group \ac{MGXS} is less, making it easier to identify clusters
@@ -96,6 +98,8 @@ first paragraph: explain what it is
 -recall equation for std. dev.
 -recall uncertainty propagation
 -also relative error - normalize out the mean \ac{MGXS}
+
+-MATCH COLOR SCHEMES
 
 \begin{equation}
 \label{eqn:chap10-rel-err}
@@ -547,7 +551,7 @@ second paragraph: visualizations
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Target Selection}
-\label{sec:chap10-feature-select}
+\label{sec:chap10-target-select}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Feature Transformation}
@@ -688,10 +692,201 @@ first paragraph: what are ``litmust tests''?
 -model selection criteria are nice
 -model selection
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Clustered Geometries}
+\label{sec:chap10-geometries}
+
+-agglomerative clustering was used to generate the figures
+-which nuclide, group, reaction was used for pinch clustering???
+
+\begin{figure}[h!]
+\centering
+\begin{subfigure}{0.48\textwidth}
+  \centering
+  \includegraphics[width=0.9\linewidth]{figures/unsupervised/geometries/2-clusters/pinch/assm-16}
+  \caption{}
+  \label{fig:chap10-assm-16-pinch-2}
+\end{subfigure}%
+\begin{subfigure}{0.48\textwidth}
+  \centering
+  \includegraphics[width=0.9\linewidth]{figures/unsupervised/geometries/2-clusters/combined/assm-16}
+  \caption{}
+  \label{fig:chap10-assm-16-combined-2}
+\end{subfigure}
+\begin{subfigure}{0.48\textwidth}
+  \centering
+  \includegraphics[width=0.9\linewidth]{figures/unsupervised/geometries/4-clusters/pinch/assm-16}
+  \caption{}
+  \label{fig:chap10-assm-16-pinch-4}
+\end{subfigure}%
+\begin{subfigure}{0.48\textwidth}
+  \centering
+  \includegraphics[width=0.9\linewidth]{figures/unsupervised/geometries/4-clusters/combined/assm-16}
+  \caption{}
+  \label{fig:chap10-assm-16-combined-4}
+\end{subfigure}
+\begin{subfigure}{0.48\textwidth}
+  \centering
+  \includegraphics[width=0.9\linewidth]{figures/unsupervised/geometries/8-clusters/pinch/assm-16}
+  \caption{}
+  \label{fig:chap10-assm-16-pinch-8}
+\end{subfigure}%
+\begin{subfigure}{0.48\textwidth}
+  \centering
+  \includegraphics[width=0.9\linewidth]{figures/unsupervised/geometries/8-clusters/combined/assm-16}
+  \caption{}
+  \label{fig:chap10-assm-16-combined-8}
+\end{subfigure}
+\caption[Materials for the 1.6\% fuel assembly with clustering homogenization]{Materials for the 1.6\% enriched fuel assembly with clustering homogenization. The materials for 2, 4, and 8 clusters are illustrated in (a), (c) and (e) for pinch clustering, and in (b), (d) and (f) for combined clustering, respectively.}
+\label{fig:chap10-assm-16-geometries}
+\end{figure}
+
+\clearpage
+
+\begin{figure}[h!]
+\centering
+\begin{subfigure}{0.48\textwidth}
+  \centering
+  \includegraphics[width=0.9\linewidth]{figures/unsupervised/geometries/2-clusters/pinch/assm-31-20BPs}
+  \caption{}
+  \label{fig:chap10-assm-31-20BPs-pinch-2}
+\end{subfigure}%
+\begin{subfigure}{0.48\textwidth}
+  \centering
+  \includegraphics[width=0.9\linewidth]{figures/unsupervised/geometries/2-clusters/combined/assm-31-20BPs}
+  \caption{}
+  \label{fig:chap10-assm-31-20BPs-combined-2}
+\end{subfigure}
+\begin{subfigure}{0.48\textwidth}
+  \centering
+  \includegraphics[width=0.9\linewidth]{figures/unsupervised/geometries/4-clusters/pinch/assm-31-20BPs}
+  \caption{}
+  \label{fig:chap10-assm-31-20BPs-pinch-4}
+\end{subfigure}%
+\begin{subfigure}{0.48\textwidth}
+  \centering
+  \includegraphics[width=0.9\linewidth]{figures/unsupervised/geometries/4-clusters/combined/assm-31-20BPs}
+  \caption{}
+  \label{fig:chap10-assm-31-20BPs-combined-4}
+\end{subfigure}
+\begin{subfigure}{0.48\textwidth}
+  \centering
+  \includegraphics[width=0.9\linewidth]{figures/unsupervised/geometries/8-clusters/pinch/assm-31-20BPs}
+  \caption{}
+  \label{fig:chap10-assm-31-20BPs-pinch-8}
+\end{subfigure}%
+\begin{subfigure}{0.48\textwidth}
+  \centering
+  \includegraphics[width=0.9\linewidth]{figures/unsupervised/geometries/8-clusters/combined/assm-31-20BPs}
+  \caption{}
+  \label{fig:chap10-assm-31-20BPs-combined-8}
+\end{subfigure}
+\caption[Materials for the 3.1\% fuel assembly with clustering homogenization]{Materials for the 3.1\% enriched fuel assembly with 20 \acp{BP} with clustering homogenization. The materials for 2, 4, and 8 clusters are illustrated in (a), (c) and (e) for pinch clustering, and in (b), (d) and (f) for combined clustering, respectively.}
+\label{fig:chap10-assm-31-20BPs-geometries}
+\end{figure}
+
+\clearpage
+
+\begin{figure}[h!]
+\centering
+\begin{subfigure}{0.48\textwidth}
+  \centering
+  \includegraphics[width=0.9\linewidth]{figures/unsupervised/geometries/2-clusters/pinch/2x2}
+  \caption{}
+  \label{fig:chap10-2x2-pinch-2}
+\end{subfigure}%
+\begin{subfigure}{0.48\textwidth}
+  \centering
+  \includegraphics[width=0.9\linewidth]{figures/unsupervised/geometries/2-clusters/combined/2x2}
+  \caption{}
+  \label{fig:chap10-2x2-combined-2}
+\end{subfigure}
+\begin{subfigure}{0.48\textwidth}
+  \centering
+  \includegraphics[width=0.9\linewidth]{figures/unsupervised/geometries/4-clusters/pinch/2x2}
+  \caption{}
+  \label{fig:chap10-2x2-pinch-4}
+\end{subfigure}%
+\begin{subfigure}{0.48\textwidth}
+  \centering
+  \includegraphics[width=0.9\linewidth]{figures/unsupervised/geometries/4-clusters/combined/2x2}
+  \caption{}
+  \label{fig:chap10-assm-2x2-combined-4}
+\end{subfigure}
+\begin{subfigure}{0.48\textwidth}
+  \centering
+  \includegraphics[width=0.9\linewidth]{figures/unsupervised/geometries/8-clusters/pinch/2x2}
+  \caption{}
+  \label{fig:chap10-assm-2x2-pinch-8}
+\end{subfigure}%
+\begin{subfigure}{0.48\textwidth}
+  \centering
+  \includegraphics[width=0.9\linewidth]{figures/unsupervised/geometries/8-clusters/combined/2x2}
+  \caption{}
+  \label{fig:chap10-assm-2x2-combined-8}
+\end{subfigure}
+\caption[Materials for the 2$\times$2 periodic colorset with clustering homogenization]{Materials for the 2$\times$2 periodic colorset with clustering homogenization. The materials for 2, 4, and 8 clusters are illustrated in (a), (c) and (e) for pinch clustering, and in (b), (d) and (f) for combined clustering, respectively.}
+\label{fig:chap10-2x2-geometries}
+\end{figure}
+
+\clearpage
+
+\begin{figure}[h!]
+\centering
+\begin{subfigure}{0.48\textwidth}
+  \centering
+  \includegraphics[width=0.9\linewidth]{figures/unsupervised/geometries/2-clusters/pinch/reflector}
+  \caption{}
+  \label{fig:chap10-reflector-pinch-2}
+\end{subfigure}%
+\begin{subfigure}{0.48\textwidth}
+  \centering
+  \includegraphics[width=0.9\linewidth]{figures/unsupervised/geometries/2-clusters/combined/reflector}
+  \caption{}
+  \label{fig:chap10-reflector-combined-2}
+\end{subfigure}
+\begin{subfigure}{0.48\textwidth}
+  \centering
+  \includegraphics[width=0.9\linewidth]{figures/unsupervised/geometries/4-clusters/pinch/reflector}
+  \caption{}
+  \label{fig:chap10-reflector-pinch-4}
+\end{subfigure}%
+\begin{subfigure}{0.48\textwidth}
+  \centering
+  \includegraphics[width=0.9\linewidth]{figures/unsupervised/geometries/4-clusters/combined/reflector}
+  \caption{}
+  \label{fig:chap10-reflector-combined-4}
+\end{subfigure}
+\begin{subfigure}{0.48\textwidth}
+  \centering
+  \includegraphics[width=0.9\linewidth]{figures/unsupervised/geometries/8-clusters/pinch/reflector}
+  \caption{}
+  \label{fig:chap10-reflector-pinch-8}
+\end{subfigure}%
+\begin{subfigure}{0.48\textwidth}
+  \centering
+  \includegraphics[width=0.9\linewidth]{figures/unsupervised/geometries/8-clusters/combined/reflector}
+  \caption{}
+  \label{fig:chap10-reflector-combined-8}
+\end{subfigure}
+\caption[Materials for the 2$\times$2 colorset with reflector with clustering homogenization]{Materials for the 2$\times$ colorset with water reflector with clustering homogenization. The materials for 2, 4, and 8 clusters are illustrated in (a), (c) and (e) for pinch clustering, and in (b), (d) and (f) for combined clustering, respectively.}
+\label{fig:chap10-reflector-geometries}
+\end{figure}
+
+\clearpage
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Approaches to Clustering}
+\section{Evaluating the Methodology}
 \label{sec:chap10-cluster}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Perfect Clustering}
+\label{subsec:chap10-perfect-cluster}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Adaptive Clustering}
+\label{subsec:chap10-adaptive-cluster}
 
 \begin{itemize}[noitemsep]
   \item dataset restrictions
