@@ -1,13 +1,12 @@
 \chapter{Unsupervised Clustering for Spatial Homogenization}
 \label{chap:unsupervised}
 
-first paragraph: motivation
--recall from previous chapter:
-  -found clusters in \ac{MGXS}
-  -must cluster \ac{MGXS} to reduce U-238 capture rate errors to level of fission
--motivate chapter two-fold:
-  -simultaneously achieve degenerate's accuracy and null's convergence
-  -KEY: need to be more adapative than \ac{LNS} for arbitrary geometries
+The preceding chapter illustrated the clustering of pin-wise \ac{MGXS} as a result of spatial self-shielding effects. It was shown that \ac{MGXS} clustering must be appropriately modeled to resolve pin-wise U-238 capture rates with the same accuracy as the fission rates. The\ac{LNS} spatial homogenization scheme was introduced to predict \ac{MGXS} clustering with a geometric template-like approach. The \ac{LNS} scheme was shown to achieve the same level of accuracy as degenerate homogenization while simultaneously accelerating the \ac{MC} tally convergence rate for simple benchmark problems. However, the \ac{LNS} scheme suffered from its inability to adapt to predict \ac{MGXS} clustering in geometries with water reflectors and steel baffles. In addition, the \ac{LNS} scheme did not scale well with the size and complexity of a geometry, resulting in large number of materials and thus an under-accelerated convergence rate. This chapter introduces an adaptable and scalable alternative to \ac{LNS} which uses unsupervised statistical learning methods to predict \ac{MGXS} clustering in arbitrary geometries.
+
+The homogenization methodology presented here seeks to achieve the over-arching goal of this thesis: to obtain Monte Carlo quality solutions with computationally efficient deterministic transport methods.
+
+The novel spatial homogenization methodology presented here 
+As stated in Sec.~\ref{sec:chap1-objectives},
 
 second paragraph: over-arching goal
 -achieve accuracy of \ac{MC} with efficient deterministic multi-group methods
@@ -21,10 +20,9 @@ third paragraph: outline chapter
 -need to say that chapter presents a general methodology, only part of which will be evaluated in the following chapter
 
 \begin{figure}
-  \centering
-  \includegraphics[width=0.9\linewidth]{figures/unsupervised/flow-chart}
-  \caption{}
-\caption[flowchar]{flowchart}
+\centering
+\includegraphics[width=0.9\linewidth]{figures/unsupervised/flow-chart}
+\caption[Expected relative runtime for different homogenization schemes]{The expected relative runtime for different spatial homogenization schemes with respect to a reference \ac{MC} calculation.}
 \label{fig:chap10-flow-chart}
 \end{figure}
   
@@ -691,6 +689,11 @@ first paragraph: what are ``litmust tests''?
 -mention dirichlet process mixture models
 -model selection criteria are nice
 -model selection
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Model Selection}
+\label{sec:chap10-model-select}
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Clustered Geometries}
