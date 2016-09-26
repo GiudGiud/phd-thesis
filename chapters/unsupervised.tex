@@ -1,30 +1,19 @@
 \chapter{Unsupervised Clustering for Spatial Homogenization}
 \label{chap:unsupervised}
 
-The preceding chapter illustrated the clustering of pin-wise \ac{MGXS} as a result of spatial self-shielding effects. It was shown that \ac{MGXS} clustering must be appropriately modeled to resolve pin-wise U-238 capture rates with the same accuracy as the fission rates. The\ac{LNS} spatial homogenization scheme was introduced to predict \ac{MGXS} clustering with a geometric template-like approach. The \ac{LNS} scheme was shown to achieve the same level of accuracy as degenerate homogenization while simultaneously accelerating the \ac{MC} tally convergence rate for simple benchmark problems. However, the \ac{LNS} scheme suffered from its inability to adapt to predict \ac{MGXS} clustering in geometries with water reflectors and steel baffles. In addition, the \ac{LNS} scheme did not scale well with the size and complexity of a geometry, resulting in large number of materials and thus an under-accelerated convergence rate. This chapter introduces an adaptable and scalable alternative to \ac{LNS} which uses unsupervised statistical learning methods to predict \ac{MGXS} clustering in arbitrary geometries.
+The preceding chapter illustrated the clustering of pin-wise \ac{MGXS} as a result of spatial self-shielding effects. It was shown that \ac{MGXS} clustering must be appropriately modeled to accurately resolve pin-wise U-238 capture rates. The \ac{LNS} spatial homogenization scheme was introduced to predict \ac{MGXS} clustering with a geometric template-like approach. The \ac{LNS} scheme was shown to achieve the same level of accuracy as degenerate homogenization while simultaneously accelerating the \ac{MC} tally convergence rate for simple benchmark problems. However, the \ac{LNS} scheme suffered from its inability to adapt to predict \ac{MGXS} clustering in geometries with water reflectors and steel baffles. In addition, the \ac{LNS} scheme did not scale well with the size and complexity of the core geometry, resulting in a large number of materials and thus an under-accelerated convergence rate. This chapter introduces an adaptable and scalable alternative to \ac{LNS} which uses unsupervised statistical learning methods to predict \ac{MGXS} clustering in arbitrary geometries.
 
-The homogenization methodology presented here seeks to achieve the over-arching goal of this thesis: to obtain Monte Carlo quality solutions with computationally efficient deterministic transport methods.
+The novel homogenization methodology presented here -- referred to as \textit{intelligent \ac{MGXS}} (\textit{i}\ac{MGXS}) spatial homogenization -- seeks to achieve the overarching goal of this thesis: to obtain Monte Carlo quality solutions with computationally efficient deterministic transport methods. The goal of \textit{i}\ac{MGXS} is to infer \ac{MGXS} clusters directly from \ac{MC} tally data rather than predict clustering from an analysis of the core geometry. The \textit{i}\ac{MGXS} scheme is more generalizable and can flexibly accommodate arbitrary core heterogeneities better than \ac{LNS} or other geometric-based approaches which must be extensively customized for particular core geometries. In addition, the \textit{i}\ac{MGXS} scheme aims to greatly accelerate the convergence rate of \ac{MGXS} tallied with \ac{MC} with respect to the the degenerate and \ac{LNS} schemes as shown in Fig.~\ref{fig:chap10-flow-chart}.
 
-The novel spatial homogenization methodology presented here 
-As stated in Sec.~\ref{sec:chap1-objectives},
-
-second paragraph: over-arching goal
--achieve accuracy of \ac{MC} with efficient deterministic multi-group methods
--recall motivation in chapter 1??
--present flow chart figure Fig.~\ref{fig:chap10-flow-chart}
--following chapter will evaluate methodology wrt eigenvalues, fission rates, U-238 capture reats
-
-third paragraph: outline chapter
--Sec.~\ref{}
-
--need to say that chapter presents a general methodology, only part of which will be evaluated in the following chapter
-
-\begin{figure}
+\begin{figure}[h!]
 \centering
-\includegraphics[width=0.9\linewidth]{figures/unsupervised/flow-chart}
-\caption[Expected relative runtime for different homogenization schemes]{The expected relative runtime for different spatial homogenization schemes with respect to a reference \ac{MC} calculation.}
+\includegraphics[width=\linewidth]{figures/unsupervised/flow-chart}
+\vspace{2mm}
+\caption[Expected relative runtime for different homogenization schemes]{The expected relative runtime for the degenerate, \ac{LNS} and \textit{i}\ac{MGXS} spatial homogenization schemes with respect to a reference \ac{MC} calculation.}
 \label{fig:chap10-flow-chart}
 \end{figure}
+
+This chapter begins by introducing a general latent variable model for \ac{MGXS} clustering which motivates \textit{i}\ac{MGXS} spatial homogenization in Sec.~\ref{sec:chap10-latent-model}. An overview of the \textit{i}\ac{MGXS} scheme is given in Sec.~\ref{sec:chap10-overview}, with in-depth presentations of the each stage of tally data pre-processing, including feature engineering (Sec.~\ref{sec:chap10-feature-engineer}), target selection (Sec.~\ref{sec:chap10-target-select}), feature transformation (Sec.~\ref{sec:chap10-feature-transform}), dimensionality reduction (Sec.~\ref{sec:chap10-dimensions-reduce}) and litmus tests (Sec.~\ref{sec:chap10-litmus}). Sec.~\ref{subsec:chap10-clustering} highlights a few statistical clustering algorithms which may be interchangeably employed within the code framework for i\ac{MGXS} implemented for this thesis. A few heuristics for unsupervised cluster model selection are discussed in Sec.~\ref{sec:chap10-model-select}. Sec.~\ref{sec:chap10-geometries} illustrates the material configurations produced by the \textit{i}\ac{MGXS} scheme for the heterogeneous \ac{PWR} benchmarks studied in this thesis. Finally, Sec.~\ref{sec:chap10-cluster} details two approaches used to evaluate the ideal and realized convergence rates of the \textit{i}\ac{MGXS} scheme. The eigenvalues and pin-wise fission and U-238 capture rates produced with the \textit{i}\ac{MGXS} scheme are evaluated in the following chapter.
   
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -581,8 +570,8 @@ first paragraph: what is goal???
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Feature Selection}
-\label{sec:chap10-litmus}
+\section{Dimensionality Reduction}
+\label{sec:chap10-dimensions-reduce}
 
 -dimensionality reduction
 
@@ -679,8 +668,8 @@ first paragraph: what are ``litmust tests''?
 -model selection
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Gaussian Mixture Models}
-\label{sec:chap10-gmms}
+\subsection{Gaussian Mixture Models}
+\label{subsec:chap10-gmms}
 
 -introduce scheme
 -algorithmic
