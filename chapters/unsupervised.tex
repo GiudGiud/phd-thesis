@@ -16,108 +16,184 @@ The novel homogenization methodology presented here -- referred to as \textit{in
 This chapter begins by introducing a general latent variable model for \ac{MGXS} clustering which motivates \textit{i}\ac{MGXS} spatial homogenization in Sec.~\ref{sec:chap10-latent-model}. An overview of the \textit{i}\ac{MGXS} scheme is given in Sec.~\ref{sec:chap10-overview}, with in-depth presentations of the each stage of tally data pre-processing, including feature engineering (Sec.~\ref{sec:chap10-feature-engineer}), target selection (Sec.~\ref{sec:chap10-target-select}), feature transformation (Sec.~\ref{sec:chap10-feature-transform}), dimensionality reduction (Sec.~\ref{sec:chap10-dimensions-reduce}) and litmus tests (Sec.~\ref{sec:chap10-litmus}). Sec.~\ref{subsec:chap10-clustering} highlights a few statistical clustering algorithms which may be interchangeably employed within the code framework for i\ac{MGXS} implemented for this thesis. A few heuristics for unsupervised cluster model selection are discussed in Sec.~\ref{sec:chap10-model-select}. Sec.~\ref{sec:chap10-geometries} illustrates the material configurations produced by the \textit{i}\ac{MGXS} scheme for the heterogeneous \ac{PWR} benchmarks studied in this thesis. Finally, Sec.~\ref{sec:chap10-cluster} details two approaches used to evaluate the ideal and realized convergence rates of the \textit{i}\ac{MGXS} scheme. The eigenvalues and pin-wise fission and U-238 capture rates produced with the \textit{i}\ac{MGXS} scheme are evaluated in the following chapter.
   
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Latent Spectral Variable Model}
-\label{sec:chap10-lsvm}
-
-This section postulates the existence of a probability distribution from which pin-wise \ac{MGXS} are drawn when generated from Monte Carlo tallies. In particular, this section introduces a \textit{latent variable model} -- termed the \ac{LSVM} -- which encapsulates the spatial self-shielding effects in heterogeneous geometries that leads to clustering of pin-wise \ac{MGXS}. \ac{LSVM} inspires the development of the unsupervised statistical clustering methodology for spatial homogenization that is the topic of this and the following chapter. Latent variable models are a widely used theoretical construct for representing \textit{hidden variables} which parameterize the probability distributions that are thought to have produced some observed dataset. This section loosely follows Bishop's presentation of probabilistic mixture models~\cite{bishop2006pattern}, including the mathematical notation frequently employed by discussions of latent variable models in the statistics and machine learning literature.
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Mathematical Notation}
-\label{subsec:chap10-lsvm-math}
-
-As discussed in Sec.~\ref{sec:chap3-mgxs-gen}, the \ac{MGXS} tallied by \ac{MC} are random variables each with an estimated sample mean and variance. \ac{LSVM} describes the probability distribution that produced the population of \ac{MGXS} random variables for a particular type of material zone. In this thesis, \ac{LSVM} is used to describe the population of pin-wise microscopic \ac{MGXS} for all instances of fuel pins of a particular enrichment in a core geometry. For example, the tallied pin-wise microscopic \ac{MGXS} $\hat{\sigma}_{x,i,k,g}$ for some reaction $x$, nuclide $i$, fuel pin instance $k$ and energy group $g$ constitute the dataset produced by some probability distribution. \ac{LSVM} hypothesizes that the statistical process which generated the \ac{MGXS} dataset is a \textit{mixture model distribution} with $M$ mixture components. Each component $m$ is a normalized distribution $p(\hat{\sigma}_{x,i,k,g}; \boldsymbol{\theta}_{m})$ parameterized by vector $\boldsymbol{\theta}_{m}$, where for simplicity is assumed that all components are from the same parametric family of distributions\footnote{This restriction may not accurately characterize the mixtures components which generates pin-wise \ac{MGXS}, but is useful to simplify the number of symbols needed to introduces \ac{LSVM}.}\textsuperscript{,}\footnote{If the components are normal then $p(\hat{\sigma}_{x,i,k,g}; \boldsymbol{\theta}_{m}) = \mathcal{N}(\boldsymbol{\theta}_{m})$ with parameter vector $\boldsymbol{\theta}_{m} = \left[\mu_{m} \;\; \sigma_{m}\right]^{T}$.}. The components are combined in a linear superposition with \textit{mixing coefficients} $\pi_{m}$ to produce the mixture model distribution $f(\hat{\sigma}_{x,i,k,g})$:
-
-\begin{equation}
-\label{eqn:chap10-mix-model}
-f(\hat{\sigma}_{x,i,k,g}) = \displaystyle\sum\limits_{m=1}^{M} \pi_{m} p(\hat{\sigma}_{x,i,k,g}; \boldsymbol{\theta}_{m})
-\end{equation}
-
-\noindent where the coefficients ${\pi_{m}}$ are defined to sum to unity such that the model is normalized:
-
-%If each mixture has $N$ parameters (\textit{e.g}, $|\boldsymbol{\theta}| = N$), then $\boldsymbol{\Theta}$ is the $K \times N$ matrix of mixture model parameters, and $\boldsymbol{\Lambda}$ is the $K$-dimensional vector $\boldsymbol{\lambda} = \left[\lambda_{1} \;\; \lambda_{2} \;\; \dots \;\; \lambda_{m}\right]^{T}$ of mixing weights. The weights are defined to sum to unity such that the mixture model is normalized:
-
-\begin{equation}
-\label{eqn:chap10-mix-weights-norm}
-0 \le \pi_{m} \le 1 \;\;\; , \;\;\; \displaystyle\sum\limits_{m=1}^{M} \pi_{m} = 1
-\end{equation}
-
-The statistical model in Eqn.~\ref{eqn:chap10-mix-model} is a complete prescription for how the dataset of $\hat{\sigma}_{x,i,k,g}$ are generated for the population of fuel pins. In particular, \ac{LSVM} hypothesizes the existence of a \textit{latent spectral variable} $z_{k}$ for each fuel pin instance. Furthermore, \ac{LSVM} posits that the latent spectral variable may assume $Z$ integral values such that $z_{k} \in \{1, 2, \dots, Z\}$. From a practical standpoint, the latent spectral variable corresonds to the shape of the flux across energy group $g$ in fuel pin instance $k$\footnote{The shape of the flux across energy group $g$ cannot be directly observed from energy-integrated \ac{MC} tally data, and hence the spectral variable is a latent or hidden variable.}. \ac{LSVM} prescribes a one-to-one mapping from each possible value of the latent variable $z_{k}$ to a corresponding vector of mixing coefficients $\boldsymbol{\pi}(z_{k})$:
-
-\begin{equation}
-\label{eqn:chap10-mix-coeffs}
-\boldsymbol{\pi}(z_{k}) = \boldsymbol{\pi}_{k} = \left[\lambda_{1,k} \;\; \lambda_{2,k} \;\; \cdots \;\; \lambda_{m,k}\right]^{T}
-\end{equation}
-
-\noindent used to generate the dataset of $\hat{\sigma}_{x,i,k,g}$ according to the following stochastic process:
-
-\begin{equation}
-\label{eqn:chap10-lsvm}
-\hat{\sigma}_{x,i,k,g} \; \sim \;\; f(\hat{\sigma}_{x,i,k,g})
-\end{equation}
-
-%\ell \;\; &\sim \;\; \text{Multinomial}(p_{1}, p_{2}, \dots, p_{M}) \\
-% \boldsymbol{\lambda} \;\; &\sim \;\; \text{Categorical}(p_{1}, p_{2}, \dots, p_{M}) \\
-
-%\footnote{The symbol $\phi$ is adopted from the widely used notation for latent variables in the machine learning literature and should not be confused for the neutron flux.}
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Graphical Plate Notation}
-\label{subsec:chap10-lsvm-graph}
-
-\begin{figure}
-\centering
-\begin{tikzpicture}
-\tikzstyle{main}=[circle, minimum size = 8mm, thick, draw =black!80, node distance = 16mm]
-\tikzstyle{param}=[regular polygon, regular polygon sides=4, minimum size = 8mm, thick, draw =black!80, node distance = 16mm]
-  \node[param] (zk) [label=above:$z_k$] { };
-  \node[param] (theta) [left=of zk,label=left:$\boldsymbol{\Theta}$] { };
-  \node[main, fill = black!20] (sigma) [below=of zk, label=below:$\hat{\sigma}_{x,i,k,g}$] { };
-  \node[param] (pi) [left=of sigma,label=left:$\boldsymbol{\pi}$] { };
-   \draw[dagconn] (zk) to (sigma);
-   \draw[dagconn] (theta) to (sigma);
-   \draw[dagconn] (pi) to (sigma);
-   \node[plate=K, inner sep=20pt, fit=(zk) (sigma)] (plate1) {};
-\end{tikzpicture}
-\vspace{4mm}
-\caption[Graphical model for LSVM for a specific reactor configuration]{A graphical model to describe \ac{LSVM} for a specific reactor configuration.}
-\label{fig:chap10-lsvm-plate}
-\end{figure}
-
-\begin{figure}
-\centering
-\begin{tikzpicture}
-\tikzstyle{main}=[circle, minimum size = 8mm, thick, draw =black!80, node distance = 16mm]
-\tikzstyle{param}=[regular polygon, regular polygon sides=4, minimum size = 8mm, thick, draw =black!80, node distance = 16mm]
-  \node[param] (alpha) [label=above:$\boldsymbol{\alpha}$] { };
-  \node[main] (theta) [below left=of alpha,label=above:$\theta_{m}$] { };
-  \node[main] (pi) [below right=of alpha,label=above:$\pi_{m}$] { };
-  \node[param] (zk) [below=of theta,label=below:$z_k$] { };
-  \node[main, fill = black!20] (sigma) [below=of pi, label=below:$\hat{\sigma}_{x,i,k,g}$] { };
-   \draw[dagconn] (alpha) to (theta);
-   \draw[dagconn] (alpha) to (pi);
-   \draw[dagconn] (zk) to (sigma);
-   \draw[dagconn] (theta) to (sigma);
-   \draw[dagconn] (pi) to (sigma);
-   \node[plate=M, inner sep=20pt, fit=(theta) (pi)] (plate1) {};
-   \node[plate=K, inner sep=20pt, fit=(zk) (sigma)] (plate2) {};
-\end{tikzpicture}
-\vspace{4mm}
-\caption[Graphical model for LSVM for an arbitrary reactor configuration]{A graphical model to describe \ac{LSVM} for an arbitrary reactor configuration.}
-\label{fig:chap10-lsvm-plate-general}
-\end{figure}
-
-
--we need to infer the latent variables $z_{k}$ for each fuel pin instance!!!
--mention covariance between samples - the could be correlated
--three goals:
-  -infer number of points/pins in each set
-  -infer conditional probabilities?
-  -assign each region to the most likely set?
--is this section needed???
--mention possibility of a multi-level latent variable model
--mention bayesian approach to solving this using maximum likelihood
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\section{Latent Spectral Variable Model}
+%\label{sec:chap10-lsvm}
+%
+%This section postulates the existence of a probability distribution from which pin-wise \ac{MGXS} are drawn when generated from Monte Carlo tallies. In particular, this section introduces a \textit{latent variable model} -- termed the \ac{LSVM} -- which encapsulates the spatial self-shielding effects in heterogeneous geometries that leads to clustering of pin-wise \ac{MGXS}. \ac{LSVM} inspires the development of the unsupervised statistical clustering methodology for spatial homogenization that is the topic of this and the following chapter. Latent variable models are a widely used theoretical construct for representing \textit{hidden variables} which parameterize the probability distributions that are thought to have produced some observed dataset. This section loosely follows Bishop's presentation of probabilistic mixture models~\cite{bishop2006pattern}, including the mathematical notation frequently employed by discussions of latent variable models in the statistics and machine learning literature. Sec.~\ref{subsec:chap10-lsvm-math} introduces the concept of latent spectral variables which dictate a parametrization of a mixture distribution which generated the pin-wise \ac{MGXS}. Sec.~\ref{subsec:chap10-lsvm-graph} illustrates \ac{LSVM} with a few graphical models.
+%
+%%Sec.~\ref{subsec:chap10-lsvm-additive-noise} begins by decompose \ac{MC} estimates for \ac{MGXS} into a multi-component additive noise model. 
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\subsection{Latent Spectral Variables}
+%\label{subsec:chap10-lsvm-math}
+%
+%
+%
+%As shown in Chap.~\ref{chap:spatial}, spatial self-shielding effects from geometric heteoregneities leads to clustering of pin-wise \ac{MGXS}. This may 
+%
+%The \ac{MGXS} clustering effects induced by spatial self-shielding from various core heterogeneities, 
+%
+%\begin{align}
+%\label{eqn:chap10-mgxs-offsets}
+%\sigma_{k} &= \pi_{k,1}\Delta_{1} + \pi_{k,2}\Delta_{2} + \cdots + \pi_{k,M}\Delta_{M} \\
+%&= \displaystyle\sum\limits_{m=1}^{M}\pi_{k,m}\Delta_{m}
+%\end{align}
+%
+%
+%
+%As discussed in Sec.~\ref{sec:chap3-mgxs-gen}, the \ac{MGXS} tallied by \ac{MC} are random variables each with an estimated sample mean and variance. \ac{LSVM} describes the probability distribution that produced the population of \ac{MGXS} random variables for a particular type of material zone. In this thesis, \ac{LSVM} is used to describe the population of pin-wise microscopic \ac{MGXS} for all instances of fuel pins of a particular enrichment in a core geometry. For example, the tallied pin-wise microscopic \ac{MGXS} $\hat{\sigma}_{x,i,k,g}$ for some reaction $x$, nuclide $i$, fuel pin instance $k$ and energy group $g$ constitute the dataset produced by some probability distribution. \ac{LSVM} hypothesizes that the statistical process which generated the \ac{MGXS} dataset is a \textit{mixture model distribution} with $M$ mixture components. Each component $m$ is a normalized distribution $p(\hat{\sigma}_{x,i,k,g}; \boldsymbol{\theta}_{m})$ parameterized by vector $\boldsymbol{\theta}_{m}$, where for simplicity is assumed that all components are from the same parametric family of distributions\footnote{This restriction may not accurately characterize the mixtures components which generates pin-wise \ac{MGXS}, but is useful to simplify the number of symbols needed to introduces \ac{LSVM}.}\textsuperscript{,}\footnote{If the components are normal then $p(\hat{\sigma}_{x,i,k,g}; \boldsymbol{\theta}_{m}) = \mathcal{N}(\boldsymbol{\theta}_{m})$ with parameter vector $\boldsymbol{\theta}_{m} = \left[\mu_{m} \;\; \sigma_{m}\right]^{T}$.}. The components are combined in a linear superposition with \textit{mixing coefficients} $\pi_{m}$ to produce the mixture model distribution $f(\hat{\sigma}_{x,i,k,g})$:
+%
+%\begin{equation}
+%\label{eqn:chap10-mix-model}
+%f(\hat{\sigma}_{x,i,k,g}) = \displaystyle\sum\limits_{m=1}^{M} \pi_{m} p(\Delta_{m}; \boldsymbol{\theta}_{m})
+%\end{equation}
+%
+%%\begin{equation}
+%%\label{eqn:chap10-mix-model}
+%%f(\hat{\sigma}_{x,i,k,g}) = \displaystyle\sum\limits_{m=1}^{M} \pi_{m} p(\hat{\sigma}_{x,i,k,g}; \boldsymbol{\theta}_{m})
+%%\end{equation}
+%
+%\noindent where the coefficients ${\pi_{m}}$ are defined to sum to unity such that the model is normalized:
+%
+%%If each mixture has $N$ parameters (\textit{e.g}, $|\boldsymbol{\theta}| = N$), then $\boldsymbol{\Theta}$ is the $K \times N$ matrix of mixture model parameters, and $\boldsymbol{\Lambda}$ is the $K$-dimensional vector $\boldsymbol{\lambda} = \left[\lambda_{1} \;\; \lambda_{2} \;\; \dots \;\; \lambda_{m}\right]^{T}$ of mixing weights. The weights are defined to sum to unity such that the mixture model is normalized:
+%
+%\begin{equation}
+%\label{eqn:chap10-mix-weights-norm}
+%0 \le \pi_{m} \le 1 \;\;\; , \;\;\; \displaystyle\sum\limits_{m=1}^{M} \pi_{m} = 1
+%\end{equation}
+%
+%The statistical model in Eqn.~\ref{eqn:chap10-mix-model} is a complete prescription for how the dataset of $\hat{\sigma}_{x,i,k,g}$ are generated for the population of fuel pins. In particular, \ac{LSVM} hypothesizes the existence of a \textit{latent spectral variable} $z_{k}$ for each fuel pin instance. Furthermore, \ac{LSVM} posits that the latent spectral variable may assume $Z$ integral values such that $z_{k} \in \{1, 2, \dots, Z\}$. From a practical standpoint, the latent spectral variable corresonds to the shape of the flux across energy group $g$ in fuel pin instance $k$\footnote{The shape of the flux across energy group $g$ cannot be directly observed from energy-integrated \ac{MC} tally data, and hence the spectral variable is a latent or hidden variable.}. \ac{LSVM} prescribes a one-to-one mapping from each possible value of the latent variable $z_{k}$ to a corresponding vector of mixing coefficients $\boldsymbol{\pi}(z_{k})$:
+%
+%\begin{equation}
+%\label{eqn:chap10-mix-coeffs}
+%\boldsymbol{\pi}(z_{k}) = \boldsymbol{\pi}_{k} = \left[\lambda_{1,k} \;\; \lambda_{2,k} \;\; \cdots \;\; \lambda_{m,k}\right]^{T}
+%\end{equation}
+%
+%\noindent used to generate the dataset of $\hat{\sigma}_{x,i,k,g}$ according to the following stochastic process:
+%
+%\begin{equation}
+%\label{eqn:chap10-lsvm}
+%\hat{\sigma}_{x,i,k,g} \;\; \sim \;\; f(\hat{\sigma}_{x,i,k,g})
+%\end{equation}
+%
+%%\ell \;\; &\sim \;\; \text{Multinomial}(p_{1}, p_{2}, \dots, p_{M}) \\
+%% \boldsymbol{\lambda} \;\; &\sim \;\; \text{Categorical}(p_{1}, p_{2}, \dots, p_{M}) \\
+%
+%%\footnote{The symbol $\phi$ is adopted from the widely used notation for latent variables in the machine learning literature and should not be confused for the neutron flux.}
+%
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\subsection{An Additive Noise Model for MGXS}
+%\label{subsec:chap10-lsvm-additive-noise}
+%
+%Additive noise models are useful theoretical construct widely considered in information theory to model many stochastic processes found in nature. This section introduces an additive noise model for \ac{MC} estimates for \ac{MGXS}. Consider an arbitrary propbability distribution $f_{x,i,k,g}(\cdot)$ from which the estimated pin-wise \ac{MGXS} $\hat{\sigma}_{x,i,k,g}$ (Eqn.~\ref{eqn:chap3-general-micro}) for reaction $x$, nuclide $i$, spatial zone $k$ and energy group $g$ are drawn:
+%
+%\begin{equation}
+%\label{eqn:chap10-mgxs-draw}
+%\hat{\sigma}_{x,i,k,g} \;\; \sim \;\; f_{x,i,k,g}(\hat{\sigma})
+%\end{equation}
+%
+%\noindent The reaction $x$, nuclide $i$ and energy group $g$ subscripts may dropped for brevity:
+%
+%\begin{equation}
+%\label{eqn:chap10-mgxs-draw-brevity}
+%\hat{\sigma}_{k} \;\; \sim \;\; f_{k}(\hat{\sigma})
+%\end{equation}
+%
+%An additive noise model may treat the \ac{MC} estimate for the \ac{MGXS} $\hat{\sigma}_{k}$ as the composition of the ``true'' \ac{MGXS} $\sigma_{k}$ (\textit{i.e.}, the expectation of $f(\hat{\sigma}_{k})$, or $\mathbb{E}[\hat{\sigma}_{k}]$) and a random ``noise'' term $\epsilon_{k}$. The noise $\epsilon_{k}$ is a random variable drawn from an arbitrary distribution $p(\epsilon; \boldsymbol{\theta}_{k})$ parameterized by $\boldsymbol{\theta}_{k}$ which represents the statistical uncertainty of the \ac{MC} estimate\footnote{If the \ac{MC} realizations are i.i.d. then the noise variables are normally distributed.}. The additive noise model for $\hat{\sigma}_{k}$ is then simply the sum of the true \ac{MGXS} and the random noise terms:
+%
+%\begin{align}
+%\label{eqn:chap10-add-noise}
+%\epsilon_{k} \;\; &\sim \;\; p(\epsilon; \boldsymbol{\theta}_{k}) \\
+%\hat{\sigma}_{k} &= \sigma_{k} + \epsilon_{k}
+%\end{align}
+%
+%As shown in Chap.~\ref{}, spatial self-shielding effects from geometric heteoregneities leads to clustering of pin-wise \ac{MGXS}. This may 
+%
+%The \ac{MGXS} clustering effects induced by spatial self-shielding from various core heterogeneities, 
+%
+%\begin{align}
+%\label{eqn:chap10-mgxs-offsets}
+%\sigma_{k} &= \pi_{k,1}\Delta_{1} + \pi_{k,2}\Delta_{2} + \cdots + \pi_{k,M}\Delta_{M} \\
+%&= \displaystyle\sum\limits_{m=1}^{M}\pi_{k,m}\Delta_{m}
+%\end{align}
+%
+%
+%\begin{align}
+%\label{eqn:chap10-mgxs-noise}
+%\epsilon_{m} \;\; &\sim \;\; p(\epsilon; \boldsymbol{\theta}_{m}) \\
+%\hat{\Delta}_{m} &= \Delta_{m} + \epsilon_{m}
+%\end{align}
+%
+%compose the noise into different spectral effects
+%
+%\begin{align}
+%\label{eqn:chap10-sum-noise}
+%\hat{\sigma}_{k} &= \pi_{k,1}\hat{\Delta}_{1} + \pi_{k,2}\hat{\Delta}_{2} + \cdots + \pi_{k,M}\hat{\Delta}_{M} \\
+%&= \pi_{k,1}\left(\Delta_{1} + \epsilon_{1}\right) + \pi_{k,2}\left(\Delta_{2} + \epsilon_{m}\right) + \cdots + \pi_{k,M}\left(\Delta_{M} + \epsilon_{m}\right) \\
+%&= \displaystyle\sum\limits_{m=1}^{M}\pi_{k,m}\left(\Delta_{m} + \epsilon_{m}\right) \\
+%&= \displaystyle\sum\limits_{m=1}^{M}\pi_{k,m}\Delta_{m} + \displaystyle\sum\limits_{m=1}^{M}\pi_{k,m}\epsilon_{m} \\
+%% &= \sigma_{k} + \displaystyle\sum\limits_{m=1}^{M}\pi_{k,m}\epsilon_{m}
+%\end{align}
+%
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\subsection{Graphical Plate Notation}
+%\label{subsec:chap10-lsvm-graph}
+%
+%\begin{figure}
+%\centering
+%\begin{tikzpicture}
+%\tikzstyle{main}=[circle, minimum size = 8mm, thick, draw =black!80, node distance = 16mm]
+%\tikzstyle{param}=[regular polygon, regular polygon sides=4, minimum size = 8mm, thick, draw =black!80, node distance = 16mm]
+%  \node[param] (zk) [label=above:$z_k$] { };
+%  \node[param] (theta) [left=of zk,label=left:$\boldsymbol{\Theta}$] { };
+%  \node[main, fill = black!20] (sigma) [below=of zk, label=below:$\hat{\sigma}_{x,i,k,g}$] { };
+%  \node[param] (pi) [left=of sigma,label=left:$\boldsymbol{\pi}$] { };
+%   \draw[dagconn] (zk) to (sigma);
+%   \draw[dagconn] (theta) to (sigma);
+%   \draw[dagconn] (pi) to (sigma);
+%   \node[plate=K, inner sep=20pt, fit=(zk) (sigma)] (plate1) {};
+%\end{tikzpicture}
+%\vspace{4mm}
+%\caption[Graphical model for LSVM for a specific reactor configuration]{A graphical model to describe \ac{LSVM} for a specific reactor configuration.}
+%\label{fig:chap10-lsvm-plate}
+%\end{figure}
+%
+%\begin{figure}
+%\centering
+%\begin{tikzpicture}
+%\tikzstyle{main}=[circle, minimum size = 8mm, thick, draw =black!80, node distance = 16mm]
+%\tikzstyle{param}=[regular polygon, regular polygon sides=4, minimum size = 8mm, thick, draw =black!80, node distance = 16mm]
+%  \node[param] (alpha) [label=above:$\boldsymbol{\alpha}$] { };
+%  \node[main] (theta) [below left=of alpha,label=above:$\theta_{m}$] { };
+%  \node[main] (pi) [below right=of alpha,label=above:$\pi_{m}$] { };
+%  \node[param] (zk) [below=of theta,label=below:$z_k$] { };
+%  \node[main, fill = black!20] (sigma) [below=of pi, label=below:$\hat{\sigma}_{x,i,k,g}$] { };
+%   \draw[dagconn] (alpha) to (theta);
+%   \draw[dagconn] (alpha) to (pi);
+%   \draw[dagconn] (zk) to (sigma);
+%   \draw[dagconn] (theta) to (sigma);
+%   \draw[dagconn] (pi) to (sigma);
+%   \node[plate=M, inner sep=20pt, fit=(theta) (pi)] (plate1) {};
+%   \node[plate=K, inner sep=20pt, fit=(zk) (sigma)] (plate2) {};
+%\end{tikzpicture}
+%\vspace{4mm}
+%\caption[Graphical model for LSVM for an arbitrary reactor configuration]{A graphical model to describe \ac{LSVM} for an arbitrary reactor configuration.}
+%\label{fig:chap10-lsvm-plate-general}
+%\end{figure}
+%
+%
+%-we need to infer the latent variables $z_{k}$ for each fuel pin instance!!!
+%-mention covariance between samples - the could be correlated
+%-three goals:
+%  -infer number of points/pins in each set
+%  -infer conditional probabilities?
+%  -assign each region to the most likely set?
+%-is this section needed???
+%-mention possibility of a multi-level latent variable model
+%-mention bayesian approach to solving this using maximum likelihood
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
