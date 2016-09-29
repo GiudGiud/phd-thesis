@@ -1,4 +1,4 @@
-\chapter{Unsupervised Clustering for Spatial Homogenization}
+	\chapter{Unsupervised Clustering for Spatial Homogenization}
 \label{chap:unsupervised}
 
 The preceding chapter illustrated the clustering of pin-wise \ac{MGXS} as a result of spatial self-shielding effects. It was shown that \ac{MGXS} clustering must be appropriately modeled to accurately resolve pin-wise U-238 capture rates. The \ac{LNS} spatial homogenization scheme was introduced to predict \ac{MGXS} clustering with a geometric template-like approach. The \ac{LNS} scheme was shown to achieve the same level of accuracy as degenerate homogenization while simultaneously accelerating the \ac{MC} tally convergence rate for simple benchmark problems. However, the \ac{LNS} scheme suffered from its inability to adapt to predict \ac{MGXS} clustering in geometries with water reflectors and steel baffles. In addition, the \ac{LNS} scheme did not scale well with the complexity of the core geometry, resulting in a large number of materials and thus an under-accelerated convergence rate. This chapter introduces an adaptable and scalable alternative to \ac{LNS} which uses unsupervised statistical learning methods to predict \ac{MGXS} clustering.
@@ -197,49 +197,96 @@ This chapter begins by introducing a general latent variable model for \ac{MGXS}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Overview of Approach}
+\section{Overview of \textit{i}MGXS}
 \label{sec:chap10-overview}
 
--competing paragidms:
-  -clustering
-  -input -> target (e.g., trees)
-  -some combination of the two
+The \textit{i}\ac{MGXS} spatial homogenization scheme is a multi-stage data processing \textit{pipeline}. The objective of the scheme is to infer the optimal assignment of cluster labels to fuel pin instances directly from \ac{MC} tally data. The cluster labels output by \textit{i}\ac{MGXS} are then used to generate track density-weighted \ac{MGXS} (see Sec.~\ref{subsec:chap9-lns-math}) for each cluster of fuel pin instances using the same process as that employed by \ac{LNS} homogenization (Eqn.~\ref{eqn:chap9-lns-micro}). The \textit{i}\ac{MGXS} methodology differs from the \ac{LNS} scheme in that it makes no consideration of the geometry and materials configuration and only examines tallied \ac{MC} tally data when assigning cluster labels to fuel pin instances.
 
--break apart diagram for machine learning piece into parts
-  -clustering
-    -flow chart: litmus tests, feature eng./selectiontransformation, clustering
-  -input -> target (e.g., regression)
-    -flow chart: litmus tests, target selection, feature eng./selection/transformation, model fitting, prediction
-     -can take outputs as inputs for clustering scheme
+A high-level overview of the various stages of the \textit{i}\ac{MGXS} data processing pipeline is illustrated in Fig.~\ref{fig:chap10-pipeline}. The \textit{i}\ac{MGXS} pipeline may be configured in various ways and this thesis makes no presumption that the incarnation presented in Fig.~\ref{fig:chap10-pipeline} is the best or most reliable version. Future work may develop schemes which improve upon the particular formulation of \textit{i}\ac{MGXS} presented in this thesis. Irregardless of the particular configuration, the overarching concept is that the \textit{i}\ac{MGXS} pipeline provides a \textit{mapping} between \ac{MC} tally data and cluster labels for each fuel pin\footnote{Similarly, the \ac{LNS} scheme defines a mapping between the combinatorial geometry and the cluster labels.}. Each of the six stages in Fig.~\ref{fig:chap10-pipeline} is detailed in the following sections of this thesis.
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.35\linewidth]{figures/unsupervised/pipeline}
+\vspace{2mm}
+\caption[MGXS pipeline]{The multi-stage \textit{i}\ac{MGXS} data processing pipeline.}
+\label{fig:chap10-pipeline}
+\end{figure}
+
+%-competing paradigms:
+%  -clustering
+%  -input -> target (e.g., trees)
+%  -some combination of the two
+
+%-break apart diagram for machine learning piece into parts
+%  -clustering
+%    -flow chart: litmus tests, feature eng./selection/transformation, clustering
+%  -input -> target (e.g., regression)
+%    -flow chart: litmus tests, target selection, feature eng./selection/transformation, model fitting, prediction
+%     -can take outputs as inputs for clustering scheme
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Feature Engineering}
 \label{sec:chap10-feature-engineer}
 
-first paragraph: motivation
--need to define ``feature''
--recall plots from preceding chapter with clusters
--identify features which are only derived from tallied quantities
--mention conflict:
-  -need 70+ groups for accurate solutions
-  -uncertainties / noise in few-group \ac{MGXS} is less, making it easier to identify clusters
--cluster \ac{MGXS} directly
-  -simply draw 1D boundaries b/w \ac{MGXS} in histograms
-  -could cluster multiple microscopic \ac{MGXS} simultaneously - nuclides, reactions, groups
-  -multiple \ac{MGXS} may eliminate ``de-noise'' data, eliminate outliers
-    -good segue to next paragraph!!
+The \textit{feature engineering} stage in the data processing pipeline in Fig.~\ref{fig:chap10-pipeline} builds \textit{features} from \ac{MC} tally data. In machine learning, features are simply variables which are used as inputs to a predictive model. Features may be engineered based upon prior domain knowledge or inferred from automated feature learning algorithms such as neural networks. In the context of \textit{i}\ac{MGXS}, features are restricted to tallies, or combinations of tallies, from \ac{MC} simulations which provide information about which fuel pin instances experience similar spatial self-shielding effects. For example, the pin-wise \ac{MGXS} $\hat{\sigma}_{x,i,k,g}$ themselves may be used as features since they exhibit the very clustering effect which \textit{i}\ac{MGXS} attempts to predict\footnote{Using the pin-wise \ac{MGXS} as the only feature(s) for unsupervised clustering would be equivalent to specifying boundaries between the samples illustrated in the rug plots in Sec.~\ref{subsec:chap9-histograms}.}. Other tallied quantities may also be used as features for predicting which fuel pin instances have similarly self-shielded \ac{MGXS}. The goal of engineering \textit{i}\ac{MGXS} features is to enable machine learning algorithms to identify \ac{MGXS} clusters as quickly as possible from ``noisy'' or unconverged tally data.
 
-second paragraph: more generally
--include non-\ac{MGXS} variables to cluster
-  -separation distance clusters may grow with more variables, making them easier to identify
--goal: identify variables which reflect spatial self-shielding effects
--can simply cluster multiple micro \ac{MGXS} simultaneously
+The \textit{i}\ac{MGXS} scheme splits the \ac{MC} tally dataset up into \textit{samples} for each particular instance $k$ of a fuel pin as illustrated in Fig.~\ref{fig:chap10-feature-eng}. A \textit{sample} is a random vector with $J$ entries for each feature $\hat{f}_{j,k}$ corresponding to a particular instance $k$ of a fuel pin. A sample may be comprised of features derived from \ac{MC} tally data for one or multiple nuclides, energy groups and/or reaction types. Ideally, the features should maximize the \textit{separation distance} in feature space $\{f_{1}, f_{2}, \dots, f_{J}\}$ between samples from the same cluster. Since features in \textit{i}\ac{MGXS} are tallied quantities from \ac{MC} simulations, some samples may include ``outlier'' feature realizations which take on values far removed from the ``true'' value of the feature\footnote{The ``true'' values are the expected values for each feature.}. Outliers may result in the incorrect assignment of cluster labels to fuel pin instances. The predictive models used in \textit{i}\ac{MGXS} are trained with the complete vector of features in order to mitigate the sensitivity of the models to outlier features and minimize the frequency of mis-labeled cluster assignments.
 
-third paragraph: outline
--
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.4\linewidth]{figures/unsupervised/feature-eng}
+\vspace{2mm}
+\caption[\textit{i}MGXS sample feature vector construction]{\textit{i}\ac{MGXS} builds feature vectors for each sample (fuel pin instance).}
+\label{fig:chap10-feature-eng}
+\end{figure}
 
--mention that some features may be 1) fuel pin specific (at the least), 2) nuclide specific, 3) reaction specific, 4) energy group specific
+%\begin{equation}
+%\hat{f}_{1,1}
+%\end{equation}
+%
+%\begin{equation}
+%\hat{f}_{2,1}
+%\end{equation}
+%
+%\begin{equation}
+%\hat{f}_{J,1}
+%\end{equation}
+%
+%\begin{equation}
+%\hat{f}_{1,2}
+%\end{equation}
+%
+%\begin{equation}
+%\hat{f}_{2,2}
+%\end{equation}
+%
+%\begin{equation}
+%\hat{f}_{J,2}
+%\end{equation}
+%
+%\begin{equation}
+%\hat{f}_{1,K}
+%\end{equation}
+%
+%\begin{equation}
+%\hat{f}_{2,K}
+%\end{equation}
+%
+%\begin{equation}
+%\hat{f}_{J,K}
+%\end{equation}
+
+In addition, it should be noted that features may not necessarily be defined for the same energy group structure as the \ac{MGXS} one wishes to cluster. For example, some or all features may be tallied on a relatively coarse energy group structure in order to minimize their \ac{MC} statistical uncertainties. It is in fact be beneficial to tally features in few groups in order to identify clusters with fewer \ac{MC} particle histories than would needed to distinguish structure from ``noisy'' fine group features.
+These coarse group features may be input to a clustering algorithm for spatial homogenization of pin-wise \ac{MGXS} defined on a fine(r) energy group structure. For example, the following sections and chapters cluster features defined for a coarse 2-group structure in order to assign each fuel pin to a cluster for spatial homogenization of the ``fine'' 70-group pin-wise \ac{MGXS} data needed to minimize reaction rate errors to 1 -- 2\% or less.
+
+The following sections introduce the features employed by \textit{i}\ac{MGXS} in this and the following chapter. These include the pin-wise \ac{MGXS} and their statistical uncertainties (Sec.~\ref{subsec:chap10-stat-uncertainty}), as well as features referred to as fractional reactivites (Sec.~\ref{subsec:chap10-frac-reactivity}), spectral indices (Sec.~\ref{subsec:chap10-spec-index}), nuclide fractions (Sec.~\ref{subsec:chap10-nuclide-frac}) and total fractions (Sec.~\ref{subsec:chap10-tot-frac}). Each feature is specific to a fuel pin instance, and may further be distinguished for one or more nuclides, energy groups and/or reaction types.
+
+%The clustering algoritms used in \textit{i}\ac{MGXS} may more easily identify clusters from the less ``noisy'' feature data, and the cluster labels used to spatially homogenize fine(r) group pin-wise \ac{MGXS}. 
+
+
+%first paragraph: motivationa 
+%  -could cluster multiple microscopic \ac{MGXS} simultaneously - nuclides, reactions, groups
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Statistical Uncertainty}
