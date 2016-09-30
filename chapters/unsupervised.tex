@@ -1,4 +1,4 @@
-	\chapter{Unsupervised Clustering for Spatial Homogenization}
+\chapter{Unsupervised Clustering for Spatial Homogenization}
 \label{chap:unsupervised}
 
 The preceding chapter illustrated the clustering of pin-wise \ac{MGXS} as a result of spatial self-shielding effects. It was shown that \ac{MGXS} clustering must be appropriately modeled to accurately resolve pin-wise U-238 capture rates. The \ac{LNS} spatial homogenization scheme was introduced to predict \ac{MGXS} clustering with a geometric template-like approach. The \ac{LNS} scheme was shown to achieve the same level of accuracy as degenerate homogenization while simultaneously accelerating the \ac{MC} tally convergence rate for simple benchmark problems. However, the \ac{LNS} scheme suffered from its inability to adapt to predict \ac{MGXS} clustering in geometries with water reflectors and steel baffles. In addition, the \ac{LNS} scheme did not scale well with the complexity of the core geometry, resulting in a large number of materials and thus an under-accelerated convergence rate. This chapter introduces an adaptable and scalable alternative to \ac{LNS} which uses unsupervised statistical learning methods to predict \ac{MGXS} clustering.
@@ -235,52 +235,16 @@ The \textit{i}\ac{MGXS} scheme splits the \ac{MC} tally dataset up into \textit{
 
 \begin{figure}[h!]
 \centering
-\includegraphics[width=0.4\linewidth]{figures/unsupervised/feature-eng}
+\includegraphics[width=0.4\linewidth]{figures/unsupervised/features/engineering/features}
 \vspace{2mm}
 \caption[\textit{i}MGXS sample feature vector construction]{\textit{i}\ac{MGXS} builds feature vectors for each sample (fuel pin instance).}
 \label{fig:chap10-feature-eng}
 \end{figure}
 
-%\begin{equation}
-%\hat{f}_{1,1}
-%\end{equation}
-%
-%\begin{equation}
-%\hat{f}_{2,1}
-%\end{equation}
-%
-%\begin{equation}
-%\hat{f}_{J,1}
-%\end{equation}
-%
-%\begin{equation}
-%\hat{f}_{1,2}
-%\end{equation}
-%
-%\begin{equation}
-%\hat{f}_{2,2}
-%\end{equation}
-%
-%\begin{equation}
-%\hat{f}_{J,2}
-%\end{equation}
-%
-%\begin{equation}
-%\hat{f}_{1,K}
-%\end{equation}
-%
-%\begin{equation}
-%\hat{f}_{2,K}
-%\end{equation}
-%
-%\begin{equation}
-%\hat{f}_{J,K}
-%\end{equation}
-
 In addition, it should be noted that features may not necessarily be defined for the same energy group structure as the \ac{MGXS} one wishes to cluster. For example, some or all features may be tallied on a relatively coarse energy group structure in order to minimize their \ac{MC} statistical uncertainties. It is in fact be beneficial to tally features in few groups in order to identify clusters with fewer \ac{MC} particle histories than would needed to distinguish structure from ``noisy'' fine group features.
 These coarse group features may be input to a clustering algorithm for spatial homogenization of pin-wise \ac{MGXS} defined on a fine(r) energy group structure. For example, the following sections and chapters cluster features defined for a coarse 2-group structure in order to assign each fuel pin to a cluster for spatial homogenization of the ``fine'' 70-group pin-wise \ac{MGXS} data needed to minimize reaction rate errors to 1 -- 2\% or less.
 
-The following sections introduce the features employed by \textit{i}\ac{MGXS} in this and the following chapter. These include the pin-wise \ac{MGXS} and their statistical uncertainties (Sec.~\ref{subsec:chap10-stat-uncertainty}), as well as features referred to as fractional reactivites (Sec.~\ref{subsec:chap10-frac-reactivity}), spectral indices (Sec.~\ref{subsec:chap10-spec-index}), nuclide fractions (Sec.~\ref{subsec:chap10-nuclide-frac}) and total fractions (Sec.~\ref{subsec:chap10-tot-frac}). Each feature is specific to a fuel pin instance, and may further be distinguished for one or more nuclides, energy groups and/or reaction types.
+The following sections introduce the features employed by \textit{i}\ac{MGXS} in this and the following chapter. These include the pin-wise \ac{MGXS} and their statistical uncertainties (Sec.~\ref{subsec:chap10-stat-uncertainty}), as well as features referred to as fractional reactivites (Sec.~\ref{subsec:chap10-frac-reactivity}), spectral indices (Sec.~\ref{subsec:chap10-spec-index}), nuclide fractions (Sec.~\ref{subsec:chap10-nuclide-frac}) and total fractions (Sec.~\ref{subsec:chap10-tot-frac}). Each feature is specific to a fuel pin instance, and may further be distinguished for one or more nuclides, energy groups and/or reaction types. Each feature is presented with accompanying illustrations generated using a custom-built tool to visualize \textit{i}\ac{MGXS} features~\cite{abel2016bokeh}, and which correspond to the 1.6\% enriched fuel assembly benchmark.
 
 %The clustering algoritms used in \textit{i}\ac{MGXS} may more easily identify clusters from the less ``noisy'' feature data, and the cluster labels used to spatially homogenize fine(r) group pin-wise \ac{MGXS}. 
 
@@ -292,110 +256,101 @@ The following sections introduce the features employed by \textit{i}\ac{MGXS} in
 \subsection{Statistical Uncertainty}
 \label{subsec:chap10-stat-uncertainty}
 
-first paragraph: explain what it is
--point to a few figures
--explain why std. dev. may be higher for different pins
--indicate that it may reflect the difference in track density in differen pins
-  -is this why we see rings in the \ac{MGXS} in the full core??
--recall equation for std. dev.
--recall uncertainty propagation
--also relative error - normalize out the mean \ac{MGXS}
+The statistical uncertainty for each pin-wise \ac{MGXS} may be a useful feature to indicate clustering effects. In particular, the standard deviation of the sample mean is easily obtained from OpenMC tallies and can be incldued in the feature vector for each fuel pin instance. The intuition behind this is that the track densities -- and therefore, the statistical uncertainties -- in different fuel pins may reflect the spatial self-shielding effects experienced by different types of fuel pins. For example, the thermal flux track density will vary for fuel pins with differential moderation from \acp{CRGT}, reflectors, etc., which may present itself through a systematic clustering of the statistical uncertainties. Similarly, the track density will vary for fuel pins which experience varying degrees of spatial self-shielding in U-238 resonance groups -- which greatly impacts the resultant \ac{MGXS} in those groups -- and may be identifiable in the \ac{MGXS} uncertainties.
 
--MATCH COLOR SCHEMES
+The statistical uncertainty feature is illustrated with scatter plots in Figs.~\ref{fig:chap10-fiss-mean-std} and~\ref{fig:chap10-capt-mean-std} for 2-group U-235 fission and U-238 capture \ac{MGXS} data, respectively. In particular, the scatter plots include a single data point for each of the 264 fuel pins in the 1.6\% enriched fuel assembly benchmark. The $x$ and $y$ coordinates correspond to the tallied \ac{MGXS} means $\hat{\sigma}_{x,i,k,g}$ and standard deviations $\sigma_{\hat{\sigma}_{x,i,k,g}}$ in units of barns, respectively. The complete datasets are illustrated in Figs.~\ref{fig:chap10-fiss-mean-std-mgxs} and~\ref{fig:chap10-capt-mean-std-mgxs}. The interactive \textit{i}\ac{MGXS} visualization tool was used to select clusters of \ac{MGXS} and plot the geometry to indicate the associated fuel pins, as displayed in Figs.~\Crefrange{fig:chap10-fiss-mean-std-mgxs-2}{fig:chap10-fiss-mean-std-mgxs-3} and~\Crefrange{fig:chap10-capt-mean-std-geom-2}{fig:chap10-capt-mean-std-mgxs-3} for the fission and capture \ac{MGXS}, respectively. The figures illustrate that the U-235 \ac{MGXS} uncertainties are smallest for the fuel pins with the most differential moderation (\textit{i.e.}, pin facially adjacent to \acp{CRGT}) and a relatively larger thermal flux track density. In contrast, the U-238 capture \ac{MGXS} uncertainties are largest for those pins with the most differential moderation due to the smaller fast-to-thermal flux ratio in these pins.
 
-\begin{equation}
-\label{eqn:chap10-rel-err}
-\eta_{x,i,k,g} = \frac{\sigma_{\hat{\sigma}_{x,i,k,g}}}{\hat{\sigma}_{x,i,k,g}}
-\end{equation}
+Notwithstanding the motivation to use the statistical uncertainties, there are also potential challenges associated with this approach. First, it would be possible for two different fuel pin instances to experience the same flux shape -- and therefore have the same \ac{MGXS} -- but very different flux magnitudes. Although the \ac{MGXS} uncertainties for the two pins would be very different, this would not accurately reflect the fact that the two pins should ideally be assigned to the same \ac{MGXS} cluster. Furthermore, error propagation theory only approximates the \ac{MGXS} uncertainties since it neglects the covariance between reaction rate and flux tallies. This approximation overestimates the \ac{MGXS} uncertainties since the reaction rate and flux tallies are highly correlated. As a result, the uncertainties may not exhibit systematic trends with poorly converged \ac{MC} data since the uncertainties will be larger than their ``true'' values. However, these are not reasons to eliminate the uncertainties as a possible feature; rather, it incites the need for robust feature selection as discussed in Sec.~\ref{sec:chap10-feature-select}.
 
-second paragraph: visualizations
--look at single fuel assembly with GUI
--three plots: full, two different clusters selected
+%\begin{equation}
+%\label{eqn:chap10-rel-err}
+%\eta_{x,i,k,g} = \frac{\sigma_{\hat{\sigma}_{x,i,k,g}}}{\hat{\sigma}_{x,i,k,g}}
+%\end{equation}
 
 \begin{figure}[h!]
 \centering
-\begin{subfigure}{0.42\textwidth}
+\begin{subfigure}{0.45\textwidth}
   \centering
   \includegraphics[width=0.9\linewidth]{figures/unsupervised/features/assm-16/geometry}
   \caption{}
   \label{fig:chap10-fiss-mean-std-geom}
 \end{subfigure}%
-\begin{subfigure}{0.42\textwidth}
+\begin{subfigure}{0.45\textwidth}
   \centering
   \includegraphics[width=0.9\linewidth]{figures/unsupervised/features/assm-16/u235-fiss/mean-std/mgxs}
   \caption{}
   \label{fig:chap10-fiss-mean-std-mgxs}
 \end{subfigure}
-\begin{subfigure}{0.42\textwidth}
+\begin{subfigure}{0.45\textwidth}
   \centering
   \includegraphics[width=0.9\linewidth]{figures/unsupervised/features/assm-16/u235-fiss/mean-std/geometry-2}
   \caption{}
   \label{fig:chap10-fiss-mean-std-geom-2}
 \end{subfigure}%
-\begin{subfigure}{0.42\textwidth}
+\begin{subfigure}{0.45\textwidth}
   \centering
   \includegraphics[width=0.9\linewidth]{figures/unsupervised/features/assm-16/u235-fiss/mean-std/mgxs-2}
   \caption{}
   \label{fig:chap10-fiss-mean-std-mgxs-2}
 \end{subfigure}
-\begin{subfigure}{0.42\textwidth}
+\begin{subfigure}{0.45\textwidth}
   \centering
   \includegraphics[width=0.9\linewidth]{figures/unsupervised/features/assm-16/u235-fiss/mean-std/geometry-3}
   \caption{}
   \label{fig:chap10-fiss-mean-std-geom-3}
 \end{subfigure}%
-\begin{subfigure}{0.42\textwidth}
+\begin{subfigure}{0.45\textwidth}
   \centering
   \includegraphics[width=0.9\linewidth]{figures/unsupervised/features/assm-16/u235-fiss/mean-std/mgxs-3}
   \caption{}
   \label{fig:chap10-fiss-mean-std-mgxs-3}
 \end{subfigure}
 \caption[Clustering of U-235 fission MGXS standard deviations]{Scatter plots of the pin-wise U-235 fission (group 2 of 2) \ac{MGXS} means ($x$) and standard deviations ($y$) for the 1.6\% enriched fuel assembly.}
-\label{fig:chap10-mean-std}
+\label{fig:chap10-fiss-mean-std}
 \end{figure}
 
 \clearpage
 
 \begin{figure}[h!]
 \centering
-\begin{subfigure}{0.42\textwidth}
+\begin{subfigure}{0.45\textwidth}
   \centering
   \includegraphics[width=0.9\linewidth]{figures/unsupervised/features/assm-16/geometry}
   \caption{}
   \label{fig:chap10-capt-mean-std-geom}
 \end{subfigure}%
-\begin{subfigure}{0.42\textwidth}
+\begin{subfigure}{0.45\textwidth}
   \centering
   \includegraphics[width=0.9\linewidth]{figures/unsupervised/features/assm-16/u238-capt/mean-std/mgxs}
   \caption{}
   \label{fig:chap10-capt-mean-std-mgxs}
 \end{subfigure}
-\begin{subfigure}{0.42\textwidth}
+\begin{subfigure}{0.45\textwidth}
   \centering
   \includegraphics[width=0.9\linewidth]{figures/unsupervised/features/assm-16/u238-capt/mean-std/geometry-2}
   \caption{}
   \label{fig:chap10-capt-mean-std-geom-2}
 \end{subfigure}%
-\begin{subfigure}{0.42\textwidth}
+\begin{subfigure}{0.45\textwidth}
   \centering
   \includegraphics[width=0.9\linewidth]{figures/unsupervised/features/assm-16/u238-capt/mean-std/mgxs-2}
   \caption{}
   \label{fig:chap10-capt-mean-std-mgxs-2}
 \end{subfigure}
-\begin{subfigure}{0.42\textwidth}
+\begin{subfigure}{0.45\textwidth}
   \centering
   \includegraphics[width=0.9\linewidth]{figures/unsupervised/features/assm-16/u238-capt/mean-std/geometry-3}
   \caption{}
   \label{fig:chap10-capt-mean-std-geom-3}
 \end{subfigure}%
-\begin{subfigure}{0.42\textwidth}
+\begin{subfigure}{0.45\textwidth}
   \centering
   \includegraphics[width=0.9\linewidth]{figures/unsupervised/features/assm-16/u238-capt/mean-std/mgxs-3}
   \caption{}
   \label{fig:chap10-capt-mean-std-mgxs-3}
 \end{subfigure}
 \caption[Clustering of U-238 capture MGXS standard deviations]{Scatter plots of the pin-wise U-238 capture (group 1 of 2) \ac{MGXS} means ($x$) and standard deviations ($y$) for the 1.6\% enriched fuel assembly.}
-\label{fig:chap10-mean-std}
+\label{fig:chap10-capt-mean-std}
 \end{figure}
 
 \clearpage
@@ -543,31 +498,31 @@ second paragraph: visualizations
   \caption{}
   \label{fig:chap10-fiss-mean-spect-ind-geom}
 \end{subfigure}%
-\begin{subfigure}{0.42\textwidth}
+\begin{subfigure}{0.45\textwidth}
   \centering
   \includegraphics[width=0.9\linewidth]{figures/unsupervised/features/assm-16/u235-fiss/mean-spect-ind/mgxs}
   \caption{}
   \label{fig:chap10-fiss-mean-spect-ind-mgxs}
 \end{subfigure}
-\begin{subfigure}{0.42\textwidth}
+\begin{subfigure}{0.45\textwidth}
   \centering
   \includegraphics[width=0.9\linewidth]{figures/unsupervised/features/assm-16/u235-fiss/mean-spect-ind/geometry-2}
   \caption{}
   \label{fig:chap10-fiss-mean-spect-ind-geom-2}
 \end{subfigure}%
-\begin{subfigure}{0.42\textwidth}
+\begin{subfigure}{0.45\textwidth}
   \centering
   \includegraphics[width=0.9\linewidth]{figures/unsupervised/features/assm-16/u235-fiss/mean-spect-ind/mgxs-2}
   \caption{}
   \label{fig:chap10-fiss-mean-spect-ind-mgxs-2}
 \end{subfigure}
-\begin{subfigure}{0.42\textwidth}
+\begin{subfigure}{0.45\textwidth}
   \centering
   \includegraphics[width=0.9\linewidth]{figures/unsupervised/features/assm-16/u235-fiss/mean-spect-ind/geometry-3}
   \caption{}
   \label{fig:chap10-fiss-mean-spect-ind-geom-3}
 \end{subfigure}%
-\begin{subfigure}{0.42\textwidth}
+\begin{subfigure}{0.45\textwidth}
   \centering
   \includegraphics[width=0.9\linewidth]{figures/unsupervised/features/assm-16/u235-fiss/mean-spect-ind/mgxs-3}
   \caption{}
@@ -581,37 +536,37 @@ second paragraph: visualizations
 
 \begin{figure}[h!]
 \centering
-\begin{subfigure}{0.42\textwidth}
+\begin{subfigure}{0.45\textwidth}
   \centering
   \includegraphics[width=0.9\linewidth]{figures/unsupervised/features/assm-16/geometry}
   \caption{}
   \label{fig:chap10-capt-mean-spect-ind-geom}
 \end{subfigure}%
-\begin{subfigure}{0.42\textwidth}
+\begin{subfigure}{0.45\textwidth}
   \centering
   \includegraphics[width=0.9\linewidth]{figures/unsupervised/features/assm-16/u238-capt/mean-spect-ind/mgxs}
   \caption{}
   \label{fig:chap10-capt-mean-spect-ind-mgxs}
 \end{subfigure}
-\begin{subfigure}{0.42\textwidth}
+\begin{subfigure}{0.45\textwidth}
   \centering
   \includegraphics[width=0.9\linewidth]{figures/unsupervised/features/assm-16/u238-capt/mean-spect-ind/geometry-2}
   \caption{}
   \label{fig:chap10-capt-mean-spect-ind-geom-2}
 \end{subfigure}%
-\begin{subfigure}{0.42\textwidth}
+\begin{subfigure}{0.45\textwidth}
   \centering
   \includegraphics[width=0.9\linewidth]{figures/unsupervised/features/assm-16/u238-capt/mean-spect-ind/mgxs-2}
   \caption{}
   \label{fig:chap10-capt-mean-spect-ind-mgxs-2}
 \end{subfigure}
-\begin{subfigure}{0.42\textwidth}
+\begin{subfigure}{0.45\textwidth}
   \centering
   \includegraphics[width=0.9\linewidth]{figures/unsupervised/features/assm-16/u238-capt/mean-spect-ind/geometry-3}
   \caption{}
   \label{fig:chap10-capt-mean-spect-ind-geom-3}
 \end{subfigure}%
-\begin{subfigure}{0.42\textwidth}
+\begin{subfigure}{0.45\textwidth}
   \centering
   \includegraphics[width=0.9\linewidth]{figures/unsupervised/features/assm-16/u238-capt/mean-spect-ind/mgxs-3}
   \caption{}
@@ -645,37 +600,37 @@ second paragraph: visualizations
 
 \begin{figure}[h!]
 \centering
-\begin{subfigure}{0.42\textwidth}
+\begin{subfigure}{0.45\textwidth}
   \centering
   \includegraphics[width=0.9\linewidth]{figures/unsupervised/features/assm-16/geometry}
   \caption{}
   \label{fig:chap10-fiss-mean-nuc-frac-geom}
 \end{subfigure}%
-\begin{subfigure}{0.42\textwidth}
+\begin{subfigure}{0.45\textwidth}
   \centering
   \includegraphics[width=0.9\linewidth]{figures/unsupervised/features/assm-16/u235-fiss/mean-nuc-frac/mgxs}
   \caption{}
   \label{fig:chap10-fiss-mean-nuc-frac-mgxs}
 \end{subfigure}
-\begin{subfigure}{0.42\textwidth}
+\begin{subfigure}{0.45\textwidth}
   \centering
   \includegraphics[width=0.9\linewidth]{figures/unsupervised/features/assm-16/u235-fiss/mean-nuc-frac/geometry-2}
   \caption{}
   \label{fig:chap10-fiss-mean-nuc-frac-geom-2}
 \end{subfigure}%
-\begin{subfigure}{0.42\textwidth}
+\begin{subfigure}{0.45\textwidth}
   \centering
   \includegraphics[width=0.9\linewidth]{figures/unsupervised/features/assm-16/u235-fiss/mean-nuc-frac/mgxs-2}
   \caption{}
   \label{fig:chap10-fiss-mean-nuc-frac-mgxs-2}
 \end{subfigure}
-\begin{subfigure}{0.42\textwidth}
+\begin{subfigure}{0.45\textwidth}
   \centering
   \includegraphics[width=0.9\linewidth]{figures/unsupervised/features/assm-16/u235-fiss/mean-nuc-frac/geometry-3}
   \caption{}
   \label{fig:chap10-fiss-mean-nuc-frac-geom-3}
 \end{subfigure}%
-\begin{subfigure}{0.42\textwidth}
+\begin{subfigure}{0.45\textwidth}
   \centering
   \includegraphics[width=0.9\linewidth]{figures/unsupervised/features/assm-16/u235-fiss/mean-nuc-frac/mgxs-3}
   \caption{}
@@ -689,37 +644,37 @@ second paragraph: visualizations
 
 \begin{figure}[h!]
 \centering
-\begin{subfigure}{0.42\textwidth}
+\begin{subfigure}{0.45\textwidth}
   \centering
   \includegraphics[width=0.9\linewidth]{figures/unsupervised/features/assm-16/geometry}
   \caption{}
   \label{fig:chap10-capt-mean-nuc-frac-geom}
 \end{subfigure}%
-\begin{subfigure}{0.42\textwidth}
+\begin{subfigure}{0.45\textwidth}
   \centering
   \includegraphics[width=0.9\linewidth]{figures/unsupervised/features/assm-16/u238-capt/mean-nuc-frac/mgxs}
   \caption{}
   \label{fig:chap10-capt-mean-nuc-frac-mgxs}
 \end{subfigure}
-\begin{subfigure}{0.42\textwidth}
+\begin{subfigure}{0.45\textwidth}
   \centering
   \includegraphics[width=0.9\linewidth]{figures/unsupervised/features/assm-16/u238-capt/mean-nuc-frac/geometry-2}
   \caption{}
   \label{fig:chap10-capt-mean-nuc-frac-geom-2}
 \end{subfigure}%
-\begin{subfigure}{0.42\textwidth}
+\begin{subfigure}{0.45\textwidth}
   \centering
   \includegraphics[width=0.9\linewidth]{figures/unsupervised/features/assm-16/u238-capt/mean-nuc-frac/mgxs-2}
   \caption{}
   \label{fig:chap10-capt-mean-nuc-frac-mgxs-2}
 \end{subfigure}
-\begin{subfigure}{0.42\textwidth}
+\begin{subfigure}{0.45\textwidth}
   \centering
   \includegraphics[width=0.9\linewidth]{figures/unsupervised/features/assm-16/u238-capt/mean-nuc-frac/geometry-3}
   \caption{}
   \label{fig:chap10-capt-mean-nuc-frac-geom-3}
 \end{subfigure}%
-\begin{subfigure}{0.42\textwidth}
+\begin{subfigure}{0.45\textwidth}
   \centering
   \includegraphics[width=0.9\linewidth]{figures/unsupervised/features/assm-16/u238-capt/mean-nuc-frac/mgxs-3}
   \caption{}
@@ -785,8 +740,8 @@ first paragraph: what is goal???
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Dimensionality Reduction}
-\label{sec:chap10-dimensions-reduce}
+\section{Feature Selection}
+\label{sec:chap10-feature-select}
 
 -dimensionality reduction
 
