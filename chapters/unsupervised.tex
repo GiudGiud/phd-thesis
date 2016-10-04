@@ -7,7 +7,7 @@ The novel homogenization methodology presented here -- referred to as \textit{in
 
 \begin{figure}[h!]
 \centering
-\includegraphics[width=\linewidth]{figures/unsupervised/flow-chart}
+\includegraphics[width=0.75\linewidth]{figures/unsupervised/flow-chart}
 \vspace{2mm}
 \caption[Expected relative runtime for different homogenization schemes]{The expected relative runtime for the degenerate, \ac{LNS} and \textit{i}\ac{MGXS} spatial homogenization schemes with respect to a reference \ac{MC} calculation.}
 \label{fig:chap10-flow-chart}
@@ -206,7 +206,7 @@ A high-level overview of the various stages of the \textit{i}\ac{MGXS} data proc
 
 \begin{figure}[h!]
 \centering
-\includegraphics[width=0.35\linewidth]{figures/unsupervised/pipeline}
+\includegraphics[width=0.95\linewidth]{figures/unsupervised/pipeline}
 \vspace{2mm}
 \caption[MGXS pipeline]{The multi-stage \textit{i}\ac{MGXS} data processing pipeline.}
 \label{fig:chap10-pipeline}
@@ -235,9 +235,9 @@ The \textit{i}\ac{MGXS} scheme splits the \ac{MC} tally dataset up into \textit{
 
 \begin{figure}[h!]
 \centering
-\includegraphics[width=0.4\linewidth]{figures/unsupervised/features/engineering/features}
+\includegraphics[width=0.9\linewidth]{figures/unsupervised/features/engineering/extract}
 \vspace{2mm}
-\caption[\textit{i}MGXS sample feature vector construction]{\textit{i}\ac{MGXS} builds feature vectors for each sample (fuel pin instance).}
+\caption[\textit{i}MGXS sample feature extraction]{\textit{i}\ac{MGXS} extracts feature vectors for each sample (fuel pin instance).}
 \label{fig:chap10-feature-eng}
 \end{figure}
 
@@ -252,8 +252,8 @@ The following sections introduce the features employed by \textit{i}\ac{MGXS} in
 %first paragraph: motivationa 
 %  -could cluster multiple microscopic \ac{MGXS} simultaneously - nuclides, reactions, groups
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Pin-Wise MGXS Statistical Uncertainties}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{MGXS Statistical Uncertainty}
 \label{subsec:chap10-stat-uncertainty}
 
 The statistical uncertainty for each pin-wise \ac{MGXS} may be a useful feature to indicate clustering effects. In particular, the standard deviation of the sample mean is easily obtained from OpenMC tallies and can be incldued in the feature vector for each fuel pin instance. The intuition behind this is that the track densities -- and therefore, the statistical uncertainties -- in different fuel pins may reflect the spatial self-shielding effects experienced by different types of fuel pins. For example, the thermal flux track density will vary for fuel pins with differential moderation from \acp{CRGT}, reflectors, etc., which may present itself through a systematic clustering of the statistical uncertainties. Similarly, the track density will vary for fuel pins which experience varying degrees of spatial self-shielding in U-238 resonance groups -- which greatly impacts the resultant \ac{MGXS} in those groups -- and may be identifiable in the \ac{MGXS} uncertainties.
@@ -355,22 +355,22 @@ Notwithstanding the motivation to use the statistical uncertainties, there are a
 
 \clearpage
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Pin-Wise Fractional Reactivities}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Fractional Reactivity}
 \label{subsec:chap10-frac-reactivity}
 
-The \textit{fractional reactivity} feature compares the fission reaction rates for the population of fuel pins in a core geometry. This feature assumes that fuel pins with similar spatial self-shielding effects have similar fission rates. This may be a valid assumption for simple geometries such as fuel assemblies and colorsets with all reflective/periodic \acp{BC}, but may not be true for benchmarks such as \ac{BEAVRS} with large globally-varying power tilts due to leakage. The fission rate statistical uncertainties will necessarily be smaller than those for the microscopic \ac{MGXS} since they are energy-integrated and summed across nuclides. As a result, clustering may emerge from ``noisy'' \ac{MC} fission rate tallies more quickly than is possible for tallies for single energy groups and/or nuclides.
+The \textit{fractional reactivity} compares the fission reaction rates for the population of fuel pins in a core geometry. This feature hypothesizes that fuel pins with similar spatial self-shielding effects have similar fission rates. This may be a valid assumption for simple geometries such as fuel assemblies and colorsets with all reflective/periodic \acp{BC}, but may not be true for benchmarks such as \ac{BEAVRS} with large globally-varying power tilts due to leakage. The fission rate statistical uncertainties will necessarily be smaller than those for the microscopic \ac{MGXS} since they are energy-integrated and summed across nuclides. As a result, clustering may emerge from ``noisy'' \ac{MC} fission rate tallies more quickly than is possible for tallies for single energy groups and/or nuclides.
 
 Although the pin-wise fission rates may used directly as a feature, the \textit{i}\ac{MGXS} implementation in this thesis normalizes the pin-wise fission rates to the globally-integrated absorption rate in the fuel as follows:
 
 \begin{equation}
 \label{eqn:chap10-frac-reactivity}
-\alpha_{k} = \frac{\displaystyle\sum\limits_{g=1}^{G}\nu\hat{\sigma}_{f,i,k,g}\hat{\phi}_{k,g}}{\displaystyle\sum\limits_{k=1}^{K}\displaystyle\sum\limits_{g=1}^{G}\hat{\sigma}_{a,i,k,g}\hat{\phi}_{k,g}} \times 10^{5}
+\hat{\alpha}_{k} = \frac{\displaystyle\sum\limits_{g=1}^{G}\nu\hat{\Sigma}_{f,i,k,g}\hat{\phi}_{k,g}}{\displaystyle\sum\limits_{k=1}^{K}\displaystyle\sum\limits_{g=1}^{G}\hat{\Sigma}_{a,i,k,g}\hat{\phi}_{k,g}} \times 10^{5}
 \end{equation}
 
-\noindent The normalized fractional reactivity $\alpha_{k}$  is multiplied by 10$^{5}$ so that it may be reported in the familiar reactivity units of per cent mille (pcm)\footnote{It might be preferable to equivalently normalize the fission rates to the mean. The normalization factor is a matter of analyst preference and does not impact the predictions made by statistical clustering algorithms if the features are standardized as discussed in Sec.~\ref{sec:chap10-feature-transform}.}. It is important to note that the denominator in Eqn.~\ref{eqn:chap10-frac-reactivity} encompasses all fuel pins of all compositions (\textit{e.g.}, enrichments) in the core geometry, but does not include absorption in the moderator, clad, \acp{BP}, etc. As a result, the fractional reactivity as defined by this thesis is not indicative of the global reactivity, but rather the reactivity restricted to the fuel.
+\noindent The normalized fractional reactivity $\hat{\alpha}_{k}$  is multiplied by 10$^{5}$ so that it may be reported in the familiar reactivity units of per cent mille (pcm)\footnote{It might be preferable to equivalently normalize the fission rates to the mean. The normalization factor is a matter of analyst preference and does not impact the predictions made by statistical clustering algorithms if the features are standardized as discussed in Sec.~\ref{sec:chap10-feature-transform}.}. It is important to note that the denominator in Eqn.~\ref{eqn:chap10-frac-reactivity} encompasses all fuel pins of all compositions (\textit{e.g.}, enrichments) in the core geometry, but does not include absorption in the moderator, clad, \acp{BP}, etc. As a result, the fractional reactivity as defined by this thesis is not indicative of the global reactivity, but rather the reactivity restricted to the fuel.
 
-The fractional reactivity feature is illustrated with scatter plots in Figs.~\ref{fig:chap10-fiss-mean-pcm} and~\ref{fig:chap10-capt-mean-pcm} for 2-group U-235 fission and U-238 capture \ac{MGXS} data, respectively. The scatter plots include a single data point for each of the 264 fuel pins in the 1.6\% enriched fuel assembly benchmark. The $x$ and $y$ coordinates correspond to the tallied \ac{MGXS} means $\hat{\sigma}_{x,i,k,g}$ and normalized fractional reactivities $\alpha_{k}$ in units of barns and \ac{pcm}, respectively. The complete datasets are illustrated in Figs.~\ref{fig:chap10-fiss-mean-pcm-mgxs} and~\ref{fig:chap10-capt-mean-pcm-mgxs}. The interactive \textit{i}\ac{MGXS} visualization tool was used to select clusters of \ac{MGXS} and plot the geometry to indicate the associated fuel pins, as displayed in Figs.~\Crefrange{fig:chap10-fiss-mean-pcm-geom-2}{fig:chap10-fiss-mean-pcm-mgxs-3} and~\Crefrange{fig:chap10-capt-mean-pcm-geom-2}{fig:chap10-capt-mean-pcm-mgxs-3} for the fission and capture \ac{MGXS}, respectively. 
+The fractional reactivity feature is illustrated with scatter plots in Figs.~\ref{fig:chap10-fiss-mean-pcm} and~\ref{fig:chap10-capt-mean-pcm} for 2-group U-235 fission and U-238 capture \ac{MGXS} data, respectively. The scatter plots include a single data point for each of the 264 fuel pins in the 1.6\% enriched fuel assembly benchmark. The $x$ and $y$ coordinates correspond to the tallied \ac{MGXS} means $\hat{\sigma}_{x,i,k,g}$ and normalized fractional reactivities $\hat{\alpha}_{k}$ in units of barns and \ac{pcm}, respectively. The complete datasets are illustrated in Figs.~\ref{fig:chap10-fiss-mean-pcm-mgxs} and~\ref{fig:chap10-capt-mean-pcm-mgxs}. The interactive \textit{i}\ac{MGXS} visualization tool was used to select clusters of \ac{MGXS} and plot the geometry to indicate the associated fuel pins, as displayed in Figs.~\Crefrange{fig:chap10-fiss-mean-pcm-geom-2}{fig:chap10-fiss-mean-pcm-mgxs-3} and~\Crefrange{fig:chap10-capt-mean-pcm-geom-2}{fig:chap10-capt-mean-pcm-mgxs-3} for the fission and capture \ac{MGXS}, respectively. 
 
 The scatter plots illustrate the highly linear relationship between the U-235 fission \ac{MGXS} and fractional reactivities; those pins facially and corner adjacent to distinct \acp{CRGT} have both the largest fission \ac{MGXS} and fission rates due to the differential moderation of the neighboring \acp{CRGT} (at least for this benchmark). The clustering of U-238 capture \ac{MGXS} generally indicates a similar proportional relationship with fractional reactivity. Perhaps more importantly, Fig.~\ref{fig:chap10-mean-pcm} also makes it possible to distinguish ``sub-clusters'' within each of the four primary clusters of U-238 capture \ac{MGXS}. Although the sub-clusters within a primary cluster have similar \ac{MGXS}\footnote{The track density-weighted average \ac{MGXS} for the sub-clusters would be relatively similar.}, there is some variation due to subtle differences in the spatial self-shielding experienced by the pins in the primary cluster.
 
@@ -415,7 +415,7 @@ The visualizations highlight the \textit{hierarchical} nature of spatial self-sh
   \label{fig:chap10-fiss-mean-pcm-mgxs-3}
 \end{subfigure}
 \caption[Clustering of U-235 fission MGXS fractional reactivities]{Scatter plots of the pin-wise U-235 fission (group 2 of 2) \ac{MGXS} means ($x$) and fractional reactivities ($y$) for the 1.6\% enriched fuel assembly.}
-\label{fig:chap10-mean-pcm}
+\label{fig:chap10-fiss-mean-pcm}
 \end{figure}
 
 \clearpage
@@ -459,81 +459,69 @@ The visualizations highlight the \textit{hierarchical} nature of spatial self-sh
   \label{fig:chap10-capt-mean-pcm-mgxs-3}
 \end{subfigure}
 \caption[Clustering of U-238 capture MGXS fractional reactivities]{Scatter plots of the pin-wise U-238 capture (group 1 of 2) \ac{MGXS} means ($x$) and fractional reactivities ($y$) for the 1.6\% enriched fuel assembly.}
-\label{fig:chap10-mean-pcm}
+\label{fig:chap10-capt-mean-pcm}
 \end{figure}
 
 \clearpage
 
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%	
 \subsection{Spectral Index}
 \label{subsec:chap10-spec-index}
 
-first paragraph: explain what it is
--divide each pin's nu-fission and absorption \ac{MGXS} 
--Eqn.~\ref{eqn:chap10-spec-index}
--explain what it indicates (differential moderation, adjacency to guide tubes, spectral hardening)
--note $i$ and $j$ may designate two difference nuclides
--note $\gamma$ is radiative capture - need to change this in theory section???
-
-\begin{equation}
-\label{eqn:chap10-spec-index-general}
-\beta_{x,i,k,g} = \frac{\hat{\sigma}_{x,i,k,g}}{\hat{\sigma}_{f,k,g}^{235}}
-\end{equation}
+The \textit{spectral index} compares the ratio of energy-integrated U-238 capture to U-235 fission reaction rates in each fuel pin. The \textit{i}\ac{MGXS} implementation in this thesis computes spectral indices as follows:
 
 \begin{equation}
 \label{eqn:chap10-spec-index-u238-capt}
-\beta_{\gamma,k,g}^{238} = \frac{\hat{\sigma}_{\gamma,k,g}^{238}}{\hat{\sigma}_{f,k,g}^{235}}
+\hat{\beta}_{k} = \frac{\displaystyle\sum\limits_{g=1}^{G}\hat{\sigma}_{\gamma,k,g}^{238}\hat{\phi}_{k,g}}{\displaystyle\sum\limits_{g=1}^{G}\hat{\sigma}_{f,k,g}^{235}\hat{\phi}_{k,g}}
 \end{equation}
 
-second paragraph: visualizations
--look at single fuel assembly with GUI
--three plots: full, two different clusters selected
--indicate which energy group and nuclide
+\noindent where $\hat{\sigma}_{\gamma,k,g}^{238}$ and $\hat{\sigma}_{f,k,g}^{235}$ are the microscopic U-238 radiative capture and U-235 fission production \ac{MGXS} for fuel pin instance $k$ and energy group $g$, respectively\footnote{The U-235 fission and fission production \ac{MGXS} may be used interchangeably in Eqn.~\ref{eqn:chap10-spec-index-u238-capt} with no impact on the predictions made by unsupervised statistical clustering algorithms.}. This feature postulates that the capture-to-fission ratio will significantly vary for fuel pins and energy groups with different spatial self-shielding effects. The spectral index is especially relevant since it accounts for relative differences in the U-238 capture rates, which previous chapters showed can only be accurately computed if an appropriate pin-wise spatial homogenization scheme is used. Unlike the fractional reactivity, the spectral index may identify pins with similar flux shapes but very different flux magnitudes since it is the ratio of two pin-wise reaction rates.
+
+The spectral index feature is illustrated with scatter plots in Figs.~\ref{fig:chap10-fiss-mean-spect-ind} and~\ref{fig:chap10-capt-mean-spect-ind} for 2-group U-235 fission and U-238 capture \ac{MGXS} data, respectively. The scatter plots include a single data point for each of the 264 fuel pins in the 1.6\% enriched fuel assembly benchmark. The $x$ and $y$ coordinates correspond to the tallied \ac{MGXS} means $\hat{\sigma}_{x,i,k,g}$ and spectral indices $\hat{\beta}_{k}$, respectively. The complete datasets are illustrated in Figs.~\ref{fig:chap10-fiss-mean-spect-ind-mgxs} and~\ref{fig:chap10-capt-mean-spect-ind-mgxs}. The interactive \textit{i}\ac{MGXS} visualization tool was used to select clusters of \ac{MGXS} and plot the geometry to indicate the associated fuel pins, as displayed in Figs.~\Crefrange{fig:chap10-fiss-mean-spect-ind-geom-2}{fig:chap10-fiss-mean-spect-ind-mgxs-3} and~\Crefrange{fig:chap10-capt-mean-spect-ind-geom-2}{fig:chap10-capt-mean-spect-ind-mgxs-3} for the fission and capture \ac{MGXS}, respectively. 
 
 \begin{figure}[h!]
 \centering
 \begin{subfigure}{0.42\textwidth}
   \centering
-  \includegraphics[width=0.9\linewidth]{figures/unsupervised/features/assm-16/geometry}
+  \includegraphics[width=0.8\linewidth]{figures/unsupervised/features/assm-16/geometry}
   \caption{}
   \label{fig:chap10-fiss-mean-spect-ind-geom}
 \end{subfigure}%
 \begin{subfigure}{0.45\textwidth}
   \centering
-  \includegraphics[width=0.9\linewidth]{figures/unsupervised/features/assm-16/u235-fiss/mean-spect-ind/mgxs}
+  \includegraphics[width=0.9\linewidth]{figures/unsupervised/features/assm-16/u235-fiss/mean-spect-ind-sum/mgxs}
   \caption{}
   \label{fig:chap10-fiss-mean-spect-ind-mgxs}
 \end{subfigure}
 \begin{subfigure}{0.45\textwidth}
   \centering
-  \includegraphics[width=0.9\linewidth]{figures/unsupervised/features/assm-16/u235-fiss/mean-spect-ind/geometry-2}
+  \includegraphics[width=0.9\linewidth]{figures/unsupervised/features/assm-16/u235-fiss/mean-spect-ind-sum/geometry-2}
   \caption{}
   \label{fig:chap10-fiss-mean-spect-ind-geom-2}
 \end{subfigure}%
 \begin{subfigure}{0.45\textwidth}
   \centering
-  \includegraphics[width=0.9\linewidth]{figures/unsupervised/features/assm-16/u235-fiss/mean-spect-ind/mgxs-2}
+  \includegraphics[width=0.9\linewidth]{figures/unsupervised/features/assm-16/u235-fiss/mean-spect-ind-sum/mgxs-2}
   \caption{}
   \label{fig:chap10-fiss-mean-spect-ind-mgxs-2}
 \end{subfigure}
 \begin{subfigure}{0.45\textwidth}
   \centering
-  \includegraphics[width=0.9\linewidth]{figures/unsupervised/features/assm-16/u235-fiss/mean-spect-ind/geometry-3}
+  \includegraphics[width=0.9\linewidth]{figures/unsupervised/features/assm-16/u235-fiss/mean-spect-ind-sum/geometry-3}
   \caption{}
   \label{fig:chap10-fiss-mean-spect-ind-geom-3}
 \end{subfigure}%
 \begin{subfigure}{0.45\textwidth}
   \centering
-  \includegraphics[width=0.9\linewidth]{figures/unsupervised/features/assm-16/u235-fiss/mean-spect-ind/mgxs-3}
+  \includegraphics[width=0.9\linewidth]{figures/unsupervised/features/assm-16/u235-fiss/mean-spect-ind-sum/mgxs-3}
   \caption{}
   \label{fig:chap10-fiss-mean-spect-ind-mgxs-3}
 \end{subfigure}
 \caption[Clustering of U-235 fission MGXS spectral indices]{Scatter plots of the pin-wise U-235 fission (group 2 of 2) \ac{MGXS} means ($x$) and spectral indices ($y$) for the 1.6\% enriched fuel assembly.}
-\label{fig:chap10-mean-spect-ind}
+\label{fig:chap10-fiss-mean-spect-ind}
 \end{figure}
 
-\clearpage
+%\clearpage
 
 \begin{figure}[h!]
 \centering
@@ -545,59 +533,55 @@ second paragraph: visualizations
 \end{subfigure}%
 \begin{subfigure}{0.45\textwidth}
   \centering
-  \includegraphics[width=0.9\linewidth]{figures/unsupervised/features/assm-16/u238-capt/mean-spect-ind/mgxs}
+  \includegraphics[width=0.9\linewidth]{figures/unsupervised/features/assm-16/u238-capt/mean-spect-ind-sum/mgxs}
   \caption{}
   \label{fig:chap10-capt-mean-spect-ind-mgxs}
 \end{subfigure}
 \begin{subfigure}{0.45\textwidth}
   \centering
-  \includegraphics[width=0.9\linewidth]{figures/unsupervised/features/assm-16/u238-capt/mean-spect-ind/geometry-2}
+  \includegraphics[width=0.9\linewidth]{figures/unsupervised/features/assm-16/u238-capt/mean-spect-ind-sum/geometry-2}
   \caption{}
   \label{fig:chap10-capt-mean-spect-ind-geom-2}
 \end{subfigure}%
 \begin{subfigure}{0.45\textwidth}
   \centering
-  \includegraphics[width=0.9\linewidth]{figures/unsupervised/features/assm-16/u238-capt/mean-spect-ind/mgxs-2}
+  \includegraphics[width=0.9\linewidth]{figures/unsupervised/features/assm-16/u238-capt/mean-spect-ind-sum/mgxs-2}
   \caption{}
   \label{fig:chap10-capt-mean-spect-ind-mgxs-2}
 \end{subfigure}
 \begin{subfigure}{0.45\textwidth}
   \centering
-  \includegraphics[width=0.9\linewidth]{figures/unsupervised/features/assm-16/u238-capt/mean-spect-ind/geometry-3}
+  \includegraphics[width=0.9\linewidth]{figures/unsupervised/features/assm-16/u238-capt/mean-spect-ind-sum/geometry-3}
   \caption{}
   \label{fig:chap10-capt-mean-spect-ind-geom-3}
 \end{subfigure}%
 \begin{subfigure}{0.45\textwidth}
   \centering
-  \includegraphics[width=0.9\linewidth]{figures/unsupervised/features/assm-16/u238-capt/mean-spect-ind/mgxs-3}
+  \includegraphics[width=0.9\linewidth]{figures/unsupervised/features/assm-16/u238-capt/mean-spect-ind-sum/mgxs-3}
   \caption{}
   \label{fig:chap10-capt-mean-spect-ind-mgxs-3}
 \end{subfigure}
 \caption[Clustering of U-238 capture MGXS spectral indices]{Scatter plots of the pin-wise U-238 capture (group 1 of 2) \ac{MGXS} means ($x$) and spectral indices ($y$) for the 1.6\% enriched fuel assembly.}
-\label{fig:chap10-mean-spect-ind}
+\label{fig:chap10-capt-mean-spect-ind}
 \end{figure}
 
-\clearpage
+%\clearpage
+
+The figures illustrate a complex relationship between the U-235 fission \ac{MGXS} and the spectral indices. In contrast to the fractional reactivity, both the fission and capture \ac{MGXS} are negatively correlated with the spectral index. In particular, the more differential moderation from neighboring \acp{CRGT}, the smaller the spectral index. Although the capture and fission rates both increase with differential moderation, these scatter plots indicate that U-235 fission increases \textit{faster} than U-238 capture. In addition, the clusters are more spread out than the more linear trends observed for the fractional reactivities. The scatter plots indicate that the spectral index is potentially more effective at separating sub-clusters within each primary cluster than fractional reactivity (at least for this benchmark). 
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Nuclide Fraction}
 \label{subsec:chap10-nuclide-frac}
 
-first paragraph: explain what it is
--divide pin-wise micro \ac{MGXS} for each nuclide/reaction/group by the corresponding total \ac{MGXS} for that nuclide/reaction/group trio
--Eqn.~\ref{eqn:chap10- nuclide-frac}
--explain what it indicates...???
--note $t$ designates the total collision reaction type
+The fractional reactivity and spectral index are both energy-integrated features, the \textit{nuclide fraction} feature is specific to each energy group. The nuclide fraction is defined as the ratio of each pin-wise microscopic \ac{MGXS} $\hat{\sigma}_{x,i,k,g}$ for reaction $x$, nuclide $i$ and energy group $k$ to the total \ac{MGXS} for the $\hat{\sigma}_{t,i,k,g}$ corresponding nuclide and energy group:
 
 \begin{equation}
 \label{eqn:chap10-nuclide-frac}
-\tau_{x,i,k,g} = \frac{\hat{\sigma}_{x,i,k,g}}{\hat{\sigma}_{t,i,k,g}}
+\hat{\tau}_{x,i,k,g} = \frac{\hat{\sigma}_{x,i,k,g}}{\hat{\sigma}_{t,i,k,g}}
 \end{equation}
 
-second paragraph: visualizations
--look at single fuel assembly with GUI
--three plots: full, two different clusters selected
--indicate which energy group, nuclide, and reaction type
+The nuclide fraction feature $\hat{\tau}_{x,i,k,g}$ is motivated by the hypothesis that spatial self-shielding effects may disproportionately impact certain reaction types (\textit{e.g.}, U-238 capture) more than the total \ac{MGXS}. Since the nuclide fraction is computed for each energy group, it may be more challenging to identify clusters with this feature with ``noisy'' \ac{MC} tally data than may be the case for the energy-integrated fractional reactivity and spectral index features. Like the spectral index, the nuclide fraction may identify pins with similar flux shapes but very different flux magnitudes since it is the ratio of two pin-wise reaction rates.
 
 \begin{figure}[h!]
 \centering
@@ -638,10 +622,10 @@ second paragraph: visualizations
   \label{fig:chap10-fiss-mean-nuc-frac-mgxs-3}
 \end{subfigure}
 \caption[Clustering of U-235 fission MGXS nuclide fractions]{Scatter plots of the pin-wise U-235 fission (group 2 of 2) \ac{MGXS} means ($x$) and nuclide fractions ($y$) for the 1.6\% enriched fuel assembly.}
-\label{fig:chap10-mean-nuc-frac}
+\label{fig:chap10-fiss-mean-nuc-frac}
 \end{figure}
 
-\clearpage
+%\clearpage
 
 \begin{figure}[h!]
 \centering
@@ -682,30 +666,239 @@ second paragraph: visualizations
   \label{fig:chap10-capt-mean-nuc-frac-mgxs-3}
 \end{subfigure}
 \caption[Clustering of U-238 capture MGXS nuclide fractions]{Scatter plots of the pin-wise U-238 capture (group 1 of 2) \ac{MGXS} means ($x$) and nuclide fractions ($y$) for the 1.6\% enriched fuel assembly.}
-\label{fig:chap10-mean-nuc-frac}
+\label{fig:chap10-capt-mean-nuc-frac}
 \end{figure}
 
-\clearpage
+%\clearpage
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Total Fraction}
-\label{subsec:chap10-tot-frac}
+The nuclide fraction feature is illustrated with scatter plots in Figs.~\ref{fig:chap10-fiss-mean-nuc-frac} and~\ref{fig:chap10-capt-mean-nuc-frac} for 2-group U-235 fission and U-238 capture \ac{MGXS} data, respectively. The scatter plots include a single data point for each of the 264 fuel pins in the 1.6\% enriched fuel assembly benchmark. The $x$ and $y$ coordinates correspond to the tallied \ac{MGXS} means $\hat{\sigma}_{x,i,k,g}$ and nuclide fractions $\beta_{k}$, respectively. The complete datasets are illustrated in Figs.~\ref{fig:chap10-fiss-mean-nuc-frac-mgxs} and~\ref{fig:chap10-capt-mean-nuc-frac-mgxs}. The interactive \textit{i}\ac{MGXS} visualization tool was used to select clusters of \ac{MGXS} and plot the geometry to indicate the associated fuel pins, as displayed in Figs.~\Crefrange{fig:chap10-fiss-mean-nuc-frac-geom-2}{fig:chap10-fiss-mean-nuc-frac-mgxs-3} and~\Crefrange{fig:chap10-capt-mean-nuc-frac-geom-2}{fig:chap10-capt-mean-nuc-frac-mgxs-3} for the fission and capture \ac{MGXS}, respectively. 
 
-first paragraph: explain what it is
--divide pin-wise micro \ac{MGXS} for each nuclide/reaction/group by the corresponding total \ac{MGXS} for that nuclide/reaction/group trio
--Eqn.~\ref{eqn:chap10-tot-frac}
--explain what it indicates...???
--note that $I$ designates the total number of nuclides in a fuel pin
+The figures illustrate a positive correlation between both the U-235 fission and U-238 capture \ac{MGXS} and the nuclide fractions (at least for this benchmark). In particular, the more differential moderation from neighboring \acp{CRGT}, the smaller the larger the nuclide fraction. Although the fission, capture and total rates all increase with differential moderation, these scatter plots indicate that U-235 fission and U-238 capture increases \textit{faster} than the corresponding total reaction rates with U-235 and U-238. The clusters are more spread out than the more linear trends observed for the fractional reactivities, but this is likely due to the relatively larger statistical uncertainty for the energy-specific nuclide fractions than the energy-integrated fractional reactivities.
 
-\begin{equation}
-\label{eqn:chap10-tot-frac}
-\omega_{x,i,k,g} = \frac{\hat{\sigma}_{x,i,k,g}}{\displaystyle\sum\limits_{i=1}^{I}\hat{\sigma}_{t,i,k,g}}
-\end{equation}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Feature Vector Construction}
+\label{subsec:chap10-feature-eng-summary}
 
-second paragraph: visualizations
--look at single fuel assembly with GUI
--three plots: full, two different clusters selected
--indicate which energy group, nuclide, and reaction type
+Each of the features described in the preceding sections is assembled into feature vectors for each sample as illustrated in Fig.~\ref{fig:chap10-feature-ex}. From a more practical standpoint, the \textit{i}\ac{MGXS} implementation in this thesis represents the sample feature vectors with a 2D \texttt{DataFrame} object from the Pandas module~\cite{mckinney2010pandas} for data processing in Python. Each column in the \texttt{DataFrame} corresponds to a feature, and each row corresponds to a sample. This \texttt{DataFrame} is the input to the feature selection and/or transformation stages of the \textit{i}\ac{MGXS} pipeline as discussed in the following sections. 
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.95\linewidth]{figures/unsupervised/features/engineering/features}
+\vspace{2mm}
+\caption[Example \textit{i}MGXS sample feature vectors]{Feature extraction creates features from \ac{MC} tally data. Each case study presented in this thesis extracts features from 2-group \ac{MGXS} as illustrated here.}
+\label{fig:chap10-features}
+\end{figure}
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.95\linewidth]{figures/unsupervised/features/engineering/select}
+\vspace{2mm}
+\caption[\textit{i}MGXS feature selection]{Feature selection chooses the features to train a clustering model.}
+\label{fig:chap10-select}
+\end{figure}
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.95\linewidth]{figures/unsupervised/features/engineering/agglomerate}
+\vspace{2mm}
+\caption[\textit{i}MGXS feature agglomeration]{Agglomeration transforms the original feature vectors into new features.}
+\label{fig:chap10-agglomerate}
+\end{figure}
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.95\linewidth]{figures/unsupervised/features/engineering/cluster}
+\vspace{2mm}
+\caption[\textit{i}MGXS clustering]{Each clustering model assigns labels to each sample.}
+\label{fig:chap10-cluster}
+\end{figure}
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.95\linewidth]{figures/unsupervised/features/engineering/model}
+\vspace{2mm}
+\caption[\textit{i}MGXS model selection]{Model selection evaluates the clustering models.}
+\label{fig:chap10-model}
+\end{figure}
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.95\linewidth]{figures/unsupervised/features/engineering/flow-chart}
+\vspace{2mm}
+\caption[\textit{i}MGXS flow chart]{The complete \textit{i}\ac{MGXS} flow chart.}
+\label{fig:chap10-flow-chart}
+\end{figure}
+
+%
+%\begin{equation}
+%\ell_{1,1}
+%\end{equation}
+%
+%\begin{equation}
+%\ell_{2,1}
+%\end{equation}
+%
+%\begin{equation}
+%\ell_{K,1}
+%\end{equation}
+%
+%\begin{equation}
+%\ell_{1,2}
+%\end{equation}
+%
+%\begin{equation}
+%\ell_{2,2}
+%\end{equation}
+%
+%\begin{equation}
+%\ell_{K,2}
+%\end{equation}
+%
+%\begin{equation}
+%\ell_{1,C}
+%\end{equation}
+%
+%\begin{equation}
+%\ell_{2,C}
+%\end{equation}
+%
+%\begin{equation}
+%\ell_{K,C}
+%\end{equation}
+%
+%\begin{equation}
+%g_{1}\left(\hat{\boldsymbol{f}}_{1}\right)
+%\end{equation}
+%
+%\begin{equation}
+%g_{2}\left(\hat{\boldsymbol{f}}_{1}\right)
+%\end{equation}
+%
+%\begin{equation}
+%g_{T}\left(\hat{\boldsymbol{f}}_{1}\right)
+%\end{equation}
+%
+%
+%\begin{equation}
+%g_{1}\left(\hat{\boldsymbol{f}}_{2}\right)
+%\end{equation}
+%
+%\begin{equation}
+%g_{2}\left(\hat{\boldsymbol{f}}_{2}\right)
+%\end{equation}
+%
+%\begin{equation}
+%g_{T}\left(\hat{\boldsymbol{f}}_{2}\right)
+%\end{equation}
+%
+%
+%\begin{equation}
+%g_{1}\left(\hat{\boldsymbol{f}}_{K}\right)
+%\end{equation}
+%
+%\begin{equation}
+%g_{2}\left(\hat{\boldsymbol{f}}_{K}\right)
+%\end{equation}
+%
+%\begin{equation}
+%g_{T}\left(\hat{\boldsymbol{f}}_{K}\right)
+%\end{equation}
+%
+%
+%\begin{equation}
+%g\left(\hat{f}_{1,2}\right)
+%\end{equation}
+%
+%\begin{equation}
+%g\left(\hat{f}_{2,2}\right)
+%\end{equation}
+%
+%\begin{equation}
+%g\left(\hat{f}_{J*,2}\right)
+%\end{equation}
+%
+%
+%\begin{equation}
+%g\left(\hat{f}_{1,K}\right)
+%\end{equation}
+%
+%\begin{equation}
+%g\left(\hat{f}_{2,K}\right)
+%\end{equation}
+%
+%\begin{equation}
+%g\left(\hat{f}_{J*,K}\right)
+%\end{equation}
+%
+%
+%\begin{equation}
+%\hat{\alpha}_{K}
+%\end{equation}
+%
+%\begin{equation}
+%\hat{\beta}_{K}
+%\end{equation}
+%
+%
+%\begin{equation}
+%\hat{\sigma}_{t,K,1}^{16}
+%\end{equation}
+%
+%
+%\begin{equation}
+%\sigma_{\hat{\sigma}_{t,K,2}^{16}}
+%\end{equation}
+%
+%\begin{equation}
+%\hat{\tau}_{t,K,1}^{16}
+%\end{equation}
+%
+%
+%\begin{equation}
+%\hat{\sigma}_{c,K,2}^{238}
+%\end{equation}
+%
+%\begin{equation}
+%\sigma_{\hat{\sigma}_{c,2,2}^{238}}
+%\end{equation}
+%
+%\begin{equation}
+%\hat{\tau}_{c,K,2}^{238}
+%\end{equation}
+%
+%
+%\begin{equation}
+%\hat{\sigma}_{f,K,1}^{235}
+%\end{equation}
+%
+%\begin{equation}
+%\sigma_{\hat{\sigma}_{f,K,1}^{235}}
+%\end{equation}
+%
+%\begin{equation}
+%\hat{\tau}_{f,K,1}^{235}
+%\end{equation}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\subsection{Total Fraction}
+%\label{subsec:chap10-tot-frac}
+%
+%first paragraph: explain what it is
+%-divide pin-wise micro \ac{MGXS} for each nuclide/reaction/group by the corresponding total \ac{MGXS} for that nuclide/reaction/group trio
+%-Eqn.~\ref{eqn:chap10-tot-frac}
+%-explain what it indicates...???
+%-note that $I$ designates the total number of nuclides in a fuel pin
+%
+%\begin{equation}
+%\label{eqn:chap10-tot-frac}
+%\omega_{x,i,k,g} = \frac{\hat{\sigma}_{x,i,k,g}}{\displaystyle\sum\limits_{i=1}^{I}\hat{\sigma}_{t,i,k,g}}
+%\end{equation}
+%
+%second paragraph: visualizations
+%-look at single fuel assembly with GUI
+%-three plots: full, two different clusters selected
+%-indicate which energy group, nuclide, and reaction type
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Target Selection}
@@ -739,16 +932,31 @@ first paragraph: what is goal???
 \subsection{Feature -- Target Regression}
 \label{subsec:chap10-feature-transform-regression}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\section{Litmus Tests}
+%\label{sec:chap10-litmus}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Feature Selection}
 \label{sec:chap10-feature-select}
 
+first paragraph:
+-
+-
+-
+
+second paragraph:
+-
+-
+-
+
+third paragraph:
+-
+-
+-
+
 -dimensionality reduction
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Litmus Tests}
-\label{sec:chap10-litmus}
 
 first paragraph: what are ``litmust tests''?
 -which \ac{MGXS} need to be clustered
@@ -761,6 +969,12 @@ first paragraph: what are ``litmust tests''?
 
 -note that results in following chapter may not make full use of litmus tests
   -instead, user will indicate wish to cluster individual MGXS like U-238 capture
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Domain Knowledge}
+\label{subsec:chap10-domain-knowledge}
+
+pinch clustering
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Nuclide Fraction}
