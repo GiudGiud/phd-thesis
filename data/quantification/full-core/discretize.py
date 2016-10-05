@@ -40,12 +40,14 @@ def discretize_geometry(self):
 
     # Find cells by their string names in the BEAVRS benchmark
     instr_tube_name = 'Instrument tube thimble radial 0: air'
-    guide_tube_name = 'Empty GT above the dashpot radial 0: water'
+    gt_below_name = 'Empty GT below the dashpot radial 0: water'
+    gt_above_name = 'Empty GT above the dashpot radial 0: water'
     burn_abs1_name = 'BPRA rod active poison radial 0: air'
     burn_abs2_name = 'BPRA rod active poison radial 3: borosilicate'
     instr_guide_bp_tube_mod_name = 'Intermediate grid pincell radial 0: water'
     instr_tube = openmc_geometry.get_cells_by_name(instr_tube_name)
-    guide_tube = openmc_geometry.get_cells_by_name(guide_tube_name)
+    gt_below = openmc_geometry.get_cells_by_name(gt_below_name)
+    gt_above = openmc_geometry.get_cells_by_name(gt_above_name)
     burn_abs1 = openmc_geometry.get_cells_by_name(burn_abs1_name)
     burn_abs2 = openmc_geometry.get_cells_by_name(burn_abs2_name)
     mod = openmc_geometry.get_cells_by_name(instr_guide_bp_tube_mod_name)
@@ -53,7 +55,9 @@ def discretize_geometry(self):
     # Discretize each cell into radial rings
     for cell in instr_tube:
         all_openmoc_cells[cell.id].setNumRings(10)
-    for cell in guide_tube:
+    for cell in gt_below:
+        all_openmoc_cells[cell.id].setNumRings(10)
+    for cell in gt_above:
         all_openmoc_cells[cell.id].setNumRings(10)
     for cell in burn_abs1:
         all_openmoc_cells[cell.id].setNumRings(5)
@@ -157,7 +161,7 @@ def discretize_geometry(self):
     all_openmoc_cells[downcomer.id].setNumSectors(0)
     all_openmoc_cells[outer_cell.id].setNumSectors(0)
 
-    return
+#    return
 
     ###########################################################################
     # Discretize the baffle steel cells using a lattice
@@ -320,12 +324,14 @@ def discretize_geometry_standalone(mat_mgxslib, openmoc_geometry):
 
     # Find cells by their string names in the BEAVRS benchmark
     instr_tube_name = 'Instrument tube thimble radial 0: air'
-    guide_tube_name = 'Empty GT above the dashpot radial 0: water'
+    gt_below_name = 'Empty GT below the dashpot radial 0: water'
+    gt_above_name = 'Empty GT above the dashpot radial 0: water'
     burn_abs1_name = 'BPRA rod active poison radial 0: air'
     burn_abs2_name = 'BPRA rod active poison radial 3: borosilicate'
     instr_guide_bp_tube_mod_name = 'Intermediate grid pincell radial 0: water'
     instr_tube = openmc_geometry.get_cells_by_name(instr_tube_name)
-    guide_tube = openmc_geometry.get_cells_by_name(guide_tube_name)
+    gt_below = openmc_geometry.get_cells_by_name(gt_below_name)
+    gt_above = openmc_geometry.get_cells_by_name(gt_above_name)
     burn_abs1 = openmc_geometry.get_cells_by_name(burn_abs1_name)
     burn_abs2 = openmc_geometry.get_cells_by_name(burn_abs2_name)
     mod = openmc_geometry.get_cells_by_name(instr_guide_bp_tube_mod_name)
@@ -333,7 +339,9 @@ def discretize_geometry_standalone(mat_mgxslib, openmoc_geometry):
     # Discretize each cell into radial rings
     for cell in instr_tube:
         all_openmoc_cells[cell.id].setNumRings(10)
-    for cell in guide_tube:
+    for cell in gt_below:
+        all_openmoc_cells[cell.id].setNumRings(10)
+    for cell in gt_above:
         all_openmoc_cells[cell.id].setNumRings(10)
     for cell in burn_abs1:
         all_openmoc_cells[cell.id].setNumRings(5)

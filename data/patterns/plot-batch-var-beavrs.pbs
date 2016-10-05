@@ -1,0 +1,32 @@
+#!/bin/sh
+###############################################################################
+# Specify nodes, processors per node and maximum running time
+###############################################################################
+
+#PBS -l select=1:ncpus=24
+#PBS -l walltime=72:00:00
+
+###############################################################################
+# Enter directory and set PATH
+###############################################################################
+
+cd $PBS_O_WORKDIR
+PATH=$PBS_O_PATH
+
+###############################################################################
+# Run OpenMOC
+# This accepts command line arguments through the "flags" shell variable.
+# For example, the following will run batchwise with Local Neighbor Symmetry
+# clustering and 128 azimuthal angles and 0.05 cm track spacing for each
+# OpenMOC simulation:
+#
+# > qsub batchwise-1.6.pbs -v flags="-clusterizer=lns -a 128 -s 0.05"
+#
+###############################################################################
+
+MV2_ENABLE_AFFINITY=0
+export MV2_ENABLE_AFFINITY
+
+#PBS -k eo
+echo ${flags}
+python plot-batch-var-beavrs.py ${flags}

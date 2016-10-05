@@ -7,14 +7,15 @@ import infermc.beavrs
 
 ####################   User-specified Simulation Parameters  ###################
 
-batches = 1000
+batches = 300
 inactive = 200
-particles = 10000000
+particles = 100000000
 
 
 #########   Exporting to OpenMC geometry.xml and materials.xml Files  ##########
 
 # Write all BEAVRS materials to materials.xml file
+infermc.beavrs.make_iso_in_lab()
 infermc.beavrs.write_materials_file()
 
 # Extract reflected geometry from InferMC's pre-built assembly Geometries
@@ -31,20 +32,21 @@ source = openmc.source.Source(space=openmc.stats.Box(lower_left, upper_right))
 source.space.only_fissionable = True
 
 settings_file = openmc.Settings()
+settings_file.run_cmfd = True
 settings_file.batches = batches
 settings_file.inactive = inactive
 settings_file.particles = particles
 settings_file.ptables = True
+settings_file.statepoint_interval = 100
 settings_file.output = {'tallies': False}
 settings_file.source = source
 settings_file.sourcepoint_write = False
 
-settings_file.entropy_dimension = [15*17, 15*17, 1]
-settings_file.entropy_upper_right = [+15*17*1.26492/2., +15*17*1.26492/2., 208.]
-settings_file.entropy_lower_left = [-15*17*1.26492/2., -15*17*1.26492/2., 203.]
+settings_file.entropy_dimension = [int(np.ceil(15/2.*17)), int(np.ceil(15/2.*17)), 1]
+settings_file.entropy_upper_right = [247.29186, 247.29186, 197.5]
+settings_file.entropy_lower_left = [0., 0., 192.5]
 
 settings_file.export_to_xml()
-
 
 
 ##################   Exporting to OpenMC plots.xml File  ######################
@@ -75,7 +77,7 @@ plot_file.export_to_xml()
 mesh = openmc.Mesh(name='assembly mesh')
 mesh.type = 'regular'
 mesh.dimension = [int(np.ceil(15./2.*17)), int(np.ceil(15./2.*17)), 1]
-mesh.lower_left = [-1.26492/2., -1.26492/2., 192.5]
+mesh.lower_left = [0., 0., 192.5]
 mesh.width = (1.26492, 1.26492, 5)
 
 # Instantiate tally Filter                                                                                   
@@ -96,3 +98,47 @@ capture_rates.scores = ['absorption', 'fission']
 # Create a "tallies.xml" file for the mesh tallies
 tallies_file = openmc.Tallies([fission_rates, capture_rates])
 tallies_file.export_to_xml()
+
+
+cmfd = openmc.CMFD()
+cmfd.begin = 10
+cmfd.feedback = True
+cmfd.display = 'source'
+#cmfd.gauss_seidel_tolerance = [1.e-10, 1.e-5]
+
+# FIXME: Bug in OpenMC: openmc.CMFD.cmfd_mesh setter
+cmfd.cmfd_mesh = openmc.CMFDMesh()
+cmfd.cmfd_mesh.lower_left = mesh.lower_left
+cmfd.cmfd_mesh.dimension = [23, 23, 1]
+cmfd.cmfd_mesh.width = [1.26492*8.5, 1.26492*8.5, 5.]
+cmfd.cmfd_mesh.energy = [0., 0.625e-6, 20.]
+
+cmfd.cmfd_mesh.map = [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+                      1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+                      1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+                      1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+                      1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+                      1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+                      1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+                      1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+                      2,2,2,2,2,2,2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+                      2,2,2,2,2,2,2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+                      2,2,2,2,2,2,2,2,2,2,2,1,1,1,1,1,1,1,1,1,1,1,1,
+                      2,2,2,2,2,2,2,2,2,2,2,1,1,1,1,1,1,1,1,1,1,1,1,
+                      2,2,2,2,2,2,2,2,2,2,2,2,2,1,1,1,1,1,1,1,1,1,1,
+                      2,2,2,2,2,2,2,2,2,2,2,2,2,1,1,1,1,1,1,1,1,1,1,
+                      2,2,2,2,2,2,2,2,2,2,2,2,2,1,1,1,1,1,1,1,1,1,1,
+                      2,2,2,2,2,2,2,2,2,2,2,2,2,1,1,1,1,1,1,1,1,1,1,
+                      2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,1,1,1,1,1,1,1,1,
+                      2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,1,1,1,1,1,1,1,1,
+                      2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,1,1,1,1,1,1,1,1,
+                      2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,1,1,1,1,1,1,1,1,
+                      2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,1,1,1,1,1,1,1,1,
+                      2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,1,1,1,1,1,1,1,1,
+                      2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,1,1,1,1,1,1,1,1]
+mesh_map = np.array(cmfd.cmfd_mesh.map)
+mesh_map.shape = (23, 23)
+mesh_map = mesh_map[::-1, :]
+cmfd.cmfd_mesh.map = mesh_map.ravel()
+
+cmfd.export_to_xml()

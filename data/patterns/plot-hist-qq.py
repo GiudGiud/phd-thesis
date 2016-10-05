@@ -25,11 +25,13 @@ from infermc.plotter import hist_kde_rug, normal_qq
 # SINGLE FUEL ASSEMBLIES
 ###############################################################################
 
-directories = OrderedDict({'assm-1.6': '1.6% Enr. (no BPs)',
-                           'assm-3.1':'3.1% Enr. (no BPs)',
-                           'assm-3.1-20BPs': '3.1% Enr. (20 BPs)',
+directories = OrderedDict({'assm-1.6': '1.6% Enr. Assm. (no BPs)',
+                           'assm-3.1':'3.1% Enr. Assm. (no BPs)',
+                           'assm-3.1-20BPs': '3.1% Enr. Assm. (20 BPs)',
                            '2x2': '2x2 Colorset',
                            'reflector': '2x2 Colorset w/ Reflector',
+                           'assm-1.6-inf': '1.6% Enr. Assm. (no CRGTs, no BPs)',
+                           'assm-3.1-inf': '3.1% Enr. Assm. (no CRGTs, no BPs)',
                            'full-core': 'Full Core'})
 
 for directory in directories:
@@ -92,6 +94,8 @@ for directory in directories:
         axes.tick_params(axis='both', which='minor', labelsize=16)
         axes.set_xlabel('Mean [barns]', fontsize=16)
         axes.set_ylabel('# Samples', fontsize=16)
+        axes.ticklabel_format(useOffset=False)
+        axes.set_xlim([0.75, 0.9])
         fig.savefig(subdirectory + filename, bbox_inches='tight')
         plt.close(fig)
 
@@ -164,6 +168,12 @@ for directory in directories:
         axes.tick_params(axis='both', which='minor', labelsize=16)
         axes.set_xlabel('Mean [barns]', fontsize=16)
         axes.set_ylabel('# Samples', fontsize=16)
+#        axes.ticklabel_format(useOffset=False)
+#        axes.xaxis.set_ticks(np.arange(279.05, 279.55, 0.1))
+        if '1.6%' in title:
+            axes.set_xlim([290, 318])
+        else:
+            axes.set_xlim([268, 298])
         fig.savefig(subdirectory + filename, bbox_inches='tight')
         plt.close(fig)
 
