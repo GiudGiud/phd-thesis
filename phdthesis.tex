@@ -38,6 +38,17 @@
 \usepackage{hhline}
 \usepackage{bm}
 
+\usepackage{tikz}
+\usetikzlibrary{fit,positioning,shapes}
+
+\tikzset{
+  latentnode/.style={draw, minimum width=10mm, shape=circle, ultra thick, black},
+  paramnode/.style={draw, minimum width=5mm, shape=rectangle, thick, black},
+  dagconn/.style={arrows=->, black, thick},
+  plate/.style={draw, shape=rectangle, rounded corners=0.5ex, thick,
+    minimum width=3.1cm, text width=3.1cm, align=right, inner sep=10pt, inner ysep=10pt,label={[xshift=-14pt,yshift=14pt]south east:#1}}
+}
+
 \usepackage{scrextend}
 
 \Crefname{chapter}{}{}
@@ -164,7 +175,6 @@
 \acrodefplural{CRGT}[CRGTs]{Control Rod Guide Tubes}
 \acrodefplural{BP}[BPs]{Burnable Poisons}
 \acrodefplural{BC}[BCs]{Boundary Conditions}
-
 
 \begin{document}
 

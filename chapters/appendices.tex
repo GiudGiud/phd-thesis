@@ -574,7 +574,7 @@ The geometric pin cell parameters for the \ac{PWR} benchmark models in Part IV w
 \section{BEAVRS Reaction Rates}
 \label{sec:beavrs-rxn-rates}
 
-The \ac{BEAVRS} reference reaction rate distributions used in Chap.~\ref{sec:chap7-motivate} were computed using isotropic in lab scattering in OpenMC to enable comparisons between OpenMC and OpenMOC. The fission and U-238 capture rate spatial distributions are highly skewed with this approximation. In particular, the distributions are signficantly more peaked in assemblies the corner reflectors since the preferential streaming and leakage of neutrons through the reflector due to anisotropic scattering in water is not modeled. The ``true'' fission and U-238 capture rate spatial distributions computed using normal anisotropic scattering in OpenMC are illustrated below for comparison purpose, and as a reminder of the necessity for accurate models of higher order scattering in high-fidelity whole-core deterministic transport calculations.
+The \ac{BEAVRS} reference reaction rate distributions used in Chap.~\ref{sec:chap7-motivate} were computed using isotropic in lab scattering in OpenMC to enable comparisons between OpenMC and OpenMOC. The fission and U-238 capture rate spatial distributions are highly skewed with this approximation. In particular, the distributions are significantly more peaked in assemblies the corner reflectors since the preferential streaming and leakage of neutrons through the reflector due to anisotropic scattering in water is not modeled. The ``true'' fission and U-238 capture rate spatial distributions computed using normal anisotropic scattering in OpenMC are illustrated below for comparison purpose, and as a reminder of the necessity for accurate models of higher order scattering in high-fidelity whole-core deterministic transport calculations.
 
 \begin{figure}[h!]
 \begin{subfigure}{\textwidth}
@@ -728,7 +728,7 @@ The percent relative U-238 capture rate errors between OpenMC and OpenMOC for ea
 \centering
 \includegraphics[width=\linewidth]{figures/quantification/appendix/full-core/capt-err}
 \vspace{2mm}
-\caption[U-238 capture rate errors for the 2D quarter core \ac{BEAVRS} model]{U-238 capture percent relative errors rate errors for the 2D quarter core \ac{BEAVRS} model corresponding to the reference in Fig.~\ref{fig:chap7-capt-rates-full-core}.}
+\caption[U-238 capture rate errors for the \ac{BEAVRS} quarter core]{U-238 capture percent relative errors rate errors for the 2D quarter core \ac{BEAVRS} model corresponding to the reference in Fig.~\ref{fig:chap7-capt-rates-full-core}.}
 \label{fig:quantify-full-core-capt-err}
 \end{figure}
 
@@ -754,10 +754,411 @@ Fig.~\ref{fig:quantify-reflector-capt-err-abs} shows the U-238 capture rate abso
 
 \begin{figure}[h!]
 \centering
-\includegraphics[width=\linewidth]{figures/quantification/appendix/magnitude/full-core/capt-err}
-\vspace{2mm}
-\caption[U-238 capture rate absolute errors for the 2D quarter core \ac{BEAVRS} model]{U-238 capture rate absolute errors for the 2D quarter core \ac{BEAVRS} model corresponding to the reference in Fig.~\ref{fig:chap7-capt-rates-full-core}.}
+\begin{subfigure}{\textwidth}
+  \centering
+  \includegraphics[width=0.6\linewidth]{figures/quantification/appendix/magnitude/full-core/capt-err-null-magnitude}
+  \caption{}
+  \label{fig:quantify-full-core-fiss-err-null-abs}
+\end{subfigure}
+\vspace{4mm}
+\begin{subfigure}{\textwidth}
+  \centering
+  \includegraphics[width=0.6\linewidth]{figures/quantification/appendix/magnitude/full-core/capt-err-degenerate-magnitude}
+  \caption{}
+  \label{fig:quantify-full-core-fiss-err-degenerate-abs}
+\end{subfigure}
+\caption[U-238 capture rate absolute errors for the quarter core \ac{BEAVRS} model]{U-238 capture rate absolute errors for the quarter core \ac{BEAVRS} model with null (a) and degenerate (b) homogenization corresponding to the reference in Fig.~\ref{fig:chap7-capt-rates-full-core}.}
 \label{fig:quantify-full-core-capt-err-abs}
+\end{figure}
+
+\clearpage
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=\linewidth]{figures/patterns/appendix/2x2/capt-err}
+\vspace{2mm}
+\caption[U-238 capture rate absolute errors for 2$\times$2 colorset]{U-238 capture rate absolute errors for a 2$\times$2 colorset corresponding to the reference in Fig.~\ref{fig:chap7-capt-rates-2x2}.}
+\label{fig:lns-2x2-capt-err-abs}
+\end{figure}
+
+\clearpage
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=\linewidth]{figures/patterns/appendix/reflector/capt-err}
+\vspace{2mm}
+\caption[U-238 capture rate absolute errors for 2$\times$2 colorset with a reflector]{U-238 capture rate absolute errors for a 2$\times$2 colorset with a reflector corresponding to the reference in Fig.~\ref{fig:chap7-capt-rates-reflector}.}
+\label{fig:lns-reflector-capt-err-abs}
+\end{figure}
+
+\clearpage
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=\linewidth]{figures/patterns/appendix/full-core/capt-err-null-magnitude}
+\vspace{2mm}
+\caption[U-238 capture rate absolute errors for the \ac{BEAVRS} with null homogenization]{U-238 capture rate absolute errors for the 2D quarter core \ac{BEAVRS} model with null spatial homogenization corresponding to the reference in Fig.~\ref{fig:chap7-capt-rates-full-core}.}
+\label{fig:null-full-core-capt-err-abs}
+\end{figure}
+
+\clearpage
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=\linewidth]{figures/patterns/appendix/full-core/capt-err-degenerate-magnitude}
+\vspace{2mm}
+\caption[U-238 capture rate absolute errors for the \ac{BEAVRS} with degenerate homogenization]{U-238 capture rate absolute errors for the 2D quarter core \ac{BEAVRS} model with degenerate spatial homogenization corresponding to the reference in Fig.~\ref{fig:chap7-capt-rates-full-core}.}
+\label{fig:degenerate-full-core-capt-err-abs}
+\end{figure}
+
+\clearpage
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=\linewidth]{figures/patterns/appendix/full-core/capt-err-lns-magnitude}
+\vspace{2mm}
+\caption[U-238 capture rate absolute errors for the \ac{BEAVRS} with LNS homogenization]{U-238 capture rate absolute errors for the 2D quarter core \ac{BEAVRS} model with \ac{LNS} spatial homogenization corresponding to the reference in Fig.~\ref{fig:chap7-capt-rates-full-core}.}
+\label{fig:lns-full-core-capt-err-abs}
+\end{figure}
+
+\clearpage
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\chapter{Comparing Homogenization Schemes}
+\label{sec:compare-schemes}
+
+It is challenging to validate the OpenMOC reaction rates for the quarter core \ac{BEAVRS} model since the ``reference'' solution from OpenMC includes the non-negligible effects of inter-cycle correlations between fission source sites. These correlations result in uneven ``clustering'' of source sites between batches which induce apparent tilts in the tallied reaction rate spatial distributions. As a result, it is challenging to derive any general conclusions about the effectiveness of the various spatial homogenization schemes for the quarter core model. However, it can be useful to directly compare the reaction rates from two different OpenMOC simulations with different spatial homogenization schemes to better understand the impact of \ac{MGXS} clustering for whole core simulations. Figs.~\Crefrange{fig:null-to-inf-full-core-dev}{fig:null-to-lns-full-core-dev} illustrate the percent relative deviation of the OpenMOC reaction rate distributions between the infinite, degenerate and \ac{LNS} spatial homogenization schemes (see Secs.~\ref{subsec:chap8-infinite},~\ref{subsec:chap8-degenerate} and~\ref{subsec:chap9-lns-overview}) with respect to the null scheme (see Sec.~\ref{subsec:chap8-null}). The results illustrate the deviations for both fission and U-238 capture rates computed with 70-group \ac{MGXS} libraries.
+
+\begin{figure}[h!]
+\centering
+\begin{subfigure}{0.78\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{figures/patterns/appendix/compare-full-core/null-to-infinite/fiss-comp}  	 
+  \caption{}
+  \label{fig:compare-null-inf-fiss}
+\end{subfigure}
+\begin{subfigure}{0.78\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{figures/patterns/appendix/compare-full-core/null-to-infinite/capt-comp}  	 
+  \caption{}
+  \label{fig:compare-null-inf-capt}
+\end{subfigure}
+\caption[Reaction rate comparison between null and infinite schemes for BEAVRS]{The percent deviation between the OpenMOC fission (a) and U-238 capture (b) rates with null and infinite homogenization  for the quarter core \ac{BEAVRS} model.}
+\label{fig:null-to-inf-full-core-dev}
+\end{figure}
+
+\clearpage
+
+\begin{figure}[h!]
+\centering
+\begin{subfigure}{0.78\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{figures/patterns/appendix/compare-full-core/null-to-degenerate/fiss-comp}  	 
+  \caption{}
+  \label{fig:compare-null-degen-fiss}
+\end{subfigure}
+\begin{subfigure}{0.78\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{figures/patterns/appendix/compare-full-core/null-to-degenerate/capt-comp}  	 
+  \caption{}
+  \label{fig:compare-null-degen-capt}
+\end{subfigure}
+\caption[Reaction rate comparison between null and degenerate schemes for BEAVRS]{The percent deviation between the OpenMOC fission (a) and U-238 capture (b) rates with null and degenerate homogenization for the quarter core \ac{BEAVRS} model.}
+\label{fig:null-to-degenerate-full-core-dev}
+\end{figure}
+
+\clearpage
+
+\begin{figure}[h!]
+\centering
+\begin{subfigure}{0.78\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{figures/patterns/appendix/compare-full-core/null-to-lns/fiss-comp}  	 
+  \caption{}
+  \label{fig:compare-null-lns-fiss}
+\end{subfigure}
+\begin{subfigure}{0.78\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{figures/patterns/appendix/compare-full-core/null-to-lns/capt-comp}  	
+  \caption{}
+  \label{fig:compare-null-lns-capt}
+\end{subfigure}
+\caption[Reaction rate comparison between null and LNS schemes for BEAVRS]{The percent deviation between the OpenMOC fission (a) and U-238 capture (b) rates with null and \ac{LNS} homogenization for the quarter core \ac{BEAVRS} model.}
+\label{fig:null-to-lns-full-core-dev}
+\end{figure}
+
+\clearpage
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\chapter{Clustering Homogenization}
+\label{sec:clustering-homogenization}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Clustering Without Features}
+\label{sec:clustering-without-features}
+
+\begin{figure}[h!]
+\centering
+\begin{subfigure}{0.48\textwidth}
+  \centering
+  \includegraphics[width=0.9\linewidth]{figures/unsupervised/geometries/without-features/2-clusters/pinch/assm-16}
+  \caption{}
+  \label{fig:no-features-assm-16-pinch-2}
+\end{subfigure}%
+\begin{subfigure}{0.48\textwidth}
+  \centering
+  \includegraphics[width=0.9\linewidth]{figures/unsupervised/geometries/without-features/2-clusters/combined/assm-16}
+  \caption{}
+  \label{fig:no-features-assm-16-combined-2}
+\end{subfigure}
+\begin{subfigure}{0.48\textwidth}
+  \centering
+  \includegraphics[width=0.9\linewidth]{figures/unsupervised/geometries/without-features/4-clusters/pinch/assm-16}
+  \caption{}
+  \label{fig:no-features-assm-16-pinch-4}
+\end{subfigure}%
+\begin{subfigure}{0.48\textwidth}
+  \centering
+  \includegraphics[width=0.9\linewidth]{figures/unsupervised/geometries/without-features/4-clusters/combined/assm-16}
+  \caption{}
+  \label{fig:no-features-assm-16-combined-4}
+\end{subfigure}
+\begin{subfigure}{0.48\textwidth}
+  \centering
+  \includegraphics[width=0.9\linewidth]{figures/unsupervised/geometries/without-features/8-clusters/pinch/assm-16}
+  \caption{}
+  \label{fig:no-features-assm-16-pinch-8}
+\end{subfigure}%
+\begin{subfigure}{0.48\textwidth}
+  \centering
+  \includegraphics[width=0.9\linewidth]{figures/unsupervised/geometries/without-features/8-clusters/combined/assm-16}
+  \caption{}
+  \label{fig:no-features-assm-16-combined-8}
+\end{subfigure}
+\caption[Materials for the 1.6\% fuel assembly with clustering homogenization]{Materials for the 1.6\% enriched fuel assembly with clustering homogenization. The materials for 2, 4, and 8 clusters are illustrated in (a), (c) and (e) for pinch clustering, and in (b), (d) and (f) for combined clustering, respectively.}
+\label{fig:no-features-assm-16-geometries}
+\end{figure}
+
+\clearpage
+
+\begin{figure}[h!]
+\centering
+\begin{subfigure}{0.48\textwidth}
+  \centering
+  \includegraphics[width=0.9\linewidth]{figures/unsupervised/geometries/without-features/2-clusters/pinch/assm-31-20BPs}
+  \caption{}
+  \label{fig:no-features-assm-31-20BPs-pinch-2}
+\end{subfigure}%
+\begin{subfigure}{0.48\textwidth}
+  \centering
+  \includegraphics[width=0.9\linewidth]{figures/unsupervised/geometries/without-features/2-clusters/combined/assm-31-20BPs}
+  \caption{}
+  \label{fig:no-features-assm-31-20BPs-combined-2}
+\end{subfigure}
+\begin{subfigure}{0.48\textwidth}
+  \centering
+  \includegraphics[width=0.9\linewidth]{figures/unsupervised/geometries/without-features/4-clusters/pinch/assm-31-20BPs}
+  \caption{}
+  \label{fig:no-features-assm-31-20BPs-pinch-4}
+\end{subfigure}%
+\begin{subfigure}{0.48\textwidth}
+  \centering
+  \includegraphics[width=0.9\linewidth]{figures/unsupervised/geometries/without-features/4-clusters/combined/assm-31-20BPs}
+  \caption{}
+  \label{fig:no-features-assm-31-20BPs-combined-4}
+\end{subfigure}
+\begin{subfigure}{0.48\textwidth}
+  \centering
+  \includegraphics[width=0.9\linewidth]{figures/unsupervised/geometries/without-features/8-clusters/pinch/assm-31-20BPs}
+  \caption{}
+  \label{fig:no-features-assm-31-20BPs-pinch-8}
+\end{subfigure}%
+\begin{subfigure}{0.48\textwidth}
+  \centering
+  \includegraphics[width=0.9\linewidth]{figures/unsupervised/geometries/without-features/8-clusters/combined/assm-31-20BPs}
+  \caption{}
+  \label{fig:no-features-assm-31-20BPs-combined-8}
+\end{subfigure}
+\caption[Materials for the 3.1\% fuel assembly with clustering homogenization]{Materials for the 3.1\% enriched fuel assembly with 20 \acp{BP} with clustering homogenization. The materials for 2, 4, and 8 clusters are illustrated in (a), (c) and (e) for pinch clustering, and in (b), (d) and (f) for combined clustering, respectively.}
+\label{fig:no-features-assm-31-20BPs-geometries}
+\end{figure}
+
+\clearpage
+
+\begin{figure}[h!]
+\centering
+\begin{subfigure}{0.48\textwidth}
+  \centering
+  \includegraphics[width=0.9\linewidth]{figures/unsupervised/geometries/without-features/2-clusters/pinch/2x2}
+  \caption{}
+  \label{fig:no-features-2x2-pinch-2}
+\end{subfigure}%
+\begin{subfigure}{0.48\textwidth}
+  \centering
+  \includegraphics[width=0.9\linewidth]{figures/unsupervised/geometries/without-features/2-clusters/combined/2x2}
+  \caption{}
+  \label{fig:no-features-2x2-combined-2}
+\end{subfigure}
+\begin{subfigure}{0.48\textwidth}
+  \centering
+  \includegraphics[width=0.9\linewidth]{figures/unsupervised/geometries/without-features/4-clusters/pinch/2x2}
+  \caption{}
+  \label{fig:no-features-2x2-pinch-4}
+\end{subfigure}%
+\begin{subfigure}{0.48\textwidth}
+  \centering
+  \includegraphics[width=0.9\linewidth]{figures/unsupervised/geometries/without-features/4-clusters/combined/2x2}
+  \caption{}
+  \label{fig:no-features-assm-2x2-combined-4}
+\end{subfigure}
+\begin{subfigure}{0.48\textwidth}
+  \centering
+  \includegraphics[width=0.9\linewidth]{figures/unsupervised/geometries/without-features/8-clusters/pinch/2x2}
+  \caption{}
+  \label{fig:no-features-assm-2x2-pinch-8}
+\end{subfigure}%
+\begin{subfigure}{0.48\textwidth}
+  \centering
+  \includegraphics[width=0.9\linewidth]{figures/unsupervised/geometries/without-features/8-clusters/combined/2x2}
+  \caption{}
+  \label{fig:no-features-assm-2x2-combined-8}
+\end{subfigure}
+\caption[Materials for the 2$\times$2 periodic colorset with clustering homogenization]{Materials for the 2$\times$2 periodic colorset with clustering homogenization. The materials for 2, 4, and 8 clusters are illustrated in (a), (c) and (e) for pinch clustering, and in (b), (d) and (f) for combined clustering, respectively.}
+\label{fig:no-features-2x2-geometries}
+\end{figure}
+
+\clearpage
+
+\begin{figure}[h!]
+\centering
+\begin{subfigure}{0.48\textwidth}
+  \centering
+  \includegraphics[width=0.9\linewidth]{figures/unsupervised/geometries/without-features/2-clusters/pinch/reflector}
+  \caption{}
+  \label{fig:no-features-reflector-pinch-2}
+\end{subfigure}%
+\begin{subfigure}{0.48\textwidth}
+  \centering
+  \includegraphics[width=0.9\linewidth]{figures/unsupervised/geometries/without-features/2-clusters/combined/reflector}
+  \caption{}
+  \label{fig:no-features-reflector-combined-2}
+\end{subfigure}
+\begin{subfigure}{0.48\textwidth}
+  \centering
+  \includegraphics[width=0.9\linewidth]{figures/unsupervised/geometries/without-features/4-clusters/pinch/reflector}
+  \caption{}
+  \label{fig:no-features-reflector-pinch-4}
+\end{subfigure}%
+\begin{subfigure}{0.48\textwidth}
+  \centering
+  \includegraphics[width=0.9\linewidth]{figures/unsupervised/geometries/without-features/4-clusters/combined/reflector}
+  \caption{}
+  \label{fig:no-features-reflector-combined-4}
+\end{subfigure}
+\begin{subfigure}{0.48\textwidth}
+  \centering
+  \includegraphics[width=0.9\linewidth]{figures/unsupervised/geometries/without-features/8-clusters/pinch/reflector}
+  \caption{}
+  \label{fig:no-features-reflector-pinch-8}
+\end{subfigure}%
+\begin{subfigure}{0.48\textwidth}
+  \centering
+  \includegraphics[width=0.9\linewidth]{figures/unsupervised/geometries/without-features/8-clusters/combined/reflector}
+  \caption{}
+  \label{fig:no-features-reflector-combined-8}
+\end{subfigure}
+\caption[Materials for the 2$\times$2 colorset with reflector with clustering homogenization]{Materials for the 2$\times$ colorset with water reflector with clustering homogenization. The materials for 2, 4, and 8 clusters are illustrated in (a), (c) and (e) for pinch clustering, and in (b), (d) and (f) for combined clustering, respectively.}
+\label{fig:no-features-reflector-geometries}
+\end{figure}
+
+\clearpage
+
+\begin{figure}[h!]
+\centering
+\begin{subfigure}{0.48\textwidth}
+  \centering
+  \includegraphics[width=0.9\linewidth]{figures/unsupervised/geometries/without-features/2-clusters/pinch/full-core}
+  \caption{}
+  \label{fig:no-features-full-core-pinch-2}
+\end{subfigure}%
+\begin{subfigure}{0.48\textwidth}
+  \centering
+  \includegraphics[width=0.9\linewidth]{figures/unsupervised/geometries/without-features/2-clusters/combined/full-core}
+  \caption{}
+  \label{fig:no-features-full-core-combined-2}
+\end{subfigure}
+\begin{subfigure}{0.48\textwidth}
+  \centering
+  \includegraphics[width=0.9\linewidth]{figures/unsupervised/geometries/without-features/4-clusters/pinch/full-core}
+  \caption{}
+  \label{fig:no-features-full-core-pinch-4}
+\end{subfigure}%
+\begin{subfigure}{0.48\textwidth}
+  \centering
+  \includegraphics[width=0.9\linewidth]{figures/unsupervised/geometries/without-features/4-clusters/combined/full-core}
+  \caption{}
+  \label{fig:no-features-full-core-combined-4}
+\end{subfigure}
+\begin{subfigure}{0.48\textwidth}
+  \centering
+  \includegraphics[width=0.9\linewidth]{figures/unsupervised/geometries/without-features/8-clusters/pinch/full-core}
+  \caption{}
+  \label{fig:no-features-full-core-pinch-8}
+\end{subfigure}%
+\begin{subfigure}{0.48\textwidth}
+  \centering
+  \includegraphics[width=0.9\linewidth]{figures/unsupervised/geometries/without-features/8-clusters/combined/full-core}
+  \caption{}
+  \label{fig:no-features-full-core-combined-8}
+\end{subfigure}
+\caption[Materials for BEAVRS with clustering homogenization (2 -- 8 clusters)]{Materials for the quarter core \ac{BEAVRS} model with clustering homogenization. The materials for 2, 4, and 8 clusters are illustrated in (a), (c) and (e) for pinch clustering, and in (b), (d) and (f) for combined clustering, respectively.}
+\label{fig:no-features-full-core-geometries-8}
+\end{figure}
+
+\clearpage
+
+\begin{figure}[h!]
+\centering
+\begin{subfigure}{0.48\textwidth}
+  \centering
+  \includegraphics[width=0.9\linewidth]{figures/unsupervised/geometries/without-features/16-clusters/pinch/full-core}
+  \caption{}
+  \label{fig:no-features-full-core-pinch-16}
+\end{subfigure}%
+\begin{subfigure}{0.48\textwidth}
+  \centering
+  \includegraphics[width=0.9\linewidth]{figures/unsupervised/geometries/without-features/16-clusters/combined/full-core}
+  \caption{}
+  \label{fig:no-features-full-core-combined-16}
+\end{subfigure}
+\begin{subfigure}{0.48\textwidth}
+  \centering
+  \includegraphics[width=0.9\linewidth]{figures/unsupervised/geometries/without-features/32-clusters/pinch/full-core}
+  \caption{}
+  \label{fig:no-features-full-core-pinch-32}
+\end{subfigure}%
+\begin{subfigure}{0.48\textwidth}
+  \centering
+  \includegraphics[width=0.9\linewidth]{figures/unsupervised/geometries/without-features/32-clusters/combined/full-core}
+  \caption{}
+  \label{fig:no-features-full-core-combined-32}
+\end{subfigure}
+\begin{subfigure}{0.48\textwidth}
+  \centering
+  \includegraphics[width=0.9\linewidth]{figures/unsupervised/geometries/without-features/64-clusters/pinch/full-core}
+  \caption{}
+  \label{fig:no-features-full-core-pinch-64}
+\end{subfigure}%
+\begin{subfigure}{0.48\textwidth}
+  \centering
+  \includegraphics[width=0.9\linewidth]{figures/unsupervised/geometries/without-features/64-clusters/combined/full-core}
+  \caption{}
+  \label{fig:no-features-full-core-combined-64}
+\end{subfigure}
+\caption[Materials for BEAVRS with clustering homogenization (16 -- 64 clusters)]{Materials for the quarter core \ac{BEAVRS} model with clustering homogenization. The materials for 16, 32 and 64 clusters are illustrated in (a), (c) and (e) for pinch clustering, and in (b), (d) and (f) for combined clustering, respectively.}
+\label{fig:no-features-full-core-geometries-64}
 \end{figure}
 
 \clearpage
