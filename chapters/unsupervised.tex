@@ -700,11 +700,11 @@ Feature standardization -- also known as \textit{mean removal} and/or \textit{va
 \hat{f}_{j,k}^{*} = \frac{\hat{f}_{j,k} - \overline{\hat{f}_{j}}}{\sigma_{\hat{f}_{j}}}
 \end{equation}
 
-\noindent where $\hat{f}_{j,k}^{*}$ is the standardized feature $j$ for fuel pin instance $k$. Several standardization schemes are provided by the \texttt{sklearn.preprocessing} module of the \texttt{scikit-learn} Python package for machine learning~\cite{pedregosa2011sklearn}. The \textit{i}\ac{MGXS} implementation in this thesis uses the \texttt{RobustScaler} to subtract the median and divide by the interquartile range (IQR)\footnote{The interquartile range is the difference between the first and third quartiles: $\mathrm{IQR} = Q_{3} - Q{1}$.} to diminish the influence of outliers on the standardization process:
+\noindent where $\hat{f}_{j,k}^{*}$ is the standardized feature $j$ for fuel pin instance $k$. Several standardization schemes are provided by the \texttt{sklearn.preprocessing} module of the \texttt{scikit-learn} Python package for machine learning~\cite{pedregosa2011sklearn}. The \textit{i}\ac{MGXS} implementation in this thesis uses the \texttt{RobustScaler} to subtract the median and divide by the interquartile range (IQR)\footnote{The interquartile range is the difference between the first and third quartiles: $\mathrm{IQR} = Q_{3} - Q_{1}$.} to diminish the influence of outliers on the standardization process:
 
 \begin{equation}
 \label{eqn:chap10-robust-standardize}
-\hat{f}_{j,k}^{*} = \frac{\hat{f}_{j,k} - \mathrm{median}\{\hat{f}_{j,1}, \hat{f}_{j,2}, \dots, \hat{f}_{j,K}\}}{\mathrm{IQR}_{\hat{f}_{j}}}
+\hat{f}_{j,k}^{*} = \frac{\hat{f}_{j,k} - \mathrm{median}\left\lbrace\hat{f}_{j,1}, \hat{f}_{j,2}, \dots, \hat{f}_{j,K}\right\rbrace}{\mathrm{IQR}_{\hat{f}_{j}}}
 \end{equation}
 
 \begin{emphbox}
@@ -730,7 +730,7 @@ This thesis makes a fairly limited use of feature selection techniques in its im
 
 %Sec.~\ref{subsec:chap10-litmus-tot-frac} introduces a threshold-based method to downselect those nuclides with the most relevant data to cluster for a given energy group. Similarly, Sec.~\ref{subsec:chap10-litmus-nuc-frac} presents a threshold for the nuclide fraction to choose the ``best'' reaction type to cluster for a given nuclide and energy group.
 
-\begin{figure}[hb!]
+\begin{figure}[h!]
 \centering
 \includegraphics[width=0.95\linewidth]{figures/unsupervised/features/engineering/select}
 \vspace{2mm}
@@ -750,16 +750,18 @@ It is important to note that the methods and metrics highlighted here should be 
 \subsubsection{Total Fraction Thresholding}
 \label{subsubsec:chap10-litmus-tot-frac}
 
-first paragraph: 
--filter method!!!
--used to choose nuclide: threshold on $\omega_{x,i,k,g}$
--this must be of the macro not the micro MGXS btw!!!
--motivate as automated selection of nuclide/reaction/energy group trios if *not* using pinch clustering
--only choose nuclides with MGXS that make up a substantial fraction of the MGXS for all nuclides
-  -assumes that nuclides(s) with little contribution are not important to cluster anyway
-  -but may mistakenly make approx that MGXS with small magnitudes don't disproportionately reflect self--shielding effects
-    -but this is a good assumption since larger MGXS will have smaller uncertainties anyway
-  -otherwise, self-shielding of the nuclide won't matter anyway
+\textit{Total fraction thresholding} is a filter method used to select \ac{MGXS}-based features\footnote{\ac{MGXS}-based features include the microscopic \ac{MGXS} means $\hat{\sigma}_{x,i,k,g}$ and standard deviations $\sigma_{\hat{\sigma}_{x,i,k,g}}$, as well as the nuclide fraction $\hat{\tau}_{x,i,k,g}$.} for one or more nuclides for a particular energy group $g$ and reaction type $x$.
+The total fraction gives an indication of how much a particular nuclide contributes to the total \ac{MGXS}. 
+The \textit{total fraction} $\hat{\omega}_{x,i,k,g}$ is defined as the ratio of a macroscopic \ac{MGXS} $\hat{\Sigma}_{x,i,k,g}$ for nuclide $i$ and fuel pin instance $k$ to the total macroscopic \ac{MGXS} for all nuclides:
+
+\begin{equation}
+\label{eqn:chap10-tot-frac}
+\hat{\omega}_{x,i,k,g} = \frac{\hat{\Sigma}_{x,i,k,g}}{\displaystyle\sum\limits_{i=1}^{I}\hat{\Sigma}_{t,i,k,g}}
+\end{equation}
+
+The \textit{i}\ac{MGXS} implementation in this thesis simply chooses \ac{MGXS}-based features for nuclide $i$ if the mean $\overline{\hat{\omega}}_{x,i,g}$ across fuel pins is greater than some user-defined threshold. This litmus test assumes that nuclide(s) which contribute little to the total \ac{MGXS} are likely not important to cluster. This assumption may not always be valid if some small \ac{MGXS} disproportionately reflect spatial self-shielding effects. For example, if the flux is appreciably depressed in narrow resonance groups for nuclides and reaction types which are especially sensitive to spatial self-shielding (\textit{e.g.}, U-238 capture), then the \ac{MGXS} may likewise be depressed such that the total fraction drops below the threshold and the feature(s) are neglected. The case studies explored in the following chapter use a relatively conservative value of 0.1 for the threshold such that \ac{MGXS}-based features for trace nuclides (\textit{e.g.}, O-17, U-234) are neglected and the \ac{MGXS} for U-235 and U-238 are always selected.
+
+%This is unlikely, however, since spatial self-shielding effects are only manifested as clusters in pin-wise \ac{MGXS} if the continuous energy data varies over a relatively large range for a given energy group. A widely varying cross section, such as those in the resonance regime, will most likely result in a relatively large microscopic \ac{MGXS} and total fraction for the nuclide.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Nuclide Fraction Thresholding}
