@@ -3,11 +3,11 @@
 
 The preceding chapter illustrated the clustering of pin-wise \ac{MGXS} as a result of spatial self-shielding effects. It was shown that \ac{MGXS} clustering must be appropriately modeled to accurately resolve pin-wise U-238 capture rates. The \ac{LNS} spatial homogenization scheme was introduced to predict \ac{MGXS} clustering with a geometric template-like approach. The \ac{LNS} scheme was shown to achieve the same level of accuracy as degenerate homogenization while simultaneously accelerating the \ac{MC} tally convergence rate for simple benchmark problems. However, the \ac{LNS} scheme suffered from its inability to adapt to predict \ac{MGXS} clustering in geometries with water reflectors and steel baffles. In addition, the \ac{LNS} scheme did not scale well with the complexity of the core geometry, resulting in a large number of materials and thus an under-accelerated convergence rate. This chapter introduces an adaptable and scalable alternative to \ac{LNS} which uses unsupervised statistical learning methods to predict \ac{MGXS} clustering.
 
-The novel homogenization methodology presented here -- referred to as \textit{intelligent \ac{MGXS}} (\textit{i}\ac{MGXS}) spatial homogenization -- seeks to achieve the overarching goal of this thesis: to obtain Monte Carlo quality solutions with computationally efficient deterministic transport methods. The goal of \textit{i}\ac{MGXS} is to use algorithms developed by the machine learning community to infer \ac{MGXS} clusters directly from \ac{MC} tally data rather than predict clustering from an analysis of the core geometry. The \textit{i}\ac{MGXS} scheme is more generalizable and can flexibly accommodate arbitrary core heterogeneities better than \ac{LNS} or other geometric-based approaches which must be extensively customized for particular core geometries. In addition, the \textit{i}\ac{MGXS} scheme aims to greatly accelerate the convergence rate of \ac{MGXS} tallied with \ac{MC} with respect to the the degenerate and \ac{LNS} schemes as shown in Fig.~\ref{fig:chap10-flow-chart}.
+The novel homogenization methodology presented here -- referred to as \textit{inferential \ac{MGXS}} (\textit{i}\ac{MGXS}) spatial homogenization -- seeks to achieve the overarching goal of this thesis: to obtain Monte Carlo quality solutions with computationally efficient deterministic transport methods. The goal of \textit{i}\ac{MGXS} is to use algorithms developed by the machine learning community to infer \ac{MGXS} clusters directly from \ac{MC} tally data rather than predict clustering from an analysis of the core geometry. The \textit{i}\ac{MGXS} scheme is more generalizable and can flexibly accommodate arbitrary core heterogeneities better than \ac{LNS} or other geometric-based approaches which must be extensively customized for particular core geometries. In addition, the \textit{i}\ac{MGXS} scheme aims to greatly accelerate the convergence rate of \ac{MGXS} tallied with \ac{MC} with respect to the the degenerate and \ac{LNS} schemes as shown in Fig.~\ref{fig:chap10-flow-chart}.
 
 \begin{figure}[h!]
 \centering
-\includegraphics[width=0.75\linewidth]{figures/unsupervised/flow-chart}
+\includegraphics[width=0.6\linewidth]{figures/unsupervised/flow-chart}
 \vspace{2mm}
 \caption[Expected relative runtime for different homogenization schemes]{The expected relative runtime for the degenerate, \ac{LNS} and \textit{i}\ac{MGXS} spatial homogenization schemes with respect to a reference \ac{MC} calculation.}
 \label{fig:chap10-flow-chart}
@@ -206,39 +206,27 @@ A high-level overview of the various stages of the \textit{i}\ac{MGXS} data proc
 
 \begin{figure}[h!]
 \centering
-\includegraphics[width=0.95\linewidth]{figures/unsupervised/pipeline}
+\includegraphics[width=0.655\linewidth]{figures/unsupervised/pipeline}
 \vspace{2mm}
 \caption[MGXS pipeline]{The multi-stage \textit{i}\ac{MGXS} data processing pipeline.}
 \label{fig:chap10-pipeline}
 \end{figure}
 
-%-competing paradigms:
-%  -clustering
-%  -input -> target (e.g., trees)
-%  -some combination of the two
-
-%-break apart diagram for machine learning piece into parts
-%  -clustering
-%    -flow chart: litmus tests, feature eng./selection/transformation, clustering
-%  -input -> target (e.g., regression)
-%    -flow chart: litmus tests, target selection, feature eng./selection/transformation, model fitting, prediction
-%     -can take outputs as inputs for clustering scheme
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Feature Engineering}
-\label{sec:chap10-feature-engineer}
+\section{Feature Extraction}
+\label{sec:chap10-feature-extract}
 
-The \textit{feature engineering} stage in the data processing pipeline in Fig.~\ref{fig:chap10-pipeline} builds \textit{features} from \ac{MC} tally data. In machine learning, features are simply variables which are used as inputs to a predictive model. Features may be engineered based upon prior domain knowledge or inferred from automated feature learning algorithms such as neural networks. In the context of \textit{i}\ac{MGXS}, features are restricted to tallies, or combinations of tallies, from \ac{MC} simulations which provide information about which fuel pin instances experience similar spatial self-shielding effects. For example, the pin-wise \ac{MGXS} $\hat{\sigma}_{x,i,k,g}$ themselves may be used as features since they exhibit the very clustering effect which \textit{i}\ac{MGXS} attempts to predict\footnote{Using the pin-wise \ac{MGXS} as the only feature(s) for unsupervised clustering would be equivalent to specifying boundaries between the samples illustrated in the rug plots in Sec.~\ref{subsec:chap9-histograms}.}. Other tallied quantities may also be used as features for predicting which fuel pin instances have similarly self-shielded \ac{MGXS}. The goal of engineering \textit{i}\ac{MGXS} features is to enable machine learning algorithms to identify \ac{MGXS} clusters as quickly as possible from ``noisy'' or unconverged tally data.
+The \textit{feature extraction} stage in the data processing pipeline in Fig.~\ref{fig:chap10-pipeline} builds \textit{features} from \ac{MC} tally data. In machine learning, features are simply variables which are used as inputs to a predictive model. Features may be engineered based upon prior domain knowledge or inferred from automated feature learning algorithms such as neural networks. In the context of \textit{i}\ac{MGXS}, features are restricted to tallies, or combinations of tallies, from \ac{MC} simulations which provide information about which fuel pin instances experience similar spatial self-shielding effects. For example, the pin-wise \ac{MGXS} $\hat{\sigma}_{x,i,k,g}$ themselves may be used as features since they exhibit the very clustering effect which \textit{i}\ac{MGXS} attempts to predict\footnote{Using the pin-wise \ac{MGXS} as the only feature(s) for unsupervised clustering would be equivalent to specifying boundaries between the samples illustrated in the rug plots in Sec.~\ref{subsec:chap9-histograms}.}. Other tallied quantities may also be used as features for predicting which fuel pin instances have similarly self-shielded \ac{MGXS}. The goal of extracting \textit{i}\ac{MGXS} features is to enable machine learning algorithms to identify \ac{MGXS} clusters as quickly as possible from ``noisy'' or unconverged tally data.
 
-The \textit{i}\ac{MGXS} scheme splits the \ac{MC} tally dataset up into \textit{samples} for each particular instance $k$ of a fuel pin as illustrated in Fig.~\ref{fig:chap10-feature-eng}. A \textit{sample} is a random vector with $J$ entries for each feature $\hat{f}_{j,k}$ corresponding to a particular instance $k$ of a fuel pin. A sample may be comprised of features derived from \ac{MC} tally data for one or multiple nuclides, energy groups and/or reaction types. Ideally, the features should maximize the \textit{separation distance} in feature space $\{f_{1}, f_{2}, \dots, f_{J}\}$ between samples from the same cluster. Since features in \textit{i}\ac{MGXS} are tallied quantities from \ac{MC} simulations, some samples may include ``outlier'' feature realizations which take on values far removed from the ``true'' value of the feature\footnote{The ``true'' values are the expected values for each feature.}. Outliers may result in the incorrect assignment of cluster labels to fuel pin instances. The predictive models used in \textit{i}\ac{MGXS} are trained with the complete vector of features in order to mitigate the sensitivity of the models to outlier features and minimize the frequency of mis-labeled cluster assignments.
+The \textit{i}\ac{MGXS} scheme splits the \ac{MC} tally dataset up into \textit{samples} for each particular instance $k$ of a fuel pin as illustrated in Fig.~\ref{fig:chap10-feature-extract}. A \textit{sample} is a random vector with $J$ entries for each feature $\hat{f}_{j,k}$ corresponding to a particular instance $k$ of a fuel pin. A sample may be comprised of features derived from \ac{MC} tally data for one or multiple nuclides, energy groups and/or reaction types. Ideally, the features should maximize the \textit{separation distance} in feature space $\{f_{1}, f_{2}, \dots, f_{J}\}$ between samples from the same cluster. Since features in \textit{i}\ac{MGXS} are tallied quantities from \ac{MC} simulations, some samples may include ``outlier'' feature realizations which take on values far removed from the ``true'' value of the feature\footnote{The ``true'' values are the expected values for each feature.}. Outliers may result in the incorrect assignment of cluster labels to fuel pin instances. The predictive models used in \textit{i}\ac{MGXS} are trained with the complete vector of features in order to mitigate the sensitivity of the models to outlier features and minimize the frequency of mis-labeled cluster assignments.
 
 \begin{figure}[h!]
 \centering
 \includegraphics[width=0.9\linewidth]{figures/unsupervised/features/engineering/extract}
 \vspace{2mm}
 \caption[\textit{i}MGXS sample feature extraction]{\textit{i}\ac{MGXS} extracts feature vectors for each sample (fuel pin instance).}
-\label{fig:chap10-feature-eng}
+\label{fig:chap10-feature-extract}
 \end{figure}
 
 In addition, it should be noted that features may not necessarily be defined for the same energy group structure as the \ac{MGXS} one wishes to cluster. For example, some or all features may be tallied on a relatively coarse energy group structure in order to minimize their \ac{MC} statistical uncertainties. It is in fact be beneficial to tally features in few groups in order to identify clusters with fewer \ac{MC} particle histories than would needed to distinguish structure from ``noisy'' fine group features.
@@ -247,7 +235,6 @@ These coarse group features may be input to a clustering algorithm for spatial h
 The following sections introduce the features employed by \textit{i}\ac{MGXS} in this and the following chapter. These include the pin-wise \ac{MGXS} and their statistical uncertainties (Sec.~\ref{subsec:chap10-stat-uncertainty}), as well as features referred to as fractional reactivites (Sec.~\ref{subsec:chap10-frac-reactivity}), spectral indices (Sec.~\ref{subsec:chap10-spec-index}), nuclide fractions (Sec.~\ref{subsec:chap10-nuclide-frac}) and total fractions (Sec.~\ref{subsec:chap10-tot-frac}). Each feature is specific to a fuel pin instance, and may further be distinguished for one or more nuclides, energy groups and/or reaction types. Each feature is presented with accompanying illustrations generated using a custom-built tool to visualize \textit{i}\ac{MGXS} features~\cite{abel2016bokeh}, and which correspond to the 1.6\% enriched fuel assembly benchmark.
 
 %The clustering algoritms used in \textit{i}\ac{MGXS} may more easily identify clusters from the less ``noisy'' feature data, and the cluster labels used to spatially homogenize fine(r) group pin-wise \ac{MGXS}. 
-
 
 %first paragraph: motivationa 
 %  -could cluster multiple microscopic \ac{MGXS} simultaneously - nuclides, reactions, groups
@@ -675,211 +662,6 @@ The nuclide fraction feature is illustrated with scatter plots in Figs.~\ref{fig
 
 The figures illustrate a positive correlation between both the U-235 fission and U-238 capture \ac{MGXS} and the nuclide fractions (at least for this benchmark). In particular, the more differential moderation from neighboring \acp{CRGT}, the smaller the larger the nuclide fraction. Although the fission, capture and total rates all increase with differential moderation, these scatter plots indicate that U-235 fission and U-238 capture increases \textit{faster} than the corresponding total reaction rates with U-235 and U-238. The clusters are more spread out than the more linear trends observed for the fractional reactivities, but this is likely due to the relatively larger statistical uncertainty for the energy-specific nuclide fractions than the energy-integrated fractional reactivities.
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Feature Vector Construction}
-\label{subsec:chap10-feature-eng-summary}
-
-Each of the features described in the preceding sections is assembled into feature vectors for each sample as illustrated in Fig.~\ref{fig:chap10-feature-ex}. From a more practical standpoint, the \textit{i}\ac{MGXS} implementation in this thesis represents the sample feature vectors with a 2D \texttt{DataFrame} object from the Pandas module~\cite{mckinney2010pandas} for data processing in Python. Each column in the \texttt{DataFrame} corresponds to a feature, and each row corresponds to a sample. This \texttt{DataFrame} is the input to the feature selection and/or transformation stages of the \textit{i}\ac{MGXS} pipeline as discussed in the following sections. 
-
-\begin{figure}[h!]
-\centering
-\includegraphics[width=0.95\linewidth]{figures/unsupervised/features/engineering/features}
-\vspace{2mm}
-\caption[Example \textit{i}MGXS sample feature vectors]{Feature extraction creates features from \ac{MC} tally data. Each case study presented in this thesis extracts features from 2-group \ac{MGXS} as illustrated here.}
-\label{fig:chap10-features}
-\end{figure}
-
-\begin{figure}[h!]
-\centering
-\includegraphics[width=0.95\linewidth]{figures/unsupervised/features/engineering/select}
-\vspace{2mm}
-\caption[\textit{i}MGXS feature selection]{Feature selection chooses the features to train a clustering model.}
-\label{fig:chap10-select}
-\end{figure}
-
-\begin{figure}[h!]
-\centering
-\includegraphics[width=0.95\linewidth]{figures/unsupervised/features/engineering/agglomerate}
-\vspace{2mm}
-\caption[\textit{i}MGXS feature agglomeration]{Agglomeration transforms the original feature vectors into new features.}
-\label{fig:chap10-agglomerate}
-\end{figure}
-
-\begin{figure}[h!]
-\centering
-\includegraphics[width=0.95\linewidth]{figures/unsupervised/features/engineering/cluster}
-\vspace{2mm}
-\caption[\textit{i}MGXS clustering]{Each clustering model assigns labels to each sample.}
-\label{fig:chap10-cluster}
-\end{figure}
-
-\begin{figure}[h!]
-\centering
-\includegraphics[width=0.95\linewidth]{figures/unsupervised/features/engineering/model}
-\vspace{2mm}
-\caption[\textit{i}MGXS model selection]{Model selection evaluates the clustering models.}
-\label{fig:chap10-model}
-\end{figure}
-
-\begin{figure}[h!]
-\centering
-\includegraphics[width=0.95\linewidth]{figures/unsupervised/features/engineering/flow-chart}
-\vspace{2mm}
-\caption[\textit{i}MGXS flow chart]{The complete \textit{i}\ac{MGXS} flow chart.}
-\label{fig:chap10-flow-chart}
-\end{figure}
-
-%
-%\begin{equation}
-%\ell_{1,1}
-%\end{equation}
-%
-%\begin{equation}
-%\ell_{2,1}
-%\end{equation}
-%
-%\begin{equation}
-%\ell_{K,1}
-%\end{equation}
-%
-%\begin{equation}
-%\ell_{1,2}
-%\end{equation}
-%
-%\begin{equation}
-%\ell_{2,2}
-%\end{equation}
-%
-%\begin{equation}
-%\ell_{K,2}
-%\end{equation}
-%
-%\begin{equation}
-%\ell_{1,C}
-%\end{equation}
-%
-%\begin{equation}
-%\ell_{2,C}
-%\end{equation}
-%
-%\begin{equation}
-%\ell_{K,C}
-%\end{equation}
-%
-%\begin{equation}
-%g_{1}\left(\hat{\boldsymbol{f}}_{1}\right)
-%\end{equation}
-%
-%\begin{equation}
-%g_{2}\left(\hat{\boldsymbol{f}}_{1}\right)
-%\end{equation}
-%
-%\begin{equation}
-%g_{T}\left(\hat{\boldsymbol{f}}_{1}\right)
-%\end{equation}
-%
-%
-%\begin{equation}
-%g_{1}\left(\hat{\boldsymbol{f}}_{2}\right)
-%\end{equation}
-%
-%\begin{equation}
-%g_{2}\left(\hat{\boldsymbol{f}}_{2}\right)
-%\end{equation}
-%
-%\begin{equation}
-%g_{T}\left(\hat{\boldsymbol{f}}_{2}\right)
-%\end{equation}
-%
-%
-%\begin{equation}
-%g_{1}\left(\hat{\boldsymbol{f}}_{K}\right)
-%\end{equation}
-%
-%\begin{equation}
-%g_{2}\left(\hat{\boldsymbol{f}}_{K}\right)
-%\end{equation}
-%
-%\begin{equation}
-%g_{T}\left(\hat{\boldsymbol{f}}_{K}\right)
-%\end{equation}
-%
-%
-%\begin{equation}
-%g\left(\hat{f}_{1,2}\right)
-%\end{equation}
-%
-%\begin{equation}
-%g\left(\hat{f}_{2,2}\right)
-%\end{equation}
-%
-%\begin{equation}
-%g\left(\hat{f}_{J*,2}\right)
-%\end{equation}
-%
-%
-%\begin{equation}
-%g\left(\hat{f}_{1,K}\right)
-%\end{equation}
-%
-%\begin{equation}
-%g\left(\hat{f}_{2,K}\right)
-%\end{equation}
-%
-%\begin{equation}
-%g\left(\hat{f}_{J*,K}\right)
-%\end{equation}
-%
-%
-%\begin{equation}
-%\hat{\alpha}_{K}
-%\end{equation}
-%
-%\begin{equation}
-%\hat{\beta}_{K}
-%\end{equation}
-%
-%
-%\begin{equation}
-%\hat{\sigma}_{t,K,1}^{16}
-%\end{equation}
-%
-%
-%\begin{equation}
-%\sigma_{\hat{\sigma}_{t,K,2}^{16}}
-%\end{equation}
-%
-%\begin{equation}
-%\hat{\tau}_{t,K,1}^{16}
-%\end{equation}
-%
-%
-%\begin{equation}
-%\hat{\sigma}_{c,K,2}^{238}
-%\end{equation}
-%
-%\begin{equation}
-%\sigma_{\hat{\sigma}_{c,2,2}^{238}}
-%\end{equation}
-%
-%\begin{equation}
-%\hat{\tau}_{c,K,2}^{238}
-%\end{equation}
-%
-%
-%\begin{equation}
-%\hat{\sigma}_{f,K,1}^{235}
-%\end{equation}
-%
-%\begin{equation}
-%\sigma_{\hat{\sigma}_{f,K,1}^{235}}
-%\end{equation}
-%
-%\begin{equation}
-%\hat{\tau}_{f,K,1}^{235}
-%\end{equation}
-
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %\subsection{Total Fraction}
 %\label{subsec:chap10-tot-frac}
@@ -894,19 +676,117 @@ Each of the features described in the preceding sections is assembled into featu
 %\label{eqn:chap10-tot-frac}
 %\omega_{x,i,k,g} = \frac{\hat{\sigma}_{x,i,k,g}}{\displaystyle\sum\limits_{i=1}^{I}\hat{\sigma}_{t,i,k,g}}
 %\end{equation}
-%
-%second paragraph: visualizations
-%-look at single fuel assembly with GUI
-%-three plots: full, two different clusters selected
-%-indicate which energy group, nuclide, and reaction type
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Feature Vector Construction}
+\label{subsec:chap10-feature-eng-summary}
+
+Each of the features described in the preceding sections is assembled into feature vectors for each sample as illustrated in Fig.~\ref{fig:chap10-features-example}. From a practical standpoint, the \textit{i}\ac{MGXS} implementation in this thesis represents the sample feature vectors with a 2D \texttt{DataFrame} object from the Pandas module~\cite{mckinney2010pandas} for data processing in Python. Each column in the \texttt{DataFrame} corresponds to a feature, and each row corresponds to a sample. This \texttt{DataFrame} is the input to the feature selection and/or transformation stages of the \textit{i}\ac{MGXS} pipeline as discussed in the following sections. 
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.95\linewidth]{figures/unsupervised/features/engineering/features}
+\vspace{2mm}
+\caption[Example \textit{i}MGXS sample feature vectors]{\textit{i}\ac{MGXS} feature extraction computes fractional reactivities $\hat{\alpha}_{k}$, spectral indices $\hat{\beta}_{k}$, nuclide fractions $\hat{\tau}_{x,i,k,g}$, \ac{MGXS} means $\hat{\sigma}_{x,i,k,g}$ and standard deviations $\sigma_{\hat{\sigma_{x,i,k,g}}}$.}
+\label{fig:chap10-features-example}
+\end{figure}
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Target Selection}
-\label{sec:chap10-target-select}
+\section{Feature Selection}
+\label{sec:chap10-feature-select}
+
+The \textit{feature selection} stage in the data processing pipeline in Fig.~\ref{fig:chap10-pipeline} determines which features to use when training\footnote{In machine learning, \textit{training} a model refers to the process of assigning numerical values to the parameters of a model based on an empirical dataset.} a clustering model. The feature extraction stage provides many different features, some of which may be poor predictors of \ac{MGXS} clusters. In addition, some features may be highly correlated and redundant as input variables to a predictive model. Feature selection attempts to identify the smallest possible subset of features which are necessary to enable a predictive model to achieve the desired predictive accuracy. Feature selection plays an important role in balancing the canonical \textit{bias--variance tradeoff} in statistics and machine learning by reducing model variance, while potentially increasing model bias. In particular, feature selection is used to train simple(r) machine learning models for the following three reasons:
+
+\begin{itemize}[noitemsep]
+\item \textbf{Reduce Model Complexity} -- Simpler models are easier to intuit and explain.
+\item \textbf{Reduce Generalization Error} -- Simpler models reduce the risk of over-fitting.
+\item \textbf{Reduce Training Time} -- Simpler models are more computaionally efficient to train.
+\end{itemize}
+
+Automated feature selection methods are often classified into three main categories: \textit{filter}, \textit{wrapper}, and \textit{embedded} methods. Filter methods are agnostic to the family of predictive models one wishes to train and selects features which provide the most information about a target variable. Correlation Feature Selection~\cite{hall1999correlation} is an example of a filter method which searches for the smallest subset of features which are highly correlated with the target variable, but uncorrelated with each other. In contrast to filter methods, wrapper methods evaluate subsets of features to determine their collective ability to minimize the generalization error of some specific family of predictive models. Wrapper methods may be computationally expensive since it entails a search of the space of possible feature subsets. In addition, wrapper methods may be at greater risk of over-fitting than filter methods since the feature selection criteria is based on model accuracy. Finally, embedded methods select features as an integral part of the model training procedure. Some examples of embedded methods include $\ell_{1}$-regularization techniques and Recursive Feature Elimination~\cite{guyon2002rfe}. The interested reader is referred to~\cite{guyon2003select} or the plethora of other sources in the literature for more detailed information about automated feature selection methods.
+
+third paragraph: outline
+-make it practical for this application 
+-Fig.~\ref{fig:chap10-select}
+-first choose a reaction type for a nuclide, energy group
+-then run litmus tests to determine whether to cluster it
+-note that results in following chapter may not make full use of litmus tests
+  -instead, user will indicate wish to cluster individual MGXS like U-238 capture  
+-list here is not by no means exhaustive
+  -others include chi-squared test, information gain, correlation coefficient scores
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.95\linewidth]{figures/unsupervised/features/engineering/select}
+\vspace{2mm}
+\caption[\textit{i}MGXS feature selection]{Feature selection chooses the features to train a clustering model.}
+\label{fig:chap10-select}
+\end{figure}
+  
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Feature Pre-Processing}
+\label{sec:chap10-feature-pre-process}
+
+-mention all pre-processing done on features
+-standardization
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Domain Knowledge}
+\label{subsec:chap10-domain-knowledge}
+
+first paragraph: pinch clustering
+-user selects a nuclide/reaction/energy/group trio(s)
+-use domain knowledge about which \ac{MGXS} are most sensitive to spatial self-shielding
+  -MAY also reflect domain knowledge about which \ac{MGXS} are most important to cluster to best prediction reaction rates (e.g., U-238 capture)
+  -and/or the \ac{MGXS} which are best *predictors* of the clustering of those \ac{MGXS} which are most important to cluster
+-in this thesis just includes a single nuclide, reaction and energy group
+  -e.g., U-238 capture in group 1/2
+-could foreseeably mean multiple specific nuclides, reactions and energy groups
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Nuclide Fraction Thresholding}
+\label{subsec:chap10-litmus-nuc-frac}
+
+first paragraph:
+-used to choose reaction type: threshold on $\tau_{x,i,k,g}$
+-motivate as automated selection of nuclide/reaction/energy group trios if *not* using pinch clustering
+-only choose reactions which contribute at least some amount towards the total cross section
+  -assumes that reaction(s) with little contribution are not important to cluster anyway
+  -but may mistakenly make approx that MGXS with small magnitudes don't disproportionately reflect self-shielding effects
+    -but this is a good assumption since larger MGXS will have smaller uncertainties anyway
+
+%-threshold on the population variance divide by the population mean
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Total Fraction Thresholding}
+\label{subsec:chap10-litmus-tot-frac}
+
+first paragraph: 
+-used to choose nuclide: threshold on $\omega_{x,i,k,g}$
+-this must be of the macro not the micro MGXS btw!!!
+-motivate as automated selection of nuclide/reaction/energy group trios if *not* using pinch clustering
+-only choose nuclides with MGXS that make up a substantial fraction of the MGXS for all nuclides
+  -assumes that nuclides(s) with little contribution are not important to cluster anyway
+  -but may mistakenly make approx that MGXS with small magnitudes don't disproportionately reflect self--shielding effects
+    -but this is a good assumption since larger MGXS will have smaller uncertainties anyway
+  -otherwise, self-shielding of the nuclide won't matter anyway
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Normality Tests}
+\label{subsec:chap10-litmus-normality}
+
+first paragraph: 
+-used to choose 
+-since all feature are tallied, makes assumption that population of feature realizations come from a normal distribution iff they do not reflect spatial self-shielding effects
+-used to determine whether to cluster MGXS for a particular nuclide, group, rxn type
+-look at $p$-value for Shapiro-Wilks tests of normality
+-don't cluster data that may have come from a normal distribution!
+-if the $p$-value is below a threshold, then data may be rejected as non-normal and may be good candidate for clustering
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Feature Transformation}
-\label{sec:chap10-feature-transform}
+\section{Feature Agglomeration}
+\label{sec:chap10-feature-agglomerate}
 
 first paragraph: what is goal???
 -curse of dimensionality - dimensionality reduction
@@ -916,108 +796,42 @@ first paragraph: what is goal???
 -can account for correlations between features
   -rather than treating each features independent
 
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.95\linewidth]{figures/unsupervised/features/engineering/agglomerate}
+\vspace{2mm}
+\caption[\textit{i}MGXS feature agglomeration]{Agglomeration transforms the original feature vectors into new features.}
+\label{fig:chap10-agglomerate}
+\end{figure}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Feature Decomposition}
-\label{subsec:chap10-feature-transform-decomp}
+\label{subsec:chap10-feature-decomp}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Principal Component Analysis}
-\label{subsec:chap10-feature-transform-pca}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Principal Component Analysis}
+\label{subsubsec:chap10-feature-pca}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Independent Component Analysis}
-\label{subsec:chap10-feature-transform-ica}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Independent Component Analysis}
+\label{subsubsec:chap10-feature-transform-ica}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Feature -- Target Regression}
-\label{subsec:chap10-feature-transform-regression}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%\section{Litmus Tests}
-%\label{sec:chap10-litmus}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Feature Selection}
-\label{sec:chap10-feature-select}
-
-first paragraph:
--
--
--
-
-second paragraph:
--
--
--
-
-third paragraph:
--
--
--
-
--dimensionality reduction
-
-
-first paragraph: what are ``litmust tests''?
--which \ac{MGXS} need to be clustered
-  -which nuclides
-  -which reaction type
-  -which energy group
-
--first choose a reaction type for a nuclide, energy group
--then run litmus tests to determine whether to cluster it
-
--note that results in following chapter may not make full use of litmus tests
-  -instead, user will indicate wish to cluster individual MGXS like U-238 capture
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Domain Knowledge}
-\label{subsec:chap10-domain-knowledge}
-
-pinch clustering
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Nuclide Fraction}
-\label{subsec:chap10-litmus-nuc-frac}
-
--used to choose reaction type
--threshold on $\tau_{x,i,k,g}$
--only choose reaction's which contribute at least some amount towards the total cross section
-  -assumes that reaction with little contribution are not important to cluster anyway
-  -but may mistakenly make approx that MGXS with small magnitudes don't disproportionately reflect self-shielding effects
-    -but this is a good assumption since larger MGXS will have smaller uncertainties anyway
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Nuclide Fraction Thresholding}
-\label{subsec:chap10-litmus-nuc-frac}
-
--used to choose reaction type
--threshold on the population variance divide by the population mean
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Feature Importance Ranking}
+\label{subsec:chap10-feature-importance}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Total Fraction Thresholding}
-\label{subsec:chap10-litmus-tot-frac}
+\subsubsection{Decision Tree Regression}
+\label{subsubsec:chap10-decision-trees}
 
--used to determine whether to cluster MGXS for a particular nuclide, group, rxn type
--threshold on $\omega_{x,i,k,g}$
-  -only cluster if the MGXS makes up a substantial fraction of the MGXS for all nuclides
-  -otherwise, self-shielding of the nuclide won't matter anyway
-  -this must be of the macro not the micro MGXS btw!!!
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Normality Tests}
-\label{subsec:chap10-litmus-normality}
-
--used to determine whether to cluster MGXS for a particular nuclide, group, rxn type
--look at $p$-value for Shapiro-Wilks tests of normality
--don't cluster data that may have come from a normal distribution!
--if the $p$-value is below a threshold, then data may be rejected as non-normal and may be good candidate for clustering
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Ensemble Regression}
+\label{subsubsec:chap10-ensemble-methods}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Clustering Algorithms}
-\label{subsec:chap10-clustering}
+\section{Clustering Feature Vectors}
+\label{sec:chap10-clustering-algorithms}
 
 -very brief overview
 -refer to literature for more info
@@ -1025,9 +839,21 @@ pinch clustering
 -while there are many, many algorithms out there, only a few selected for discussion here
   -one concern is scalability to large number of samples
 
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.95\linewidth]{figures/unsupervised/features/engineering/cluster}
+\vspace{2mm}
+\caption[\textit{i}MGXS clustering]{Each clustering model assigns labels to each sample.}
+\label{fig:chap10-cluster}
+\end{figure}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Unsupervised Clustering}
+\label{subsec:chap10-feature-mapping}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{$k$-Means Clustering}
-\label{subsec:chap10-kmeans}
+\subsubsection{$k$-Means Clustering}
+\label{subsubsec:chap10-kmeans}
 
 -introduce scheme
 -algorithmic
@@ -1035,8 +861,8 @@ pinch clustering
 -model selection
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Hierarchical Clustering}
-\label{subsec:chap10-agglomerative}
+\subsubsection{Hierarchical Clustering}
+\label{subsubsec:chap10-agglomerative}
 
 -introduce scheme
 -algorithmic
@@ -1044,8 +870,17 @@ pinch clustering
 -model selection
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{DBSCAN}
-\label{subsec:chap10-dbscan}
+\subsubsection{DBSCAN}
+\label{subsubsec:chap10-dbscan}
+
+-introduce scheme
+-algorithmic
+-initialization
+-model selection
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Birch}
+\label{subsubsec:chap10-birch}
 
 -introduce scheme
 -algorithmic
@@ -1053,8 +888,8 @@ pinch clustering
 -model selection
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Gaussian Mixture Models}
-\label{subsec:chap10-gmms}
+\subsubsection{Gaussian Mixture Models}
+\label{subsubsec:chap10-gmms}
 
 -introduce scheme
 -algorithmic
@@ -1065,8 +900,39 @@ pinch clustering
 -model selection
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Mapping Features to MGXS Targets}
+\label{subsubsec:chap10-feature-mapping}
+
+%-competing paradigms:
+%  -clustering
+%  -input -> target (e.g., trees)
+%  -some combination of the two
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Model Selection}
 \label{sec:chap10-model-select}
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.95\linewidth]{figures/unsupervised/features/engineering/model}
+\vspace{2mm}
+\caption[\textit{i}MGXS model selection]{Model selection evaluates the clustering models.}
+\label{fig:chap10-model}
+\end{figure}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{\textit{i}\ac{MGXS} Spatial Homogenization}
+\label{sec:chap10-imgxs-pipeline}
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.95\linewidth]{figures/unsupervised/features/engineering/flow-chart}
+\vspace{2mm}
+\caption[\textit{i}MGXS flow chart]{The complete \textit{i}\ac{MGXS} flow chart.}
+\label{fig:chap10-flow-chart}
+\end{figure}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1254,43 +1120,59 @@ pinch clustering
 
 \begin{figure}[h!]
 \centering
-\begin{subfigure}{0.48\textwidth}
+\begin{subfigure}{0.68\textwidth}
   \centering
-  \includegraphics[width=0.9\linewidth]{figures/unsupervised/geometries/with-features/2-clusters/pinch/full-core}
+  \includegraphics[width=\linewidth]{figures/unsupervised/geometries/with-features/2-clusters/pinch/full-core}
   \caption{}
   \label{fig:chap10-full-core-pinch-2}
-\end{subfigure}%
-\begin{subfigure}{0.48\textwidth}
+\end{subfigure}
+\begin{subfigure}{0.68\textwidth}
   \centering
-  \includegraphics[width=0.9\linewidth]{figures/unsupervised/geometries/with-features/2-clusters/combined/full-core}
+  \includegraphics[width=\linewidth]{figures/unsupervised/geometries/with-features/2-clusters/combined/full-core}
   \caption{}
   \label{fig:chap10-full-core-combined-2}
 \end{subfigure}
-\begin{subfigure}{0.48\textwidth}
+\caption[Materials for BEAVRS with clustering homogenization (2 clusters)]{Materials for the \ac{BEAVRS} model with \textit{i}\ac{MGXS} spatial homogenization from 2 clusters with pinch feature selection (a) and automated feature selection (b).}
+\label{fig:chap10-full-core-geometries-2}
+\end{figure}
+
+\clearpage
+
+\begin{figure}[h!]
+\centering
+\begin{subfigure}{0.68\textwidth}
   \centering
-  \includegraphics[width=0.9\linewidth]{figures/unsupervised/geometries/with-features/4-clusters/pinch/full-core}
+  \includegraphics[width=\linewidth]{figures/unsupervised/geometries/with-features/4-clusters/pinch/full-core}
   \caption{}
   \label{fig:chap10-full-core-pinch-4}
-\end{subfigure}%
-\begin{subfigure}{0.48\textwidth}
+\end{subfigure}
+\begin{subfigure}{0.68\textwidth}
   \centering
-  \includegraphics[width=0.9\linewidth]{figures/unsupervised/geometries/with-features/4-clusters/combined/full-core}
+  \includegraphics[width=\linewidth]{figures/unsupervised/geometries/with-features/4-clusters/combined/full-core}
   \caption{}
   \label{fig:chap10-full-core-combined-4}
 \end{subfigure}
-\begin{subfigure}{0.48\textwidth}
+\caption[Materials for BEAVRS with clustering homogenization (4 clusters)]{Materials for the \ac{BEAVRS} model with \textit{i}\ac{MGXS} spatial homogenization from 4 clusters with pinch feature selection (a) and automated feature selection (b).}
+\label{fig:chap10-full-core-geometries-4}
+\end{figure}
+
+\clearpage
+
+\begin{figure}[h!]
+\centering
+\begin{subfigure}{0.68\textwidth}
   \centering
-  \includegraphics[width=0.9\linewidth]{figures/unsupervised/geometries/with-features/8-clusters/pinch/full-core}
+  \includegraphics[width=\linewidth]{figures/unsupervised/geometries/with-features/8-clusters/pinch/full-core}
   \caption{}
   \label{fig:chap10-full-core-pinch-8}
-\end{subfigure}%
-\begin{subfigure}{0.48\textwidth}
+\end{subfigure}
+\begin{subfigure}{0.68\textwidth}
   \centering
-  \includegraphics[width=0.9\linewidth]{figures/unsupervised/geometries/with-features/8-clusters/combined/full-core}
+  \includegraphics[width=\linewidth]{figures/unsupervised/geometries/with-features/8-clusters/combined/full-core}
   \caption{}
   \label{fig:chap10-full-core-combined-8}
 \end{subfigure}
-\caption[Materials for BEAVRS with clustering homogenization (2 -- 8 clusters)]{Materials for the quarter core \ac{BEAVRS} model with clustering homogenization. The materials for 2, 4, and 8 clusters are illustrated in (a), (c) and (e) for pinch clustering, and in (b), (d) and (f) for combined clustering, respectively.}
+\caption[Materials for BEAVRS with clustering homogenization (8 clusters)]{Materials for the \ac{BEAVRS} model with \textit{i}\ac{MGXS} spatial homogenization from 8 clusters with pinch feature selection (a) and automated feature selection (b).}
 \label{fig:chap10-full-core-geometries-8}
 \end{figure}
 
@@ -1298,43 +1180,59 @@ pinch clustering
 
 \begin{figure}[h!]
 \centering
-\begin{subfigure}{0.48\textwidth}
+\begin{subfigure}{0.68\textwidth}
   \centering
-  \includegraphics[width=0.9\linewidth]{figures/unsupervised/geometries/with-features/16-clusters/pinch/full-core}
+  \includegraphics[width=\linewidth]{figures/unsupervised/geometries/with-features/16-clusters/pinch/full-core}
   \caption{}
   \label{fig:chap10-full-core-pinch-16}
-\end{subfigure}%
-\begin{subfigure}{0.48\textwidth}
+\end{subfigure}
+\begin{subfigure}{0.68\textwidth}
   \centering
-  \includegraphics[width=0.9\linewidth]{figures/unsupervised/geometries/with-features/16-clusters/combined/full-core}
+  \includegraphics[width=\linewidth]{figures/unsupervised/geometries/with-features/16-clusters/combined/full-core}
   \caption{}
   \label{fig:chap10-full-core-combined-16}
 \end{subfigure}
-\begin{subfigure}{0.48\textwidth}
+\caption[Materials for BEAVRS with clustering homogenization (16 clusters)]{Materials for the \ac{BEAVRS} model with \textit{i}\ac{MGXS} spatial homogenization from 16 clusters with pinch feature selection (a) and automated feature selection (b).}
+\label{fig:chap10-full-core-geometries-16}
+\end{figure}
+
+\clearpage
+
+\begin{figure}[h!]
+\centering
+\begin{subfigure}{0.68\textwidth}
   \centering
-  \includegraphics[width=0.9\linewidth]{figures/unsupervised/geometries/with-features/32-clusters/pinch/full-core}
+  \includegraphics[width=\linewidth]{figures/unsupervised/geometries/with-features/32-clusters/pinch/full-core}
   \caption{}
   \label{fig:chap10-full-core-pinch-32}
-\end{subfigure}%
-\begin{subfigure}{0.48\textwidth}
+\end{subfigure}
+\begin{subfigure}{0.68\textwidth}
   \centering
-  \includegraphics[width=0.9\linewidth]{figures/unsupervised/geometries/with-features/32-clusters/combined/full-core}
+  \includegraphics[width=\linewidth]{figures/unsupervised/geometries/with-features/32-clusters/combined/full-core}
   \caption{}
   \label{fig:chap10-full-core-combined-32}
 \end{subfigure}
-\begin{subfigure}{0.48\textwidth}
+\caption[Materials for BEAVRS with clustering homogenization (32 clusters)]{Materials for the \ac{BEAVRS} model with \textit{i}\ac{MGXS} spatial homogenization from 32 clusters with pinch feature selection (a) and automated feature selection (b).}
+\label{fig:chap10-full-core-geometries-32}
+\end{figure}
+
+\clearpage
+
+\begin{figure}[h!]
+\centering
+\begin{subfigure}{0.68\textwidth}
   \centering
-  \includegraphics[width=0.9\linewidth]{figures/unsupervised/geometries/with-features/64-clusters/pinch/full-core}
+  \includegraphics[width=\linewidth]{figures/unsupervised/geometries/with-features/64-clusters/pinch/full-core}
   \caption{}
   \label{fig:chap10-full-core-pinch-64}
-\end{subfigure}%
-\begin{subfigure}{0.48\textwidth}
+\end{subfigure}
+\begin{subfigure}{0.68\textwidth}
   \centering
-  \includegraphics[width=0.9\linewidth]{figures/unsupervised/geometries/with-features/64-clusters/combined/full-core}
+  \includegraphics[width=\linewidth]{figures/unsupervised/geometries/with-features/64-clusters/combined/full-core}
   \caption{}
   \label{fig:chap10-full-core-combined-64}
 \end{subfigure}
-\caption[Materials for BEAVRS with clustering homogenization (16 -- 64 clusters)]{Materials for the quarter core \ac{BEAVRS} model with clustering homogenization. The materials for 16, 32, and 64 clusters are illustrated in (a), (c) and (e) for pinch clustering, and in (b), (d) and (f) for combined clustering, respectively.}
+\caption[Materials for BEAVRS with clustering homogenization (64 clusters)]{Materials for the \ac{BEAVRS} model with \textit{i}\ac{MGXS} spatial homogenization from 64 clusters with pinch feature selection (a) and automated feature selection (b).}
 \label{fig:chap10-full-core-geometries-64}
 \end{figure}
 
