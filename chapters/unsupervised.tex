@@ -554,7 +554,9 @@ The spectral index feature is illustrated with scatter plots in Figs.~\ref{fig:c
 
 %\clearpage
 
-The figures illustrate a complex relationship between the U-235 fission \ac{MGXS} and the spectral indices. In contrast to the fractional reactivity, both the fission and capture \ac{MGXS} are negatively correlated with the spectral index. In particular, the more differential moderation from neighboring \acp{CRGT}, the smaller the spectral index. Although the capture and fission rates both increase with differential moderation, these scatter plots indicate that U-235 fission increases \textit{faster} than U-238 capture. In addition, the clusters are more spread out than the more linear trends observed for the fractional reactivities. The scatter plots indicate that the spectral index is potentially more effective at separating sub-clusters within each primary cluster than fractional reactivity (at least for this benchmark). 
+The figures illustrate a complex relationship between the U-235 fission \ac{MGXS} and the spectral indices. In contrast to the fractional reactivity, both the fission and capture \ac{MGXS} are negatively correlated with the spectral index. In particular, the more differential moderation from neighboring \acp{CRGT}, the smaller the spectral index. Although the capture and fission rates both increase with differential moderation, these scatter plots indicate that U-235 fission increases \textit{faster} than U-238 capture. In addition, the clusters are more spread out than the more linear trends observed for the fractional reactivities. The scatter plots indicate that the spectral index is potentially more effective at separating sub-clusters within each primary cluster than fractional reactivity.
+
+%(at least for this benchmark). 
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -691,7 +693,19 @@ Each of the features described in the preceding sections is assembled into featu
 \label{fig:chap10-features-example}
 \end{figure}
 
-Feature standardization -- also known as \textit{mean removal} and/or \textit{variance scaling} -- is commonly needed since many machine learning estimators assume that all features are centered about zero with near unit variance. In the context of \textit{i}\ac{MGXS}, the distance between samples (or clusters) in feature space will be skewed if the features are not standardized. In particular, the distance will be dominated by features with the largest magnitudes (\textit{e.g.}, thermal U-235 fission \ac{MGXS}), and conversely, insensitive to features with small magnitudes (\textit{e.g.}, \ac{MGXS} standard deviations). The canonical form of standardization \textit{translates} each sample by subtracting the mean of each feature, and \textit{scales} each sample by dividing by the population standard deviation. Many standardization schemes are provided by the \texttt{sklearn.preprocessing} module of the \texttt{scikit-learn} Python package for machine learning~\cite{pedregosa2011sklearn}. The \textit{i}\ac{MGXS} implementation in this thesis used the \texttt{RobustScaler} from \texttt{scikit-learn} to subtract the median and divide by the interquartile range to diminish the influence of outliers on the standardization process.
+Feature standardization -- also known as \textit{mean removal} and/or \textit{variance scaling} -- is commonly needed since many machine learning estimators assume that all features are centered about zero with near unit variance. In the context of \textit{i}\ac{MGXS}, the distance between samples (or clusters) in feature space will be skewed if the features are not standardized. In particular, the distance will be dominated by features with the largest magnitudes (\textit{e.g.}, thermal U-235 fission \ac{MGXS}), and conversely, insensitive to features with small magnitudes (\textit{e.g.}, \ac{MGXS} standard deviations). The canonical form of standardization \textit{translates} each sample by subtracting the mean $\overline{\hat{f}_{j}}$, and \textit{scales} each sample by dividing by the standard deviation $\sigma_{\hat{f}_{j}}$ of feature $j$:
+
+\begin{equation}
+\label{eqn:chap10-standard-standardize}
+\hat{f}_{j,k}^{*} = \frac{\hat{f}_{j,k} - \overline{\hat{f}_{j}}}{\sigma_{\hat{f}_{j}}}
+\end{equation}
+
+\noindent where $\hat{f}_{j,k}^{*}$ is the standardized feature $j$ for fuel pin instance $k$. Several standardization schemes are provided by the \texttt{sklearn.preprocessing} module of the \texttt{scikit-learn} Python package for machine learning~\cite{pedregosa2011sklearn}. The \textit{i}\ac{MGXS} implementation in this thesis uses the \texttt{RobustScaler} to subtract the median and divide by the interquartile range (IQR)\footnote{The interquartile range is the difference between the first and third quartiles: $\mathrm{IQR} = Q_{3} - Q{1}$.} to diminish the influence of outliers on the standardization process:
+
+\begin{equation}
+\label{eqn:chap10-robust-standardize}
+\hat{f}_{j,k}^{*} = \frac{\hat{f}_{j,k} - \mathrm{median}\{\hat{f}_{j,1}, \hat{f}_{j,2}, \dots, \hat{f}_{j,K}\}}{\mathrm{IQR}_{\hat{f}_{j}}}
+\end{equation}
 
 \begin{emphbox}
 \textbf{Features are random variables derived from \ac{MC} tally data which may provide information about \ac{MGXS} clustering. Feature vectors are constructed for each fuel pin instance and used as inputs for predictive clustering models.}
@@ -702,7 +716,7 @@ Feature standardization -- also known as \textit{mean removal} and/or \textit{va
 \section{Feature Selection}
 \label{sec:chap10-feature-select}
 
-The \textit{feature selection} stage in the data processing pipeline in Fig.~\ref{fig:chap10-pipeline} determines which features to use when training\footnote{In machine learning, \textit{training} a model refers to the process of assigning numerical values to the parameters of a model based on an empirical dataset.} a clustering model. The feature extraction stage provides many different features, some of which may be poor predictors of \ac{MGXS} clusters. In addition, some features may be highly correlated and redundant as input variables to a predictive model. Feature selection attempts to identify the smallest possible subset of features necessary to achieve the desired predictive accuracy. Feature selection plays an important role in balancing the canonical \textit{bias--variance tradeoff} in statistics and machine learning by reducing model variance, while potentially increasing model bias. In particular, feature selection is used to train simple(r) machine learning models for the following three reasons:
+The \textit{feature selection} stage in the data processing pipeline in Fig.~\ref{fig:chap10-pipeline} determines which features to use when training\footnote{In machine learning, \textit{training} a model refers to the process of assigning numerical values to the parameters of the model to best fit an empirical dataset.} a clustering model. The feature extraction stage provides many different features, some of which may be poor predictors of \ac{MGXS} clusters. In addition, some features may be highly correlated and redundant as input variables to a predictive model. Feature selection attempts to identify the smallest possible subset of features necessary to achieve the desired predictive accuracy. Feature selection plays an important role in balancing the canonical \textit{bias--variance tradeoff} in statistics and machine learning by reducing model variance, while potentially increasing model bias. In particular, feature selection is used to train simple(r) machine learning models for the following three reasons:
 
 \begin{itemize}[noitemsep]
 \item \textbf{Reduce Model Complexity} -- Simpler models are easier to intuit and explain.
@@ -712,11 +726,11 @@ The \textit{feature selection} stage in the data processing pipeline in Fig.~\re
 
 Automated feature selection methods are often classified into three main categories: \textit{filter}, \textit{wrapper}, and \textit{embedded} methods. \textit{Filter methods} are agnostic to the family of predictive models one wishes to train and selects features which provide the most information about a target variable. Correlation Feature Selection~\cite{hall1999correlation} is an example of a filter method which searches for the smallest subset of features which are highly correlated with the target variable, but uncorrelated with each other. In contrast to filter methods, \textit{wrapper methods} evaluate subsets of features to determine their collective ability to minimize the generalization error of some specific family of predictive models. Wrapper methods may be computationally expensive since it entails a search of the space of possible feature subsets. In addition, wrapper methods may be at greater risk of over-fitting than filter methods since the feature selection criteria is based on model accuracy. Finally, \textit{embedded methods} select features as an integral part of the model training procedure. Some examples of embedded methods include $\ell_{1}$-regularization techniques and Recursive Feature Elimination~\cite{guyon2002rfe}. The interested reader is referred to~\cite{guyon2003select} or the plethora of other sources in the literature for more detailed information about automated feature selection methods.
 
-This thesis makes a fairly limited use of feature selection techniques in its implementation of \textit{i}\ac{MGXS}. In particular, a number of relatively simple filter and wrapper methods are presented in the following sections as options to select the best features. This process is illustrated as part of the \textit{i}\ac{MGXS} data processing pipeline in Fig.~\ref{fig:chap10-select}. Sec.~\ref{subsec:chap10-litmus} presents \textit{litmus tests} to filter the features and choose those pairings of nuclides and reaction types which are most likely to exhibit clustering. Sec.~\ref{subsec:chap10-var-threshold} introduces variance thresholding, while Sec.~\ref{subsec:chap10-univariate-selection} highlights a collection of filter methods which select the highest scoring features. Sec.~\ref{subsec:chap10-select-from-model} discusses a wrapper method which selects features based on their importances for decision tree or ensemble regressors. Finally, domain knowledge may not be an elegant approach to downselect features, it is simple to implement and is discussed in Sec.~\ref{subsec:chap10-domain-knowledge}.
+This thesis makes a fairly limited use of feature selection techniques in its implementation of \textit{i}\ac{MGXS}. In particular, a number of relatively simple filter and wrapper methods are presented in the following sections as options to select the best features. This process is illustrated as part of the \textit{i}\ac{MGXS} data processing pipeline in Fig.~\ref{fig:chap10-select}. Sec.~\ref{subsec:chap10-litmus} presents \textit{litmus tests} to filter the features and choose those pairings of nuclides and reaction types which are most likely to exhibit clustering. Sec.~\ref{subsec:chap10-var-threshold} introduces variance thresholding, while Sec.~\ref{subsec:chap10-univariate-selection} highlights a collection of filter methods which select the highest scoring features. Sec.~\ref{subsec:chap10-select-from-model} discusses a wrapper method which selects features based on their importances for decision tree or ensemble regressors. Finally, while domain knowledge is not an automated approach to feature downselection, it is employed by the case studies in the following chapter and is discussed in Sec.~\ref{subsec:chap10-domain-knowledge}.
 
 %Sec.~\ref{subsec:chap10-litmus-tot-frac} introduces a threshold-based method to downselect those nuclides with the most relevant data to cluster for a given energy group. Similarly, Sec.~\ref{subsec:chap10-litmus-nuc-frac} presents a threshold for the nuclide fraction to choose the ``best'' reaction type to cluster for a given nuclide and energy group.
 
-\begin{figure}[h!]
+\begin{figure}[hb!]
 \centering
 \includegraphics[width=0.95\linewidth]{figures/unsupervised/features/engineering/select}
 \vspace{2mm}
@@ -730,12 +744,7 @@ It is important to note that the methods and metrics highlighted here should be 
 \subsection{Litmus Tests}
 \label{subsec:chap10-litmus}
 
-first paragraph:
--used to select best nuclides and reaction types
--down features specific to a reaction type, nuclide and energy group
--both tests applied to each nuclide/energy group/reaction trios
-
--update summary above!!!
+\textit{Litmus tests} are filter methods specifically designed to select data for particular nuclides and reaction types for clustering. The litmus tests presented here are used to downselect the \ac{MGXS} mean and standard deviation features by predicting which nuclides and reaction types are most likely to exhibit clustering effects. The litmus tests are independently applied to each nuclide / energy group / reaction type trio. Sec.~\ref{subsubsec:chap10-litmus-tot-frac} introduces total fraction thresholding to select a nuclide for a given energy group, while Sec.~\ref{subsubsec:chap10-litmus-nuc-frac} introduces nuclide fraction thresholding to select a reaction type for a given nuclide and energy group. Sec.~\ref{subsubsec:chap10-litmus-nuc-frac} discusses how normality tests can be used to reject features which may have been drawn from a normal distribution.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Total Fraction Thresholding}
