@@ -7,9 +7,9 @@ import infermc.beavrs
 
 ####################   User-specified Simulation Parameters  ###################
 
-batches = 1000
+batches = 300
 inactive = 200
-particles = 10000000
+particles = 400000000
 
 
 #########   Exporting to OpenMC geometry.xml and materials.xml Files  ##########
@@ -33,9 +33,11 @@ source.space.only_fissionable = True
 
 settings_file = openmc.Settings()
 settings_file.batches = batches
+settings_file.seed = 10000
 settings_file.inactive = inactive
 settings_file.particles = particles
 settings_file.ptables = True
+settings_file.statepoint_interval = 100
 settings_file.output = {'tallies': False}
 settings_file.source = source
 settings_file.sourcepoint_write = False

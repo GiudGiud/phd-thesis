@@ -33,18 +33,24 @@ else:
 os.chdir(benchmark)
 
 directories = {'assm-1.6': '1.6\\% Assm',
+               'assm-1.6-test-lns': '1.6\\% Assm',
                'assm-3.1': '3.1\\% Assm',
                'assm-3.1-20BPs': '3.1\\% Assm w/ 20 BPs',
                '2x2': '2$\\times$2 Colorset',
                'reflector': '2$\\times$2 Colorset w/ Reflector',
-               'full-core': 'BEAVRS Full Core'}
+               'full-core': 'BEAVRS Full Core',
+               'full-core-bechler': 'BEAVRS Full Core'}
 
-groups = [2, 8, 70]
-#groups = [8]
+#groups = [2, 8]
+groups = [70]
 clusterizer_types = ['lns']
+#clusterizer_types = ['infinite', 'null', 'degenerate', 'pinch-agglomerative-(2)', 'pinch-agglomerative-(4)', 'combined-agglomerative-(2)', 'combined-agglomerative-(4)']
+#clusterizer_types = ['null', 'degenerate', 'lns', 'pinch-kmeans-(30)']
+#clusterizer_types = ['degenerate']
+#clusterizer_types = ['null', 'degenerate', 'pinch-kmeans-(50)']
+#clusterizer_types = ['infinite', 'null']
 #clusterizer_types = ['null', 'lns', 'degenerate']
-#clusterizer_types = ['null', 'degenerate']
-#clusterizer_types = ['infinite', 'null', 'degenerate']
+#clusterizer_types = ['infinite', 'null'] #, 'degenerate']
 
 print('EIGENVALUE BIAS')
 msg = '\multirow{3}{*}{\parbox{2.5cm}{%s}} ' % directories[benchmark]
@@ -195,7 +201,10 @@ for i, clusterizer_type in enumerate(clusterizer_types):
             cmap=cmap, vmin=min_fiss, vmax=max_fiss)
 
         if num_groups == groups[0]:
-            plt.ylabel(clusterizer_type.capitalize(), fontsize=16)
+            if clusterizer_type == 'lns':
+                plt.ylabel(clusterizer_type.upper(), fontsize=16)
+            else:
+                plt.ylabel(clusterizer_type.capitalize(), fontsize=16)
         if clusterizer_type == clusterizer_types[0]:
             plt.title('{} Groups'.format(num_groups), fontsize=16)
         plt.grid(False)
@@ -258,7 +267,10 @@ for i, clusterizer_type in enumerate(clusterizer_types):
             cmap=cmap, vmin=min_capt, vmax=max_capt)
 
         if num_groups == groups[0]:
-            plt.ylabel(clusterizer_type.capitalize(), fontsize=16)
+            if clusterizer_type == 'lns':
+                plt.ylabel(clusterizer_type.upper(), fontsize=16)
+            else:
+                plt.ylabel(clusterizer_type.capitalize(), fontsize=16)
         if clusterizer_type == clusterizer_types[0]:
             plt.title('{} Groups'.format(num_groups), fontsize=16)
         plt.grid(False)

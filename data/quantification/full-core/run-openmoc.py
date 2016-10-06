@@ -18,7 +18,7 @@ batchwise.mat_mgxslib_filename = 'material'
 batchwise.zcoord = 195.
 batchwise.log_level = 'INFO'
 #batchwise.reference_sp = openmc.StatePoint('statepoint.1000.h5')
-batchwise.reference_sp = openmc.StatePoint('../../benchmarks/full-core/statepoint.1000.h5')
+batchwise.reference_sp = openmc.StatePoint('../../benchmarks/full-core/statepoint.600.h5')
 
 # Initialize quarter pin-wise CMFD mesh
 batchwise.cmfd = openmoc.Cmfd()
@@ -26,6 +26,7 @@ batchwise.cmfd.setLatticeStructure(23*17, 23*17)
 #batchwise.cmfd.setLatticeStructure(23, 23)
 batchwise.cmfd.setKNearest(3)
 batchwise.with_cmfd = True
+#batchwise.cmfd = None
 
 # Attach a method to discretize this geometry to the Batchwise instance
 batchwise._discretize_geometry = types.MethodType(discretize_geometry, batchwise)
@@ -46,11 +47,11 @@ elif batchwise.options.clusterizer_type == 'degenerate':
 import sklearn.cluster
 
 # Initialize a scikit-learn clustering estimator                                                       
-#estimator = sklearn.cluster.AgglomerativeClustering()
-#estimator.n_clusters = batchwise.options.num_clusters
-
-estimator = sklearn.cluster.KMeans(init='k-means++')
+estimator = sklearn.cluster.AgglomerativeClustering()
 estimator.n_clusters = batchwise.options.num_clusters
+
+#estimator = sklearn.cluster.KMeans(init='k-means++')
+#estimator.n_clusters = batchwise.options.num_clusters
 
 # If a basic clusterizer type ('null', 'degenerate', 'lns') was not specified
 # as a command line argument initialize a clusterizer with scikit-learn

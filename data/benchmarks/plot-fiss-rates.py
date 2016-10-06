@@ -25,9 +25,7 @@ directories = OrderedDict({'assm-1.6': '1.6% Enr. (no BPs)',
                            'assm-3.1-20BPs': '3.1% Enr. (20 BPs)',
                            '2x2': '2x2 Colorset',
                            'reflector': '2x2 Colorset w/ Reflector',
-                           'full-core': 'BEAVRS Quarter Core',
-                           'full-core-aniso': 'BEAVRS Quarter Core (Aniso)',
-                           'full-core-aniso-3d': 'BEAVRS Quarter Core (Aniso 3D)'})
+                           'full-core': 'BEAVRS Quarter Core'})
 
 for directory in directories:
     sp = openmc.StatePoint(os.path.join(directory, 'statepoint.1000.h5'))
