@@ -679,9 +679,9 @@ The figures illustrate a positive correlation between both the U-235 fission and
 %\omega_{x,i,k,g} = \frac{\hat{\sigma}_{x,i,k,g}}{\displaystyle\sum\limits_{i=1}^{I}\hat{\sigma}_{t,i,k,g}}
 %\end{equation}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Feature Vector Construction}
-\label{subsec:chap10-feature-eng-summary}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Feature Standardization}
+\label{subsec:chap10-feature-standardize}
 
 Each of the features described in the preceding sections is assembled into feature vectors for each sample as illustrated in Fig.~\ref{fig:chap10-features-example}. From a practical standpoint, the \textit{i}\ac{MGXS} implementation in this thesis represents the sample feature vectors with a 2D \texttt{DataFrame} object from the Pandas module~\cite{mckinney2010pandas} for data processing in Python. Each column in the \texttt{DataFrame} corresponds to a feature, and each row corresponds to a sample. This \texttt{DataFrame} is the input to the feature selection stage of the \textit{i}\ac{MGXS} pipeline. However, each feature must first be \textit{standardized} before used as an input to a predictive model.
 
@@ -783,22 +783,17 @@ The \textit{i}\ac{MGXS} implementation in this thesis uses the Shapiro-Wilk test
 \subsection{Variance Thresholding}
 \label{subsec:chap10-var-threshold}
 
-first paragraph:
--filter method!!!
--remove features with low variance
--\texttt{VarianceThreshold} class from \texttt{sklearn.feature_selection} module
+\textit{Variance thresholding} is a filter method which removes low variance features. The \textit{i}\ac{MGXS} implementation in this thesis uses the \texttt{VarianceThreshold} class from the \texttt{sklearn.feature_selection} module to administer variance thresholding. It is important to note that variance thresholding must be applied to the features \textit{prior} to standardization (see Sec.~\ref{subsec:chap10-feature-standardize}).
+
+Variance thresholding presents an opportunity for a user to guide the \textit{i}\ac{MGXS} feature selection process. A user may define specialized variance thresholds for one or more features based on some prior understanding of the reactor physics relevant to the problem at hand. For example, a user may know that it is only important to model \ac{MGXS} clustering if the variance of one, some or all features is greater than some collection of corresponding thresholds. If the feature variances are below the threshold, the features will be rejected and the data may be treated with a ``coarse'' clustering model with more data points assigned to fewer clusters, and improved statistics for the resultant track density-weighted \ac{MGXS} (see Sec.~\ref{subsubsec:chap9-relative-uncertainties}).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Univariate Feature Selection}
 \label{subsec:chap10-univariate-selection}
 
-first paragraph:
--filter method!!!
--applies tests to features individually and selects those with highest scores
--does not consider correlations between features - e.g., could choose highly redundant features which each have high scores
--\texttt{GenericUnivariateSelect} class from \texttt{sklearn.feature_selection} module
--select $k$ best features, or highest percentage of features with highest scores
--also could use $\chi^2$ test or mutual information to select best features
+\textit{Univariate feature selection} is a filter method which selects features based on univariate statistical tests. This thesis used the \texttt{GenericUnivariateSelect} class from the \texttt{sklearn.feature_selection} module to administer univariate feature selection. This method individually ranks each feature according to some metric and selects the $k$ best features, or some percentage of the highest scoring features. Univariate feature selection does not consider correlations between features, and as a result, may choose a collection of highly redundant features.
+
+The typical statistical tests used for univariate feature selection quantify a mapping between the features and some target variable(s). The \textit{i}\ac{MGXS} implementation in this thesis uses the \ac{MGXS} means $\hat{\sigma}_{x,i,k,g}$ as the target variables and builds a sequence of linear regression models based on the non-\ac{MGXS} features (\textit{e.g.}, fractional reactivities, spectral indices, etc.). Each linear regressor is scored with a $p$-value from an $F$-test which assesses the strength of the linear dependence between the non-\ac{MGXS} feature and \ac{MGXS} target variable(s). An alternative but equally valid approach would use the mutal information between the non-\ac{MGXS} features and \ac{MGXS} target variable(s) to individually score each feature. 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Select From Model}
