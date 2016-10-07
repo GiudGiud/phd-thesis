@@ -787,27 +787,19 @@ The \textit{i}\ac{MGXS} implementation in this thesis uses the Shapiro-Wilk test
 
 Variance thresholding presents an opportunity for a user to guide the \textit{i}\ac{MGXS} feature selection process. A user may define specialized variance thresholds for one or more features based on some prior understanding of the reactor physics relevant to the problem at hand. For example, a user may know that it is only important to model \ac{MGXS} clustering if the variance of one, some or all features is greater than some collection of corresponding thresholds. If the feature variances are below the threshold, the features will be rejected and the data may be treated with a ``coarse'' clustering model with more data points assigned to fewer clusters, and improved statistics for the resultant track density-weighted \ac{MGXS} (see Sec.~\ref{subsubsec:chap9-relative-uncertainties}).
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Univariate Feature Selection}
 \label{subsec:chap10-univariate-selection}
 
-\textit{Univariate feature selection} is a filter method which selects features based on univariate statistical tests. This thesis used the \texttt{GenericUnivariateSelect} class from the \texttt{sklearn.feature_selection} module to administer univariate feature selection. This method individually ranks each feature according to some metric and selects the $k$ best features, or some percentage of the highest scoring features. Univariate feature selection does not consider correlations between features, and as a result, may choose a collection of highly redundant features.
+\textit{Univariate feature selection} is a filter method which selects features based on univariate statistical tests. This thesis uses the \texttt{GenericUnivariateSelect} class from the \texttt{sklearn.feature_selection} module to administer univariate feature selection. This method individually ranks each feature according to some metric and selects some user-specified number or percentage of the highest scoring features. Univariate feature selection does not consider correlations between features, and as a result, may choose a collection of highly redundant features.
 
 The typical statistical tests used for univariate feature selection quantify a mapping between the features and some target variable(s). The \textit{i}\ac{MGXS} implementation in this thesis uses the \ac{MGXS} means $\hat{\sigma}_{x,i,k,g}$ as the target variables and builds a sequence of linear regression models based on the non-\ac{MGXS} features (\textit{e.g.}, fractional reactivities, spectral indices, etc.). Each linear regressor is scored with a $p$-value from an $F$-test which assesses the strength of the linear dependence between the non-\ac{MGXS} feature and \ac{MGXS} target variable(s). An alternative but equally valid approach would use the mutal information between the non-\ac{MGXS} features and \ac{MGXS} target variable(s) to individually score each feature. 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Select From Model}
+\subsection{Select-from-Model}
 \label{subsec:chap10-select-from-model}
 
-first paragraph:
--wrapper method!!!
--uses meta-transformer to select features based on importance weights
--\texttt{SelectFromModel} class from \texttt{sklearn.feature_selection} module
--train regression model to take any non-\ac{MGXS} mean features to map to \ac{MGXS} mean target variables
-  -use \texttt{DecisionTreeRegressor} from \texttt{sklearn.tree}
-    -choose features which correspond to nodes in tree which define biggest splits of dataset
-  -use \texttt{RandomForestRegressor} from \texttt{sklearn.ensemble} to avoid over-fitting trees
-    -choose features which correspond to nodes in tree which define biggest splits of dataset
+The \textit{select-from-model} approach is a a wrapper method for feature selection. This thesis uses the \texttt{SelectFromModel} class from the \texttt{sklearn.feature_selection} module to administer select-from-model feature selection. This approach uses a \textit{meta-transformer} to select features based on their importance weights. Similar to univariate feature selection, the meta-transformer defines a mapping between the features and some target variable(s). The \textit{i}\ac{MGXS} implementation in this thesis uses the \ac{MGXS} means $\hat{\sigma}_{x,i,k,g}$ as the target variables, and trains multi-dimensional piece-wise constant regression models from the non-\ac{MGXS} features (\textit{e.g.}, fractional reactivities, spectral indices, etc.). For example, the \texttt{DecisionTreeRegressor} from the \texttt{sklearn.tree} module may be used to train a decision tree~\cite{breiman1984tree} and the best features selected by identifying the decision tree nodes which provide the greatest reduction in variance of the target variables. Alternatively, the \texttt{RandomForestRegressor} from \texttt{sklearn.ensemble} module may be used to train a random forest~\cite{ho1998forest} of multiple decision tree regressors on subsets of the dataset. The random forest regressor may better control over-fitting than a simple decision tree, and improve the generalization of the select-from-model feature selection method.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Domain Knowledge}
