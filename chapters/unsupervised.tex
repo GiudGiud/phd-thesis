@@ -795,8 +795,8 @@ Variance thresholding presents an opportunity for a user to guide the \textit{i}
 
 The typical statistical tests used for univariate feature selection quantify a mapping between the features and some target variable(s). The \textit{i}\ac{MGXS} implementation in this thesis uses the \ac{MGXS} means $\hat{\sigma}_{x,i,k,g}$ as the target variables and builds a sequence of linear regression models based on the non-\ac{MGXS} features (\textit{e.g.}, fractional reactivities, spectral indices, etc.). Each linear regressor is scored with a $p$-value from an $F$-test which assesses the strength of the linear dependence between the non-\ac{MGXS} feature and \ac{MGXS} target variable(s). An alternative but equally valid approach would use the mutal information between the non-\ac{MGXS} features and \ac{MGXS} target variable(s) to individually score each feature. 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Select-from-Model Importance Ranking}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Select-from-Model Feature Importance Ranking}
 \label{subsec:chap10-select-from-model}
 
 The \textit{select-from-model} approach is a wrapper method for feature selection. This thesis uses the \texttt{SelectFromModel} class from the \texttt{sklearn.feature_selection} module to administer select-from-model feature selection. This approach uses a \textit{meta-transformer} to select features based on a ranking of their importance weights. Similar to univariate feature selection, the meta-transformer defines a mapping between the features and some target variable(s). The \textit{i}\ac{MGXS} implementation in this thesis uses the \ac{MGXS} means $\hat{\sigma}_{x,i,k,g}$ as the target variables, and trains multi-dimensional piece-wise constant regression models from the non-\ac{MGXS} features (\textit{e.g.}, fractional reactivities, spectral indices, etc.). For example, the \texttt{DecisionTreeRegressor} from the \texttt{sklearn.tree} module may be used to train a decision tree~\cite{breiman1984tree} and the best features selected by identifying the decision tree nodes which provide the greatest reduction in variance of the target variables. Alternatively, the \texttt{RandomForestRegressor} from \texttt{sklearn.ensemble} module may be used to train a random forest~\cite{ho1998forest} of multiple decision tree regressors on subsets of the dataset. The random forest regressor better controls over-fitting than a single decision tree, and improves the generalization of the select-from-model feature selection method.
@@ -863,6 +863,12 @@ first paragraph: what is goal???
 \section{Clustering Feature Vectors}
 \label{sec:chap10-clustering-algorithms}
 
+first paragraph:
+-
+
+second paragraph:
+-
+
 -very brief overview
 -refer to literature for more info
 -used canned algorithms in scikit-learn \texttt{sklearn.cluster}
@@ -881,24 +887,170 @@ first paragraph: what is goal???
 \subsection{Unsupervised Clustering}
 \label{subsec:chap10-feature-mapping}
 
+first paragraph:
+-try to find patterns between like data points
+-all features treated on an equal basis
+
+-define each clustering algorithm as minimizing some metric
+  -k-Means: inertia
+  -
+
+-define assumptions for each clustering algorithm:
+  -
+
+-make it real for this application!!!
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{$k$-Means Clustering}
 \label{subsubsec:chap10-kmeans}
 
--introduce scheme
--algorithmic
--initialization
--model selection
--locally optimal
+first paragraph: intro
+-introduce scheme~\cite{macqueen1967kmeans, lloyd1982kmeans}
+-intro inertia minimization
+-partitions of feature space into Voronoi cells
+-set of $C$ disjoint clusters
+-not to confuse $k$ for the fuel pin instance index!!!
+-minimize inertia\footnote{The inertia is a within-cluster sum-of-squares criterion.}:
+
+\begin{equation}
+\label{eqn:chap10-kmeans-inertia}
+\displaystyle\sum\limits_{k=0}^{K} \min_{\boldsymbol{\mu}_{j} \in C} \|\boldsymbol{\hat{f}}_{k} - \boldsymbol{\mu}_{j}\|^{2}
+\end{equation}
+
+second paragraph: algorithm
+-Alg.~\ref{alg:chap10-kmeans}
+-step 1 (initialization): choose initial centroids
+-loop until centroids stop moving:
+  -step 2 (assignment): assign each sample to nearest centroid
+  -step 3 (update): create new centroids from mean of those points assigned to each centroid
+-a variant to the expecation-mazimization algorithm 
+ -assignment step is the expectation step
+ -update step is the maximization step
+
+third paragraph: implementation
+-\texttt{KMeans} of the \texttt{sklearn.cluster}
+-fast and scalable to datasets with large number of samples $K$ and features $J$
+  -requires distance calculation from for each data point to each cluster centroid
+  -easy to parallelize, for large datasets with out-of-core mini-batch $k$-Means algorithm~\cite{sculley2010minibatchkmeans} implemenbted by \texttt{MiniBatchKMeans}
+
+fourth paragraph: assumptions and guarantees
+-inertia assumes clusters are convex and isotropic
+  -actually assumes clusters are spherical in feature space
+  -assumes clusters are of the similar size
+  -not well suite to clusters with irregular shapes
+-provably guaranteed to converge if Euclidean distance is used
+  -which is the case for this thesis
+-requires the number of clusters to be defined
+  -need model selection to determine $k$
+-$k$-Means will always converge, but to a local minimum of the inertia
+  -partioning is highly dependent on the initialization of centroids
+  -can randomly choose $k$ data points as initial centroids
+  -$k$-Means++~\cite{arthur2007kmeans++} 
+    -\texttt{init=kmeans++} argument to \texttt{KMeans}
+    -attempts to uniformly disperse centers across regions of feature space with samples
+    -this is what is used in this thesis
+  -since algorithm is very fast, run many times with different initial centroids and choose solution with smallest inertia
+-computational complexity of $\mathcal{O}(KJ^{*}MT)$ for $K$ fuel pin instances, $J^{*}$ features, $M$ clusters and $T$ iterations
+
+\begin{equation}
+\label{eqn:chap10-kmeans-assign}
+\mathbb{S}_{m}^{(t)} = \lbrace \boldsymbol{\hat{f}}_{k} \;\; : \;\; \| \boldsymbol{\hat{f}}_{k} - \boldsymbol{\mu}_{m}^{(t)} \|^{2} \;\; \le \;\; \| \boldsymbol{\hat{f}}_{p} - \boldsymbol{\mu}_{j}^{(t)} \|^{2} \;\;\;\;\;\;\; \forall j, \; 1 \; \le j \le M \rbrace
+\end{equation}
+  
+\begin{equation}
+\label{eqn:chap10-kmeans-update}
+\boldsymbol{\mu}_{m}^{(t+1)} = \frac{1}{|\mathbb{S}_{m}^{(t)}|} \displaystyle\sum\limits_{\boldsymbol{\hat{f}}_{k} \in \mathbb{S}_{m}^{(t)}} \boldsymbol{\hat{f}}_{k}
+\end{equation}
+
+\begin{equation}
+\label{eqn:chap10-kmeans-residuals}
+res = \max \|\boldsymbol{\mu}_{m}^{(t+1)} - \boldsymbol{\mu}_{m}^{(t)}\|^{2}
+\end{equation}
+
+\begin{algorithm}[h]
+\caption{$k$-Means Clustering Algorithm}
+\label{alg:chap10-kmeans}
+\begin{algorithmic}[1]
+  \State Initialize $M$ centroids $\lbrace \boldsymbol{\mu}_{1}, \boldsymbol{\mu}_{2}, \dots, \boldsymbol{\mu}_{M} \rbrace$
+  \While{centroid residual is not converged}
+    \State Assign each sample $\boldsymbol{\hat{f}}_{k}$ to nearest centroid $\boldsymbol{\mu}_{m}$ \Comment{Eqn.~\ref{eqn:chap10-kmeans-assign}}
+    \State Update centroids to mean of samples assigned to each centroid \Comment{Eqn.~\ref{eqn:chap10-kmeans-update}}
+    \State Compute centroid residuals \Comment{Eqn.~\ref{eqn:chap10-kmeans-residuals}}
+  \EndWhile
+%  \State Compute final inertia of cluster centroids \Comment{Eqn.~\ref{eqn:chap10-kmeans-inertia}}
+\end{algorithmic}
+\end{algorithm}
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Hierarchical Clustering}
 \label{subsubsec:chap10-agglomerative}
 
--introduce scheme
--algorithmic
--initialization
--model selection
+first paragraph: intro
+-introduce scheme~\cite{johnson1967hierarchical}
+-greedy algorithm - merges and splits greedily at each step
+-minimize linkage criterion at each step
+-build clusters through recursive splitting or merging
+  -agglomerative clustering in \texttt{scikit-learn} uses a bottom-up approach
+-clusters are built as a dendogram
+
+second paragraph: algorithm
+-Alg.~\ref{alg:chap10-agglomerative}
+-affinity/distance:
+  -euclidean distance $\ell_{2}$ (used in this thesis)
+  -manhattan distance $\ell_{1}$
+linkage criteria: various cluster ``dissimiliarity'' metrics that are minimized *at each step*
+  -Complete: minimize max distance between pairs of points within two clusters to be merged
+  -Average: minimize avg. of dist. between pairs of points within two clusters to be merged
+ -Ward: minimize sum of squared differences between points in two clusters to be merged~\cite{ward1963hierarchical}
+  -variance minimization, similar to $k$-Means
+  -used by this thesis
+
+\begin{equation}
+\label{eqn:chap10-agglomerative-mean}
+\boldsymbol{\mu}_{a+b} = \frac{1}{|\mathbb{S}_{a+b}|} \displaystyle\sum\limits_{\boldsymbol{\hat{f}}_{k} \in \mathbb{S}_{a+b}}  \boldsymbol{\hat{f}}_{k}
+\end{equation}
+
+\begin{equation}
+\label{eqn:chap10-agglomerative-ward}
+d_{a,b} = d\left(\mathbb{S}_{a}, \mathbb{S}_{b}\right) = \displaystyle\sum\limits_{\boldsymbol{\hat{f}}_{k} \in \mathbb{S}_{a+b}} \|\boldsymbol{\hat{f}}_{k} - \boldsymbol{\mu}_{a+b}\|^{2}
+\end{equation}
+
+third paragraph: implementation
+-\texttt{AgglomerativeClustering} of \texttt{sklearn.cluster} module
+
+fourth paragraph: assumptions and guarantees
+-choice of linkage criterion impacts shape of clusters
+-connectivity constraints
+  -forbid merging clusters which are not adjacent, and impose some local structure
+  -could use $k$-nearest neighbors graph to ensure that only clusters with MGXS adjacent to one another are merged
+-must specify number of clusters
+  -requires model selection
+-computational complexity is $\mathcal{O}(n^{2}\log(n))$ -- too slow for large datasets
+-``rich get richer'' behavior with uneven cluster sizes
+  -though depends on linkage criteria
+-no assumptions about shape or size of clusters
+
+%\begin{equation}
+%\label{eqn:chap10-agglomerative-ward}
+%d_{a,b} = d\left(\boldsymbol{\hat{f}}_{a}, \boldsymbol{\hat{f}}_{b}\right) = \|\boldsymbol{\hat{f}}_{a} - \boldsymbol{\hat{f}}_{b}\|^{2}
+%\end{equation}
+
+\begin{algorithm}[h]
+\caption{Agglomerative Clustering Algorithm}
+\label{alg:chap10-agglomerative}
+\begin{algorithmic}[1]
+  \State Initialize collection $\mathbb{C}$ of $K$ singleton clusters: $\mathbb{S}_{k} = \lbrace \boldsymbol{\hat{f}}_{k} \rbrace$
+  \While{There are too many clusters: $|\mathbb{C}| > M$}
+    \State Compute pairwise distances between clusters \Comment{Eqn.~\ref{eqn:chap10-agglomerative-ward}}
+    \State Find pair of clusters $\mathbb{S}_{a}$ and $\mathbb{S}_{b}$ that are closest %$\operatornamewithlimits{argmin}\limits_{k_{1},k_{2}} d_{k_{1}k_{2}}$
+    \State Merge clusters $\mathbb{S}_{a}$ and $\mathbb{S}_{b}$ into new cluster $\mathbb{S}_{a+b}$
+    \State Remove $\mathbb{S}_{a}$ and $\mathbb{S}_{b}$ from $\mathbb{C}$
+    \State Add $\mathbb{S}_{a+b}$ to $\mathbb{C}$
+  \EndWhile
+\end{algorithmic}
+\end{algorithm}
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Birch}
