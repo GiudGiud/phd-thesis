@@ -744,7 +744,7 @@ It is important to note that the methods and metrics highlighted here should be 
 \subsection{Litmus Tests}
 \label{subsec:chap10-litmus}
 
-\textit{Litmus tests} are filter methods specifically designed to select data for particular nuclides and reaction types for clustering. The litmus tests presented here are used to downselect the \ac{MGXS} mean and standard deviation features by predicting which nuclides and reaction types are most likely to exhibit clustering effects. The litmus tests are independently applied to each nuclide / energy group / reaction type trio. Sec.~\ref{subsubsec:chap10-litmus-tot-frac} introduces total fraction thresholding to select a nuclide for a given energy group, while Sec.~\ref{subsubsec:chap10-litmus-nuc-frac} introduces nuclide fraction thresholding to select a reaction type for a given nuclide and energy group. Sec.~\ref{subsubsec:chap10-litmus-nuc-frac} discusses how normality tests can be used to reject features which may have been drawn from a normal distribution.
+\textit{Litmus tests} are filter methods specifically designed to select data for particular nuclides and reaction types for clustering. The litmus tests presented here are used to downselect the \ac{MGXS} mean and standard deviation features by predicting which nuclides and reaction types are most likely to exhibit clustering effects. The litmus tests are independently applied to each nuclide / energy group / reaction type grouping. Sec.~\ref{subsubsec:chap10-litmus-tot-frac} introduces total fraction thresholding to select a nuclide for a given energy group, while Sec.~\ref{subsubsec:chap10-litmus-nuc-frac} introduces nuclide fraction thresholding to select a reaction type for a given nuclide and energy group. Sec.~\ref{subsubsec:chap10-litmus-nuc-frac} discusses how normality tests can be used to reject features which may have been drawn from a normal distribution.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Total Fraction Thresholding}
@@ -795,27 +795,23 @@ Variance thresholding presents an opportunity for a user to guide the \textit{i}
 
 The typical statistical tests used for univariate feature selection quantify a mapping between the features and some target variable(s). The \textit{i}\ac{MGXS} implementation in this thesis uses the \ac{MGXS} means $\hat{\sigma}_{x,i,k,g}$ as the target variables and builds a sequence of linear regression models based on the non-\ac{MGXS} features (\textit{e.g.}, fractional reactivities, spectral indices, etc.). Each linear regressor is scored with a $p$-value from an $F$-test which assesses the strength of the linear dependence between the non-\ac{MGXS} feature and \ac{MGXS} target variable(s). An alternative but equally valid approach would use the mutal information between the non-\ac{MGXS} features and \ac{MGXS} target variable(s) to individually score each feature. 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Select-from-Model}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Select-from-Model Feature Importance Ranking}
 \label{subsec:chap10-select-from-model}
 
-The \textit{select-from-model} approach is a a wrapper method for feature selection. This thesis uses the \texttt{SelectFromModel} class from the \texttt{sklearn.feature_selection} module to administer select-from-model feature selection. This approach uses a \textit{meta-transformer} to select features based on their importance weights. Similar to univariate feature selection, the meta-transformer defines a mapping between the features and some target variable(s). The \textit{i}\ac{MGXS} implementation in this thesis uses the \ac{MGXS} means $\hat{\sigma}_{x,i,k,g}$ as the target variables, and trains multi-dimensional piece-wise constant regression models from the non-\ac{MGXS} features (\textit{e.g.}, fractional reactivities, spectral indices, etc.). For example, the \texttt{DecisionTreeRegressor} from the \texttt{sklearn.tree} module may be used to train a decision tree~\cite{breiman1984tree} and the best features selected by identifying the decision tree nodes which provide the greatest reduction in variance of the target variables. Alternatively, the \texttt{RandomForestRegressor} from \texttt{sklearn.ensemble} module may be used to train a random forest~\cite{ho1998forest} of multiple decision tree regressors on subsets of the dataset. The random forest regressor may better control over-fitting than a simple decision tree, and improve the generalization of the select-from-model feature selection method.
+The \textit{select-from-model} approach is a a wrapper method for feature selection. This thesis uses the \texttt{SelectFromModel} class from the \texttt{sklearn.feature_selection} module to administer select-from-model feature selection. This approach uses a \textit{meta-transformer} to select features based on a ranking of their importance weights. Similar to univariate feature selection, the meta-transformer defines a mapping between the features and some target variable(s). The \textit{i}\ac{MGXS} implementation in this thesis uses the \ac{MGXS} means $\hat{\sigma}_{x,i,k,g}$ as the target variables, and trains multi-dimensional piece-wise constant regression models from the non-\ac{MGXS} features (\textit{e.g.}, fractional reactivities, spectral indices, etc.). For example, the \texttt{DecisionTreeRegressor} from the \texttt{sklearn.tree} module may be used to train a decision tree~\cite{breiman1984tree} and the best features selected by identifying the decision tree nodes which provide the greatest reduction in variance of the target variables. Alternatively, the \texttt{RandomForestRegressor} from \texttt{sklearn.ensemble} module may be used to train a random forest~\cite{ho1998forest} of multiple decision tree regressors on subsets of the dataset. The random forest regressor may better control over-fitting than a simple decision tree, and improve the generalization of the select-from-model feature selection method.
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Domain Knowledge}
-\label{subsec:chap10-domain-knowledge}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Pinch Feature Selection}
+\label{subsec:chap10-pinch-selection}
 
-first paragraph: pinch clustering
--user selects a nuclide/reaction/energy/group trio(s)
-  -instead, user will indicate wish to cluster individual MGXS like U-238 capture  
--use domain knowledge about which \ac{MGXS} are most sensitive to spatial self-shielding
-  -MAY also reflect domain knowledge about which \ac{MGXS} are most important to cluster to best prediction reaction rates (e.g., U-238 capture)
-  -and/or the \ac{MGXS} which are best *predictors* of the clustering of those \ac{MGXS} which are most important to cluster
--in this thesis just includes a single nuclide, reaction and energy group
-  -e.g., U-238 capture in group 1/2
--could foreseeably mean multiple specific nuclides, reactions and energy groups
+Each of the preceding feature selection techniques automatically selects or rejects features based on some test criterion. An obvious alternative is to base feature selection entirely on user domain knowledge. The \textit{i}\ac{MGXS} implementation in this thesis allows users to employ \textit{pinch feature selection} to specify a single nuclide / energy group / reaction type grouping from which to derive features. For example, the case studies in the following chapter employ the pinch method to select only those features derived from U-238 capture \ac{MGXS} in group 1 of 2. This is based on the knowledge acquired from Chaps.~\ref{chap:quantify} and~\ref{chap:spatial} that a detailed model of \ac{MGXS} clustering is necessary for accurate predictions of pin-wise U-238 capture reaction rates. Alternatively, a user may specify a nuclide / energy group / reaction type grouping which indicates the clustering of other \ac{MGXS} which may be more important to cluster for accurate reaction rate predictions. For example, clustering of U-235 fission \ac{MGXS} may be a good (\textit{e.g.}, low uncertainty) signal of U-238 capture \ac{MGXS} clustering, even if pin-wise fission rates are less sensitive to \ac{MGXS} clustering than U-238 capture rates.
 
-SUMMARY BOXES!!!
+%-could foreseeably mean multiple specific nuclides, reactions and energy groups
+
+\begin{emphbox}
+\textbf{Feature selection is used to reduce the feature space to minimize clustering model complexity. \textit{i}\ac{MGXS} uses custom \textit{litmus tests} to select the most promising candidate nuclides and reaction types, as well as generic techniques such as variance thresholding and select-from-model feature importance ranking.}
+\end{emphbox}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -893,19 +889,11 @@ first paragraph: what is goal???
 -algorithmic
 -initialization
 -model selection
+-locally optimal
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Hierarchical Clustering}
 \label{subsubsec:chap10-agglomerative}
-
--introduce scheme
--algorithmic
--initialization
--model selection
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsubsection{DBSCAN}
-\label{subsubsec:chap10-dbscan}
 
 -introduce scheme
 -algorithmic
