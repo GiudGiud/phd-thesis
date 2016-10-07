@@ -759,7 +759,7 @@ The \textit{total fraction} $\hat{\omega}_{x,i,k,g}$ is defined as the ratio of 
 \hat{\omega}_{x,i,k,g} = \frac{\hat{\Sigma}_{x,i,k,g}}{\displaystyle\sum\limits_{i=1}^{I}\hat{\Sigma}_{t,i,k,g}}
 \end{equation}
 
-The \textit{i}\ac{MGXS} implementation in this thesis simply chooses \ac{MGXS}-based features for nuclide $i$ if the mean $\overline{\hat{\omega}}_{x,i,g}$ across fuel pins is greater than some user-defined threshold. This litmus test assumes that nuclide(s) which contribute little to the total \ac{MGXS} are likely not important to cluster. This assumption may not always be valid if some small \ac{MGXS} disproportionately reflect spatial self-shielding effects. For example, if the flux is appreciably depressed in narrow resonance groups for nuclides and reaction types which are especially sensitive to spatial self-shielding (\textit{e.g.}, U-238 capture), then the \ac{MGXS} may likewise be depressed such that the total fraction drops below the threshold and the feature(s) are neglected. The case studies explored in the following chapter use a relatively conservative value of 0.1 for the threshold such that \ac{MGXS}-based features for trace nuclides (\textit{e.g.}, O-17, U-234) are neglected and the \ac{MGXS} for U-235 and U-238 are always selected.
+The \textit{i}\ac{MGXS} implementation in this thesis simply chooses \ac{MGXS}-based features for nuclide $i$ if the mean $\overline{\hat{\omega}}_{x,i,g}$ across fuel pins is greater than some user-defined threshold. This litmus test assumes that nuclide(s) which contribute little to the total \ac{MGXS} are not important to cluster. This assumption may not always be valid if some small \ac{MGXS} disproportionately reflect spatial self-shielding effects. For example, if the flux is appreciably depressed in narrow resonance groups for nuclides and reaction types which are especially sensitive to spatial self-shielding (\textit{e.g.}, U-238 capture), then the \ac{MGXS} may likewise be depressed such that the total fraction drops below the threshold and the feature(s) are neglected. The case studies explored in the following chapter use a relatively conservative value of 0.1 for the threshold such that \ac{MGXS}-based features for trace nuclides (\textit{e.g.}, O-17, U-234) are neglected while those for U-235 and U-238 are always selected.
 
 %This is unlikely, however, since spatial self-shielding effects are only manifested as clusters in pin-wise \ac{MGXS} if the continuous energy data varies over a relatively large range for a given energy group. A widely varying cross section, such as those in the resonance regime, will most likely result in a relatively large microscopic \ac{MGXS} and total fraction for the nuclide.
 
@@ -767,28 +767,17 @@ The \textit{i}\ac{MGXS} implementation in this thesis simply chooses \ac{MGXS}-b
 \subsubsection{Nuclide Fraction Thresholding}
 \label{subsubsec:chap10-litmus-nuc-frac}
 
-first paragraph:
--filter method!!!
--used to choose reaction type: threshold on $\tau_{x,i,k,g}$
--motivate as automated selection of nuclide/reaction/energy group trios if *not* using pinch clustering
--only choose reactions which contribute at least some amount towards the total cross section
-  -assumes that reaction(s) with little contribution are not important to cluster anyway
-  -but may mistakenly make approx that MGXS with small magnitudes don't disproportionately reflect self-shielding effects
-    -but this is a good assumption since larger MGXS will have smaller uncertainties anyway
+\textit{Nuclide fraction thresholding} is a filter method used to select \ac{MGXS}-based features for one or more reaction types for a particular nuclide $i$ and energy group  $g$ pairing. The nuclide fraction $\hat{\tau}_{x,i,k,g}$ (Eqn.~\ref{eqn:chap10-nuclide-frac}) gives an indication of how much a particular reaction contributes to a nuclide's total \ac{MGXS}. This litmus test is employed in a similar fashion to total fraction thresholding. In particular, the \textit{i}\ac{MGXS} implementation in this thesis simply chooses \ac{MGXS}-based features for nuclide $i$ and reaction $x$ if the mean $\overline{\hat{\tau}}_{x,i,g}$ across fuel pins is greater than some user-defined threshold.
 
-%-threshold on the population variance divide by the population mean
+The nuclide fraction thresholding litmus test assumes that reaction(s) which contribute little to a nuclide's total \ac{MGXS} are not important to cluster. As was noted for total fraction thresholding, this assumption may not always be valid if some small \ac{MGXS} disproportionately reflect spatial self-shielding effects. For example, if the flux is appreciably depressed in narrow resonance groups for nuclides and reaction types which are especially sensitive to spatial self-shielding (\textit{e.g.}, U-238 capture), then the \ac{MGXS} may likewise be depressed such that the total fraction drops below the threshold and the feature(s) are neglected. The case studies explored in the following chapter use a relatively conservative value of 0.3 for the threshold such that \ac{MGXS}-based features for U-235 fission and U-238 capture are always selected for thermal energy groups.
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Normality Tests}
 \label{subsubsec:chap10-litmus-normality}
 
-first paragraph: 
--used to choose 
--since all feature are tallied, makes assumption that population of feature realizations come from a normal distribution iff they do not reflect spatial self-shielding effects
--used to determine whether to cluster MGXS for a particular nuclide, group, rxn type
--look at $p$-value for Shapiro-Wilks tests of normality
--don't cluster data that may have come from a normal distribution!
--if the $p$-value is below a threshold, then data may be rejected as non-normal and may be good candidate for clustering
+\textit{Normality tests} select features which fail to satisfy the null hypothesis that the data is drawn from a normal distribution. Normality tests are a filter method for feature selection motivated by the thought experiment posed in Chap.~\ref{chap:spatial} and investigated in Sec.~\ref{subsec:chap9-qq-plots} with \ac{Q-Q} plots. This litmus test assumes that the realizations of a given feature are normally distributed if they do not reflect spatial self-shielding effects. If this assumption is valid, then those features which pass a normality test do not provide any useful information about \ac{MGXS} clustering and can be neglected.
+
+The \textit{i}\ac{MGXS} implementation in this thesis uses the Shapiro-Wilk test of normality~\cite{shapiro1965analysis} computed using the Python \texttt{scipy.stats} package~\cite{jones2011scipy}. The Shapiro-Wilk test is applied to all samples for a given feature to compute a $p$-value to quantify the null hypothesis that the population came from a normal distribution. A user-defined significance level $\alpha$ is chosen (\textit{e.g.}, 0.001) and compared with the Shapiro-Wilk $p$-value. If $p > \alpha$ then the null hypothesis that the feature is normally distributed is accepted and the feature is dropped from the dataset. Alternatively, if $p < \alpha$, then the null hypothesis is rejected and the feature is selected as a potentially good candidate to indicate \ac{MGXS} clustering.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Variance Thresholding}
