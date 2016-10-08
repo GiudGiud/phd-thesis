@@ -29,9 +29,62 @@
 
 \begin{table}[ht!]
   \centering
-  \caption[OpenMOC eigenvalue bias with \textit{i}MGXS spatial homogenization]{OpenMOC eigenvalue bias $\Delta\rho$ for \textit{i}MGXS spatial homogenization with various clustering algorithms.}
+  \caption[OpenMOC eigenvalue bias for null feature selection]{OpenMOC eigenvalue bias $\Delta\rho$ for null feature selection for \textit{i}\ac{MGXS} spatial homogenization with varying clustering algorithms.}
   \small
-  \label{table:chap11-eigenvalues}
+  \label{table:chap11-eigenvalues-combined}
+  \vspace{6pt}
+  \begin{tabular}{l l R{1.5cm} R{1.5cm} R{1.5cm} R{1.5cm} R{1.5cm}}
+  \toprule
+  \rowcolor{lightgray}
+  & \multicolumn{1}{c}{\cellcolor{lightgray} \bf Clustering} & \multicolumn{5}{S[table-format=6.1]}{\cellcolor{lightgray} \textbf{\# Clusters}} \\
+  \multirow{-2}{*}{\cellcolor{lightgray} \bf Benchmark} &
+  \multicolumn{1}{c}{\cellcolor{lightgray} \bf Algorithm} &
+  \multicolumn{1}{c}{\cellcolor{lightgray} \bf 2} &
+  \multicolumn{1}{c}{\cellcolor{lightgray} \bf 4} &
+  \multicolumn{1}{c}{\cellcolor{lightgray} \bf 6} &
+  \multicolumn{1}{c}{\cellcolor{lightgray} \bf 8} &
+  \multicolumn{1}{c}{\cellcolor{lightgray} \bf 10} \\
+  \midrule
+\multirow{4}{*}{\parbox{2.5cm}{1.6\% Assm}} & $k$-Means & & & & & \\
+& Agglomerative & & & & & \\
+& BIRCH & & & & & \\
+& GMM & & & & & \\
+  \midrule
+\multirow{4}{*}{\parbox{2.5cm}{3.1\% Assm}} & $k$-Means & & & & & \\
+& Agglomerative & & & & & \\
+& BIRCH & & & & & \\
+& GMM & & & & & \\
+  \midrule
+\multirow{4}{*}{\parbox{2.5cm}{3.1\% Assm w/ 20 BPs}} & $k$-Means & & & & & \\
+& Agglomerative & & & & & \\
+& BIRCH & & & & & \\
+& GMM & & & & & \\
+  \midrule
+\multirow{4}{*}{\parbox{2.5cm}{2$\times$2 Colorset}} & $k$-Means & & & & & \\
+& Agglomerative & & & & & \\
+& BIRCH & & & & & \\
+& GMM & & & & & \\
+  \midrule
+\multirow{4}{*}{\parbox{2.5cm}{2$\times$2 Colorset w/ Reflector}} & $k$-Means & & & & & \\
+& Agglomerative & & & & & \\
+& BIRCH & & & & & \\
+& GMM & & & & & \\
+  \midrule
+\multirow{4}{*}{\parbox{2.5cm}{BEAVRS Full Core}} & $k$-Means & & & & & \\
+& Agglomerative & & & & & \\
+& BIRCH & & & & & \\
+& GMM & & & & & \\
+  \bottomrule
+\end{tabular}
+\end{table}
+
+\clearpage
+
+\begin{table}[ht!]
+  \centering
+  \caption[OpenMOC eigenvalue bias for pinch feature selection]{OpenMOC eigenvalue bias $\Delta\rho$ for pinch feature selection for \textit{i}\ac{MGXS} spatial homogenization with varying clustering algorithms.}
+  \small
+  \label{table:chap11-eigenvalues-pinch}
   \vspace{6pt}
   \begin{tabular}{l l R{1.5cm} R{1.5cm} R{1.5cm} R{1.5cm} R{1.5cm}}
   \toprule
@@ -90,12 +143,13 @@
 \end{itemize}
 
 -put tables for PCA and ensemble transforms in appendix
+-need tables for both combined and pinch feature selection
 
 \begin{table}[ht!]
   \centering
-  \caption[Mean OpenMOC U-238 capture rate errors]{Mean absolute U-238 capture rate percent relative errors for \textit{i}MGXS spatial homogenization.}
+  \caption[Mean OpenMOC U-238 capture rate errors for null feature selection]{Mean absolute U-238 capture rate percent relative errors for null feature selection for \textit{i}\ac{MGXS} spatial homogenization with varying clustering algorithms.}
   \small
-  \label{table:chap11-max-capt-rates}
+  \label{table:chap11-max-capt-rates-null}
   \vspace{6pt}
   \begin{tabular}{l l R{1.5cm} R{1.5cm} R{1.5cm} R{1.5cm} R{1.5cm}}
   \toprule
@@ -142,11 +196,119 @@
 \end{tabular}
 \end{table}
 
+\clearpage
+
 \begin{table}[ht!]
   \centering
-  \caption[Maximum OpenMOC U-238 capture rate errors]{Maximum absolute U-238 capture rate percent relative errors for \textit{i}MGXS spatial homogenization.}
+  \caption[Maximum OpenMOC U-238 capture rate errors for null feature selection]{Maximum absolute U-238 capture rate percent relative errors for null feature selection for \textit{i}\ac{MGXS} spatial homogenization with varying clustering algorithms.}
   \small
-  \label{table:chap11-mean-capt-rates}
+  \label{table:chap11-mean-capt-rates-null}
+  \vspace{6pt}
+  \begin{tabular}{l l R{1.5cm} R{1.5cm} R{1.5cm} R{1.5cm} R{1.5cm}}
+  \toprule
+  \rowcolor{lightgray}
+  & & \multicolumn{5}{S[table-format=6.1]}{\cellcolor{lightgray} \textbf{\# Clusters}} \\
+  \multirow{-2}{*}{\cellcolor{lightgray} \bf Benchmark} &
+  \multirow{-2}{*}{\cellcolor{lightgray} \bf Predictor} &
+  \multicolumn{1}{c}{\cellcolor{lightgray} \bf 2} &
+  \multicolumn{1}{c}{\cellcolor{lightgray} \bf 4} &
+  \multicolumn{1}{c}{\cellcolor{lightgray} \bf 6} &
+  \multicolumn{1}{c}{\cellcolor{lightgray} \bf 8} &
+  \multicolumn{1}{c}{\cellcolor{lightgray} \bf 10} \\
+  \midrule
+\multirow{4}{*}{\parbox{2.5cm}{1.6\% Assm}} & $k$-Means & & & & & \\
+& Agglomerative & & & & & \\
+& BIRCH & & & & & \\
+& GMM & & & & & \\
+  \midrule
+\multirow{4}{*}{\parbox{2.5cm}{3.1\% Assm}} & $k$-Means & & & & & \\
+& Agglomerative & & & & & \\
+& BIRCH & & & & & \\
+& GMM & & & & & \\
+  \midrule
+\multirow{4}{*}{\parbox{2.5cm}{3.1\% Assm w/ 20 BPs}} & $k$-Means & & & & & \\
+& Agglomerative & & & & & \\
+& BIRCH & & & & & \\
+& GMM & & & & & \\
+  \midrule
+\multirow{4}{*}{\parbox{2.5cm}{2$\times$2 Colorset}} & $k$-Means & & & & & \\
+& Agglomerative & & & & & \\
+& BIRCH & & & & & \\
+& GMM & & & & & \\
+  \midrule
+\multirow{4}{*}{\parbox{2.5cm}{2$\times$2 Colorset w/ Reflector}} & $k$-Means & & & & & \\
+& Agglomerative & & & & & \\
+& BIRCH & & & & & \\
+& GMM & & & & & \\
+  \midrule
+\multirow{4}{*}{\parbox{2.5cm}{BEAVRS Full Core}} & $k$-Means & & & & & \\
+& Agglomerative & & & & & \\
+& BIRCH & & & & & \\
+& GMM & & & & & \\
+  \bottomrule
+\end{tabular}
+\end{table}
+
+\clearpage
+
+\begin{table}[ht!]
+  \centering
+  \caption[Mean OpenMOC U-238 capture rate errors for pinch feature selection]{Mean absolute U-238 capture rate percent relative errors for pinch feature selection for \textit{i}\ac{MGXS} spatial homogenization with varying clustering algorithms.}
+  \small
+  \label{table:chap11-max-capt-rates-pinch}
+  \vspace{6pt}
+  \begin{tabular}{l l R{1.5cm} R{1.5cm} R{1.5cm} R{1.5cm} R{1.5cm}}
+  \toprule
+  \rowcolor{lightgray}
+  & & \multicolumn{5}{S[table-format=6.1]}{\cellcolor{lightgray} \textbf{\# Clusters}} \\
+  \multirow{-2}{*}{\cellcolor{lightgray} \bf Benchmark} &
+  \multirow{-2}{*}{\cellcolor{lightgray} \bf Predictor} &
+  \multicolumn{1}{c}{\cellcolor{lightgray} \bf 2} &
+  \multicolumn{1}{c}{\cellcolor{lightgray} \bf 4} &
+  \multicolumn{1}{c}{\cellcolor{lightgray} \bf 6} &
+  \multicolumn{1}{c}{\cellcolor{lightgray} \bf 8} &
+  \multicolumn{1}{c}{\cellcolor{lightgray} \bf 10} \\
+  \midrule
+\multirow{4}{*}{\parbox{2.5cm}{1.6\% Assm}} & $k$-Means & & & & & \\
+& Agglomerative & & & & & \\
+& BIRCH & & & & & \\
+& GMM & & & & & \\
+  \midrule
+\multirow{4}{*}{\parbox{2.5cm}{3.1\% Assm}} & $k$-Means & & & & & \\
+& Agglomerative & & & & & \\
+& BIRCH & & & & & \\
+& GMM & & & & & \\
+  \midrule
+\multirow{4}{*}{\parbox{2.5cm}{3.1\% Assm w/ 20 BPs}} & $k$-Means & & & & & \\
+& Agglomerative & & & & & \\
+& BIRCH & & & & & \\
+& GMM & & & & & \\
+  \midrule
+\multirow{4}{*}{\parbox{2.5cm}{2$\times$2 Colorset}} & $k$-Means & & & & & \\
+& Agglomerative & & & & & \\
+& BIRCH & & & & & \\
+& GMM & & & & & \\
+  \midrule
+\multirow{4}{*}{\parbox{2.5cm}{2$\times$2 Colorset w/ Reflector}} & $k$-Means & & & & & \\
+& Agglomerative & & & & & \\
+& BIRCH & & & & & \\
+& GMM & & & & & \\
+  \midrule
+\multirow{4}{*}{\parbox{2.5cm}{BEAVRS Full Core}} & $k$-Means & & & & & \\
+& Agglomerative & & & & & \\
+& BIRCH & & & & & \\
+& GMM & & & & & \\
+  \bottomrule
+\end{tabular}
+\end{table}
+
+\clearpage
+
+\begin{table}[ht!]
+  \centering
+  \caption[Maximum OpenMOC U-238 capture rate errors for pinch feature selection]{Maximum absolute U-238 capture rate percent relative errors for pinch feature selection for \textit{i}\ac{MGXS} spatial homogenization with varying clustering algorithms.}
+  \small
+  \label{table:chap11-mean-capt-rates-pinch}
   \vspace{6pt}
   \begin{tabular}{l l R{1.5cm} R{1.5cm} R{1.5cm} R{1.5cm} R{1.5cm}}
   \toprule

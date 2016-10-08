@@ -1058,48 +1058,39 @@ fourth paragraph: assumptions and guarantees
 
 first paragraph: intro
 -introduce scheme~\cite{zhang1996birch}
+-a hierarchical clustering algorithm
 -Balanced Iterative Reducing and Clustering Using Hierarchies (BIRCH)
+-designed as an out-of-core clustering algorithm for very large datasets (in number of samples)
+-considered a data reduction method: reduces dataset to subclusters, which are then clustered!
+-does not require inspecting all data points equally for each ``clustering decision'' as does $k$-Means or agglomerative clustering
+  -``local'' use CF of subclusters to make ``clustering decisions''
+
+second paragraph: algorithm
+-Alg.~\ref{alg:chap10-birch}
 -builds a Characteristic Feature Tree (CFT)
   -height-balanced tree governed by a branching factor $B$ and threshold $T$
   -each non-leaf node contains a CF and a pointer to a child node
   -each leaf node contains a CF
   -all entries in a leaf node must have a radius less than the threshold
 -Characteristic Features (CF)
-
--a hierarchical clustering algorithm
--designed as an out-of-core clustering algorithm for very large datasets (in number of samples)
--does not require inspecting all data points equally for each ``clustering decision'' as does $k$-Means or agglomerative clustering
-  -``local'' use CF of subclusters to make ``clustering decisions''
-
--predicate on assumption that feature space is not uniformly occupied
-  -e.g., not every data point is equally important
--use existing clustering algorithm to cluster leaf nodes
-  -\texttt{scikit-learn} uses \texttt{AgglomerativeClustering}
-
+-two parameters:
+  -threshold $T$: limits distance between entering sample and existing subclusters
+  -branching factor $B$: limits number of subclusters in a node
+-CF additivity theorem~\cite{zhang1996birch} allows two clusters to merged without loss of information
 -CF subcluster nodes (terminal and non-terminal)
   -hold information necessary to represent each subcluster without needing to explicitly store each of the data points assigned to the subcluster
     -number of samples, linear sum, squared sum
 
--two parameters:
-  -threshold $T$: limits distance between entering sample and existing subclusters
-  -branching factor $B$: limits number of subclusters in a node
-
--considered a data reduction method: reduces dataset to subclusters, which are then clustered!
-
-
-second paragraph: algorithm
--Alg.~\ref{alg:chap10-birch}
-
 third paragraph: implementation
 -\texttt{Birch} of \texttt{sklearn.cluster} module
+-use existing clustering algorithm to cluster leaf nodes
+  -\texttt{scikit-learn} uses \texttt{AgglomerativeClustering}
 
 fourth paragraph: assumptions and guarantees
-
-%-algorithm has four stages
+-predicate on assumption that feature space is not uniformly occupied
+  -e.g., not every data point is equally important
 
 -cluster centroids $\boldsymbol{\mu}_{\mathbb{N}_{a}}$ computed per Eqn.~\ref{eqn:chap10-kmeans-update}
-
--CF additivity theorem~\cite{zhang1996birch} allows two clusters to merged without loss of information
 
 \begin{equation}
 \label{eqn:chap10-birch-radius}
@@ -1115,7 +1106,6 @@ LS_{a} = \displaystyle\sum\limits_{\boldsymbol{\hat{f}}_{k} \in \mathbb{N}_{a}} 
 \label{eqn:chap10-birch-square-sum}
 SS_{a} = \displaystyle\sum\limits_{\boldsymbol{\hat{f}}_{k} \in \mathbb{N}_{a}} \boldsymbol{\hat{f}}_{k}^{2}
 \end{equation}
-
 
 \begin{equation}
 \label{eqn:chap10-birch-cf}
@@ -1137,11 +1127,7 @@ CF_{a+b} = CF_{a} + CF_{b} = \left[|\mathbb{N}_{a}| + |\mathbb{N}_{b}|, LS_{a} +
     \While{$\mathbb{N}$ is not a leaf node} 
       \State Compute radii for each subcluster if merged with sample \Comment{Eqn.~\ref{eqn:chap10-birch-radius}}
       \State Find subcluster $\mathbb{N}_{a}$ with smallest post-merged radius $R_{a+k}$
-%      \State Add sample to subcluster with smallest post-merged radius
-%      \State Update CF properties for the merged subcluster \Comment{Eqn.~\ref{eqn:chap10-birch-cf-additivity}}
 	  \State Assign $\mathbb{N} \leftarrow \mathbb{N}_{a}$
-%      \State Assign merged subcluster to $\mathbb{N}$
-%      \State Merge sample with nearest subcluster
     \EndWhile
     \State Add sample to $\mathbb{N}$ and update $CF_{\mathbb{N}}$ \Comment{Eqn.~\ref{eqn:chap10-birch-cf-additivity}}
     \While{$\mathbb{N} \ne \mathbb{N}_{r}$ } 
@@ -1149,7 +1135,6 @@ CF_{a+b} = CF_{a} + CF_{b} = \left[|\mathbb{N}_{a}| + |\mathbb{N}_{b}|, LS_{a} +
         \If{$|\mathbb{N}| > B$}
           \State Split subclusters in $\mathbb{N}$ into $\mathbb{N}_{a}$ and $\mathbb{N}_{b}$
         \EndIf
-%        \State Split samples in merged subcluster into two subclusters
         \State Assign parent subcluster $\mathbb{N}_{p}$ with sample $k$ to $\mathbb{N}$: $\mathbb{N} \leftarrow \mathbb{N}_{p}$
       \EndIf
    \EndWhile
@@ -1158,28 +1143,167 @@ CF_{a+b} = CF_{a} + CF_{b} = \left[|\mathbb{N}_{a}| + |\mathbb{N}_{b}|, LS_{a} +
 \end{algorithmic}
 \end{algorithm}
 
+%http://slideplayer.com/slide/4942836/
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Gaussian Mixture Models}
 \label{subsubsec:chap10-gmms}
 
--introduce scheme
--algorithmic
--initialization
+first paragraph: intro
+-introduce scheme~\cite{mclachlan1988mixture}
+
+
+-a probabilistic or generative model
+  -hierarchical
+  -observations are random variables distributed according to mixture of component distributions
+  -each component comes from the same family of probability distributions (e.g., gaussians)
+  -assumes latent variables for each observation indicating identify of component distribution from which it was drawn
+  -parameters: number of components, mixture weights, component-wise params ($\mu$ and $\sigma$)
+  
+-assumes data points are generated from a mixture of a finite number of gaussian distributions
+-parameters for each gaussian (e.g., $\mu$ and $\sigma$) are unknown and must be inferred from data
+-like generalizing $k$-Means to include data about covariance between features
+-fits the data to define best $\mu$ and $\sigma$ for each cluster
+-labels each data point to the most likely cluster
+-but gives posterior probabilities to each cluster for each data point
+  -nice since this may give some indication about the confidence of the clustering predictions
+-requires model selection criterion to determine appropriate number of clusters
+
+
+\begin{figure}
+\centering
+\begin{tikzpicture}
+  \tikzstyle{main}=[circle, minimum size = 10mm, thick, draw =black!80, node distance = 16mm]
+  \tikzstyle{hyparam}=[rectangle, minimum size = 5mm, thick, draw =black!80, fill = black!10, node distance = 16mm]
+  \tikzstyle{param}=[rectangle, minimum size = 5mm, thick, draw =black!80, node distance = 16mm] 
+  \tikzstyle{connect}=[-latex, thick]
+  \tikzstyle{selector}=[-latex, -|, snake=snake,segment amplitude=.4mm,segment length=2mm,line after snake=1mm, thick]
+  \tikzstyle{shortconnect}=[-latex, thin]
+  \tikzstyle{box}=[rectangle, draw=black!100]
+  \tikzstyle{switch}=[circle, minimum size = 1mm, fill = black!100, draw=black!100]
+  \node[param] (pi) [label=below:$\boldsymbol\pi$] {[M]};
+  \node[main] (ell) [xshift=10mm, right of=pi,label=below:$\ell_{k}$] {M};
+  \node[param] (mu) [above of=pi,yshift=20mm, label=below:$\boldsymbol{\mu}_{m}$] { };
+  \node[main, fill = black!10] (f) [right of= ell,label=below:$\boldsymbol{\hat{f}}_{k}$] { };
+  \node[param] (sigma) [above of=ell,yshift=20mm, label=below:$\sigma_{m}^2$] { };
+  \path (pi) edge [connect] (ell) (ell) edge [selector] (f) (mu) edge [connect] (f) (sigma) edge [connect] (f);
+  \node[rectangle, inner sep=0mm, fit= (ell) (f),label=below right:K, xshift=9mm] {};
+  \node[rectangle, inner sep=7mm,draw=black!100, fit= (ell) (f), xshift=1mm] {};
+  \node[rectangle, inner sep=2mm, fit= (mu) (sigma),label=below right:M, yshift=-2mm, xshift=11mm] {};   
+  \node[rectangle, inner sep=7mm,draw=black!100, fit= (mu) (sigma), yshift=-2mm, xshift=3mm] {};
+\end{tikzpicture}
+\caption[Plate notation for a Gaussian Mixture Model]{Plate notation for a Gaussian Mixture Model.}
+\label{fig:chap10-gmm}
+\end{figure}
+
+-Bayesian Information Criterion (BIC)~\cite{schwarz1978bic} to select number of components
+  -should this be reserved for the section on model selection???
+  -a penalty term on the number of parameters in a model
+    -measures the ``efficiency'' of parametrized model at predicting dataset
+    -choose model with lowest BIC
+  -theoretically guaranteed to recover true number of components in asymptotic regime
+    -i.e., given infinite data points which were in fact i.i.d. by a mixture of gaussians
+    -assumes that data is distributed according to an exponential family 
+  -given by the number of of data points $K$, the number of parameters$\boldsymbol{\theta}$ to be estimated $|\boldsymbol{\theta}|$ and the maximumum likelihood $\hat{L}$ of the model to be estimated:
+    
+\begin{equation}
+\label{eqn:chap10-bic}
+\textrm{BIC} = -2 \cdot \ln(\hat{L}) + |\boldsymbol{\theta}| \cdot \ln(K) 
+\end{equation}
+
+\begin{equation}
+\label{eqn:chap10-likelihood}
+\hat{L} = p \left( \lbrace \boldsymbol{\hat{f}}_{1}, \boldsymbol{\hat{f}}_{2}, \dots, \boldsymbol{\hat{f}}_{K} \rbrace | \boldsymbol{\hat{\theta}}\right)
+\end{equation}
+
+-uses Expecation-Maximization (EM) algorithm~\cite{dempster1977em}
+
+\begin{equation}
+\label{eqn:chap10-gmm}
+p\left(\boldsymbol{\hat{f}}_{k} | \boldsymbol{\theta}\right) = \displaystyle\sum\limits_{m=1}^{M} \pi_{m} \mathcal{N}\left(\boldsymbol{\hat{f}}_{k}; \boldsymbol{\theta}\right) = \displaystyle\sum\limits_{m=1}^{M} \pi_{m} \mathcal{N}\left(\boldsymbol{\hat{f}}_{k}; \boldsymbol{\mu}_{m}, \boldsymbol{\Sigma}_{m}\right)
+\end{equation}
+
+\begin{equation}
+\label{eqn:chap10-gaussian}
+\mathcal{N}\left(\boldsymbol{\hat{f}}_{k}; \boldsymbol{\mu}_{m}, \boldsymbol{\Sigma}_{m}\right) = \frac{1}{(2\pi)^{\nicefrac{J^{*}}{2}} |\boldsymbol{\Sigma}_{m}|^{\nicefrac{1}{2}}} exp\lbrace -\frac{1}{2}\left(\boldsymbol{\hat{f}}_{k} - \boldsymbol{\mu}_{m})^{T}\boldsymbol{\Sigma}_{m}^{-1}(_{k} - \boldsymbol{\mu}_{m}\right) \rbrace
+\end{equation}
+
+\begin{equation}
+\label{eqn:em-weights}
+\pi_{m}^{(t+1)} = \frac{1}{K}\displaystyle\sum\limits_{k=1}^{K} h_{m,k}^{(t)}
+\end{equation}
+
+\begin{equation}
+\label{eqn:em-means}
+\boldsymbol{\mu}_{m}^{(t+1)} = \frac{\displaystyle\sum\limits_{k=1}^{K}h_{m,k}^{(t)}\boldsymbol{\hat{f}}_{k}}{\displaystyle\sum\limits_{k=1}^{K}h_{m,k}^{(t)}}
+\end{equation}
+
+\begin{equation}
+\label{eqn:em-covariances}
+\boldsymbol{\Sigma}_{m}^{(t+1)} = \frac{\displaystyle\sum\limits_{k=1}^{K}h_{m,k}^{(t)}\left[ \boldsymbol{\hat{f}}_{k} - \boldsymbol{\mu}_{m}^{(t+1)}\right]\left[ \boldsymbol{\hat{f}}_{k} - \boldsymbol{\mu}_{m}^{(t+1)}\right]^{T}}{\displaystyle\sum\limits_{k=1}^{K}h_{m,k}^{(t)}}
+\end{equation}
+
+\begin{equation}
+\label{eqn:em-posterior-probs}
+h_{m,k}^{(t)} = \frac{\pi_{m}^{(t)} \mathcal{N}\left( \boldsymbol{\hat{f}}_{k}; \boldsymbol{\mu}_{m}^{(t)}, \boldsymbol{\Sigma}_{m}^{(t)} \right)}{\displaystyle\sum\limits_{m=1}^{M}\pi_{m}^{(t)} \mathcal{N}\left( \boldsymbol{\hat{f}}_{k}; \boldsymbol{\mu}_{m}^{(t)}, \boldsymbol{\Sigma}_{m}^{(t)} \right)}
+\end{equation}
+
+second paragraph: algorithm
+-Alg.~\ref{alg:chap10-gmm-em}
+  -initialize random $\mu$ and $\sigma$ components
+  -compute probability of each as generated from each component of model
+  -assign probabilities as ``soft weights'' to each data point 
+  -update the components given the points and soft weights (similar to $k$-Means)
+    -adjust parameters to maximize likelihood of data given assignments
+  -repeat
+  -will always converge to local optimum unique to initialization just like $k$-Means
+    -initialization starting parameters by using $k$-Means
+  -often want to run multiple times with different initializations
+
+-Variational Bayesian estimation for \acp{GMM}~\cite{attias2000variational,blei2006variational}
+  -Dirichlet Process prior~\cite{ferguson1973dirichlet} over parameters for an infinite \acp{GMM}
+    -including the number of components
+    -approximate infinite mixture using a finite number of components according to stick-breaking representation
+    -use hyper-parameter $\alpha$ known as the \textit{concentration parameter}
+  
+
+third paragraph: implementation
+-\texttt{GMM} and \texttt{DPMM} of \texttt{sklearn.mixture} module
+
+fourth paragraph: assumptions and guarantees
+
 -intro fact that it is not scalable - not evaluated here
 -mention dirichlet process mixture models
--model selection criteria are nice
--model selection
+
+\begin{algorithm}[h]
+\caption{Expectation-Maximization for \acp{GMM} Algorithm}
+\label{alg:chap10-gmm-em}
+\begin{algorithmic}[1]
+  \State Initialize an empty root node $\mathbb{N}_{r}$
+\end{algorithmic}
+\end{algorithm}
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsubsection{Mapping Features to MGXS Targets}
-\label{subsubsec:chap10-feature-mapping}
+\subsection{Mapping Features to MGXS Targets}
+\label{subsec:chap10-feature-mapping}
 
 %-competing paradigms:
 %  -clustering
 %  -input -> target (e.g., trees)
 %  -some combination of the two
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Decision Tree Regression}
+\label{subsubsec:chap10-tree-regression}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Random Forest Regression}
+\label{subsubsec:chap10-forest-regression}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Gaussian Process Regression}
+\label{subsubsec:chap10-gaussian-processes}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Model Selection}
