@@ -982,8 +982,8 @@ res = \max \|\boldsymbol{\mu}_{m}^{(t+1)} - \boldsymbol{\mu}_{m}^{(t)}\|^{2}
 \end{algorithm}
 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsubsection{Hierarchical Clustering}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Agglomerative Clustering}
 \label{subsubsec:chap10-agglomerative}
 
 first paragraph: intro
@@ -1041,7 +1041,7 @@ fourth paragraph: assumptions and guarantees
 \label{alg:chap10-agglomerative}
 \begin{algorithmic}[1]
   \State Initialize collection $\mathbb{C}$ of $K$ singleton clusters: $\mathbb{S}_{k} = \lbrace \boldsymbol{\hat{f}}_{k} \rbrace$
-  \While{There are too many clusters: $|\mathbb{C}| > M$}
+  \While{there are too many clusters: $|\mathbb{C}| > M$}
     \State Compute pairwise distances between clusters \Comment{Eqn.~\ref{eqn:chap10-agglomerative-ward}}
     \State Find pair of clusters $\mathbb{S}_{a}$ and $\mathbb{S}_{b}$ that are closest %$\operatornamewithlimits{argmin}\limits_{k_{1},k_{2}} d_{k_{1}k_{2}}$
     \State Merge clusters $\mathbb{S}_{a}$ and $\mathbb{S}_{b}$ into new cluster $\mathbb{S}_{a+b}$
@@ -1053,13 +1053,111 @@ fourth paragraph: assumptions and guarantees
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsubsection{Birch}
+\subsubsection{BIRCH}
 \label{subsubsec:chap10-birch}
 
--introduce scheme
--algorithmic
--initialization
--model selection
+first paragraph: intro
+-introduce scheme~\cite{zhang1996birch}
+-Balanced Iterative Reducing and Clustering Using Hierarchies (BIRCH)
+-builds a Characteristic Feature Tree (CFT)
+  -height-balanced tree governed by a branching factor $B$ and threshold $T$
+  -each non-leaf node contains a CF and a pointer to a child node
+  -each leaf node contains a CF
+  -all entries in a leaf node must have a radius less than the threshold
+-Characteristic Features (CF)
+
+-a hierarchical clustering algorithm
+-designed as an out-of-core clustering algorithm for very large datasets (in number of samples)
+-does not require inspecting all data points equally for each ``clustering decision'' as does $k$-Means or agglomerative clustering
+  -``local'' use CF of subclusters to make ``clustering decisions''
+
+-predicate on assumption that feature space is not uniformly occupied
+  -e.g., not every data point is equally important
+-use existing clustering algorithm to cluster leaf nodes
+  -\texttt{scikit-learn} uses \texttt{AgglomerativeClustering}
+
+-CF subcluster nodes (terminal and non-terminal)
+  -hold information necessary to represent each subcluster without needing to explicitly store each of the data points assigned to the subcluster
+    -number of samples, linear sum, squared sum
+
+-two parameters:
+  -threshold $T$: limits distance between entering sample and existing subclusters
+  -branching factor $B$: limits number of subclusters in a node
+
+-considered a data reduction method: reduces dataset to subclusters, which are then clustered!
+
+
+second paragraph: algorithm
+-Alg.~\ref{alg:chap10-birch}
+
+third paragraph: implementation
+-\texttt{Birch} of \texttt{sklearn.cluster} module
+
+fourth paragraph: assumptions and guarantees
+
+%-algorithm has four stages
+
+-cluster centroids $\boldsymbol{\mu}_{\mathbb{N}_{a}}$ computed per Eqn.~\ref{eqn:chap10-kmeans-update}
+
+-CF additivity theorem~\cite{zhang1996birch} allows two clusters to merged without loss of information
+
+\begin{equation}
+\label{eqn:chap10-birch-radius}
+R_{a} = \left(\frac{1}{|\mathbb{N}_{a}|}\displaystyle\sum\limits_{\boldsymbol{\hat{f}}_{k} \in \mathbb{N}_{a}} \left(\boldsymbol{\hat{f}}_{k} - \boldsymbol{\mu}_{a}\right)^{2}\right)^{\frac{1}{2}}
+\end{equation}
+
+\begin{equation}
+\label{eqn:chap10-birch-linear-sum}
+LS_{a} = \displaystyle\sum\limits_{\boldsymbol{\hat{f}}_{k} \in \mathbb{N}_{a}} \boldsymbol{\hat{f}}_{k}
+\end{equation}
+
+\begin{equation}
+\label{eqn:chap10-birch-square-sum}
+SS_{a} = \displaystyle\sum\limits_{\boldsymbol{\hat{f}}_{k} \in \mathbb{N}_{a}} \boldsymbol{\hat{f}}_{k}^{2}
+\end{equation}
+
+
+\begin{equation}
+\label{eqn:chap10-birch-cf}
+CF_{a} = \left[|\mathbb{N}_{a}|, LS_{a}, SS_{a}\right]^{T}
+\end{equation}
+
+\begin{equation}
+\label{eqn:chap10-birch-cf-additivity}
+CF_{a+b} = CF_{a} + CF_{b} = \left[|\mathbb{N}_{a}| + |\mathbb{N}_{b}|, LS_{a} + LS_{b}, SS_{a} + SS_{b}\right]^{T}
+\end{equation}
+
+\begin{algorithm}[h]
+\caption{BIRCH Clustering Algorithm}
+\label{alg:chap10-birch}
+\begin{algorithmic}[1]
+  \State Initialize an empty root node $\mathbb{N}_{r}$
+  \For{each sample $k$}
+    \State Initialize CFT node: $\mathbb{N} \leftarrow \mathbb{N}_{r}$
+    \While{$\mathbb{N}$ is not a leaf node} 
+      \State Compute radii for each subcluster if merged with sample \Comment{Eqn.~\ref{eqn:chap10-birch-radius}}
+      \State Find subcluster $\mathbb{N}_{a}$ with smallest post-merged radius $R_{a+k}$
+%      \State Add sample to subcluster with smallest post-merged radius
+%      \State Update CF properties for the merged subcluster \Comment{Eqn.~\ref{eqn:chap10-birch-cf-additivity}}
+	  \State Assign $\mathbb{N} \leftarrow \mathbb{N}_{a}$
+%      \State Assign merged subcluster to $\mathbb{N}$
+%      \State Merge sample with nearest subcluster
+    \EndWhile
+    \State Add sample to $\mathbb{N}$ and update $CF_{\mathbb{N}}$ \Comment{Eqn.~\ref{eqn:chap10-birch-cf-additivity}}
+    \While{$\mathbb{N} \ne \mathbb{N}_{r}$ } 
+      \If{$R_{\mathbb{N}} > T$}
+        \If{$|\mathbb{N}| > B$}
+          \State Split subclusters in $\mathbb{N}$ into $\mathbb{N}_{a}$ and $\mathbb{N}_{b}$
+        \EndIf
+%        \State Split samples in merged subcluster into two subclusters
+        \State Assign parent subcluster $\mathbb{N}_{p}$ with sample $k$ to $\mathbb{N}$: $\mathbb{N} \leftarrow \mathbb{N}_{p}$
+      \EndIf
+   \EndWhile
+  \EndFor
+  \State Input leaf nodes to agglomerative clustering algorithm \Comment{Alg.~\ref{alg:chap10-agglomerative}}
+\end{algorithmic}
+\end{algorithm}
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Gaussian Mixture Models}
