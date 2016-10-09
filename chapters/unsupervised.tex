@@ -879,7 +879,6 @@ Clustering algorithms are often categorized according to the \textit{(multi-)obj
 
 Depending on the clustering algorithm, many different predictors may be built for different model parameters -- including the number of clusters to find, a sample distance or similarity function, a density threshold, etc. -- as is illustrated in the context of \textit{i}\ac{MGXS} pipeline in Fig.~\ref{fig:chap10-cluster}. The ``best'' predictor is identified using model selection techniques as discussed in Sec.~\ref{sec:chap10-model-select}. The following sections provide synopses of the four clustering algorithms evaluated in this thesis, including the assumptions they make and the objective functions they optimize. Sec.~\ref{subsec:chap10-kmeans} describes the $k$-means algorithm, a commonly used centroid model which is fast and scalable for large datasets. Sec.~\ref{subsec:chap10-agglomerative} outlines the algorithm for agglomerative clustering and Sec.~\ref{subsec:chap10-birch} presents the BIRCH algorithm -- two connectivity models which are widely used to model data that may lie on manifolds with with irregular (\textit{i.e.}, non-convex) shapes. Sec.~\ref{subsec:chap10-gmms} highlights the Gaussian Mixture Model (GMM), a distribution model which fits the data to a mixture of one or more Gaussian probability distributions. Each of these algorithms is implemented in the \texttt{scikit-learn} Python package and employed as needed in the \textit{i}\ac{MGXS} data processing pipeline.
 
-
 \begin{figure}[h!]
 \centering
 \includegraphics[width=0.95\linewidth]{figures/unsupervised/features/engineering/cluster}
@@ -897,86 +896,59 @@ Depending on the clustering algorithm, many different predictors may be built fo
 %    -elegantly models overlapping clusters with soft weights
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{$k$-Means Clustering}
+\subsection{$k$-means Clustering}
 \label{subsec:chap10-kmeans}
 
-first paragraph: intro
--introduce scheme~\cite{macqueen1967kmeans, lloyd1982kmeans}
--intro inertia minimization
--partitions of feature space into Voronoi cells
--set of $C$ disjoint clusters
--not to confuse $k$ for the fuel pin instance index!!!
--minimize inertia\footnote{The inertia is a within-cluster sum-of-squares criterion.}:
+The $k$-means algorithm~\cite{macqueen1967kmeans, lloyd1982kmeans} constructs a Voronoi tesselation of feature space composed of $k$ Voronoi cells\footnote{It should be noted that the ``$k$'' in $k$-means should not be confused for the $k$ commonly used throughout this thesis to index fuel pin instances.}. A Voronoi tesselation is a partitioning of feature space into convex regions based on the distance to a discrete set of ``seed'' points. In the context of the $k$-means, each seed is the centroid of a cluster. Each sample is assigned a cluster label according to the Voronoi cell that contains it. The $k$-means algorithm attempts to minimize the within-cluster sum-of-squares, also known as the \textit{inertia}:
 
 \begin{equation}
 \label{eqn:chap10-kmeans-inertia}
-\displaystyle\sum\limits_{k=0}^{K} \min_{\boldsymbol{\mu}_{j} \in C} \|\boldsymbol{\hat{f}}_{k} - \boldsymbol{\mu}_{j}\|^{2}
+\displaystyle\sum\limits_{k=0}^{K} \min_{\boldsymbol{\mu}_{m} \in \mathbb{C}} \|\boldsymbol{\hat{f}}_{k} - \boldsymbol{\mu}_{m}\|^{2}
 \end{equation}
 
-second paragraph: algorithm
--Alg.~\ref{alg:chap10-kmeans}
--step 1 (initialization): choose initial centroids
--loop until centroids stop moving:
-  -step 2 (assignment): assign each sample to nearest centroid
-  -step 3 (update): create new centroids from mean of those points assigned to each centroid
--a variant to the expecation-mazimization algorithm 
- -assignment step is the expectation step
- -update step is the maximization step
+\noindent where $\boldsymbol{\mu}_{m}$ and $\boldsymbol{\hat{f}}_{k}$ are the $J^{*}$-dimensional centroid of cluster $m$ and feature vector for fuel pin instance $k$ in feature space, respectively. Each of the cluster centroids is stored in set $\mathbb{C} = \lbrace \boldsymbol{\mu}_{1}, \boldsymbol{\mu}_{2}, \dots, \boldsymbol{\mu}_{M} \rbrace$, where $M$ is used in place of $k$ to denote the total number of clusters to avoid confusion with the $k$ used to index the fuel pin instances.
 
-third paragraph: implementation
--\texttt{KMeans} of the \texttt{sklearn.cluster}
--fast and scalable to datasets with large number of samples $K$ and features $J$
-  -requires distance calculation from for each data point to each cluster centroid
-  -easy to parallelize, for large datasets with out-of-core mini-batch $k$-Means algorithm~\cite{sculley2010minibatchkmeans} implemenbted by \texttt{MiniBatchKMeans}
-
-fourth paragraph: assumptions and guarantees
--inertia assumes clusters are convex and isotropic
-  -actually assumes clusters are spherical in feature space
-  -assumes clusters are of the similar size
-  -not well suite to clusters with irregular shapes
--provably guaranteed to converge if Euclidean distance is used
-  -which is the case for this thesis
--requires the number of clusters to be defined
-  -need model selection to determine $k$
--$k$-Means will always converge, but to a local minimum of the inertia
-  -partioning is highly dependent on the initialization of centroids
-  -can randomly choose $k$ data points as initial centroids
-  -$k$-Means++~\cite{arthur2007kmeans++} 
-    -\texttt{init=kmeans++} argument to \texttt{KMeans}
-    -attempts to uniformly disperse centers across regions of feature space with samples
-    -this is what is used in this thesis
-  -since algorithm is very fast, run many times with different initial centroids and choose solution with smallest inertia
--computational complexity of $\mathcal{O}(KJ^{*}MT)$ for $K$ fuel pin instances, $J^{*}$ features, $M$ clusters and $T$ iterations
+The key steps in the $k$-means algorithm are summarized in Alg.~\ref{alg:chap10-kmeans}. The first step initializes $M$ cluster centroids in feature space. A variety of techniques exist to initialize the centroids, including random selection of $M$ samples as centroids, or the $k$-means++ method~\cite{arthur2007kmeans++} which uniformly disperses the centroids across high density regions of feature space. The algorithm then iterates over \textit{assignment} and \textit{update} steps. The assignment step loops over each sample and assigns it to the nearest cluster centroid:
 
 \begin{equation}
 \label{eqn:chap10-kmeans-assign}
-\mathbb{S}_{m}^{(t)} = \lbrace \boldsymbol{\hat{f}}_{k} \;\; : \;\; \| \boldsymbol{\hat{f}}_{k} - \boldsymbol{\mu}_{m}^{(t)} \|^{2} \;\; \le \;\; \| \boldsymbol{\hat{f}}_{p} - \boldsymbol{\mu}_{j}^{(t)} \|^{2} \;\;\;\;\;\;\; \forall j, \; 1 \; \le j \le M \rbrace
+\mathbb{S}_{m}^{(t)} = \lbrace \boldsymbol{\hat{f}}_{k} \;\; : \;\; \| \boldsymbol{\hat{f}}_{k} - \boldsymbol{\mu}_{m}^{(t)} \|^{2} \;\; \le \;\; \| \boldsymbol{\hat{f}}_{p} - \boldsymbol{\mu}_{m}^{(t)} \|^{2} \;\;\;\;\;\;\; \forall n, \; 1 \; \le n \le M \rbrace
 \end{equation}
-  
+
+\noindent where $\mathbb{S}_{m}^{(t)}$ represents cluster $m$ at iteration $t$ as the set of nearby samples. The update step moves each cluster centroid to the mean of those samples assigned to it:
+
 \begin{equation}
 \label{eqn:chap10-kmeans-update}
 \boldsymbol{\mu}_{m}^{(t+1)} = \frac{1}{|\mathbb{S}_{m}^{(t)}|} \displaystyle\sum\limits_{\boldsymbol{\hat{f}}_{k} \in \mathbb{S}_{m}^{(t)}} \boldsymbol{\hat{f}}_{k}
 \end{equation}
 
+The $k$-means iteration proceeds until the cluster centroids stop moving as defined by some criterion, such as the residual sum of squares:
+
 \begin{equation}
 \label{eqn:chap10-kmeans-residuals}
-res = \max \|\boldsymbol{\mu}_{m}^{(t+1)} - \boldsymbol{\mu}_{m}^{(t)}\|^{2}
+res = \max_{1 \le m \le M} \|\boldsymbol{\mu}_{m}^{(t+1)} - \boldsymbol{\mu}_{m}^{(t)}\|^{2}
 \end{equation}
 
-\begin{algorithm}[h]
-\caption{$k$-Means Clustering Algorithm}
+\begin{algorithm}[ht!]
+\caption{$k$-means Clustering Algorithm}
 \label{alg:chap10-kmeans}
 \begin{algorithmic}[1]
-  \State Initialize $M$ centroids $\lbrace \boldsymbol{\mu}_{1}, \boldsymbol{\mu}_{2}, \dots, \boldsymbol{\mu}_{M} \rbrace$
+  \State \textit{Initialize} $M$ centroids $\lbrace \boldsymbol{\mu}_{1}, \boldsymbol{\mu}_{2}, \dots, \boldsymbol{\mu}_{M} \rbrace$
   \While{centroid residual is not converged}
-    \State Assign each sample $\boldsymbol{\hat{f}}_{k}$ to nearest centroid $\boldsymbol{\mu}_{m}$ \Comment{Eqn.~\ref{eqn:chap10-kmeans-assign}}
-    \State Update centroids to mean of samples assigned to each centroid \Comment{Eqn.~\ref{eqn:chap10-kmeans-update}}
+    \State \textit{Assign} each sample $\boldsymbol{\hat{f}}_{k}$ to nearest centroid $\boldsymbol{\mu}_{m}$ \Comment{Eqn.~\ref{eqn:chap10-kmeans-assign}}
+    \State \textit{Update} centroids to mean of samples assigned to each centroid \Comment{Eqn.~\ref{eqn:chap10-kmeans-update}}
     \State Compute centroid residuals \Comment{Eqn.~\ref{eqn:chap10-kmeans-residuals}}
   \EndWhile
-%  \State Compute final inertia of cluster centroids \Comment{Eqn.~\ref{eqn:chap10-kmeans-inertia}}
 \end{algorithmic}
 \end{algorithm}
 
+This thesis employs the $k$-means algorithm implemented in the \texttt{KMeans} class of the \texttt{sklearn.cluster} module in the \texttt{scikit-learn} Python package. The Euclidean distance metric is used to compare the similarity of samples in feature space, and the $k$-means++ algorithm is used to initialize cluster centroids. Two attractive features of $k$-means are its simplicity and speed. It has a linear computational complexity of $\mathcal{O}(KJ^{*}MT)$ for $K$ fuel pin instances, $J^{*}$ features, $M$ clusters and $T$ iterations. The algorithm is relatively easy to parallelize since is primarily consists of by independent calculations of the distances between each sample and cluster centroid. In addition, out-of-core variants of the algorithm exist for very big datasets such as those that might be realized if the \textit{i}\ac{MGXS} scheme were used to model a full core \ac{PWR} in 3D. For example, mini-batch $k$-means~\cite{sculley2010minibatchkmeans} is an out-of-core version of the algorithm and is implemented as \texttt{MiniBatchKMeans} in the \texttt{sklearn.cluster} package.
+
+The $k$-means algorithm makes a number of assumptions about what constitutes a ``cluster'' that have consequences for the types of clusterings that it finds. In particular, $k$-means optimizes the inertia which implicitly assumes that clusters are convex and isotropic, and in particular, that clusters are spherical and of similar size in feature space. As a result, $k$-means is not well-suited to identify clusters with irregular shapes without special distance metrics and/or feature agglomeration techniques. Another complication is that while $k$-means is provably guaranteed to converge\footnote{This is only true if the Euclidean distance metric is used.}, it only finds local minima of the inertia. Furthermore, the performance is especially sensitive to the placement of the initial centroids. The $k$-means++ algorithm is designed to mitigate this by ensuring that the centroids are uniformly and randomly dispersed across the important regions of feature space. Nonetheless, since the algorithm is fast, it is common to run $k$-means many times with different initial cluster centroids and choose the solution with the smallest inertia. Finally, $k$-means requires a user to define the number of clusters $k$ to find within the dataset. In practice, the optimal value of $k$ is unknown \textit{a priori}, and model selection techniques must be used to select from a sequence of clusterings trained for different values of $k$, as discussed in Sec.~\ref{sec:chap10-model-select}.
+
+%-a variant to the expecation-mazimization algorithm 
+% -assignment step is the expectation step
+% -update step is the maximization step
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Agglomerative Clustering}
@@ -999,7 +971,7 @@ linkage criteria: various cluster ``dissimiliarity'' metrics that are minimized 
   -Complete: minimize max distance between pairs of points within two clusters to be merged
   -Average: minimize avg. of dist. between pairs of points within two clusters to be merged
  -Ward: minimize sum of squared differences between points in two clusters to be merged~\cite{ward1963hierarchical}
-  -variance minimization, similar to $k$-Means
+  -variance minimization, similar to $k$-means
   -used by this thesis
 
 \begin{equation}
@@ -1058,7 +1030,7 @@ first paragraph: intro
 -Balanced Iterative Reducing and Clustering Using Hierarchies (BIRCH)
 -designed as an out-of-core clustering algorithm for very large datasets (in number of samples)
 -considered a data reduction method: reduces dataset to subclusters, which are then clustered!
--does not require inspecting all data points equally for each ``clustering decision'' as does $k$-Means or agglomerative clustering
+-does not require inspecting all data points equally for each ``clustering decision'' as does $k$-means or agglomerative clustering
   -``local'' use CF of subclusters to make ``clustering decisions''
 
 second paragraph: algorithm
@@ -1148,7 +1120,7 @@ CF_{a+b} = CF_{a} + CF_{b} = \left[|\mathbb{N}_{a}| + |\mathbb{N}_{b}|, LS_{a} +
 first paragraph: intro
 -introduce scheme~\cite{mclachlan1988mixture}
 -a hierarchical probabilistic or generative model
--like generalizing $k$-Means to include data about covariance between features
+-like generalizing $k$-means to include data about covariance between features
 -assumes data points are generated from a mixture of a finite number of gaussian distributions
   -observations are random variables distributed according to mixture of component distributions
   -each component comes from the same family of probability distributions (e.g., gaussians)
@@ -1219,7 +1191,7 @@ second paragraph: algorithm
   -initialize random $\mu$ and $\sigma$ components
   -compute probability of each as generated from each component of model
   -assign probabilities as ``soft weights'' to each data point 
-  -update the components given the points and soft weights (similar to $k$-Means)
+  -update the components given the points and soft weights (similar to $k$-means)
     -adjust parameters to maximize likelihood of data given assignments
   -repeat
   
@@ -1228,8 +1200,8 @@ third paragraph: implementation
 
 fourth paragraph: assumptions and guarantees
 -theoretically guaranteed to monotonically improve the log-likelihood
--will always converge to local optimum unique to initialization just like $k$-Means
-  -initialization starting parameters by using $k$-Means
+-will always converge to local optimum unique to initialization just like $k$-means
+  -initialization starting parameters by using $k$-means
 -often want to run multiple times with different initializations
 -model selection - BIC
 -Variational Bayesian estimation for \acp{GMM}~\cite{attias2000variational,blei2006variational}
@@ -1246,7 +1218,7 @@ fourth paragraph: assumptions and guarantees
 \caption{Expectation-Maximization Algorithm for \acp{GMM}}
 \label{alg:chap10-em-gmm}
 \begin{algorithmic}[1]
-  \State Initialize means $\lbrace \boldsymbol{\mu}_{1}^{(0)}, \boldsymbol{\mu}_{2}^{(0)}, \dots, \boldsymbol{\mu}_{m}^{(0)} \rbrace$ with $k$-Means \Comment{Alg.~\ref{alg:chap10-kmeans}}
+  \State Initialize means $\lbrace \boldsymbol{\mu}_{1}^{(0)}, \boldsymbol{\mu}_{2}^{(0)}, \dots, \boldsymbol{\mu}_{m}^{(0)} \rbrace$ with $k$-means \Comment{Alg.~\ref{alg:chap10-kmeans}}
   \State Initialize covariances $\lbrace \boldsymbol{\Sigma}_{1}^{(1)}, \boldsymbol{\Sigma}_{2}^{(1)}, \dots, \boldsymbol{\Sigma}_{m}^{(1)} \rbrace$ \Comment{Eqn.~\ref{alg:chap10-em-covariances}}  
   \State Initialize mixture weights $\lbrace \pi_{1}^{(1)}, \pi_{2}^{(1)}, \dots, \pi_{m}^{(1)} \rbrace$ \Comment{Eqn.~\ref{alg:chap10-em-weights}}  
   \While{model parameters are not converged}
@@ -1677,7 +1649,7 @@ fourth paragraph: assumptions and guarantees
   \end{itemize}
   \item clustering algorithms
   \begin{itemize}[noitemsep]
-    \item discriminative clustering ($k$-Means++, Agglomerative, etc.)
+    \item discriminative clustering ($k$-means++, Agglomerative, etc.)
     \item generative clustering (Gaussian Mixtures, Dirichlet Processes)
   \end{itemize}
   \item ``regression-informed'' clustering
