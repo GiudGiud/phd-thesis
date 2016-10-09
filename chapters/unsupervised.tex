@@ -1,4 +1,4 @@
-\chapter{Unsupervised Clustering for Spatial Homogenization}
+\chapter{The \textit{i}MGXS Spatial Homogenization Scheme}
 \label{chap:unsupervised}
 
 The preceding chapter illustrated the clustering of pin-wise \ac{MGXS} as a result of spatial self-shielding effects. It was shown that \ac{MGXS} clustering must be appropriately modeled to accurately resolve pin-wise U-238 capture rates. The \ac{LNS} spatial homogenization scheme was introduced to predict \ac{MGXS} clustering with a geometric template-like approach. The \ac{LNS} scheme was shown to achieve the same level of accuracy as degenerate homogenization while simultaneously accelerating the \ac{MC} tally convergence rate for simple benchmark problems. However, the \ac{LNS} scheme suffered from its inability to adapt to predict \ac{MGXS} clustering in geometries with water reflectors and steel baffles. In addition, the \ac{LNS} scheme did not scale well with the complexity of the core geometry, resulting in a large number of materials and thus an under-accelerated convergence rate. This chapter introduces an adaptable and scalable alternative to \ac{LNS} which uses unsupervised statistical learning methods to predict \ac{MGXS} clustering.
@@ -13,7 +13,7 @@ The novel homogenization methodology presented here -- referred to as \textit{in
 \label{fig:chap10-flow-chart}
 \end{figure}
 
-This chapter begins by introducing a general latent variable model for \ac{MGXS} clustering which motivates \textit{i}\ac{MGXS} spatial homogenization in Sec.~\ref{sec:chap10-latent-model}. An overview of the \textit{i}\ac{MGXS} scheme is given in Sec.~\ref{sec:chap10-overview}, with in-depth presentations of the each stage of tally data pre-processing, including feature extraction (Sec.~\ref{sec:chap10-feature-extract}), selection (Sec.~\ref{sec:chap10-feature-select}) and agglomeration (Sec.~\ref{sec:chap10-feature-agglomerate}). Sec.~\ref{subsec:chap10-clustering-algorithms} highlights a few statistical clustering algorithms which may be interchangeably employed within the code framework for i\ac{MGXS} implemented for this thesis. A few heuristics for unsupervised cluster model selection are discussed in Sec.~\ref{sec:chap10-model-select}. Sec.~\ref{sec:chap10-geometries} illustrates the material configurations produced by the \textit{i}\ac{MGXS} scheme for the heterogeneous \ac{PWR} benchmarks studied in this thesis. Finally, Sec.~\ref{sec:chap10-cluster} details two approaches used to evaluate the ideal and realized convergence rates of the \textit{i}\ac{MGXS} scheme. The eigenvalues and pin-wise fission and U-238 capture rates produced with the \textit{i}\ac{MGXS} scheme are evaluated in the following chapter.
+This chapter begins by introducing a general latent variable model for \ac{MGXS} clustering which motivates \textit{i}\ac{MGXS} spatial homogenization in Sec.~\ref{sec:chap10-latent-model}. An overview of the \textit{i}\ac{MGXS} scheme is given in Sec.~\ref{sec:chap10-overview}, with in-depth presentations of the each stage of tally data pre-processing, including feature extraction (Sec.~\ref{sec:chap10-feature-extract}), selection (Sec.~\ref{sec:chap10-feature-select}) and agglomeration (Sec.~\ref{sec:chap10-feature-agglomerate}). Sec.~\ref{subsec:chap10-train-predictor} highlights a few statistical clustering algorithms which may be interchangeably employed within the code framework for i\ac{MGXS} implemented for this thesis. A few heuristics for unsupervised cluster model selection are discussed in Sec.~\ref{sec:chap10-model-select}. Sec.~\ref{sec:chap10-geometries} illustrates the material configurations produced by the \textit{i}\ac{MGXS} scheme for the heterogeneous \ac{PWR} benchmarks studied in this thesis. Finally, Sec.~\ref{sec:chap10-cluster} details two approaches used to evaluate the ideal and realized convergence rates of the \textit{i}\ac{MGXS} scheme. The eigenvalues and pin-wise fission and U-238 capture rates produced with the \textit{i}\ac{MGXS} scheme are evaluated in the following chapter.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -719,9 +719,9 @@ Feature standardization -- also known as \textit{mean removal} and/or \textit{va
 The \textit{feature selection} stage in the data processing pipeline in Fig.~\ref{fig:chap10-pipeline} determines which features to use when training\footnote{In machine learning, \textit{training} a model refers to the process of assigning numerical values to the parameters of the model to best fit an empirical dataset.} a clustering model. The feature extraction stage provides many different features, some of which may be poor predictors of \ac{MGXS} clusters. In addition, some features may be highly correlated and redundant as input variables to a predictive model. Feature selection attempts to identify the smallest possible subset of features necessary to achieve the desired predictive accuracy. Feature selection plays an important role in balancing the canonical \textit{bias--variance tradeoff} in statistics and machine learning by reducing model variance, while potentially increasing model bias. In particular, feature selection is used to train simple(r) machine learning models for the following three reasons:
 
 \begin{itemize}[noitemsep]
-\item \textbf{Reduce Model Complexity} -- Simpler models are easier to intuit and explain.
-\item \textbf{Reduce Generalization Error} -- Simpler models reduce the risk of over-fitting.
-\item \textbf{Reduce Training Time} -- Simpler models are computationally efficient to train.
+\item \textbf{Reduce Model Complexity} -- Simpler models are easier to intuit and explain
+\item \textbf{Reduce Generalization Error} -- Simpler models reduce the risk of over-fitting
+\item \textbf{Reduce Training Time} -- Simpler models are computationally efficient to train
 \end{itemize}
 
 Automated feature selection methods are often classified into three main categories: \textit{filter}, \textit{wrapper}, and \textit{embedded} methods. \textit{Filter methods} are agnostic to the family of predictive models one wishes to train and selects features which provide the most information about a target variable. Correlation Feature Selection~\cite{hall1999correlation} is an example of a filter method which searches for the smallest subset of features which are highly correlated with the target variable, but uncorrelated with each other. In contrast to filter methods, \textit{wrapper methods} evaluate subsets of features to determine their collective ability to minimize the generalization error of some specific family of predictive models. Wrapper methods may be computationally expensive since it entails a search of the space of possible feature subsets. In addition, wrapper methods may be at greater risk of over-fitting than filter methods since the feature selection criteria is based on model accuracy. Finally, \textit{embedded methods} select features as an integral part of the model training procedure. Some examples of embedded methods include $\ell_{1}$-regularization techniques and Recursive Feature Elimination~\cite{guyon2002rfe}. The interested reader is referred to~\cite{guyon2003select} or the plethora of other sources in the literature for more detailed information about automated feature selection methods.
@@ -860,20 +860,25 @@ first paragraph: what is goal???
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Clustering Feature Vectors}
-\label{sec:chap10-clustering-algorithms}
+\section{Training a Predictor}
+\label{sec:chap10-train-predictor}
 
-first paragraph:
--
+The \textit{predictor training} stage in the data processing pipeline in Fig.~\ref{fig:chap10-pipeline} builds a predictive model and assigns cluster labels $\ell_{k}$ to each fuel pin instance. The cluster labels are employed for track density-weighted spatial homogenization in the same way the identifiers produced by OpenCG's Local Neighbor Symmetry algorithm were used by the \ac{LNS} spatial homogenization scheme (see Sec.~\ref{subsec:chap9-lns-math}). An unsupervised clustering algorithm is used to infer structure from the dataset of feature vectors generated by the feature extraction, selection and transform stages. This process attempts to identify which fuel pin instances should be grouped together with the same \ac{MGXS} in order to best predict reaction rate spatial distributions.
 
-second paragraph:
--
+Although machine learning researchers have developed many different clustering algorithms over the last few decades, only one thing is agreed upon by the community: ``clustering is in the eye of the beholder''~\cite{castro2002clustering}. Perhaps the best way to differentiate between algorithms for cluster analysis is their implicit or explicit assumption(s) of what constitutes a ``cluster.'' In general, all clustering algorithms aim to group samples such that those within one cluster are more similar than they are to the samples in other clusters. Beyond that, no precise definition of what makes a ``cluster'' is broadly agreed upon. Instead, each clustering algorithm is designed to solve an optimization problem which may minimize the distances between samples within each cluster, identify high density regions of feature space, fit a statistical distribution to a given dataset, among other strategies. For practical reasons, only a select few clustering algorithms are evaluated within the \textit{i}\ac{MGXS} implementation developed for this thesis.
 
--very brief overview
--refer to literature for more info
--used canned algorithms in scikit-learn \texttt{sklearn.cluster}
--while there are many, many algorithms out there, only a few selected for discussion here
-  -one concern is scalability to large number of samples
+Clustering algorithms are often categorized according to the \textit{(multi-)objective function} they seek to minimize and the \textit{assumptions} they make. This thesis evaluates four different clustering algorithms within the \textit{i}\ac{MGXS} data processing pipeline. These four algorithms are associated within one of the following three categories of clustering algorithms:
+ 
+\begin{itemize}[noitemsep]
+\item \textbf{Centroid models} partition feature space using cluster central vectors
+\item \textbf{Connectivity models} build dendrograms to relate neighboring samples
+\item \textbf{Distribution models} build probability distributions to fit the data
+\end{itemize}
+
+\noindent \textit{Centroid models} make assumptions about the size and convexity of each cluster and optimize the choice of central vectors used to represent the center of each cluster. \textit{Connectivity models} assume that the similarity between samples is inversely related to the distance separating them and build hierarchical models to locally optimize sample connectivity. \textit{Distribution models} assume that the observed dataset was generated from a well-defined probability distribution and optimally select parameters to fit a distribution model to best predict the data. It is important to note that the various algorithms within each category may differ according to how they associate each sample with a cluster. Some algorithms use \textit{hard assignments} which designate each sample to one particular cluster, while other algorithms use \textit{soft assignments} to indicate the likelihood of each sample belonging to each cluster.
+
+Depending on the clustering algorithm, many different predictors may be built for different model parameters -- including the number of clusters to find, a sample distance or similarity function, a density threshold, etc. -- as is illustrated in the context of \textit{i}\ac{MGXS} pipeline in Fig.~\ref{fig:chap10-cluster}. The ``best'' predictor is identified using model selection techniques as discussed in Sec.~\ref{sec:chap10-model-select}. The following sections provide synopses of the four clustering algorithms evaluated in this thesis, including the assumptions they make and the objective functions they optimize. Sec.~\ref{subsec:chap10-kmeans} describes the $k$-means algorithm, a commonly used centroid model which is fast and scalable for large datasets. Sec.~\ref{subsec:chap10-agglomerative} outlines the algorithm for agglomerative clustering and Sec.~\ref{subsec:chap10-birch} presents the BIRCH algorithm -- two connectivity models which are widely used to model data that may lie on manifolds with with irregular (\textit{i.e.}, non-convex) shapes. Sec.~\ref{subsec:chap10-gmms} highlights the Gaussian Mixture Model (GMM), a distribution model which fits the data to a mixture of one or more Gaussian probability distributions. Each of these algorithms is implemented in the \texttt{scikit-learn} Python package and employed as needed in the \textit{i}\ac{MGXS} data processing pipeline.
+
 
 \begin{figure}[h!]
 \centering
@@ -883,26 +888,17 @@ second paragraph:
 \label{fig:chap10-cluster}
 \end{figure}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Unsupervised Clustering}
-\label{subsec:chap10-feature-mapping}
-
-first paragraph:
--try to find patterns between like data points
--all features treated on an equal basis
-
--define each clustering algorithm as minimizing some metric
-  -k-Means: inertia
-  -
-
--define assumptions for each clustering algorithm:
-  -
-
--make it real for this application!!!
+%third paragraph: types of clustering algorithms
+%  -Distribution Models: e.g., GMMs, generative models
+%    -good theoretical foundation (i.e., analytical expressions for likelihood)
+%    -suffer from over-fitting without constaints on model complexity
+%    -can capture correlation between features
+%    -makes strong assumption that real world data came from some concisely defined mathematical model
+%    -elegantly models overlapping clusters with soft weights
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsubsection{$k$-Means Clustering}
-\label{subsubsec:chap10-kmeans}
+\subsection{$k$-Means Clustering}
+\label{subsec:chap10-kmeans}
 
 first paragraph: intro
 -introduce scheme~\cite{macqueen1967kmeans, lloyd1982kmeans}
@@ -983,8 +979,8 @@ res = \max \|\boldsymbol{\mu}_{m}^{(t+1)} - \boldsymbol{\mu}_{m}^{(t)}\|^{2}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsubsection{Agglomerative Clustering}
-\label{subsubsec:chap10-agglomerative}
+\subsection{Agglomerative Clustering}
+\label{subsec:chap10-agglomerative}
 
 first paragraph: intro
 -introduce scheme~\cite{johnson1967hierarchical}
@@ -1053,8 +1049,8 @@ fourth paragraph: assumptions and guarantees
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsubsection{BIRCH}
-\label{subsubsec:chap10-birch}
+\subsection{BIRCH}
+\label{subsec:chap10-birch}
 
 first paragraph: intro
 -introduce scheme~\cite{zhang1996birch}
@@ -1146,29 +1142,20 @@ CF_{a+b} = CF_{a} + CF_{b} = \left[|\mathbb{N}_{a}| + |\mathbb{N}_{b}|, LS_{a} +
 %http://slideplayer.com/slide/4942836/
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsubsection{Gaussian Mixture Models}
-\label{subsubsec:chap10-gmms}
+\subsection{Gaussian Mixture Models}
+\label{subsec:chap10-gmms}
 
 first paragraph: intro
 -introduce scheme~\cite{mclachlan1988mixture}
-
-
--a probabilistic or generative model
-  -hierarchical
+-a hierarchical probabilistic or generative model
+-like generalizing $k$-Means to include data about covariance between features
+-assumes data points are generated from a mixture of a finite number of gaussian distributions
   -observations are random variables distributed according to mixture of component distributions
   -each component comes from the same family of probability distributions (e.g., gaussians)
   -assumes latent variables for each observation indicating identify of component distribution from which it was drawn
-  -parameters: number of components, mixture weights, component-wise params ($\mu$ and $\sigma$)
-  
--assumes data points are generated from a mixture of a finite number of gaussian distributions
--parameters for each gaussian (e.g., $\mu$ and $\sigma$) are unknown and must be inferred from data
--like generalizing $k$-Means to include data about covariance between features
+-parameters: number of components, mixture weights, component-wise params ($\mu$ and $\sigma$)
+  -parameters for each gaussian (e.g., $\mu$ and $\sigma$) are unknown and must be inferred from data
 -fits the data to define best $\mu$ and $\sigma$ for each cluster
--labels each data point to the most likely cluster
--but gives posterior probabilities to each cluster for each data point
-  -nice since this may give some indication about the confidence of the clustering predictions
--requires model selection criterion to determine appropriate number of clusters
-
 
 \begin{figure}
 \centering
@@ -1195,28 +1182,6 @@ first paragraph: intro
 \caption[Plate notation for a Gaussian Mixture Model]{Plate notation for a Gaussian Mixture Model.}
 \label{fig:chap10-gmm}
 \end{figure}
-
--Bayesian Information Criterion (BIC)~\cite{schwarz1978bic} to select number of components
-  -should this be reserved for the section on model selection???
-  -a penalty term on the number of parameters in a model
-    -measures the ``efficiency'' of parametrized model at predicting dataset
-    -choose model with lowest BIC
-  -theoretically guaranteed to recover true number of components in asymptotic regime
-    -i.e., given infinite data points which were in fact i.i.d. by a mixture of gaussians
-    -assumes that data is distributed according to an exponential family 
-  -given by the number of of data points $K$, the number of parameters$\boldsymbol{\theta}$ to be estimated $|\boldsymbol{\theta}|$ and the maximumum likelihood $\hat{L}$ of the model to be estimated:
-    
-\begin{equation}
-\label{eqn:chap10-bic}
-\textrm{BIC} = -2 \cdot \ln(\hat{L}) + |\boldsymbol{\theta}| \cdot \ln(K) 
-\end{equation}
-
-\begin{equation}
-\label{eqn:chap10-likelihood}
-\hat{L} = p \left( \lbrace \boldsymbol{\hat{f}}_{1}, \boldsymbol{\hat{f}}_{2}, \dots, \boldsymbol{\hat{f}}_{K} \rbrace | \boldsymbol{\hat{\theta}}\right)
-\end{equation}
-
--uses Expecation-Maximization (EM) algorithm~\cite{dempster1977em}
 
 \begin{equation}
 \label{eqn:chap10-gmm}
@@ -1249,44 +1214,51 @@ h_{m,k}^{(t)} = \frac{\pi_{m}^{(t)} \mathcal{N}\left( \boldsymbol{\hat{f}}_{k}; 
 \end{equation}
 
 second paragraph: algorithm
--Alg.~\ref{alg:chap10-gmm-em}
+-uses Expecation-Maximization (EM) algorithm~\cite{dempster1977em}
+-Alg.~\ref{alg:chap10-em-gmm}
   -initialize random $\mu$ and $\sigma$ components
   -compute probability of each as generated from each component of model
   -assign probabilities as ``soft weights'' to each data point 
   -update the components given the points and soft weights (similar to $k$-Means)
     -adjust parameters to maximize likelihood of data given assignments
   -repeat
-  -will always converge to local optimum unique to initialization just like $k$-Means
-    -initialization starting parameters by using $k$-Means
-  -often want to run multiple times with different initializations
+  
+third paragraph: implementation
+-\texttt{GMM} and \texttt{DPMM} of \texttt{sklearn.mixture} module
 
+fourth paragraph: assumptions and guarantees
+-theoretically guaranteed to monotonically improve the log-likelihood
+-will always converge to local optimum unique to initialization just like $k$-Means
+  -initialization starting parameters by using $k$-Means
+-often want to run multiple times with different initializations
+-model selection - BIC
 -Variational Bayesian estimation for \acp{GMM}~\cite{attias2000variational,blei2006variational}
   -Dirichlet Process prior~\cite{ferguson1973dirichlet} over parameters for an infinite \acp{GMM}
     -including the number of components
     -approximate infinite mixture using a finite number of components according to stick-breaking representation
     -use hyper-parameter $\alpha$ known as the \textit{concentration parameter}
-  
-
-third paragraph: implementation
--\texttt{GMM} and \texttt{DPMM} of \texttt{sklearn.mixture} module
-
-fourth paragraph: assumptions and guarantees
-
--intro fact that it is not scalable - not evaluated here
--mention dirichlet process mixture models
+-labels each data point to the most likely cluster
+-but gives posterior probabilities to each cluster for each data point
+  -nice since this may give some indication about the confidence of the clustering predictions
+-requires model selection criterion to determine appropriate number of clusters
 
 \begin{algorithm}[h]
-\caption{Expectation-Maximization for \acp{GMM} Algorithm}
-\label{alg:chap10-gmm-em}
+\caption{Expectation-Maximization Algorithm for \acp{GMM}}
+\label{alg:chap10-em-gmm}
 \begin{algorithmic}[1]
-  \State Initialize an empty root node $\mathbb{N}_{r}$
+  \State Initialize means $\lbrace \boldsymbol{\mu}_{1}^{(0)}, \boldsymbol{\mu}_{2}^{(0)}, \dots, \boldsymbol{\mu}_{m}^{(0)} \rbrace$ with $k$-Means \Comment{Alg.~\ref{alg:chap10-kmeans}}
+  \State Initialize covariances $\lbrace \boldsymbol{\Sigma}_{1}^{(1)}, \boldsymbol{\Sigma}_{2}^{(1)}, \dots, \boldsymbol{\Sigma}_{m}^{(1)} \rbrace$ \Comment{Eqn.~\ref{alg:chap10-em-covariances}}  
+  \State Initialize mixture weights $\lbrace \pi_{1}^{(1)}, \pi_{2}^{(1)}, \dots, \pi_{m}^{(1)} \rbrace$ \Comment{Eqn.~\ref{alg:chap10-em-weights}}  
+  \While{model parameters are not converged}
+    \State Expectation Step: Update posterior probabilities \Comment{Eqn.~\ref{eqn:em-posterior-probs}}
+    \State Maximization Step: Update mixture parameters \Comment{Eqns.~\Crefrange{eqn:em-weights}{eqn:em-covariances}}
+  \EndWhile 
 \end{algorithmic}
 \end{algorithm}
 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Mapping Features to MGXS Targets}
-\label{subsec:chap10-feature-mapping}
+%\section{Mapping Features to MGXS Targets}
+%\label{subsec:chap10-feature-mapping}
 
 %-competing paradigms:
 %  -clustering
@@ -1294,16 +1266,16 @@ fourth paragraph: assumptions and guarantees
 %  -some combination of the two
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsubsection{Decision Tree Regression}
-\label{subsubsec:chap10-tree-regression}
+%\subsection{Decision Tree Regression}
+%\label{subsubsec:chap10-tree-regression}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsubsection{Random Forest Regression}
-\label{subsubsec:chap10-forest-regression}
+%\subsection{Random Forest Regression}
+%\label{subsubsec:chap10-forest-regression}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsubsection{Gaussian Process Regression}
-\label{subsubsec:chap10-gaussian-processes}
+%\subsection{Gaussian Process Regression}
+%\label{subsubsec:chap10-gaussian-processes}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Model Selection}
@@ -1316,6 +1288,56 @@ fourth paragraph: assumptions and guarantees
 \caption[\textit{i}MGXS model selection]{Model selection evaluates the clustering models.}
 \label{fig:chap10-model}
 \end{figure}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Davies-Boulding Index}
+\label{sec:chap10-db-index}
+
+-Davies-Boulding (DB) index~\cite{davies1979dbindex}
+
+\begin{equation}
+\label{eqn:chap10-db-index}
+\textrm{DB} = \frac{1}{K} \displaystyle\sum\limits_{m=1}^{M} \max_{m \ne n} \left(\frac{\sigma_{m} + \sigma_{n}}{d\left(\boldsymbol{\mu}_{m},\boldsymbol{\mu}_{n}\right)}\right) 
+\end{equation}
+
+%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Dunn Index}
+\label{sec:chap10-dunn-index}
+
+-Dunn Index~\cite{dunn1974index}
+
+\begin{equation}
+\label{eqn:chap10-dunn-index}
+\textrm{D} = \frac{\min_{1 \le m \le n \le M} d(\boldsymbol{\mu}_{m},\boldsymbol{\mu}_{n})}{\max_{1 \le m \le M} d^'(m)}
+\end{equation}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Silhouette Coefficient}
+\label{sec:chap10-silhouette-coeff}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Bayesian Information Criterion}
+\label{sec:chap10-bic}
+
+-Bayesian Information Criterion (BIC)~\cite{schwarz1978bic} to select number of components for \acp{GMM}
+-a penalty term on the number of parameters in a model
+  -measures the ``efficiency'' of parametrized model at predicting dataset
+  -choose model with lowest BIC
+-theoretically guaranteed to recover true number of components in asymptotic regime
+  -i.e., given infinite data points which were in fact i.i.d. by a mixture of gaussians
+  -assumes that data is distributed according to an exponential family 
+-given by the number of of data points $K$, the number of parameters$\boldsymbol{\theta}$ to be estimated
+-$|\boldsymbol{\theta}|$ and the maximumum likelihood $\hat{L}$ of the model to be estimated:
+    
+\begin{equation}
+\label{eqn:chap10-bic}
+\textrm{BIC} = -2 \cdot \ln(\hat{L}) + |\boldsymbol{\theta}| \cdot \ln(K) 
+\end{equation}
+
+\begin{equation}
+\label{eqn:chap10-likelihood}
+\hat{L} = p \left( \lbrace \boldsymbol{\hat{f}}_{1}, \boldsymbol{\hat{f}}_{2}, \dots, \boldsymbol{\hat{f}}_{K} \rbrace | \boldsymbol{\hat{\theta}}\right)
+\end{equation}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
