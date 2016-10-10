@@ -930,7 +930,7 @@ res = \max_{1 \le m \le M} \|\boldsymbol{\mu}_{m}^{(t+1)} - \boldsymbol{\mu}_{m}
 \end{equation}
 
 \begin{algorithm}[ht!]
-\caption{$k$-means Clustering Algorithm}
+\caption[$k$-means Clustering Algorithm]{$k$-means Clustering Algorithm}
 \label{alg:chap10-kmeans}
 \begin{algorithmic}[1]
   \State Initialize $M$ centroids $\lbrace \boldsymbol{\mu}_{1}, \boldsymbol{\mu}_{2}, \dots, \boldsymbol{\mu}_{M} \rbrace$
@@ -964,7 +964,7 @@ d_{a,b} = d\left(\mathbb{S}_{a}, \mathbb{S}_{b}\right) = \displaystyle\sum\limit
 \end{equation}
 
 \begin{algorithm}[h!]
-\caption{Agglomerative Clustering Algorithm}
+\caption[Agglomerative Clustering Algorithm]{Agglomerative Clustering Algorithm}
 \label{alg:chap10-agglomerative}
 \begin{algorithmic}[1]
   \State Initialize collection $\mathbb{C}$ of $K$ singleton clusters: $\mathbb{S}_{k} = \lbrace \boldsymbol{\hat{f}}_{k} \rbrace$
@@ -989,7 +989,7 @@ The Ward criterion minimizes the sum-of-squared differences within all clusters,
 
 The agglomerative clustering algorithm makes no explicit assumption about the shape or size of clusters. As a result, it may out-perform $k$-means for datasets with clusters with non-convex shapes. The linkage criterion as well as the distance metric have a large impact on the shapes of clusters found by the algorithm\footnote{Agglomerative clustering is known to exhibit a ``rich get richer'' behavior with highly uneven cluster sizes, which may be exacerbated for certain linkage criteria.}. In contrast to $k$-means, agglomerative clustering does not depend on any starting conditions. However, these advantages come at a cost since the computational complexity of the algorithm is $\mathcal{O}(K^{2}\log(K))$ which is too slow for large datasets. \textit{Connectivity constraints} may be employed to improve the performance given some domain knowledge about the local structure, such as a nearest neighbors graph. Finally, similar to the $k$-means algorithm, agglomerative clustering requires a user to define the number of clusters $M$ to find within the dataset. In practice, the optimal value of $M$ is unknown \textit{a priori}, and model selection techniques must be used to select from a sequence of clusterings trained for different values of $M$, as discussed in Sec.~\ref{sec:chap10-model-select}.
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%
 \subsection{BIRCH}
 \label{subsec:chap10-birch}
 
@@ -1030,7 +1030,7 @@ SS_{a_{i}} = \displaystyle\sum\limits_{\boldsymbol{\hat{f}}_{k} \in \mathbb{N}_{
 \noindent The linear and squared sums are all that is needed to uniquely and exactly determine the nearest subcluster to a sample, and to compute the subcluster radius. Each non-terminal CF node contains a list (at most $B$ long) of pointers $\mathbb{N}_{a_{i}}$ and the CF vectors $CF_{a_{i}}$ for each of its children. Each terminal CF node $a$ contains a list (at most $B$ long) with the CF vectors $CF_{a_{i}}$ of each of its subclusters, each of which must have a radius $R_{a_{i}}$ less than the threshold.
 
 \begin{algorithm}[h!]
-\caption{BIRCH Clustering Algorithm}
+\caption[BIRCH Clustering Algorithm]{BIRCH Clustering Algorithm}
 \label{alg:chap10-birch}
 \begin{algorithmic}[1]
   \State Initialize an empty root node $\mathbb{N}_{r}$
@@ -1094,7 +1094,7 @@ The key steps of the BIRCH clustering algorithm are summarized in Alg.~\ref{alg:
 CF_{a_{i}+k} = CF_{a_{i}} + CF_{k} = \left[|\mathbb{S}_{a_{i}}| + |\mathbb{S}_{k}|, LS_{a_{i}} + LS_{k}, SS_{a_{i}} + SS_{k}\right]^{T}
 \end{equation}
 
-This thesis employs the BIRCH clustering algorithm implemented in the \texttt{Birch} class of the \texttt{sklearn.cluster} module in the \texttt{scikit-learn} Python package. The leaf subclusters were clustered using the \texttt{AgglomerativeClustering} from the \texttt{scikit-learn} package, with the Ward linkage criterion and Euclidean distance metric (see Sec.~\ref{subsec:chap10-agglomerative}). The default branching factor of 50 and threshold of 0.5 were used; future work may seek to identify the most appropriate values for $B$ and $T$ for the \textit{i}\ac{MGXS} data processing application.
+This thesis employs the BIRCH clustering algorithm implemented in the \texttt{Birch} class of the \texttt{sklearn.cluster} module in the \texttt{scikit-learn} Python package. The leaf subclusters were clustered using the \texttt{AgglomerativeClustering} from the \texttt{scikit-learn} package, with the Ward linkage criterion and Euclidean distance metric (see Sec.~\ref{subsec:chap10-agglomerative}). The default branching factor of 50 and threshold of 0.5 were used; future work may seek to identify the most appropriate values for $B$ and $T$ to cluster \ac{MGXS} datasets.
 
 Like agglomerative clustering, the BIRCH clustering algorithm makes no explicit assumption about the shape or size of clusters. As a result, it may out-perform $k$-means for datasets with clusters with non-convex shapes. In contrast to $k$-means and agglomerative clustering, BIRCH is local and does not require an explicit scan of all data points and existing clusters to make clustering decisions. As a result, BIRCH has a computational complexity that approaches $\mathcal{O}(K)$ for large datasets. Furthemore, unlike $k$-means, BIRCH does not depend on any starting conditions. In addition, the user does not necessarily need to specify the number of clusters to find since the leaf subclusters can simply be read from the final CFT. However, the commonly used variant of BIRCH employed by this thesis does require the number of clusters $M$ to be specified for use in a final step which clusters the leaf nodes in the CFT. As a result, model selection techniques must be used to select from a sequence of clusterings trained for different values of $M$, as discussed in Sec.~\ref{sec:chap10-model-select}.
 
@@ -1202,7 +1202,7 @@ fourth paragraph: assumptions and guarantees
 -requires model selection criterion to determine appropriate number of clusters
 
 \begin{algorithm}[h]
-\caption{Expectation-Maximization Algorithm for \acp{GMM}}
+\caption[Expectation-Maximization Algorithm for GMMs]{Expectation-Maximization Algorithm for \acp{GMM}}
 \label{alg:chap10-em-gmm}
 \begin{algorithmic}[1]
   \State Initialize means $\lbrace \boldsymbol{\mu}_{1}^{(0)}, \boldsymbol{\mu}_{2}^{(0)}, \dots, \boldsymbol{\mu}_{m}^{(0)} \rbrace$ with $k$-means \Comment{Alg.~\ref{alg:chap10-kmeans}}
