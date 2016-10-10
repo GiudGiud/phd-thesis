@@ -1104,19 +1104,25 @@ It should be noted that the datasets clustered in this thesis may be stored in m
 \subsection{Gaussian Mixture Models}
 \label{subsec:chap10-gmms}
 
-first paragraph: intro
--introduce scheme~\cite{mclachlan1988mixture}
--a hierarchical probabilistic or generative model
--like generalizing $k$-means to include data about covariance between features
--assumes data points are generated from a mixture of a finite number of gaussian distributions
-  -observations are random variables distributed according to mixture of component distributions
-  -each component comes from the same family of probability distributions (e.g., gaussians)
-  -assumes latent variables for each observation indicating identify of component distribution from which it was drawn
--parameters: number of components, mixture weights, component-wise params ($\mu$ and $\sigma$)
-  -parameters for each gaussian (e.g., $\mu$ and $\sigma$) are unknown and must be inferred from data
--fits the data to define best $\mu$ and $\sigma$ for each cluster
+\acp{GMM} are a commonly used distribution model approach to clustering~\cite{mclachlan1988mixture}. The \ac{GMM} is a machine learning algorithm from the broader class of \textit{generative models} which attempt to describe the probability distribution from which a dataset was generated (assuming one exists). The \ac{GMM} may be thought of as a generalization of the $k$-means algorithm to include information about the covariance between features. The distribution model approach assumes that each sample was i.i.d. generated from one of a finite number of component Gaussian distributions which comprise the mixture. The model assumes that each sample contains a \textit{latent variable}\footnote{A hidden variable which is not observed within a feature vector.} that indicates the identity of the component distribution from which it was drawn. In the context of \textit{i}\ac{MGXS}, the latent variables are the cluster labels $\ell_{k}$ for each fuel pin instance $k$ and must be inferred by fitting a \ac{GMM} to the \ac{MGXS} dataset.
 
-\begin{figure}
+The generic \ac{GMM} is parameterized by the number of components (or clusters) $M$, as well as the mixture weights $\pi_{m}$, means $\boldsymbol{\mu}_{m}$ and covariance matrices $\boldsymbol{\Sigma}_{m}$ for each component $m \in \lbrace 1, 2, \dots, M \rbrace$, and is expressed as:
+
+\begin{equation}
+\label{eqn:chap10-gmm}
+p\left(\boldsymbol{\hat{f}}_{k} | \boldsymbol{\theta}\right) = \displaystyle\sum\limits_{m=1}^{M} \pi_{m} \mathcal{N}\left(\boldsymbol{\hat{f}}_{k}; \boldsymbol{\theta}\right) = \displaystyle\sum\limits_{m=1}^{M} \pi_{m} \mathcal{N}\left(\boldsymbol{\hat{f}}_{k}; \boldsymbol{\mu}_{m}, \boldsymbol{\Sigma}_{m}\right)
+\end{equation}
+
+\noindent where each $J^{*}$-dimensional Gaussian component distribution is given by:
+
+\begin{equation}
+\label{eqn:chap10-gaussian}
+\mathcal{N}\left(\boldsymbol{\hat{f}}_{k}; \boldsymbol{\mu}_{m}, \boldsymbol{\Sigma}_{m}\right) = \frac{1}{(2\pi)^{\nicefrac{J^{*}}{2}} |\boldsymbol{\Sigma}_{m}|^{\nicefrac{1}{2}}} exp\lbrace -\frac{1}{2}\left(\boldsymbol{\hat{f}}_{k} - \boldsymbol{\mu}_{m})^{T}\boldsymbol{\Sigma}_{m}^{-1}(_{k} - \boldsymbol{\mu}_{m}\right) \rbrace
+\end{equation}
+
+The generic \ac{GMM} is illustrated in Fig.~\ref{fig:chap10-gmm-plates} with the \textit{plate notation} commonly used by the machine learning community to describe complex probability distributions. In summary, small rectangles represent unknown model parameters, unshaded circles describe unobserved random variables, and shaded circles signify observed random variables. The dimensionality of non-scalar random variables are indicated in brackets inside each square and circle. Rectangular \textit{plates} group subgraphs of variables which repeat together according to the repetition numbers in the bottom right corners of each plate (\textit{e.g.}, $M$ and $K$). The inter-dependences of each model parameter and random variable within the graph are indicated by directed arrows. Categorical variables, such as the cluster labels $\ell_{k}$, are related using a squiggly arrow with a T junction. The interested reader is referred to~\cite{jordan1999graphs} or many other sources in the machine learning literature for more information about describing graphical models with plate notation.
+
+\begin{figure}[h!]
 \centering
 \begin{tikzpicture}
   \tikzstyle{main}=[circle, minimum size = 10mm, thick, draw =black!80, node distance = 16mm]
@@ -1127,11 +1133,11 @@ first paragraph: intro
   \tikzstyle{shortconnect}=[-latex, thin]
   \tikzstyle{box}=[rectangle, draw=black!100]
   \tikzstyle{switch}=[circle, minimum size = 1mm, fill = black!100, draw=black!100]
-  \node[param] (pi) [label=below:$\boldsymbol\pi$] {[M]};
+  \node[param] (pi) [label=below:$\boldsymbol\pi$] {[$M$]};
   \node[main] (ell) [xshift=10mm, right of=pi,label=below:$\ell_{k}$] {M};
-  \node[param] (mu) [above of=pi,yshift=20mm, label=below:$\boldsymbol{\mu}_{m}$] { };
-  \node[main, fill = black!10] (f) [right of= ell,label=below:$\boldsymbol{\hat{f}}_{k}$] { };
-  \node[param] (sigma) [above of=ell,yshift=20mm, label=below:$\sigma_{m}^2$] { };
+  \node[param] (mu) [above of=pi,yshift=20mm, label=below:$\boldsymbol{\mu}_{m}$] {[$J^{*}$]};
+  \node[main, fill = black!10] (f) [right of= ell,label=below:$\boldsymbol{\hat{f}}_{k}$] {[$J^{*}$]};
+  \node[param] (sigma) [above of=ell,yshift=20mm, label=below:$\boldsymbol{\Sigma}_{m}$] {[$J^{*},J^{*}$] };
   \path (pi) edge [connect] (ell) (ell) edge [selector] (f) (mu) edge [connect] (f) (sigma) edge [connect] (f);
   \node[rectangle, inner sep=0mm, fit= (ell) (f),label=below right:K, xshift=9mm] {};
   \node[rectangle, inner sep=7mm,draw=black!100, fit= (ell) (f), xshift=1mm] {};
@@ -1139,81 +1145,66 @@ first paragraph: intro
   \node[rectangle, inner sep=7mm,draw=black!100, fit= (mu) (sigma), yshift=-2mm, xshift=3mm] {};
 \end{tikzpicture}
 \caption[Plate notation for a Gaussian Mixture Model]{Plate notation for a Gaussian Mixture Model.}
-\label{fig:chap10-gmm}
+\label{fig:chap10-gmm-plates}
 \end{figure}
+\begin{algorithm}[h!]
+\caption[Expectation-Maximization Algorithm for GMMs]{Expectation-Maximization Algorithm for \acp{GMM}}
+\label{alg:chap10-em-gmm}
 
-\begin{equation}
-\label{eqn:chap10-gmm}
-p\left(\boldsymbol{\hat{f}}_{k} | \boldsymbol{\theta}\right) = \displaystyle\sum\limits_{m=1}^{M} \pi_{m} \mathcal{N}\left(\boldsymbol{\hat{f}}_{k}; \boldsymbol{\theta}\right) = \displaystyle\sum\limits_{m=1}^{M} \pi_{m} \mathcal{N}\left(\boldsymbol{\hat{f}}_{k}; \boldsymbol{\mu}_{m}, \boldsymbol{\Sigma}_{m}\right)
-\end{equation}
+\begin{algorithmic}[1]
+  \State Initialize means $\lbrace \boldsymbol{\mu}_{1}^{(0)}, \boldsymbol{\mu}_{2}^{(0)}, \dots, \boldsymbol{\mu}_{m}^{(0)} \rbrace$ \Comment{Alg.~\ref{alg:chap10-kmeans}}
+  \State Initialize soft weights $\lbrace h_{1,1}^{(1)}, h_{1,2}^{(1)}, \dots, h_{M,K}^{(1)} \rbrace$
+  \State Initialize component weights $\lbrace \pi_{1}^{(1)}, \pi_{2}^{(1)}, \dots, \pi_{m}^{(1)} \rbrace$ \Comment{Eqn.~\ref{alg:chap10-em-weights}}
+  \State Initialize component covariances $\lbrace \boldsymbol{\Sigma}_{1}^{(1)}, \boldsymbol{\Sigma}_{2}^{(1)}, \dots, \boldsymbol{\Sigma}_{m}^{(1)} \rbrace$ \Comment{Eqn.~\ref{alg:chap10-em-covariances}}
+  \While{model parameters are not converged}
+    \State Expectation Step: Update soft weights \Comment{Eqn.~\ref{eqn:em-posterior-probs}}
+    \State Maximization Step: Update mixture parameters \Comment{Eqns.~\Crefrange{eqn:em-weights}{eqn:em-covariances}}
+  \EndWhile 
+  \State Compute cluster labels from MAP estimators \Comment{Eqn.~\ref{eqn:chap10-gmm-map}}
+\end{algorithmic}
+\end{algorithm}
 
-\begin{equation}
-\label{eqn:chap10-gaussian}
-\mathcal{N}\left(\boldsymbol{\hat{f}}_{k}; \boldsymbol{\mu}_{m}, \boldsymbol{\Sigma}_{m}\right) = \frac{1}{(2\pi)^{\nicefrac{J^{*}}{2}} |\boldsymbol{\Sigma}_{m}|^{\nicefrac{1}{2}}} exp\lbrace -\frac{1}{2}\left(\boldsymbol{\hat{f}}_{k} - \boldsymbol{\mu}_{m})^{T}\boldsymbol{\Sigma}_{m}^{-1}(_{k} - \boldsymbol{\mu}_{m}\right) \rbrace
-\end{equation}
+The number of mixture components $M$ may either be specified by the user or inferred using Variational Bayesian methods. The means $\boldsymbol{\mu}_{m}$ and variances $\boldsymbol{\Sigma}_{m}$ are \textit{a priori} unknown and must be inferred from the data. These parameters cannot be solved for directly and must instead by approximated by an iterative algorithm such as \textit{Expecation-Maximization} (EM)~\cite{dempster1977em} summarized in Alg.~\ref{alg:chap10-em-gmm}. The algorithm introduces \textit{soft weights} $h_{m,k}$ which signify the probability that sample $k$ was drawn from mixture component $m$, and are normalized to unity for each sample. The EM algorithm finds the maximum likelihood parameters for $\boldsymbol{\mu}_{m}$ and $\boldsymbol{\Sigma}_{m}$ on each iteration $t$ and repeats until convergence. 
+
+The first step of the EM algorithm initializes the means $\boldsymbol{\mu}_{m}$ for the $M$ mixture components. A variety of approaches exist to initialize the means; it is common to use the $k$-means algorithm (Sec.~\ref{subsec:chap10-kmeans}) and extract the cluster centroids for this purpose. Next, each sample $k$ is associated with the nearest component mean $\boldsymbol{\mu}_{m}$ by setting soft weight $h_{m,k}$ to unity and all others to zero. Given the initial component means and soft weights, the mixture weights $\pi_{m}$ may be computed for each component $m$ from the following normalization:
 
 \begin{equation}
 \label{eqn:em-weights}
 \pi_{m}^{(t+1)} = \frac{1}{K}\displaystyle\sum\limits_{k=1}^{K} h_{m,k}^{(t)}
 \end{equation}
 
-\begin{equation}
-\label{eqn:em-means}
-\boldsymbol{\mu}_{m}^{(t+1)} = \frac{\displaystyle\sum\limits_{k=1}^{K}h_{m,k}^{(t)}\boldsymbol{\hat{f}}_{k}}{\displaystyle\sum\limits_{k=1}^{K}h_{m,k}^{(t)}}
-\end{equation}
+\noindent The covariance matrices $\boldsymbol{\Sigma}_{m}$ for mixture component $m$ are then computed from the component mean and soft weights as follows:
 
 \begin{equation}
 \label{eqn:em-covariances}
 \boldsymbol{\Sigma}_{m}^{(t+1)} = \frac{\displaystyle\sum\limits_{k=1}^{K}h_{m,k}^{(t)}\left[ \boldsymbol{\hat{f}}_{k} - \boldsymbol{\mu}_{m}^{(t+1)}\right]\left[ \boldsymbol{\hat{f}}_{k} - \boldsymbol{\mu}_{m}^{(t+1)}\right]^{T}}{\displaystyle\sum\limits_{k=1}^{K}h_{m,k}^{(t)}}
 \end{equation}
 
+The EM algorithm then proceeds to iterate between \textit{expectation} and \textit{maximization} steps. The \textit{expectation step} updates the soft weights $h_{m,k}$ with the \textit{posterior probabilities} that each sample $k$ was generated from mixture component $m$:
+
 \begin{equation}
 \label{eqn:em-posterior-probs}
 h_{m,k}^{(t)} = \frac{\pi_{m}^{(t)} \mathcal{N}\left( \boldsymbol{\hat{f}}_{k}; \boldsymbol{\mu}_{m}^{(t)}, \boldsymbol{\Sigma}_{m}^{(t)} \right)}{\displaystyle\sum\limits_{m=1}^{M}\pi_{m}^{(t)} \mathcal{N}\left( \boldsymbol{\hat{f}}_{k}; \boldsymbol{\mu}_{m}^{(t)}, \boldsymbol{\Sigma}_{m}^{(t)} \right)}
 \end{equation}
 
-second paragraph: algorithm
--uses Expecation-Maximization (EM) algorithm~\cite{dempster1977em}
--Alg.~\ref{alg:chap10-em-gmm}
-  -initialize random $\mu$ and $\sigma$ components
-  -compute probability of each as generated from each component of model
-  -assign probabilities as ``soft weights'' to each data point 
-  -update the components given the points and soft weights (similar to $k$-means)
-    -adjust parameters to maximize likelihood of data given assignments
-  -repeat
-  
-third paragraph: implementation
--\texttt{GMM} and \texttt{DPMM} of \texttt{sklearn.mixture} module
+\noindent The \textit{maximization step} updates the mixture parameters by first computing the new component means as the average of all samples biased by the soft weights:
 
-fourth paragraph: assumptions and guarantees
--theoretically guaranteed to monotonically improve the log-likelihood
--will always converge to local optimum unique to initialization just like $k$-means
-  -initialization starting parameters by using $k$-means
--often want to run multiple times with different initializations
--model selection - BIC
--Variational Bayesian estimation for \acp{GMM}~\cite{attias2000variational,blei2006variational}
-  -Dirichlet Process prior~\cite{ferguson1973dirichlet} over parameters for an infinite \acp{GMM}
-    -including the number of components
-    -approximate infinite mixture using a finite number of components according to stick-breaking representation
-    -use hyper-parameter $\alpha$ known as the \textit{concentration parameter}
--labels each data point to the most likely cluster
--but gives posterior probabilities to each cluster for each data point
-  -nice since this may give some indication about the confidence of the clustering predictions
--requires model selection criterion to determine appropriate number of clusters
+\begin{equation}
+\label{eqn:em-means}
+\boldsymbol{\mu}_{m}^{(t+1)} = \frac{\displaystyle\sum\limits_{k=1}^{K}h_{m,k}^{(t)}\boldsymbol{\hat{f}}_{k}}{\displaystyle\sum\limits_{k=1}^{K}h_{m,k}^{(t)}}
+\end{equation}
 
-\begin{algorithm}[h]
-\caption[Expectation-Maximization Algorithm for GMMs]{Expectation-Maximization Algorithm for \acp{GMM}}
-\label{alg:chap10-em-gmm}
-\begin{algorithmic}[1]
-  \State Initialize means $\lbrace \boldsymbol{\mu}_{1}^{(0)}, \boldsymbol{\mu}_{2}^{(0)}, \dots, \boldsymbol{\mu}_{m}^{(0)} \rbrace$ with $k$-means \Comment{Alg.~\ref{alg:chap10-kmeans}}
-  \State Initialize covariances $\lbrace \boldsymbol{\Sigma}_{1}^{(1)}, \boldsymbol{\Sigma}_{2}^{(1)}, \dots, \boldsymbol{\Sigma}_{m}^{(1)} \rbrace$ \Comment{Eqn.~\ref{alg:chap10-em-covariances}}  
-  \State Initialize mixture weights $\lbrace \pi_{1}^{(1)}, \pi_{2}^{(1)}, \dots, \pi_{m}^{(1)} \rbrace$ \Comment{Eqn.~\ref{alg:chap10-em-weights}}  
-  \While{model parameters are not converged}
-    \State Expectation Step: Update posterior probabilities \Comment{Eqn.~\ref{eqn:em-posterior-probs}}
-    \State Maximization Step: Update mixture parameters \Comment{Eqns.~\Crefrange{eqn:em-weights}{eqn:em-covariances}}
-  \EndWhile 
-\end{algorithmic}
-\end{algorithm}
+\noindent The component weights and covariances are updated according to Eqns.~\ref{eqn:em-weights} and~\ref{eqn:em-covariances}, respectively. The iteration terminates once the \ac{GMM} parameters converge to within a user-defined tolerance. The mixture or cluster labels $\ell_{k}$ for each sample are inferred using \textit{maximum a posteriori} probability (MAP) estimation from the final soft weights:
+
+\begin{equation}
+\label{eqn:chap10-gmm-map}
+\ell_{k} = \underset{m}{\text{argmax}} \;\; h_{m,k}^{(T)}
+\end{equation}
+
+The EM algorithm is guaranteed to monotonically increase the likelihood function of the observed data, but may not necessarily find the global optimum. The algorithm is only guaranteed to converge to a local maxima of the likelihood function. Like the $k$-means algorithm, the converged solution is highly dependent on the initial component means, though some heuristics, such as the use of $k$-means to initialize the means, may make the algorithm more robust against converging to spurious local maxima. Nevertheless, it is common to run EM many times with different initial component means and choose the solution with the maximum likelihood. This thesis employs \acp{GMM} fit with the EM algorithm implemented in the \texttt{GaussianMixture} class of the \texttt{sklearn.mixture} module in the \texttt{scikit-learn} Python package. A full or dense covariance matrix is fit during the process; approximations such as diagonal or spherical covariance matrices may alternatively be used to tractably model very large \ac{MGXS} datasets.
+
+Although the \ac{GMM} does not make assumptions about the size or shape of clusters, it does assume that each cluster is normally distributed. In addition, the EM algorithm employed by this thesis does require the number of clusters $M$ to be specified. As a result, model selection techniques must be used to select from a sequence of clusterings trained for different values of $M$, as discussed in Sec.~\ref{sec:chap10-model-select}. Alternatively, Variational Bayesian estimation methods developed for \acp{GMM}~\cite{attias2000variational,blei2006variational} may be used to automatically infer the number of mixture components using a Dirichlet Process prior over the parameters for infinite \acp{GMM}~\cite{ferguson1973dirichlet}. These methods are broadly available, including the \texttt{BayesianGaussianMixture} implementation in the \texttt{sklearn.mixture} module.
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %\section{Mapping Features to MGXS Targets}
