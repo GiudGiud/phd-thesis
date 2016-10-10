@@ -993,94 +993,112 @@ The agglomerative clustering algorithm makes no explicit assumption about the sh
 \subsection{BIRCH}
 \label{subsec:chap10-birch}
 
-first paragraph: intro
--introduce scheme~\cite{zhang1996birch}
--a hierarchical clustering algorithm
--Balanced Iterative Reducing and Clustering Using Hierarchies (BIRCH)
--designed as an out-of-core clustering algorithm for very large datasets (in number of samples)
--considered a data reduction method: reduces dataset to subclusters, which are then clustered!
--does not require inspecting all data points equally for each ``clustering decision'' as does $k$-means or agglomerative clustering
-  -``local'' use CF of subclusters to make ``clustering decisions''
+%http://slideplayer.com/slide/4942836/
 
-second paragraph: algorithm
--Alg.~\ref{alg:chap10-birch}
--builds a Characteristic Feature Tree (CFT)
-  -height-balanced tree governed by a branching factor $B$ and threshold $T$
-  -each non-leaf node contains a CF and a pointer to a child node
-  -each leaf node contains a CF
-  -all entries in a leaf node must have a radius less than the threshold
--Characteristic Features (CF)
--two parameters:
-  -threshold $T$: limits distance between entering sample and existing subclusters
-  -branching factor $B$: limits number of subclusters in a node
--CF additivity theorem~\cite{zhang1996birch} allows two clusters to merged without loss of information
--CF subcluster nodes (terminal and non-terminal)
-  -hold information necessary to represent each subcluster without needing to explicitly store each of the data points assigned to the subcluster
-    -number of samples, linear sum, squared sum
+The Balanced Iterative Reducing and Clustering Using Hierarchies (BIRCH) clustering algorithm~\cite{zhang1996birch} is an out-of-core hierarchical clustering algorithm designed for large datasets.
+BIRCH reduces the dataset to a series of \textit{subclusters} signified by the CF leaf nodes, which are themselves clustered using a standard clustering algorithm such as $k$-means or agglomerative clustering.
+BIRCH is often considered a \textit{data reduction} method which represents a dataset as a height-balanced Characteristic Feature Tree (CFT) composed of Characteristic Feature (CF) nodes. This approach is advantageous for ``big data'' settings since it does not require the equal inspection of all data points to make clustering decisions at each step as do many other algorithms (\textit{e.g.}, $k$-means, agglomerative clustering). Instead, BIRCH makes local clustering decisions when inserting a sample into the CFT. After each node's Characteristic Feature has been updated and the CFT rebalanced, the sample may be discarded (\textit{i.e.}, no longer stored in main memory). 
 
-third paragraph: implementation
--\texttt{Birch} of \texttt{sklearn.cluster} module
--use existing clustering algorithm to cluster leaf nodes
-  -\texttt{scikit-learn} uses \texttt{AgglomerativeClustering}
-
-fourth paragraph: assumptions and guarantees
--predicate on assumption that feature space is not uniformly occupied
-  -e.g., not every data point is equally important
-
--cluster centroids $\boldsymbol{\mu}_{\mathbb{N}_{a}}$ computed per Eqn.~\ref{eqn:chap10-kmeans-update}
+The CFT is governed by two user-defined parameters: the threshold $T$ representing the maximum \textit{radius} of a subcluster, and the branching factor $B$ specifying the maximum number of \textit{children} per CF node\footnote{A CF node's \textit{children} are the CF nodes that it points to at the next level in the Characteristic Feature Tree.}. The radius $R_{a_{i}}$ of the $i$\textsuperscript{th} subcluster $\mathbb{S}_{a_{i}}$ contained by CF node $\mathbb{N}_{a}$ is defined as the average squared distance of each sample $\boldsymbol{\hat{f}}_{k}$ assigned to the subcluster from the centroid of the subcluster $\boldsymbol{\mu}_{\mathbb{N}_{a}}$:
 
 \begin{equation}
 \label{eqn:chap10-birch-radius}
-R_{a} = \left(\frac{1}{|\mathbb{N}_{a}|}\displaystyle\sum\limits_{\boldsymbol{\hat{f}}_{k} \in \mathbb{N}_{a}} \left(\boldsymbol{\hat{f}}_{k} - \boldsymbol{\mu}_{a}\right)^{2}\right)^{\frac{1}{2}}
+R_{a} = \left(\frac{1}{|\mathbb{S}_{a_{i}}|}\displaystyle\sum\limits_{\boldsymbol{\hat{f}}_{k} \in \mathbb{S}_{a_{i}}} \left(\boldsymbol{\hat{f}}_{k} - \boldsymbol{\mu}_{a_{i}}\right)^{2}\right)^{\frac{1}{2}}
 \end{equation}
+
+\noindent where the subcluster centroid $\boldsymbol{\mu}_{\mathbb{N}_{a}}$ is computed by Eqn.~\ref{eqn:chap10-kmeans-update}. The branching and threshold factors collectively govern the heigh-balancing of the tree, with the branching factor limiting the growth rate of new CF nodes and the threshold upper bounding the length scale of the subclusters found by the algorithm. 
+
+The Characteristic Feature nodes can be distinguished between terminal (leaf) and non-terminal nodes. Each CF node represents a sequence of at most $B$ subclusters, and holds the information necessary to represent the subclusters without explicitly storing the samples assigned to each subcluster. Each CF node $\mathbb{N}_{a}$ contains a Characteristic Feature vector $CF_{a_{i}}$ for its $i$\textsuperscript{th} subcluster:
+
+\begin{equation}
+\label{eqn:chap10-birch-cf}
+CF_{a_{i}} = \left[|\mathbb{S}_{a_{i}}|, LS_{a_{i}}, SS_{a_{i}}\right]^{T}
+\end{equation}
+
+\noindent The first element is the number of subclusters within the subcluster. The second and third elements are referred to as the \textit{linear sum} $LS_{a_{i}}$ and \textit{squared sum} $SS_{a_{i}}$ of the samples assigned to the subcluster, and are expressed as follows:
 
 \begin{equation}
 \label{eqn:chap10-birch-linear-sum}
-LS_{a} = \displaystyle\sum\limits_{\boldsymbol{\hat{f}}_{k} \in \mathbb{N}_{a}} \boldsymbol{\hat{f}}_{k}
+LS_{a_{i}} = \displaystyle\sum\limits_{\boldsymbol{\hat{f}}_{k} \in \mathbb{S}_{a_{i}}} \boldsymbol{\hat{f}}_{k}
 \end{equation}
 
 \begin{equation}
 \label{eqn:chap10-birch-square-sum}
-SS_{a} = \displaystyle\sum\limits_{\boldsymbol{\hat{f}}_{k} \in \mathbb{N}_{a}} \boldsymbol{\hat{f}}_{k}^{2}
+SS_{a_{i}} = \displaystyle\sum\limits_{\boldsymbol{\hat{f}}_{k} \in \mathbb{N}_{a_{i}}} \boldsymbol{\hat{f}}_{k}^{2}
 \end{equation}
 
-\begin{equation}
-\label{eqn:chap10-birch-cf}
-CF_{a} = \left[|\mathbb{N}_{a}|, LS_{a}, SS_{a}\right]^{T}
-\end{equation}
+\noindent The linear and squared sums are all that is needed to uniquely and exactly determine the nearest subcluster to a sample, and to compute the subcluster radius. Each non-terminal CF node contains a list (at most $B$ long) of pointers $\mathbb{N}_{a_{i}}$ and the CF vectors $CF_{a_{i}}$ for each of its children. Each terminal CF node $a$ contains a list (at most $B$ long) with the CF vectors $CF_{a_{i}}$ of each of its subclusters, each of which must have a radius $R_{a_{i}}$ less than the threshold.
 
-\begin{equation}
-\label{eqn:chap10-birch-cf-additivity}
-CF_{a+b} = CF_{a} + CF_{b} = \left[|\mathbb{N}_{a}| + |\mathbb{N}_{b}|, LS_{a} + LS_{b}, SS_{a} + SS_{b}\right]^{T}
-\end{equation}
-
-\begin{algorithm}[h]
+\begin{algorithm}[h!]
 \caption{BIRCH Clustering Algorithm}
 \label{alg:chap10-birch}
 \begin{algorithmic}[1]
   \State Initialize an empty root node $\mathbb{N}_{r}$
   \For{each sample $k$}
-    \State Initialize CFT node: $\mathbb{N} \leftarrow \mathbb{N}_{r}$
-    \While{$\mathbb{N}$ is not a leaf node} 
+  
+    \item[]
+  
+    \Statex \hspace{0.2in} \textit{Insert sample into CFT}
+    \State Initialize  node: $\mathbb{N} \leftarrow \mathbb{N}_{r}$
+    \For{each level of CFT (root-to-leaf)}
       \State Compute radii for each subcluster if merged with sample \Comment{Eqn.~\ref{eqn:chap10-birch-radius}}
-      \State Find subcluster $\mathbb{N}_{a}$ with smallest post-merged radius $R_{a+k}$
-	  \State Assign $\mathbb{N} \leftarrow \mathbb{N}_{a}$
-    \EndWhile
-    \State Add sample to $\mathbb{N}$ and update $CF_{\mathbb{N}}$ \Comment{Eqn.~\ref{eqn:chap10-birch-cf-additivity}}
-    \While{$\mathbb{N} \ne \mathbb{N}_{r}$ } 
-      \If{$R_{\mathbb{N}} > T$}
-        \If{$|\mathbb{N}| > B$}
-          \State Split subclusters in $\mathbb{N}$ into $\mathbb{N}_{a}$ and $\mathbb{N}_{b}$
-        \EndIf
-        \State Assign parent subcluster $\mathbb{N}_{p}$ with sample $k$ to $\mathbb{N}$: $\mathbb{N} \leftarrow \mathbb{N}_{p}$
+      \State Find subcluster $\mathbb{S}_{a_{i}}$ with smallest post-merged radius
+      \If{$\mathbb{N}$ is a terminal node}
+        \State Add sample to $\mathbb{S}_{a_{i}}$ and update $CF_{a_{i}}$ \Comment{Eqn.~\ref{eqn:chap10-birch-cf-additivity}}
+  	  \Else
+  	    \State Move to child $\mathbb{N}_{a_{i}}$ of subcluster: $\mathbb{N} \leftarrow \mathbb{N}_{a_{i}}$
+  	  \EndIf
+    \EndFor
+
+    \item[]
+
+    \Statex \hspace{0.2in} \textit{Balance terminal node}
+    \If{$R_{a_{i}} > T$} \Comment{Eqn.~\ref{eqn:chap10-birch-radius}}
+      \State Split subcluster $\mathbb{S}_{a_{i}}$ into $\mathbb{S}_{a_{i,1}}$ and $\mathbb{S}_{a_{i,2}}$
+      \State Add subclusters $\mathbb{S}_{a_{i,1}}$ and $\mathbb{S}_{a_{i,2}}$ to node $\mathbb{N}_{a}$
+      \State Remove subcluster $\mathbb{S}_{a_{i}}$ from node
+      \If{$|\mathbb{N}| > B$}
+        \State Split node $\mathbb{N}$ into nodes $\mathbb{N}_{a}$ and $\mathbb{N}_{b}$
       \EndIf
-   \EndWhile
+    \EndIf
+    
+    \item[]
+
+    \Statex \hspace{0.2in} \textit{Rebalance CFT}
+    \For{each level of CFT (leaf-to-root)}
+      \If{a child node was split}
+        \State Remove child and insert two new children
+        \If{$|\mathbb{N}| > B$}
+          \State Split node $\mathbb{N}$ into nodes $\mathbb{N}_{a}$ and $\mathbb{N}_{b}$
+        \EndIf
+      \Else
+        \State Update CF vector for child with sample \Comment{Eqn.~\ref{eqn:chap10-birch-cf-additivity}}        
+      \EndIf
+	  \State Move to parent $\mathbb{N}_{p}$: $\mathbb{N} \leftarrow \mathbb{N}_{p}$
+    \EndFor
+
+  \item[]
+
   \EndFor
-  \State Input leaf nodes to agglomerative clustering algorithm \Comment{Alg.~\ref{alg:chap10-agglomerative}}
+
+  \item[]
+
+  \State Input terminal subclusters to standard clustering algorithm \Comment{Algs.~\ref{alg:chap10-kmeans},~\ref{alg:chap10-agglomerative} }
 \end{algorithmic}
 \end{algorithm}
 
-%http://slideplayer.com/slide/4942836/
+The key steps of the BIRCH clustering algorithm are summarized in Alg.~\ref{alg:chap10-birch}. BIRCH consists of a primary loop over all samples to build the Characteristic Feature Tree, and typically only needs to make a single pass through a dataset. For each sample, BIRCH starts at the top of the CFT and proceeds to traverse the tree, inserting the sample into each CF node and/or height-balancing the tree by creating new nodes as dictated by the threshold and branching factor. The BIRCH algorithm constructs the CFT by leveraging the \textit{Characteristic Feature Aditivity Theorem}~\cite{zhang1996birch}, which allows subcluster $\mathbb{S}_{a_{i}}$ to be merged with the singleton subcluster $\mathbb{S}_{k}$ for sample $k$ without loss of information:
+
+\begin{equation}
+\label{eqn:chap10-birch-cf-additivity}
+CF_{a_{i}+k} = CF_{a_{i}} + CF_{k} = \left[|\mathbb{S}_{a_{i}}| + |\mathbb{S}_{k}|, LS_{a_{i}} + LS_{k}, SS_{a_{i}} + SS_{k}\right]^{T}
+\end{equation}
+
+This thesis employs the BIRCH clustering algorithm implemented in the \texttt{Birch} class of the \texttt{sklearn.cluster} module in the \texttt{scikit-learn} Python package. The leaf subclusters were clustered using the \texttt{AgglomerativeClustering} from the \texttt{scikit-learn} package, with the Ward linkage criterion and Euclidean distance metric (see Sec.~\ref{subsec:chap10-agglomerative}). The default branching factor of 50 and threshold of 0.5 were used; future work may seek to identify the most appropriate values for $B$ and $T$ for the \textit{i}\ac{MGXS} data processing application.
+
+Like agglomerative clustering, the BIRCH clustering algorithm makes no explicit assumption about the shape or size of clusters. As a result, it may out-perform $k$-means for datasets with clusters with non-convex shapes. In contrast to $k$-means and agglomerative clustering, BIRCH is local and does not require an explicit scan of all data points and existing clusters to make clustering decisions. As a result, BIRCH has a computational complexity that approaches $\mathcal{O}(K)$ for large datasets. Furthemore, unlike $k$-means, BIRCH does not depend on any starting conditions. In addition, the user does not necessarily need to specify the number of clusters to find since the leaf subclusters can simply be read from the final CFT. However, the commonly used variant of BIRCH employed by this thesis does require the number of clusters $M$ to be specified for use in a final step which clusters the leaf nodes in the CFT. As a result, model selection techniques must be used to select from a sequence of clusterings trained for different values of $M$, as discussed in Sec.~\ref{sec:chap10-model-select}.
+
+It should be noted that the datasets clustered in this thesis may be stored in memory on most modern computing systems, and do not require the use of an out-of-core algorithm like BIRCH. Nevertheless, BIRCH may be useful if future efforts use \textit{i}\ac{MGXS} to cluster \ac{MGXS} datasets for full core 3D reactor benchmarks with axial heterogeneities with orders of magnitude more samples (\textit{i.e.}, fuel pin instances with axial subdivisions). In addition, the size of the \ac{MGXS} datasets may substantially grow if new features are employed in the \textit{i}\ac{MGXS} data processing pipeline in the future. Finally, BIRCH may be used in the future to cluster \ac{MGXS} datasets on high-performance memory-limited hardware such as Graphical Processing Units.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Gaussian Mixture Models}
