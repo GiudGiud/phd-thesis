@@ -1271,7 +1271,7 @@ It is important to note that model selection may \textit{only} examine the clust
 \subsection{Davies-Boulding Index}
 \label{subsec:chap10-db-index}
 
-The Davies-Boulding (DB) index~\cite{davies1979dbindex} is the ratio of intra-cluster to inter-cluster dis-similarity, or equivalently, the ratio of within-cluster scatter to between-cluster separation. The DB index penalizes cluster models with high \textit{intra-cluster distances} (\textit{i.e.}, low intra-cluster similarities) and low \textit{inter-cluster distances} (\textit{i.e.}, high inter-cluster similarities). The inter-custer distance $d\left(\boldsymbol{\mu}_{m},\boldsymbol{\mu}_{n}\right)$ is simply the distance between cluster centroids $\boldsymbol{\mu}_{m}$ and $\boldsymbol{\mu}_{n}$ in feature space. The most common metric for the intra-cluster distance $R_{m}$ -- and the one used in this thesis -- is the average distance of all samples in cluster $\mathbb{S}_{m}$ to its centroid $\boldsymbol{\mu}_{m}$:
+The Davies-Boulding (DB) index~\cite{davies1979dbindex} is the ratio of intra-cluster to inter-cluster dissimilarity, or equivalently, the ratio of within-cluster scatter to between-cluster separation. The DB index penalizes cluster models with high \textit{intra-cluster distances} (\textit{i.e.}, low intra-cluster similarities) and low \textit{inter-cluster distances} (\textit{i.e.}, high inter-cluster similarities). The inter-custer distance $d\left(\boldsymbol{\mu}_{m},\boldsymbol{\mu}_{n}\right)$ is simply the distance between cluster centroids $\boldsymbol{\mu}_{m}$ and $\boldsymbol{\mu}_{n}$ in feature space. The most common metric for the intra-cluster distance $R_{m}$ -- and the one used in this thesis -- is the average distance of all samples in cluster $\mathbb{S}_{m}$ to its centroid $\boldsymbol{\mu}_{m}$:
 
 \begin{equation}
 \label{eqn:chap10-db-mean-distance}
@@ -1291,7 +1291,7 @@ The ``best'' clustering model is the one which \textit{minimizes} the DB index. 
 \subsection{Dunn Index}
 \label{subsec:chap10-dunn-index}
 
-The Dunn index~\cite{dunn1974index} is the ratio of the minimum \textit{inter-cluster distance} to the maximum \textit{intra-cluster distance}, or equivalently, the ratio between the distance separating the two most similar clusters and the radius of the most dis-similar cluster. The Dunn index seeks to identify clustering models with high-density (\textit{i.e.}, high intra-cluster similarities) and well-separated clusters (\textit{i.e.}, low inter-cluster similarities). In contrast to the DB index which is an average across clusters, the Dunn index is indicative of the most poorly defined cluster(s) in the model. Various formulations may be used for both the intra- and inter-cluster distances. This thesis used the same formulations for the intra-cluster distance $R_{m}$ (Eqn.~\ref{eqn:chap10-birch-radius}) and inter-cluster distance $d\left(\boldsymbol{\mu}_{m},\boldsymbol{\mu}_{n}\right)$ (Eqn.~\ref{eqn:chap10-db-index}) as those used for the DB index. The Dunn index is then given by the following expression:
+The Dunn index~\cite{dunn1974index} is the ratio of the minimum \textit{inter-cluster distance} to the maximum \textit{intra-cluster distance}, or equivalently, the ratio between the distance separating the two most similar clusters and the radius of the most dissimilar cluster. The Dunn index seeks to identify clustering models with high-density (\textit{i.e.}, high intra-cluster similarities) and well-separated clusters (\textit{i.e.}, low inter-cluster similarities). In contrast to the DB index which is an average across clusters, the Dunn index is indicative of the most poorly defined cluster(s) in the model. Various formulations may be used for both the intra- and inter-cluster distances. This thesis used the same formulations for the intra-cluster distance $R_{m}$ (Eqn.~\ref{eqn:chap10-birch-radius}) and inter-cluster distance $d\left(\boldsymbol{\mu}_{m},\boldsymbol{\mu}_{n}\right)$ (Eqn.~\ref{eqn:chap10-db-index}) as those used for the DB index. The Dunn index is then given by the following expression:
 
 \begin{equation}
 \label{eqn:chap10-dunn-index}
@@ -1333,56 +1333,37 @@ The higher the between-group variance and the lower the within-group variance, t
 \subsection{Silhouette Coefficient}
 \label{subsec:chap10-silhouette-coeff}
 
-first paragraph: what is it??
--introduce silhouette coefficients~\cite{rousseeuw1987silhouette}
--compares average distance to elements in the same cluster with average distance to elements in other clusters
-  -there is a silhouette coefficient for each sample
-  -samples with high silhouette coeff are ``well clustered'
-  -samples with low silhouette coeff may be outliers
--often used as a graphical aid - can view the rank-ordered silhouette coefficients within each cluster
--values range from -1 (poorly matched to its cluster) to +1 (well matched to its cluster)
--if many points have a low value, may have too many or too few clusters
--can used any distance metric (e.g., Euclidean or Manhattan)
+The silhouette coefficient~\cite{rousseeuw1987silhouette} is defined for each sample, and compares the average distance between the sample and all other samples within its assigned cluster to the average distance to samples in all other clusters. Since the silhouette coefficient is defined for each sample, it provides a more granular metric to evaluate a clustering model on a sample-by-sample basis than the Davies-Boulding, Dunn and Calinski-Harabaz indices. In particular, a high silhouette coefficient signifies a ``well-clustered'' sample, while a low silhouette coefficient may indicate that a sample is an outlier. The distribution of silhouette coefficients is often visualized with a \textit{silhouette plot} to aid in identifying the quality of each cluster in a model. If many samples have a low silhouette coefficient, then it may indicate the inclusion of too few or too many clusters in the model.
 
-second paragraph: math
--want $s_{k} \underset{a_{k} \gg b_{k}}{\longrightarrow} +1$
-  -$s_{k}$ near +1 indicates that data is appropriately clustered
-  -$s_{k}$ near -1 indicates that data may be more appropriately clustered within neighboring cluster
-  -$s_{k}$ near 0 indicates that data is on border of two equally valid clusters
--define dis-similarity $a_{k}$ of $\boldsymbol{\hat{f}}_{k}$ to its cluster $\mathbb{S}_{m}$ as avg distance  from $\boldsymbol{\hat{f}}_{k}$ to all points in $\mathbb{S}_{m}$:
+The silhouette coefficient defines the dissimilarity $a_{k}$ of sample $\boldsymbol{\hat{f}}_{k}$ to its cluster $\mathbb{S}_{m}$ as the average distance from $\boldsymbol{\hat{f}}_{k}$ to all points in $\mathbb{S}_{m}$:
 
 \begin{equation}
 \label{eqn:chap10-silhouette-a}
 a_{k} = \frac{1}{|\mathbb{S}_{m}|-1} \displaystyle\sum\limits_{\substack{\boldsymbol{\hat{f}_{j}} \in \mathbb{S}_{m}\\ j \ne k}} \|\boldsymbol{\hat{f}}_{j} - \boldsymbol{\hat{f}}_{k}\|
 \end{equation}
 
--define $b_{k}$ lowest average dis-similarity of $\boldsymbol{\hat{f}}_{k}$ to any cluster of which it is not a member:
-  -e.g., the ``neighboring cluster'' $\mathbb{S}_{n}$, or next best fit for $\boldsymbol{\hat{f}}_{k}$
-  -large $b_{k}$ indicates that $\boldsymbol{\hat{f}}_{k}$ is badly matched to neighboring cluster $\mathbb{S}_{n}$
+\noindent Similarly, the smallest dissimilarity $b_{k}$ of sample $\boldsymbol{\hat{f}}_{k}$ to all other clusters compares the sample to all samples in the ``next best fit'' or nearest neighboring cluster $\mathbb{S}_{n}$:
 
 \begin{equation}
 \label{eqn:chap10-silhouette-b}
 b_{k} = \frac{1}{|\mathbb{S}_{n}|} \displaystyle\sum\limits_{\substack{\boldsymbol{\hat{f}_{j}} \in \mathbb{S}_{n}}} \|\boldsymbol{\hat{f}}_{j} - \boldsymbol{\hat{f}}_{k}\|
 \end{equation}
 
+\noindent The silhouette coefficient for sample $\boldsymbol{\hat{f}}_{k}$ is then given by the following:
+
 \begin{equation}
 \label{eqn:chap10-silhouette}
 s_{k} = \frac{b_{k}-a_{k}}{\textrm{max}(a_{k},b_{k})}
 \end{equation}
 
-\begin{equation}
-\label{eqn:chap10-silhouette-range}
--1 \le s_{k} \le +1
-\end{equation}
-
-third paragraph: how to use it
--average of all silhouette coefficients for the entire dataset may be used to characterize the quality of the overall clustering
--though silhouette plots may be used to consider the variation of the coefficients, which may reveal the presence of outliers, or that some clusters have much lower silhouette coefficients than the rest and perhaps should be ``refined'' into further clusters
+\noindent The average silhouette coefficient over all samples $\overline{s}_{k}$ may be used to measure the overall quality of a clustering model:
 
 \begin{equation}
 \label{eqn:chap10-silhouette-mean}
-\overline{s} = \frac{1}{K} \displaystyle\sum\limits_{k=1}^{K} s_{k}
+\overline{s}_{k} = \frac{1}{K} \displaystyle\sum\limits_{k=1}^{K} s_{k}
 \end{equation}
+
+The silhouette coefficient is defined over the range $-1 \le s_{k} \le +1$ where a value near +1 indicates that the sample is well-matched to its assigned cluster. Likewise, a value near -1 indicates that sample $\boldsymbol{\hat{f}}_{k}$ is ill-matched to its assigned cluster and may be more appropriately matched with the nearest neighboring cluster. Furthermore, a value near zero indicates that the sample is on the border of two equally valid (but poorly matched) clusters. Therefore, in general, higher average silhouette coefficient $\overline{s}_{k}$ indicate a better matching of samples to assigned clusters. Hence, the ``best'' clustering model is the one which \textit{maximizes} the silhouette coefficient. The silhouette coefficient is used to quantify clustering models produced by \textit{i}\ac{MGXS} in the following chapter.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Bayesian Information Criterion}
