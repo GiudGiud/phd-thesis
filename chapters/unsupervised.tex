@@ -1304,37 +1304,30 @@ The ``best'' clustering model is the one which \textit{maximizes} the Dunn index
 \subsection{Calinski-Harabaz Index}
 \label{subsec:chap10-calinski-harabaz}
 
-first paragraph: what is it??
--Calinski-Harabaz (CH) index~\cite{calinski1974dendrite}
--ratio of between-clusters dispersion mean and within-cluster dispersion
-
-second paragraph: math
--for $M$ clusters
-
-third paragraph: how to use it
--higer score relates to model with better defined clusters
-
--define the within-group dispersion matrix $\boldsymbol{W}$
-
-\begin{equation}
-\label{eqn:chap10-ch-index-bw-group-disp}
-\boldsymbol{W} = \displaystyle\sum\limits_{m=1}^{M} \displaystyle\sum\limits_{\boldsymbol{\hat{f}}_{k} \in \mathbb{S}_{m}} \left(\boldsymbol{\hat{f}}_{k} - \boldsymbol{\hat{\mu}}_{m}\right)\left(\boldsymbol{\hat{f}}_{k} - \boldsymbol{\hat{\mu}}_{m}\right)^{T}
-\end{equation}
-
--define the between group dispersion matrix $\boldsymbol{B}$
-  -with the mean of all samples $\overline{\boldsymbol{\hat{f}}}_{k}$:
-
-\begin{equation}
-\label{eqn:chap10-ch-index-bw-group-disp}
-\boldsymbol{B} = \displaystyle\sum\limits_{m=1}^{M} |\mathbb{S}_{m}|\left(\boldsymbol{\hat{\mu}}_{m} - \overline{\boldsymbol{\hat{f}}}_{k}\right)\left(\boldsymbol{\hat{\mu}}_{m} - \overline{\boldsymbol{\hat{f}}}_{k}\right)^{T}
-\end{equation}
-
--define the trace of a matrix as a footnote: the sum of elements along the diagonal of a square matrix
+The Calinski-Harabaz (CH) index~\cite{calinski1974dendrite} is the ratio of between-cluster and within-cluster \textit{dispersion}, and is often referred to as the \textit{variance ratio criterion}. The CH index is formally defined as follows:
 
 \begin{equation}
 \label{eqn:chap10-ch-index}
 CH = \frac{\mathrm{Tr}(\boldsymbol{B})}{\mathrm{Tr}(\boldsymbol{W})} \times \frac{K-M}{M-1}
 \end{equation}
+
+\noindent where $\boldsymbol{B}$ and $\boldsymbol{W}$ are the between-group and within-group dispersion matrices given by:
+
+\begin{equation}
+\label{eqn:chap10-ch-index-between-group-disp}
+\boldsymbol{B} = \displaystyle\sum\limits_{m=1}^{M} |\mathbb{S}_{m}| \times \left(\boldsymbol{\hat{\mu}}_{m} - \overline{\boldsymbol{\hat{f}}}_{k}\right)\left(\boldsymbol{\hat{\mu}}_{m} - \overline{\boldsymbol{\hat{f}}}_{k}\right)^{T}
+\end{equation}
+
+\begin{equation}
+\label{eqn:chap10-ch-index-within-group-disp}
+\boldsymbol{W} = \displaystyle\sum\limits_{m=1}^{M} \displaystyle\sum\limits_{\boldsymbol{\hat{f}}_{k} \in \mathbb{S}_{m}} \left(\boldsymbol{\hat{f}}_{k} - \boldsymbol{\hat{\mu}}_{m}\right)\left(\boldsymbol{\hat{f}}_{k} - \boldsymbol{\hat{\mu}}_{m}\right)^{T}
+\end{equation}
+
+\noindent The $B$ matrix depends on the mean $\overline{\boldsymbol{\hat{f}}}_{k}$ of all samples in the dataset.
+
+The higher the between-group variance and the lower the within-group variance, the more well-defined the clusters are for a given model. Hence, the ``best'' clustering model is the one which \textit{maximizes} the Calinski-Harabaz index. The Calinski-Harabaz index is used to quantify clustering models produced by \textit{i}\ac{MGXS} in the following chapter.
+
+%-define the trace of a matrix as a footnote: the sum of elements along the diagonal of a square matrix
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Silhouette Coefficient}
