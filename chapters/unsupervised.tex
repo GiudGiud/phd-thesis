@@ -1271,7 +1271,7 @@ It is important to note that model selection may \textit{only} examine the clust
 \subsection{Davies-Boulding Index}
 \label{subsec:chap10-db-index}
 
-The Davies-Boulding (DB) index~\cite{davies1979dbindex} is the ratio of intra-cluster to inter-cluster dissimilarity, or equivalently, the ratio of within-cluster scatter to between-cluster separation. The DB index penalizes cluster models with high \textit{intra-cluster distances} (\textit{i.e.}, low intra-cluster similarities) and low \textit{inter-cluster distances} (\textit{i.e.}, high inter-cluster similarities). The inter-custer distance $d\left(\boldsymbol{\mu}_{m},\boldsymbol{\mu}_{n}\right)$ is simply the distance between cluster centroids $\boldsymbol{\mu}_{m}$ and $\boldsymbol{\mu}_{n}$ in feature space. The most common metric for the intra-cluster distance $R_{m}$ -- and the one used in this thesis -- is the average distance of all samples in cluster $\mathbb{S}_{m}$ to its centroid $\boldsymbol{\mu}_{m}$:
+The Davies-Boulding (DB) index~\cite{davies1979dbindex} is the ratio of intra-cluster to inter-cluster dissimilarity, or equivalently, the ratio of within-cluster scatter to between-cluster separation. The DB index penalizes cluster models with high \textit{intra-cluster distances} (\textit{i.e.}, low intra-cluster similarities) and low \textit{inter-cluster distances} (\textit{i.e.}, high inter-cluster similarities). The inter-custer distance $d\left(\boldsymbol{\mu}_{m},\boldsymbol{\mu}_{n}\right)$ is simply the distance between cluster centroids $\boldsymbol{\mu}_{m}$ and $\boldsymbol{\mu}_{n}$ in feature space. The most common metric for the intra-cluster distance $R_{m}$ is the average distance of all samples in cluster $\mathbb{S}_{m}$ to its centroid $\boldsymbol{\mu}_{m}$:
 
 \begin{equation}
 \label{eqn:chap10-db-mean-distance}
@@ -1285,7 +1285,7 @@ R_{m} = \left(\frac{1}{|\mathbb{S}_{m}|}\displaystyle\sum\limits_{\boldsymbol{\h
 \textrm{DB} = \frac{1}{K} \displaystyle\sum\limits_{m=1}^{M} \max_{m \ne n} \left(\frac{\sigma_{m} + \sigma_{n}}{d\left(\boldsymbol{\mu}_{m},\boldsymbol{\mu}_{n}\right)}\right) 
 \end{equation}
 
-The ``best'' clustering model is the one which \textit{minimizes} the DB index. The DB index is used to quantify clustering models produced by \textit{i}\ac{MGXS} in the following chapter.
+The ``best'' clustering model is the one which \textit{minimizes} the DB index. The DB index is used to evaluate the clustering models produced by \textit{i}\ac{MGXS} in the following chapter.
   
 %%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Dunn Index}
@@ -1298,7 +1298,7 @@ The Dunn index~\cite{dunn1974index} is the ratio of the minimum \textit{inter-cl
 \textrm{D} = \frac{\underset{{1 \le m \le n \le M}}{\textrm{min}} d(\boldsymbol{\mu}_{m},\boldsymbol{\mu}_{n})}{\underset{{1 \le p \le M}}{\textrm{max}} R_{p}}
 \end{equation}
 
-The ``best'' clustering model is the one which \textit{maximizes} the Dunn index. The Dunn index is used to quantify clustering models produced by \textit{i}\ac{MGXS} in the following chapter.
+The ``best'' clustering model is the one which \textit{maximizes} the Dunn index. The Dunn index is used to evaluate the clustering models produced by \textit{i}\ac{MGXS} in the following chapter.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Calinski-Harabaz Index}
@@ -1325,7 +1325,7 @@ CH = \frac{\mathrm{Tr}(\boldsymbol{B})}{\mathrm{Tr}(\boldsymbol{W})} \times \fra
 
 \noindent The $B$ matrix depends on the mean $\overline{\boldsymbol{\hat{f}}}_{k}$ of all samples in the dataset.
 
-The higher the between-group variance and the lower the within-group variance, the more well-defined the clusters are for a given model. Hence, the ``best'' clustering model is the one which \textit{maximizes} the Calinski-Harabaz index. The Calinski-Harabaz index is used to quantify clustering models produced by \textit{i}\ac{MGXS} in the following chapter.
+The higher the between-group variance and the lower the within-group variance, the more well-defined the clusters are for a given model. Hence, the ``best'' clustering model is the one which \textit{maximizes} the Calinski-Harabaz index. The Calinski-Harabaz index is used to evaluate the clustering models produced by \textit{i}\ac{MGXS} in the following chapter.
 
 %-define the trace of a matrix as a footnote: the sum of elements along the diagonal of a square matrix
 
@@ -1363,74 +1363,62 @@ s_{k} = \frac{b_{k}-a_{k}}{\textrm{max}(a_{k},b_{k})}
 \overline{s}_{k} = \frac{1}{K} \displaystyle\sum\limits_{k=1}^{K} s_{k}
 \end{equation}
 
-The silhouette coefficient is defined over the range $-1 \le s_{k} \le +1$ where a value near +1 indicates that the sample is well-matched to its assigned cluster. Likewise, a value near -1 indicates that sample $\boldsymbol{\hat{f}}_{k}$ is ill-matched to its assigned cluster and may be more appropriately matched with the nearest neighboring cluster. Furthermore, a value near zero indicates that the sample is on the border of two equally valid (but poorly matched) clusters. Therefore, in general, higher average silhouette coefficient $\overline{s}_{k}$ indicate a better matching of samples to assigned clusters. Hence, the ``best'' clustering model is the one which \textit{maximizes} the silhouette coefficient. The silhouette coefficient is used to quantify clustering models produced by \textit{i}\ac{MGXS} in the following chapter.
+The silhouette coefficient is defined over the range $-1 \le s_{k} \le +1$ where a value near +1 indicates that the sample is well-matched to its assigned cluster. Likewise, a value near -1 indicates that sample $\boldsymbol{\hat{f}}_{k}$ is ill-matched to its assigned cluster and may be more appropriately matched with the nearest neighboring cluster. Furthermore, a value near zero indicates that the sample is on the border of two equally valid (but poorly matched) clusters. Therefore, in general, higher average silhouette coefficient $\overline{s}_{k}$ indicate a better matching of samples to assigned clusters. Hence, the ``best'' clustering model is the one which \textit{maximizes} the silhouette coefficient. The silhouette coefficient is used to evaluate the clustering models produced by \textit{i}\ac{MGXS} in the following chapter.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Bayesian Information Criterion}
 \label{subsec:chap10-bic}
 
-first paragraph: what is it??
--Bayesian Information Criterion (BIC)~\cite{schwarz1978bic}
--based on the likelihood function $\hat{L}$
--an information-theoretic criterion
--select number of components for \acp{GMM}
--a penalty term on the number of parameters in a model (model complexity)
-  -measures the ``efficiency'' of parametrized model at predicting dataset
--theoretically guaranteed to recover true number of components in asymptotic regime
-  -i.e., given infinite data points which were in fact i.i.d. by a mixture of gaussians
-  -assumes that data is distributed according to an exponential family 
-  -asymptotic result is only valid is the sample size $K$ is much larger than number of model parameters
+The Bayesian Information Criterion (BIC)~\cite{schwarz1978bic} may be used to optimize parameter selection for models with well-defined likelihood functions. As a result, of the four clustering algorithms presented in Sec.~\ref{sec:chap10-cluster}, the BIC may only be used to select the number of components for \acp{GMM}. In contrast to the previously defined model selection criterion, the BIC is based on an information theory analysis of model complexity and attempts to measure the ``efficiency'' with which a parametrized model predicts an observed dataset. The BIC is an asymptotic result that is only guaranteed to recover the ``true'' number of mixture components in a \ac{GMM} given an infinite number of samples which were drawn i.i.d. from a mixture of Gaussians. In practice, the asymptotic result is only valid if the sample size is much larger than the number of mixture components. 
 
-second paragraph: math
--given by the number of of data points $K$, the number of parameters$\boldsymbol{\theta}$ to be estimated
--$|\boldsymbol{\theta}|$ and the maximumum likelihood $\hat{L}$ of the model to be estimated:
+These assumptions are important to consider in the context of the \textit{i}\ac{MGXS} data processing pipeline. Pin-wise \ac{MGXS} datasets are not necessarily distributed according to a \ac{GMM}. The case studies in Chap.~\ref{chap:spatial} would indicate that the number of samples per component should increase with the size of the core geometry\footnote{This assumes that the complexity of heterogeneities -- each of which induce \ac{MGXS} clusters -- does not also scale with the size of the core geometry.}. Hence, one might expect that the BIC would perform better for a full core geometry than for a single assembly.
 
-third paragraph: how to use it
--model with lowest BIC is preferred
--choose model with lowest BIC
--only nicely expressed for \acp{GMM}
+% the GMM is simply a model which may be applied to cluster the data
 
-\begin{equation}
-\label{eqn:chap10-bic}
-\textrm{BIC} = -2 \cdot \ln(\hat{L}) + |\boldsymbol{\theta}| \cdot \ln(K) 
-\end{equation}
+The BIC is based upon the maximized value of the \textit{maximum likelihood function} $\hat{L}$\footnote{The probability of observing a dataset given a set of model parameters.}:
 
 \begin{equation}
 \label{eqn:chap10-likelihood}
-\hat{L} = p \left( \left\{ \boldsymbol{\hat{f}}_{1}, \boldsymbol{\hat{f}}_{2}, \dots, \boldsymbol{\hat{f}}_{K} \right\} | \boldsymbol{\hat{\theta}}\right)
+\hat{L} = \underset{\boldsymbol{\theta}}{\textrm{max}} \; p \left( \left\{ \boldsymbol{\hat{f}}_{1}, \boldsymbol{\hat{f}}_{2}, \dots, \boldsymbol{\hat{f}}_{K} \right\} | \boldsymbol{\theta}\right)
 \end{equation}
 
--log likelihood for \ac{GMM} in Eqns.~\ref{eqn:chap10-gmm} and~\ref{eqn:chap10-gaussian}:
-
--need production over clusters with indicator function
+\noindent where the model parameters are denoted by $\boldsymbol{\theta}$ (\textit{i.e.}, the \ac{GMM} mixture means $\boldsymbol{\mu}_{m}$ and covariance matrices $\boldsymbol{\Sigma}_{m}$). The parameters found by the expectation-maximization algorithm maximize the \textit{log-likelihood} $\ln\left({\hat{L}}\right)$ for the \ac{GMM} defined by Eqns.~\ref{eqn:chap10-gmm} and~\ref{eqn:chap10-gaussian}:
 
 \begin{dmath}
 \label{eqn:chap10-log-likelihood-gmm}
 \ln(\hat{L}) = \displaystyle\sum\limits_{k=1}^{K} \log \displaystyle\sum\limits_{m=1}^{M} \left\{ -\frac{1}{2}\ln(|\boldsymbol{\Sigma}_{m}|) - \frac{1}{2}\left(\boldsymbol{\hat{f}}_{k} - \boldsymbol{\mu}_{m}\right)^{T}\boldsymbol{\Sigma}_{m}^{-1}\left(\boldsymbol{\hat{f}}_{k} - \boldsymbol{\mu}_{m}\right) - \frac{J^{*}}{2}\ln(2\pi) \right\}^{\mathbb{1}_{\mathbb{S}_{m}(k)}}
 \end{dmath}
 
--where the indicator function $\mathbb{1}_{\mathbb{S}_{m}}(k)$ is equal to 1 if $k \in \mathbb{S}_{m}$ and 0 otherwise. 
+\noindent where the indicator function $\mathbb{1}_{\mathbb{S}_{m}}(k)$ is equal to 1 if $k \in \mathbb{S}_{m}$ and 0 otherwise. The BIC is then given by the following expression:
+
+\begin{equation}
+\label{eqn:chap10-bic}
+\textrm{BIC} = -2 \cdot \ln(\hat{L}) + |\boldsymbol{\theta}| \cdot \ln(K) 
+\end{equation}
+
+The first term in the BIC uses the maximum log-likelihood to measure the ability of the \ac{GMM} to predict the observed \ac{MGXS} dataset. The second term acts as a regularizer and penalizes the complexity of the model by comparing the number of model parameters $|\boldsymbol{\theta}|$ to the number of observed samples $K$. The ``best'' clustering model is the one which \textit{minimizes} the Bayesian Information Criterion. The BIC is used to evaluate the \acp{GMM} produced by \textit{i}\ac{MGXS} in the following chapter.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Cross-Validation}
 \label{subsec:chap10-cross-validate}
 
-first paragraph: what is it?
--commonly used model validation technique for machine learning and statistical analysis
--used to assess generalization of a model by evaluating it with an independent data set
--leverage the data one has to control model complexity
--consider sensitivity of a model to the data that is used to train it
--prevent over-fitting
--partition dataset into mutually exclusive subsets
--combines (averages) measure of fit to derive a more accurate/robust estimator of a predictor's performance
+\textit{Cross-validation} is a technique for model validation~\cite{kohavi1995cv}, and is closely related to the \textit{bootstrap} method commonly used to approximate the properties of statistical estimators~\cite{efron1994bootstrap}. Cross-validation is used to asses the generalization of a model by evaluating it with a dataset independent of the one used to train the model. In general, cross-validation is used to control model complexity and prevent over-fitting to outliers. The integration of the model selection and predictor training stages with cross-validation is highlighted in Alg.~\ref{alg:chap10-cross-validate}. Cross-validation aims to estimate a predictor's performance by averaging a model selection criterion across multiple models trained on disjoint subsets of a dataset. A model selection criterion averaged across multiple models will be more robust than a single model trained on the complete dataset. Although cross-validation was not evaluated as part of the \textit{i}\ac{MGXS} data processing pipeline for this thesis, it may be worthwhile to consider its value for model selection in the future.
 
-second paragraph: how to apply it to clustering
--for each subset, train model on the other $v-1$ subsets
-  -train models with different numbers of clusters
--evaluate each model with the subset left out (e.g., squared distances to the centroids)
--average the scores across the $v$ models
--choose the number of clusters which minimizes the score
-
+\begin{algorithm}[h!]
+\caption[Cross-Validation]{Cross-validation for clustering model validation.}
+\label{alg:chap10-cross-validate}
+\begin{algorithmic}[1]
+  \State Divide dataset into $P$ mutually exclusive partitions
+  \For{each set of model parameters}
+	\For{each partition $p$}
+      \State Train model on data from the other $P-1$ partitions
+      \State Score model with criterion evaluated for partition $p$ 
+    \EndFor
+    \State Average selection criterion across models
+  \EndFor
+  \State Choose model with best model selection criteria
+\end{algorithmic}
+\end{algorithm}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{\textit{i}\ac{MGXS} Spatial Homogenization}
