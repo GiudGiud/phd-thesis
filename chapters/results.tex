@@ -764,3 +764,283 @@
 \end{figure}
 
 \clearpage
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Evaluation of Model Selection Techniques}
+\label{sec:chap11-model-select}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Davies-Boulding Index}
+\label{subsec:chap11-db-index}
+
+\begin{table}[ht!]
+  \centering
+  \caption[Davies-Boulding indices for \textit{i}MGXS]{Davies-Boulding indices for pinch feature selection for \textit{i}\ac{MGXS} spatial homogenization with varying clustering algorithms.}
+  \small
+  \label{table:chap11-db-index}
+  \vspace{6pt}
+  \begin{tabular}{l l R{1.5cm} R{1.5cm} R{1.5cm} R{1.5cm} R{1.5cm}}
+  \toprule
+  \rowcolor{lightgray}
+  & & \multicolumn{5}{S[table-format=6.1]}{\cellcolor{lightgray} \textbf{\# Clusters}} \\
+  \multirow{-2}{*}{\cellcolor{lightgray} \bf Benchmark} &
+  \multirow{-2}{*}{\cellcolor{lightgray} \bf Predictor} &
+  \multicolumn{1}{c}{\cellcolor{lightgray} \bf 2} &
+  \multicolumn{1}{c}{\cellcolor{lightgray} \bf 4} &
+  \multicolumn{1}{c}{\cellcolor{lightgray} \bf 6} &
+  \multicolumn{1}{c}{\cellcolor{lightgray} \bf 8} &
+  \multicolumn{1}{c}{\cellcolor{lightgray} \bf 10} \\
+  \midrule
+\multirow{4}{*}{\parbox{2.5cm}{1.6\% Assm}} & $k$-Means & & & & & \\
+& Agglomerative & & & & & \\
+& BIRCH & & & & & \\
+& \ac{GMM} & & & & & \\
+  \midrule
+\multirow{4}{*}{\parbox{2.5cm}{3.1\% Assm}} & $k$-Means & & & & & \\
+& Agglomerative & & & & & \\
+& BIRCH & & & & & \\
+& GMM & & & & & \\
+  \midrule
+\multirow{4}{*}{\parbox{2.5cm}{3.1\% Assm w/ 20 BPs}} & $k$-Means & & & & & \\
+& Agglomerative & & & & & \\
+& BIRCH & & & & & \\
+& \ac{GMM} & & & & & \\
+  \midrule
+\multirow{4}{*}{\parbox{2.5cm}{2$\times$2 Colorset}} & $k$-Means & & & & & \\
+& Agglomerative & & & & & \\
+& BIRCH & & & & & \\
+& GMM & & & & & \\
+  \midrule
+\multirow{4}{*}{\parbox{2.5cm}{2$\times$2 Colorset w/ Reflector}} & $k$-Means & & & & & \\
+& Agglomerative & & & & & \\
+& BIRCH & & & & & \\
+& GMM & & & & & \\
+  \midrule
+\multirow{4}{*}{\parbox{2.5cm}{BEAVRS Full Core}} & $k$-Means & & & & & \\
+& Agglomerative & & & & & \\
+& BIRCH & & & & & \\
+& GMM & & & & & \\
+  \bottomrule
+\end{tabular}
+\end{table}
+
+%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Dunn Index}
+\label{subsec:chap11-dunn-index}
+
+\begin{table}[ht!]
+  \centering
+  \caption[Dunn indices for \textit{i}MGXS]{Dunn indices for pinch feature selection for \textit{i}\ac{MGXS} spatial homogenization with varying clustering algorithms.}
+  \small
+  \label{table:chap11-db-index}
+  \vspace{6pt}
+  \begin{tabular}{l l R{1.5cm} R{1.5cm} R{1.5cm} R{1.5cm} R{1.5cm}}
+  \toprule
+  \rowcolor{lightgray}
+  & & \multicolumn{5}{S[table-format=6.1]}{\cellcolor{lightgray} \textbf{\# Clusters}} \\
+  \multirow{-2}{*}{\cellcolor{lightgray} \bf Benchmark} &
+  \multirow{-2}{*}{\cellcolor{lightgray} \bf Predictor} &
+  \multicolumn{1}{c}{\cellcolor{lightgray} \bf 2} &
+  \multicolumn{1}{c}{\cellcolor{lightgray} \bf 4} &
+  \multicolumn{1}{c}{\cellcolor{lightgray} \bf 6} &
+  \multicolumn{1}{c}{\cellcolor{lightgray} \bf 8} &
+  \multicolumn{1}{c}{\cellcolor{lightgray} \bf 10} \\
+  \midrule
+\multirow{4}{*}{\parbox{2.5cm}{1.6\% Assm}} & $k$-Means & & & & & \\
+& Agglomerative & & & & & \\
+& BIRCH & & & & & \\
+& \ac{GMM} & & & & & \\
+  \midrule
+\multirow{4}{*}{\parbox{2.5cm}{3.1\% Assm}} & $k$-Means & & & & & \\
+& Agglomerative & & & & & \\
+& BIRCH & & & & & \\
+& GMM & & & & & \\
+  \midrule
+\multirow{4}{*}{\parbox{2.5cm}{3.1\% Assm w/ 20 BPs}} & $k$-Means & & & & & \\
+& Agglomerative & & & & & \\
+& BIRCH & & & & & \\
+& \ac{GMM} & & & & & \\
+  \midrule
+\multirow{4}{*}{\parbox{2.5cm}{2$\times$2 Colorset}} & $k$-Means & & & & & \\
+& Agglomerative & & & & & \\
+& BIRCH & & & & & \\
+& GMM & & & & & \\
+  \midrule
+\multirow{4}{*}{\parbox{2.5cm}{2$\times$2 Colorset w/ Reflector}} & $k$-Means & & & & & \\
+& Agglomerative & & & & & \\
+& BIRCH & & & & & \\
+& GMM & & & & & \\
+  \midrule
+\multirow{4}{*}{\parbox{2.5cm}{BEAVRS Full Core}} & $k$-Means & & & & & \\
+& Agglomerative & & & & & \\
+& BIRCH & & & & & \\
+& GMM & & & & & \\
+  \bottomrule
+\end{tabular}
+\end{table}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Silhouette Coefficient}
+\label{subsec:chap11-silhouette-coeff}
+
+\begin{table}[ht!]
+  \centering
+  \caption[Silhouette coefficients for \textit{i}MGXS]{Silhouette coefficients for pinch feature selection for \textit{i}\ac{MGXS} spatial homogenization with varying clustering algorithms.}
+  \small
+  \label{table:chap11-db-index}
+  \vspace{6pt}
+  \begin{tabular}{l l R{1.5cm} R{1.5cm} R{1.5cm} R{1.5cm} R{1.5cm}}
+  \toprule
+  \rowcolor{lightgray}
+  & & \multicolumn{5}{S[table-format=6.1]}{\cellcolor{lightgray} \textbf{\# Clusters}} \\
+  \multirow{-2}{*}{\cellcolor{lightgray} \bf Benchmark} &
+  \multirow{-2}{*}{\cellcolor{lightgray} \bf Predictor} &
+  \multicolumn{1}{c}{\cellcolor{lightgray} \bf 2} &
+  \multicolumn{1}{c}{\cellcolor{lightgray} \bf 4} &
+  \multicolumn{1}{c}{\cellcolor{lightgray} \bf 6} &
+  \multicolumn{1}{c}{\cellcolor{lightgray} \bf 8} &
+  \multicolumn{1}{c}{\cellcolor{lightgray} \bf 10} \\
+  \midrule
+\multirow{4}{*}{\parbox{2.5cm}{1.6\% Assm}} & $k$-Means & & & & & \\
+& Agglomerative & & & & & \\
+& BIRCH & & & & & \\
+& \ac{GMM} & & & & & \\
+  \midrule
+\multirow{4}{*}{\parbox{2.5cm}{3.1\% Assm}} & $k$-Means & & & & & \\
+& Agglomerative & & & & & \\
+& BIRCH & & & & & \\
+& GMM & & & & & \\
+  \midrule
+\multirow{4}{*}{\parbox{2.5cm}{3.1\% Assm w/ 20 BPs}} & $k$-Means & & & & & \\
+& Agglomerative & & & & & \\
+& BIRCH & & & & & \\
+& \ac{GMM} & & & & & \\
+  \midrule
+\multirow{4}{*}{\parbox{2.5cm}{2$\times$2 Colorset}} & $k$-Means & & & & & \\
+& Agglomerative & & & & & \\
+& BIRCH & & & & & \\
+& GMM & & & & & \\
+  \midrule
+\multirow{4}{*}{\parbox{2.5cm}{2$\times$2 Colorset w/ Reflector}} & $k$-Means & & & & & \\
+& Agglomerative & & & & & \\
+& BIRCH & & & & & \\
+& GMM & & & & & \\
+  \midrule
+\multirow{4}{*}{\parbox{2.5cm}{BEAVRS Full Core}} & $k$-Means & & & & & \\
+& Agglomerative & & & & & \\
+& BIRCH & & & & & \\
+& GMM & & & & & \\
+  \bottomrule
+\end{tabular}
+\end{table}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Calinski-Harabaz Index}
+\label{subsec:chap11-calinski-harabaz}
+
+\begin{table}[ht!]
+  \centering
+  \caption[Calinski-Harabaz indices for \textit{i}MGXS]{Calinski-Harabaz indices for pinch feature selection for \textit{i}\ac{MGXS} spatial homogenization with varying clustering algorithms.}
+  \small
+  \label{table:chap11-db-index}
+  \vspace{6pt}
+  \begin{tabular}{l l R{1.5cm} R{1.5cm} R{1.5cm} R{1.5cm} R{1.5cm}}
+  \toprule
+  \rowcolor{lightgray}
+  & & \multicolumn{5}{S[table-format=6.1]}{\cellcolor{lightgray} \textbf{\# Clusters}} \\
+  \multirow{-2}{*}{\cellcolor{lightgray} \bf Benchmark} &
+  \multirow{-2}{*}{\cellcolor{lightgray} \bf Predictor} &
+  \multicolumn{1}{c}{\cellcolor{lightgray} \bf 2} &
+  \multicolumn{1}{c}{\cellcolor{lightgray} \bf 4} &
+  \multicolumn{1}{c}{\cellcolor{lightgray} \bf 6} &
+  \multicolumn{1}{c}{\cellcolor{lightgray} \bf 8} &
+  \multicolumn{1}{c}{\cellcolor{lightgray} \bf 10} \\
+  \midrule
+\multirow{4}{*}{\parbox{2.5cm}{1.6\% Assm}} & $k$-Means & & & & & \\
+& Agglomerative & & & & & \\
+& BIRCH & & & & & \\
+& \ac{GMM} & & & & & \\
+  \midrule
+\multirow{4}{*}{\parbox{2.5cm}{3.1\% Assm}} & $k$-Means & & & & & \\
+& Agglomerative & & & & & \\
+& BIRCH & & & & & \\
+& GMM & & & & & \\
+  \midrule
+\multirow{4}{*}{\parbox{2.5cm}{3.1\% Assm w/ 20 BPs}} & $k$-Means & & & & & \\
+& Agglomerative & & & & & \\
+& BIRCH & & & & & \\
+& \ac{GMM} & & & & & \\
+  \midrule
+\multirow{4}{*}{\parbox{2.5cm}{2$\times$2 Colorset}} & $k$-Means & & & & & \\
+& Agglomerative & & & & & \\
+& BIRCH & & & & & \\
+& GMM & & & & & \\
+  \midrule
+\multirow{4}{*}{\parbox{2.5cm}{2$\times$2 Colorset w/ Reflector}} & $k$-Means & & & & & \\
+& Agglomerative & & & & & \\
+& BIRCH & & & & & \\
+& GMM & & & & & \\
+  \midrule
+\multirow{4}{*}{\parbox{2.5cm}{BEAVRS Full Core}} & $k$-Means & & & & & \\
+& Agglomerative & & & & & \\
+& BIRCH & & & & & \\
+& GMM & & & & & \\
+  \bottomrule
+\end{tabular}
+\end{table}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Bayesian Information Criterion}
+\label{subsec:chap11-bic}
+
+\begin{table}[ht!]
+  \centering
+  \caption[Bayesian Information Criteria for \textit{i}MGXS]{Bayesian Information Criteria for pinch feature selection for \textit{i}\ac{MGXS} spatial homogenization with varying clustering algorithms.}
+  \small
+  \label{table:chap11-db-index}
+  \vspace{6pt}
+  \begin{tabular}{l l R{1.5cm} R{1.5cm} R{1.5cm} R{1.5cm} R{1.5cm}}
+  \toprule
+  \rowcolor{lightgray}
+  & & \multicolumn{5}{S[table-format=6.1]}{\cellcolor{lightgray} \textbf{\# Clusters}} \\
+  \multirow{-2}{*}{\cellcolor{lightgray} \bf Benchmark} &
+  \multirow{-2}{*}{\cellcolor{lightgray} \bf Predictor} &
+  \multicolumn{1}{c}{\cellcolor{lightgray} \bf 2} &
+  \multicolumn{1}{c}{\cellcolor{lightgray} \bf 4} &
+  \multicolumn{1}{c}{\cellcolor{lightgray} \bf 6} &
+  \multicolumn{1}{c}{\cellcolor{lightgray} \bf 8} &
+  \multicolumn{1}{c}{\cellcolor{lightgray} \bf 10} \\
+  \midrule
+\multirow{4}{*}{\parbox{2.5cm}{1.6\% Assm}} & $k$-Means & & & & & \\
+& Agglomerative & & & & & \\
+& BIRCH & & & & & \\
+& \ac{GMM} & & & & & \\
+  \midrule
+\multirow{4}{*}{\parbox{2.5cm}{3.1\% Assm}} & $k$-Means & & & & & \\
+& Agglomerative & & & & & \\
+& BIRCH & & & & & \\
+& GMM & & & & & \\
+  \midrule
+\multirow{4}{*}{\parbox{2.5cm}{3.1\% Assm w/ 20 BPs}} & $k$-Means & & & & & \\
+& Agglomerative & & & & & \\
+& BIRCH & & & & & \\
+& \ac{GMM} & & & & & \\
+  \midrule
+\multirow{4}{*}{\parbox{2.5cm}{2$\times$2 Colorset}} & $k$-Means & & & & & \\
+& Agglomerative & & & & & \\
+& BIRCH & & & & & \\
+& GMM & & & & & \\
+  \midrule
+\multirow{4}{*}{\parbox{2.5cm}{2$\times$2 Colorset w/ Reflector}} & $k$-Means & & & & & \\
+& Agglomerative & & & & & \\
+& BIRCH & & & & & \\
+& GMM & & & & & \\
+  \midrule
+\multirow{4}{*}{\parbox{2.5cm}{BEAVRS Full Core}} & $k$-Means & & & & & \\
+& Agglomerative & & & & & \\
+& BIRCH & & & & & \\
+& GMM & & & & & \\
+  \bottomrule
+\end{tabular}
+\end{table}

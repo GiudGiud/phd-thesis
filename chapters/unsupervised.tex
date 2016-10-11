@@ -1231,22 +1231,14 @@ Although the \ac{GMM} does not make assumptions about the size or shape of clust
 \section{Model Selection}
 \label{sec:chap10-model-select}
 
-first paragraph: objective
--need to evaluate and assess clusterings and select the ``best'' one
-  -aka cluster validation???
--need criterion to quantify ``quality'' of a clustering and/or to compare similarity between clusterings
--must be quantifiable so it can be automated
-  -a human cannot be required to ``inspect'' clustering
-  -this isn't doable since visualizations in high-dimensional feature space aren't possible anyway
--need to consider and present concept of \textit{over-fitting}
--need to strike a balance when choosing the number of clusters between:
-  -maximum compression of data with a single cluster
-  -maximum accuracy by assigning each data point to its own cluster
--want to choose optimal number of clusters so that adding another cluster doesn't model the data much better
-  -in our case, ``better'' is determined by the quality of the OpenMOC solution
-  -first few clusters will ``explain'' most of the variance of the data
-  -the addition of more cluters will add marginal information
--Fig.~\ref{fig:chap10-model}
+The \textit{model selection} stage in the data processing pipeline in Fig.~\ref{fig:chap10-pipeline} chooses the ``best'' predictive model for \ac{MGXS} clustering. The four clustering algorithms discussed in Sec.~\ref{sec:chap10-train-predictor} require the number of clusters to be specified \textit{a priori} by the user. Model selection techniques are used to compare multiple clustering models (\textit{i.e}, trained for different numbers of clusters) and choose the most appropriate one for a particular application. In the context of \textit{i}\ac{MGXS} scheme, the number of \ac{MGXS} clusters is unknown, nor is it clear that there will be a well-defined number of clusters in highly heterogeneous core configurations. In this case, model selection aims to determine the \textit{fewest} number of \ac{MGXS} clusters needed to meet the requirements for predictive accuracy and enable the fastest possible \ac{MC} convergence rate. More specifically, model selection must identify the optimal number of clusters such that adding another cluster would only marginally improve the predictive accuracy of multi-group transport codes such as OpenMOC. 
+
+The model selection stage of the \textit{i}\ac{MGXS} data processing pipeline is described in Fig.~\ref{fig:chap10-model}. Since \textit{i}\ac{MGXS} is an unsupervised scheme for spatial homogenization, a numerical criterion must be used to quantify the ``quality'' of each clustering model. The criterion may be subjected to thresholding or other techniques to automate model selection and obviate the need for human intervention. When choosing the appropriate number of clusters, model selection must strike a balance between:
+
+\begin{itemize}[noitemsep]
+\item  \textbf{Maximum Compression} -- Assign all samples to a single cluster
+\item \textbf{Maximum Accuracy} -- Assign each sample to its own cluster
+\end{itemize}
 
 \begin{figure}[h!]
 \centering
@@ -1256,22 +1248,28 @@ first paragraph: objective
 \label{fig:chap10-model}
 \end{figure}
 
-second paragraph: types of methods:
-  -External Evaluation: evaluated with some labeled data that was left of training phase
-    -requires some ground truth cluster labels for some or all samples
-    -this is not the case for truly unsupervised applications like \textit{i}\ac{MGXS}
-    -external evaluation metrics compare predictions of cluster model to the true labels
-  -Interal Evaluation: evaluate based on the data that was used to train the predictor
-    -high similarity within a cluster
-    -low similarity between clusters
-    -i.e., the same as our rough definition of a ``cluster''
-    -evaluation is biased towards algorithms that use the same cluster model
-      -i.e., if the metric is distance-based, it will over-rate $k$-means and other variance minimization clustering algorithms
-      -i.e., if criterion assumes convex clusters, then it will over-rate $k$-means solutions since $k$-means also makes this assumption
+\noindent In the context of pin-wise spatial homogenization, the former is null homogenization (Sec.~\ref{subsec:chap8-null}) and the latter is degenerate homogenization (Sec.~\ref{subsec:chap8-degenerate}).
+
+The machine learning community has developed a plethora of model selection techniques for statistical clustering analysis. The techniques are often segmented into the following two categories:
+
+\begin{itemize}[noitemsep]
+\item \textbf{External Evaluation} -- Validate model data with the \textit{ground truth labels}
+\item \textbf{Internal Evaluation} -- Score model on its intra- and inter-cluster \textit{similarities}
+\end{itemize}
+
+\noindent \textit{External evaluation} criteria are useful in supervised learning settings where some or all of the dataset may include the ground truth cluster labels. In this case, some of the dataset may be left out of the training phase and used to validate the model trained on the rest of the data. In the context of \textit{i}\ac{MGXS}, none of the samples are labeled and all of the cluster labels are unknown. As a result, \textit{internal evaluation} criteria must be used to optimize clusterings based upon the unlabeled dataset with which each was trained. Internal evaluation critera generally attempt to identify clusterings with high \textit{intra-cluster} similarities and low \textit{inter-cluster} similarities\footnote{Conversely, some criteria minimize and maximize the intra and inter-cluster \textit{dis-similiarities}, respectively.}. Alternatively, some internal evaluation criteria act as \textit{regularizers} to balance model complexity with generality.
+
+The following sections describe several model selection criteria that are use to evaluate the clusterings produce by \textit{i}\ac{MGXS} scheme. Secs.~\Crefrange{subsec:chap10-db-index}{subsec:chap10-silhouette-coeff} introduce the Davies-Boulding index, Dunn index, Calinski-Harabaz index and silhouette coefficients. These criteria aims employ different metrics to quantify inter- and intra-cluster similarities to quantify the quality of a clustering model. Sec.~\ref{subsec:chap10-bic} presents the Bayesian Information Criterion, a technique with a strong theoretical formulation that may be used to evaluate \acp{GMM}. Finally, Sec.~\ref{subsec:chap10-cross-validate} discusses cross-validation and how it may be used in conjunction with any of these model selection criteria to prevent over-fitting.
+
+It is important to note that model selection may \textit{only} examine the clustering models. The clustered \ac{MGXS} may \textit{not} be employed in a multi-group transport simulation and then compared with respect to some reference \ac{MC} solution. Although such an exercise is important as a proof of principle of the \textit{i}\ac{MGXS} scheme, it would be unacceptable as a model selection technique since it is not unsupervised. Furthermore, it would nullify the over-arching goal of this thesis -- to obtain \ac{MC} quality solutions with computationally efficient deterministic multi-group transport codes -- since it would require the computationally expensive calculation of a \ac{MC} reference solution.
+
+%    -evaluation is biased towards algorithms that use the same cluster model
+%      -i.e., if the metric is distance-based, it will over-rate $k$-means and other variance minimization clustering algorithms
+%      -i.e., if criterion assumes convex clusters, then it will over-rate $k$-means solutions since $k$-means also makes this assumption
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Davies-Boulding Index}
-\label{sec:chap10-db-index}
+\label{subsec:chap10-db-index}
 
 first paragraph: what is it??
 -introduce Davies-Boulding (DB) index~\cite{davies1979dbindex}
@@ -1308,7 +1306,7 @@ third paragraph: how to use it??
 
 %%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Dunn Index}
-\label{sec:chap10-dunn-index}
+\label{subsec:chap10-dunn-index}
 
 first paragraph: what is it?
 -introduce Dunn Index~\cite{dunn1974index}
@@ -1334,8 +1332,44 @@ third paragraph: how to use it
 \end{equation}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Calinski-Harabaz Index}
+\label{subsec:chap10-calinski-harabaz}
+
+first paragraph: what is it??
+-Calinski-Harabaz (CH) index~\cite{calinski1974dendrite}
+-ratio of between-clusters dispersion mean and within-cluster dispersion
+
+second paragraph: math
+-for $M$ clusters
+
+third paragraph: how to use it
+-higer score relates to model with better defined clusters
+
+-define the within-group dispersion matrix $\boldsymbol{W}$
+
+\begin{equation}
+\label{eqn:chap10-ch-index-bw-group-disp}
+\boldsymbol{W} = \displaystyle\sum\limits_{m=1}^{M} \displaystyle\sum\limits_{\boldsymbol{\hat{f}}_{k} \in \mathbb{S}_{m}} \left(\boldsymbol{\hat{f}}_{k} - \boldsymbol{\hat{\mu}}_{m}\right)\left(\boldsymbol{\hat{f}}_{k} - \boldsymbol{\hat{\mu}}_{m}\right)^{T}
+\end{equation}
+
+-define the between group dispersion matrix $\boldsymbol{B}$
+  -with the mean of all samples $\overline{\boldsymbol{\hat{f}}}_{k}$:
+
+\begin{equation}
+\label{eqn:chap10-ch-index-bw-group-disp}
+\boldsymbol{B} = \displaystyle\sum\limits_{m=1}^{M} |\mathbb{S}_{m}|\left(\boldsymbol{\hat{\mu}}_{m} - \overline{\boldsymbol{\hat{f}}}_{k}\right)\left(\boldsymbol{\hat{\mu}}_{m} - \overline{\boldsymbol{\hat{f}}}_{k}\right)^{T}
+\end{equation}
+
+-define the trace of a matrix as a footnote: the sum of elements along the diagonal of a square matrix
+
+\begin{equation}
+\label{eqn:chap10-ch-index}
+CH = \frac{\mathrm{Tr}(\boldsymbol{B})}{\mathrm{Tr}(\boldsymbol{W})} \times \frac{K-M}{M-1}
+\end{equation}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Silhouette Coefficient}
-\label{sec:chap10-silhouette-coeff}
+\label{subsec:chap10-silhouette-coeff}
 
 first paragraph: what is it??
 -introduce silhouette coefficients~\cite{rousseeuw1987silhouette}
@@ -1388,45 +1422,9 @@ third paragraph: how to use it
 \overline{s} = \frac{1}{K} \displaystyle\sum\limits_{k=1}^{K} s_{k}
 \end{equation}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Calinski-Harabaz Index}
-\label{sec:chap10-calinski-harabaz}
-
-first paragraph: what is it??
--Calinski-Harabaz (CH) index~\cite{calinski1974dendrite}
--ratio of between-clusters dispersion mean and within-cluster dispersion
-
-second paragraph: math
--for $M$ clusters
-
-third paragraph: how to use it
--higer score relates to model with better defined clusters
-
--define the within-group dispersion matrix $\boldsymbol{W}$
-
-\begin{equation}
-\label{eqn:chap10-ch-index-bw-group-disp}
-\boldsymbol{W} = \displaystyle\sum\limits_{m=1}^{M} \displaystyle\sum\limits_{\boldsymbol{\hat{f}}_{k} \in \mathbb{S}_{m}} \left(\boldsymbol{\hat{f}}_{k} - \boldsymbol{\hat{\mu}}_{m}\right)\left(\boldsymbol{\hat{f}}_{k} - \boldsymbol{\hat{\mu}}_{m}\right)^{T}
-\end{equation}
-
--define the between group dispersion matrix $\boldsymbol{B}$
-  -with the mean of all samples $\overline{\boldsymbol{\hat{f}}}_{k}$:
-
-\begin{equation}
-\label{eqn:chap10-ch-index-bw-group-disp}
-\boldsymbol{B} = \displaystyle\sum\limits_{m=1}^{M} |\mathbb{S}_{m}|\left(\boldsymbol{\hat{\mu}}_{m} - \overline{\boldsymbol{\hat{f}}}_{k}\right)\left(\boldsymbol{\hat{\mu}}_{m} - \overline{\boldsymbol{\hat{f}}}_{k}\right)^{T}
-\end{equation}
-
--define the trace of a matrix as a footnote: the sum of elements along the diagonal of a square matrix
-
-\begin{equation}
-\label{eqn:chap10-ch-index}
-CH = \frac{\mathrm{Tr}(\boldsymbol{B})}{\mathrm{Tr}(\boldsymbol{W})} \times \frac{K-M}{M-1}
-\end{equation}
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Bayesian Information Criterion}
-\label{sec:chap10-bic}
+\label{subsec:chap10-bic}
 
 first paragraph: what is it??
 -Bayesian Information Criterion (BIC)~\cite{schwarz1978bic}
@@ -1472,7 +1470,7 @@ third paragraph: how to use it
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Cross-Validation}
-\label{sec:chap10-cross-validate}
+\label{subsec:chap10-cross-validate}
 
 first paragraph: what is it?
 -commonly used model validation technique for machine learning and statistical analysis
