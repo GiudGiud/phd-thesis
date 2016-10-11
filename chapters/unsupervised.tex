@@ -704,7 +704,7 @@ Feature standardization -- also known as \textit{mean removal} and/or \textit{va
 
 \begin{equation}
 \label{eqn:chap10-robust-standardize}
-\hat{f}_{j,k}^{*} = \frac{\hat{f}_{j,k} - \mathrm{median}\left\lbrace\hat{f}_{j,1}, \hat{f}_{j,2}, \dots, \hat{f}_{j,K}\right\rbrace}{\mathrm{IQR}_{\hat{f}_{j}}}
+\hat{f}_{j,k}^{*} = \frac{\hat{f}_{j,k} - \mathrm{median}\left\{\hat{f}_{j,1}, \hat{f}_{j,2}, \dots, \hat{f}_{j,K}\right\}}{\mathrm{IQR}_{\hat{f}_{j}}}
 \end{equation}
 
 \begin{emphbox}
@@ -906,13 +906,13 @@ The $k$-means algorithm~\cite{macqueen1967kmeans, lloyd1982kmeans} constructs a 
 \displaystyle\sum\limits_{k=0}^{K} \min_{\boldsymbol{\mu}_{m} \in \mathbb{C}} \|\boldsymbol{\hat{f}}_{k} - \boldsymbol{\mu}_{m}\|^{2}
 \end{equation}
 
-\noindent where $\boldsymbol{\mu}_{m}$ and $\boldsymbol{\hat{f}}_{k}$ are the $J^{*}$-dimensional centroid of cluster $m$ and feature vector for fuel pin instance $k$ in feature space, respectively. Each of the cluster centroids is stored in set $\mathbb{C} = \lbrace \boldsymbol{\mu}_{1}, \boldsymbol{\mu}_{2}, \dots, \boldsymbol{\mu}_{M} \rbrace$, where $M$ is used in place of $k$ to denote the total number of clusters to avoid confusion with the $k$ used to index the fuel pin instances.
+\noindent where $\boldsymbol{\mu}_{m}$ and $\boldsymbol{\hat{f}}_{k}$ are the $J^{*}$-dimensional centroid of cluster $m$ and feature vector for fuel pin instance $k$ in feature space, respectively. Each of the cluster centroids is stored in set $\mathbb{C} = \left\{ \boldsymbol{\mu}_{1}, \boldsymbol{\mu}_{2}, \dots, \boldsymbol{\mu}_{M} \right\}$, where $M$ is used in place of $k$ to denote the total number of clusters to avoid confusion with the $k$ used to index the fuel pin instances.
 
 The key steps of the $k$-means algorithm are summarized in Alg.~\ref{alg:chap10-kmeans}. The first step initializes $M$ cluster centroids in feature space. A variety of techniques exist to initialize the centroids, including random selection of $M$ samples as centroids, or the $k$-means++ method~\cite{arthur2007kmeans++} which uniformly disperses the centroids across high density regions of feature space. The algorithm then iterates over \textit{assignment} and \textit{update} steps. The assignment step loops over each sample and assigns it to the nearest cluster centroid:
 
 \begin{equation}
 \label{eqn:chap10-kmeans-assign}
-\mathbb{S}_{m}^{(t)} = \lbrace \boldsymbol{\hat{f}}_{k} \;\; : \;\; \| \boldsymbol{\hat{f}}_{k} - \boldsymbol{\mu}_{m}^{(t)} \|^{2} \;\; \le \;\; \| \boldsymbol{\hat{f}}_{k} - \boldsymbol{\mu}_{m}^{(t)} \|^{2} \;\;\;\;\;\;\; \forall n, \; 1 \; \le n \le M \rbrace
+\mathbb{S}_{m}^{(t)} = \left\{ \boldsymbol{\hat{f}}_{k} \;\; : \;\; \| \boldsymbol{\hat{f}}_{k} - \boldsymbol{\mu}_{m}^{(t)} \|^{2} \;\; \le \;\; \| \boldsymbol{\hat{f}}_{k} - \boldsymbol{\mu}_{m}^{(t)} \|^{2} \;\;\;\;\;\;\; \forall n, \; 1 \; \le n \le M \right\}
 \end{equation}
 
 \noindent where $\mathbb{S}_{m}^{(t)}$ represents cluster $m$ at iteration $t$ as the set of nearby samples. The update step moves each cluster centroid to the mean of those samples assigned to it:
@@ -933,7 +933,7 @@ res = \max_{1 \le m \le M} \|\boldsymbol{\mu}_{m}^{(t+1)} - \boldsymbol{\mu}_{m}
 \caption[$k$-means Clustering Algorithm]{$k$-means Clustering Algorithm}
 \label{alg:chap10-kmeans}
 \begin{algorithmic}[1]
-  \State Initialize $M$ centroids $\lbrace \boldsymbol{\mu}_{1}, \boldsymbol{\mu}_{2}, \dots, \boldsymbol{\mu}_{M} \rbrace$
+  \State Initialize $M$ centroids $\left\{ \boldsymbol{\mu}_{1}, \boldsymbol{\mu}_{2}, \dots, \boldsymbol{\mu}_{M} \right\}$
   \While{centroid residual is not converged}
     \State Assign each sample $\boldsymbol{\hat{f}}_{k}$ to nearest centroid $\boldsymbol{\mu}_{m}$ \Comment{Eqn.~\ref{eqn:chap10-kmeans-assign}}
     \State Update centroids to mean of samples assigned to each centroid \Comment{Eqn.~\ref{eqn:chap10-kmeans-update}}
@@ -967,7 +967,7 @@ d_{a,b} = d\left(\mathbb{S}_{a}, \mathbb{S}_{b}\right) = \displaystyle\sum\limit
 \caption[Agglomerative Clustering Algorithm]{Agglomerative Clustering Algorithm}
 \label{alg:chap10-agglomerative}
 \begin{algorithmic}[1]
-  \State Initialize collection $\mathbb{C}$ of $K$ singleton clusters: $\mathbb{S}_{k} = \lbrace \boldsymbol{\hat{f}}_{k} \rbrace$
+  \State Initialize collection $\mathbb{C}$ of $K$ singleton clusters: $\mathbb{S}_{k} = \left\{ \boldsymbol{\hat{f}}_{k} \right\}$
   \While{there are too many clusters: $|\mathbb{C}| > M$}
     \State Compute pairwise affinities between clusters \Comment{Eqn.~\ref{eqn:chap10-agglomerative-ward}}
     \State Find pair of clusters $\mathbb{S}_{a}$ and $\mathbb{S}_{b}$ that are closest %$\operatornamewithlimits{argmin}\limits_{k_{1},k_{2}} d_{k_{1}k_{2}}$
@@ -1098,7 +1098,7 @@ This thesis employs the BIRCH clustering algorithm implemented in the \texttt{Bi
 
 Like agglomerative clustering, the BIRCH clustering algorithm makes no explicit assumption about the shape or size of clusters. As a result, it may out-perform $k$-means for datasets with clusters with non-convex shapes. In contrast to $k$-means and agglomerative clustering, BIRCH is local and does not require an explicit scan of all data points and existing clusters to make clustering decisions. As a result, BIRCH has a computational complexity that approaches $\mathcal{O}(K)$ for large datasets. Furthemore, unlike $k$-means, BIRCH does not depend on any starting conditions. In addition, the user does not necessarily need to specify the number of clusters to find since the leaf subclusters can simply be read from the final CFT. However, the commonly used variant of BIRCH employed by this thesis does require the number of clusters $M$ to be specified for use in a final step which clusters the leaf nodes in the CFT. As a result, model selection techniques must be used to select from a sequence of clusterings trained for different values of $M$, as discussed in Sec.~\ref{sec:chap10-model-select}.
 
-It should be noted that the datasets clustered in this thesis may be stored in memory on most modern computing systems, and do not require the use of an out-of-core algorithm like BIRCH. Nevertheless, BIRCH may be useful if future efforts use \textit{i}\ac{MGXS} to cluster \ac{MGXS} datasets for full core 3D reactor benchmarks with axial heterogeneities with orders of magnitude more samples (\textit{i.e.}, fuel pin instances with axial subdivisions). In addition, the size of the \ac{MGXS} datasets may substantially grow if new features are employed in the \textit{i}\ac{MGXS} data processing pipeline in the future. Finally, BIRCH may be used in the future to cluster \ac{MGXS} datasets on high-performance memory-limited hardware such as Graphical Processing Units.
+It should be noted that the datasets clustered in this thesis may be stored in memory on most modern computing systems, and do not require the use of an out-of-core algorithm like BIRCH. Nevertheless, BIRCH may be useful if future efforts use \textit{i}\ac{MGXS} to cluster \ac{MGXS} datasets for full core 3D reactor benchmarks with axial heterogeneities with orders of magnitude more samples (\textit{i.e.}, fuel pin instances with axial subdivisions). In addition, the size of the \ac{MGXS} datasets may substantially grow if new features are employed in the \textit{i}\ac{MGXS} data processing pipeline in the future. Finally, BIRCH may be used in the future to cluster \ac{MGXS} datasets on high-performance memory-limited hardware such as Graphical Processing Units (GPUs).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Gaussian Mixture Models}
@@ -1106,7 +1106,7 @@ It should be noted that the datasets clustered in this thesis may be stored in m
 
 \acp{GMM} are a commonly used distribution model approach to clustering~\cite{mclachlan1988mixture}. The \ac{GMM} is a machine learning algorithm from the broader class of \textit{generative models} which attempt to describe the probability distribution from which a dataset was generated (assuming one exists). The \ac{GMM} may be thought of as a generalization of the $k$-means algorithm to include information about the covariance between features. The distribution model approach assumes that each sample was i.i.d. generated from one of a finite number of component Gaussian distributions which comprise the mixture. The model assumes that each sample contains a \textit{latent variable}\footnote{A hidden variable which is not observed within a feature vector.} that indicates the identity of the component distribution from which it was drawn. In the context of \textit{i}\ac{MGXS}, the latent variables are the cluster labels $\ell_{k}$ for each fuel pin instance $k$ and must be inferred by fitting a \ac{GMM} to the \ac{MGXS} dataset.
 
-The generic \ac{GMM} is parameterized by the number of components (or clusters) $M$, as well as the mixture weights $\pi_{m}$, means $\boldsymbol{\mu}_{m}$ and covariance matrices $\boldsymbol{\Sigma}_{m}$ for each component $m \in \lbrace 1, 2, \dots, M \rbrace$, and is expressed as:
+The generic \ac{GMM} is parameterized by the number of components (or clusters) $M$, as well as the mixture weights $\pi_{m}$, means $\boldsymbol{\mu}_{m}$ and covariance matrices $\boldsymbol{\Sigma}_{m}$ for each component $m \in \left\{ 1, 2, \dots, M \right\}$, and is expressed as:
 
 \begin{equation}
 \label{eqn:chap10-gmm}
@@ -1117,10 +1117,10 @@ p\left(\boldsymbol{\hat{f}}_{k} | \boldsymbol{\theta}\right) = \displaystyle\sum
 
 \begin{equation}
 \label{eqn:chap10-gaussian}
-\mathcal{N}\left(\boldsymbol{\hat{f}}_{k}; \boldsymbol{\mu}_{m}, \boldsymbol{\Sigma}_{m}\right) = \frac{1}{(2\pi)^{\nicefrac{J^{*}}{2}} |\boldsymbol{\Sigma}_{m}|^{\nicefrac{1}{2}}} exp\lbrace -\frac{1}{2}\left(\boldsymbol{\hat{f}}_{k} - \boldsymbol{\mu}_{m})^{T}\boldsymbol{\Sigma}_{m}^{-1}(_{k} - \boldsymbol{\mu}_{m}\right) \rbrace
+\mathcal{N}\left(\boldsymbol{\hat{f}}_{k}; \boldsymbol{\mu}_{m}, \boldsymbol{\Sigma}_{m}\right) = \frac{1}{(2\pi)^{\nicefrac{J^{*}}{2}} |\boldsymbol{\Sigma}_{m}|^{\nicefrac{1}{2}}} exp\left\{ -\frac{1}{2}\left(\boldsymbol{\hat{f}}_{k} - \boldsymbol{\mu}_{m})^{T}\boldsymbol{\Sigma}_{m}^{-1}(_{k} - \boldsymbol{\mu}_{m}\right) \right\}
 \end{equation}
 
-The generic \ac{GMM} is illustrated in Fig.~\ref{fig:chap10-gmm-plates} with the \textit{plate notation} commonly used by the machine learning community to describe complex probability distributions. In summary, small rectangles represent unknown model parameters, unshaded circles describe unobserved random variables, and shaded circles signify observed random variables. The dimensionality of non-scalar random variables are indicated in brackets inside each square and circle. Rectangular \textit{plates} group subgraphs of variables which repeat together according to the repetition numbers in the bottom right corners of each plate (\textit{e.g.}, $M$ and $K$). The inter-dependences of each model parameter and random variable within the graph are indicated by directed arrows. Categorical variables, such as the cluster labels $\ell_{k}$, are related using a squiggly arrow with a T junction. The interested reader is referred to~\cite{jordan1999graphs} or many other sources in the machine learning literature for more information about describing graphical models with plate notation.
+The generic \ac{GMM} is illustrated in Fig.~\ref{fig:chap10-gmm-plates} with the \textit{plate notation} commonly used by the machine learning community to describe complex probability distributions. In summary, small rectangles represent unknown model parameters, unshaded circles describe unobserved random variables, and shaded circles signify observed random variables. The dimensionality of non-scalar random variables are indicated in brackets inside each square and circle. Large rectangular \textit{plates} group subgraphs of variables which repeat together according to the repetition numbers in the bottom right corners of each plate (\textit{e.g.}, $M$ and $K$). The inter-dependences of each model parameter and random variable within the graph are indicated by directed arrows. Categorical variables, such as the cluster labels $\ell_{k}$, are related using a squiggly arrow with a T junction. The interested reader is referred to~\cite{jordan1999graphs} or many other sources in the machine learning literature for more information about describing graphical models with plate notation.
 
 \begin{figure}[h!]
 \centering
@@ -1152,10 +1152,10 @@ The generic \ac{GMM} is illustrated in Fig.~\ref{fig:chap10-gmm-plates} with the
 \label{alg:chap10-em-gmm}
 
 \begin{algorithmic}[1]
-  \State Initialize means $\lbrace \boldsymbol{\mu}_{1}^{(0)}, \boldsymbol{\mu}_{2}^{(0)}, \dots, \boldsymbol{\mu}_{m}^{(0)} \rbrace$ \Comment{Alg.~\ref{alg:chap10-kmeans}}
-  \State Initialize soft weights $\lbrace h_{1,1}^{(1)}, h_{1,2}^{(1)}, \dots, h_{M,K}^{(1)} \rbrace$
-  \State Initialize component weights $\lbrace \pi_{1}^{(1)}, \pi_{2}^{(1)}, \dots, \pi_{m}^{(1)} \rbrace$ \Comment{Eqn.~\ref{alg:chap10-em-weights}}
-  \State Initialize component covariances $\lbrace \boldsymbol{\Sigma}_{1}^{(1)}, \boldsymbol{\Sigma}_{2}^{(1)}, \dots, \boldsymbol{\Sigma}_{m}^{(1)} \rbrace$ \Comment{Eqn.~\ref{alg:chap10-em-covariances}}
+  \State Initialize means $\left\{ \boldsymbol{\mu}_{1}^{(0)}, \boldsymbol{\mu}_{2}^{(0)}, \dots, \boldsymbol{\mu}_{m}^{(0)} \right\}$ \Comment{Alg.~\ref{alg:chap10-kmeans}}
+  \State Initialize soft weights $\left\{ h_{1,1}^{(1)}, h_{1,2}^{(1)}, \dots, h_{M,K}^{(1)} \right\}$
+  \State Initialize component weights $\left\{ \pi_{1}^{(1)}, \pi_{2}^{(1)}, \dots, \pi_{m}^{(1)} \right\}$ \Comment{Eqn.~\ref{alg:chap10-em-weights}}
+  \State Initialize component covariances $\left\{ \boldsymbol{\Sigma}_{1}^{(1)}, \boldsymbol{\Sigma}_{2}^{(1)}, \dots, \boldsymbol{\Sigma}_{m}^{(1)} \right\}$ \Comment{Eqn.~\ref{alg:chap10-em-covariances}}
   \While{model parameters are not converged}
     \State Expectation Step: Update soft weights \Comment{Eqn.~\ref{eqn:em-posterior-probs}}
     \State Maximization Step: Update mixture parameters \Comment{Eqns.~\Crefrange{eqn:em-weights}{eqn:em-covariances}}
@@ -1231,6 +1231,23 @@ Although the \ac{GMM} does not make assumptions about the size or shape of clust
 \section{Model Selection}
 \label{sec:chap10-model-select}
 
+first paragraph: objective
+-need to evaluate and assess clusterings and select the ``best'' one
+  -aka cluster validation???
+-need criterion to quantify ``quality'' of a clustering and/or to compare similarity between clusterings
+-must be quantifiable so it can be automated
+  -a human cannot be required to ``inspect'' clustering
+  -this isn't doable since visualizations in high-dimensional feature space aren't possible anyway
+-need to consider and present concept of \textit{over-fitting}
+-need to strike a balance when choosing the number of clusters between:
+  -maximum compression of data with a single cluster
+  -maximum accuracy by assigning each data point to its own cluster
+-want to choose optimal number of clusters so that adding another cluster doesn't model the data much better
+  -in our case, ``better'' is determined by the quality of the OpenMOC solution
+  -first few clusters will ``explain'' most of the variance of the data
+  -the addition of more cluters will add marginal information
+-Fig.~\ref{fig:chap10-model}
+
 \begin{figure}[h!]
 \centering
 \includegraphics[width=0.95\linewidth]{figures/unsupervised/features/engineering/model}
@@ -1239,11 +1256,50 @@ Although the \ac{GMM} does not make assumptions about the size or shape of clust
 \label{fig:chap10-model}
 \end{figure}
 
+second paragraph: types of methods:
+  -External Evaluation: evaluated with some labeled data that was left of training phase
+    -requires some ground truth cluster labels for some or all samples
+    -this is not the case for truly unsupervised applications like \textit{i}\ac{MGXS}
+    -external evaluation metrics compare predictions of cluster model to the true labels
+  -Interal Evaluation: evaluate based on the data that was used to train the predictor
+    -high similarity within a cluster
+    -low similarity between clusters
+    -i.e., the same as our rough definition of a ``cluster''
+    -evaluation is biased towards algorithms that use the same cluster model
+      -i.e., if the metric is distance-based, it will over-rate $k$-means and other variance minimization clustering algorithms
+      -i.e., if criterion assumes convex clusters, then it will over-rate $k$-means solutions since $k$-means also makes this assumption
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Davies-Boulding Index}
 \label{sec:chap10-db-index}
 
--Davies-Boulding (DB) index~\cite{davies1979dbindex}
+first paragraph: what is it??
+-introduce Davies-Boulding (DB) index~\cite{davies1979dbindex}
+-penalizes clusterings with high intra-cluster distances (e.g., low intra-cluster similarity)
+-penalizes clusterings with low inter-cluster distances (e.g., high inter-cluster similarity)
+-DB index is the ratio of the intra-cluster dis-similarity to the inter-cluster dis-similarity
+  -e.g., ratio of the within cluster scatter to the between cluster separation
+  -average similarity between each cluster and its most similar one, averaged over all the clusters  
+  -where the metrics for similarity are inversely related t
+  -for each cluster, choose the worst case scenario -- compare to the most similar cluster and/or the cluster with the greatest within-cluster scatter
+
+second paragraph: math
+-average distance of all elements in cluster $x$ to centroid $\boldsymbol{\mu}_{x}$ is $\sigma_{x}$:
+  -same as the subcluster radius for the BIRCH algorithm (Eqn.~\ref{eqn:chap10-birch-radius})
+  -other distance metrics could be used given domain knowledge about the type of manifold the clusters reside on
+-distance between cluster centroids $\boldsymbol{\mu}_{m}$ and $\boldsymbol{\mu}_{n}$:
+  -$d\left(\boldsymbol{\mu}_{m},\boldsymbol{\mu}_{n}\right)$
+
+third paragraph: how to use it??
+-train multiple predictors with different numbers of clusters
+-choose clustering with the lowest DB index
+
+%-may want to have tables/plots comparing DB indices for all algorithms and \# of clusters??
+  
+\begin{equation}
+\label{eqn:chap10-db-mean-distance}
+\sigma_{m} = \left(\frac{1}{|\mathbb{S}_{m}|}\displaystyle\sum\limits_{\boldsymbol{\hat{f}}_{k} \in \mathbb{S}_{m}} \left(\boldsymbol{\hat{f}}_{k} - \boldsymbol{\mu}_{m}\right)^{2}\right)^{\frac{1}{2}}
+\end{equation}
 
 \begin{equation}
 \label{eqn:chap10-db-index}
@@ -1254,31 +1310,145 @@ Although the \ac{GMM} does not make assumptions about the size or shape of clust
 \subsection{Dunn Index}
 \label{sec:chap10-dunn-index}
 
--Dunn Index~\cite{dunn1974index}
+first paragraph: what is it?
+-introduce Dunn Index~\cite{dunn1974index}
+-want to find dense and well-separated clusters
+-ratio of minimal inter-cluster distance to maximal intra-cluster distance
+  -e.g., the distance between the two most similar clusters and the radius of the most dis-similar cluter
+
+second paragraph: math
+-$d\left(\boldsymbol{\mu}_{m},\boldsymbol{\mu}_{n}\right)$ is distance between clusters $m$ and $n$
+  -given by Eqn.~\ref{eqn:chap10-db-index}
+-intra-cluster distance $\sigma_{m}$
+-various formulation for both intra- and inter-cluster distances can be used
+
+third paragraph: how to use it
+-want clusterings with a high Dunn index
+  -e.g., high intra-cluter similarity and low inter-cluster similarity, duhh
+-more of a worst case indicator since there is a max in the denominator
+  -will be indicative of the ``worst behaving'' cluster
 
 \begin{equation}
 \label{eqn:chap10-dunn-index}
-\textrm{D} = \frac{\min_{1 \le m \le n \le M} d(\boldsymbol{\mu}_{m},\boldsymbol{\mu}_{n})}{\max_{1 \le m \le M} d^'(m)}
+\textrm{D} = \frac{\underset{{1 \le m \le n \le M}}{\textrm{min}} d(\boldsymbol{\mu}_{m},\boldsymbol{\mu}_{n})}{\underset{{1 \le p \le M}}{\textrm{max}} \sigma_{p}}
 \end{equation}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Silhouette Coefficient}
 \label{sec:chap10-silhouette-coeff}
 
+first paragraph: what is it??
+-introduce silhouette coefficients~\cite{rousseeuw1987silhouette}
+-compares average distance to elements in the same cluster with average distance to elements in other clusters
+  -there is a silhouette coefficient for each sample
+  -samples with high silhouette coeff are ``well clustered'
+  -samples with low silhouette coeff may be outliers
+-often used as a graphical aid - can view the rank-ordered silhouette coefficients within each cluster
+-values range from -1 (poorly matched to its cluster) to +1 (well matched to its cluster)
+-if many points have a low value, may have too many or too few clusters
+-can used any distance metric (e.g., Euclidean or Manhattan)
+
+second paragraph: math
+-want $s_{k} \underset{a_{k} \gg b_{k}}{\longrightarrow} +1$
+  -$s_{k}$ near +1 indicates that data is appropriately clustered
+  -$s_{k}$ near -1 indicates that data may be more appropriately clustered within neighboring cluster
+  -$s_{k}$ near 0 indicates that data is on border of two equally valid clusters
+-define dis-similarity $a_{k}$ of $\boldsymbol{\hat{f}}_{k}$ to its cluster $\mathbb{S}_{m}$ as avg distance  from $\boldsymbol{\hat{f}}_{k}$ to all points in $\mathbb{S}_{m}$:
+
+\begin{equation}
+\label{eqn:chap10-silhouette-a}
+a_{k} = \frac{1}{|\mathbb{S}_{m}|-1} \displaystyle\sum\limits_{\substack{\boldsymbol{\hat{f}_{j}} \in \mathbb{S}_{m}\\ j \ne k}} \|\boldsymbol{\hat{f}}_{j} - \boldsymbol{\hat{f}}_{k}\|
+\end{equation}
+
+-define $b_{k}$ lowest average dis-similarity of $\boldsymbol{\hat{f}}_{k}$ to any cluster of which it is not a member:
+  -e.g., the ``neighboring cluster'' $\mathbb{S}_{n}$, or next best fit for $\boldsymbol{\hat{f}}_{k}$
+  -large $b_{k}$ indicates that $\boldsymbol{\hat{f}}_{k}$ is badly matched to neighboring cluster $\mathbb{S}_{n}$
+
+\begin{equation}
+\label{eqn:chap10-silhouette-b}
+b_{k} = \frac{1}{|\mathbb{S}_{n}|} \displaystyle\sum\limits_{\substack{\boldsymbol{\hat{f}_{j}} \in \mathbb{S}_{n}}} \|\boldsymbol{\hat{f}}_{j} - \boldsymbol{\hat{f}}_{k}\|
+\end{equation}
+
+\begin{equation}
+\label{eqn:chap10-silhouette}
+s_{k} = \frac{b_{k}-a_{k}}{\textrm{max}(a_{k},b_{k})}
+\end{equation}
+
+\begin{equation}
+\label{eqn:chap10-silhouette-range}
+-1 \le s_{k} \le +1
+\end{equation}
+
+third paragraph: how to use it
+-average of all silhouette coefficients for the entire dataset may be used to characterize the quality of the overall clustering
+-though silhouette plots may be used to consider the variation of the coefficients, which may reveal the presence of outliers, or that some clusters have much lower silhouette coefficients than the rest and perhaps should be ``refined'' into further clusters
+
+\begin{equation}
+\label{eqn:chap10-silhouette-mean}
+\overline{s} = \frac{1}{K} \displaystyle\sum\limits_{k=1}^{K} s_{k}
+\end{equation}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Calinski-Harabaz Index}
+\label{sec:chap10-calinski-harabaz}
+
+first paragraph: what is it??
+-Calinski-Harabaz (CH) index~\cite{calinski1974dendrite}
+-ratio of between-clusters dispersion mean and within-cluster dispersion
+
+second paragraph: math
+-for $M$ clusters
+
+third paragraph: how to use it
+-higer score relates to model with better defined clusters
+
+-define the within-group dispersion matrix $\boldsymbol{W}$
+
+\begin{equation}
+\label{eqn:chap10-ch-index-bw-group-disp}
+\boldsymbol{W} = \displaystyle\sum\limits_{m=1}^{M} \displaystyle\sum\limits_{\boldsymbol{\hat{f}}_{k} \in \mathbb{S}_{m}} \left(\boldsymbol{\hat{f}}_{k} - \boldsymbol{\hat{\mu}}_{m}\right)\left(\boldsymbol{\hat{f}}_{k} - \boldsymbol{\hat{\mu}}_{m}\right)^{T}
+\end{equation}
+
+-define the between group dispersion matrix $\boldsymbol{B}$
+  -with the mean of all samples $\overline{\boldsymbol{\hat{f}}}_{k}$:
+
+\begin{equation}
+\label{eqn:chap10-ch-index-bw-group-disp}
+\boldsymbol{B} = \displaystyle\sum\limits_{m=1}^{M} |\mathbb{S}_{m}|\left(\boldsymbol{\hat{\mu}}_{m} - \overline{\boldsymbol{\hat{f}}}_{k}\right)\left(\boldsymbol{\hat{\mu}}_{m} - \overline{\boldsymbol{\hat{f}}}_{k}\right)^{T}
+\end{equation}
+
+-define the trace of a matrix as a footnote: the sum of elements along the diagonal of a square matrix
+
+\begin{equation}
+\label{eqn:chap10-ch-index}
+CH = \frac{\mathrm{Tr}(\boldsymbol{B})}{\mathrm{Tr}(\boldsymbol{W})} \times \frac{K-M}{M-1}
+\end{equation}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Bayesian Information Criterion}
 \label{sec:chap10-bic}
 
--Bayesian Information Criterion (BIC)~\cite{schwarz1978bic} to select number of components for \acp{GMM}
--a penalty term on the number of parameters in a model
+first paragraph: what is it??
+-Bayesian Information Criterion (BIC)~\cite{schwarz1978bic}
+-based on the likelihood function $\hat{L}$
+-an information-theoretic criterion
+-select number of components for \acp{GMM}
+-a penalty term on the number of parameters in a model (model complexity)
   -measures the ``efficiency'' of parametrized model at predicting dataset
-  -choose model with lowest BIC
 -theoretically guaranteed to recover true number of components in asymptotic regime
   -i.e., given infinite data points which were in fact i.i.d. by a mixture of gaussians
   -assumes that data is distributed according to an exponential family 
+  -asymptotic result is only valid is the sample size $K$ is much larger than number of model parameters
+
+second paragraph: math
 -given by the number of of data points $K$, the number of parameters$\boldsymbol{\theta}$ to be estimated
 -$|\boldsymbol{\theta}|$ and the maximumum likelihood $\hat{L}$ of the model to be estimated:
-    
+
+third paragraph: how to use it
+-model with lowest BIC is preferred
+-choose model with lowest BIC
+-only nicely expressed for \acp{GMM}
+
 \begin{equation}
 \label{eqn:chap10-bic}
 \textrm{BIC} = -2 \cdot \ln(\hat{L}) + |\boldsymbol{\theta}| \cdot \ln(K) 
@@ -1286,8 +1456,39 @@ Although the \ac{GMM} does not make assumptions about the size or shape of clust
 
 \begin{equation}
 \label{eqn:chap10-likelihood}
-\hat{L} = p \left( \lbrace \boldsymbol{\hat{f}}_{1}, \boldsymbol{\hat{f}}_{2}, \dots, \boldsymbol{\hat{f}}_{K} \rbrace | \boldsymbol{\hat{\theta}}\right)
+\hat{L} = p \left( \left\{ \boldsymbol{\hat{f}}_{1}, \boldsymbol{\hat{f}}_{2}, \dots, \boldsymbol{\hat{f}}_{K} \right\} | \boldsymbol{\hat{\theta}}\right)
 \end{equation}
+
+-log likelihood for \ac{GMM} in Eqns.~\ref{eqn:chap10-gmm} and~\ref{eqn:chap10-gaussian}:
+
+-need production over clusters with indicator function
+
+\begin{dmath}
+\label{eqn:chap10-log-likelihood-gmm}
+\ln(\hat{L}) = \displaystyle\sum\limits_{k=1}^{K} \log \displaystyle\sum\limits_{m=1}^{M} \left\{ -\frac{1}{2}\ln(|\boldsymbol{\Sigma}_{m}|) - \frac{1}{2}\left(\boldsymbol{\hat{f}}_{k} - \boldsymbol{\mu}_{m}\right)^{T}\boldsymbol{\Sigma}_{m}^{-1}\left(\boldsymbol{\hat{f}}_{k} - \boldsymbol{\mu}_{m}\right) - \frac{J^{*}}{2}\ln(2\pi) \right\}^{\mathbb{1}_{\mathbb{S}_{m}(k)}}
+\end{dmath}
+
+-where the indicator function $\mathbb{1}_{\mathbb{S}_{m}}(k)$ is equal to 1 if $k \in \mathbb{S}_{m}$ and 0 otherwise. 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Cross-Validation}
+\label{sec:chap10-cross-validate}
+
+first paragraph: what is it?
+-commonly used model validation technique for machine learning and statistical analysis
+-used to assess generalization of a model by evaluating it with an independent data set
+-leverage the data one has to control model complexity
+-consider sensitivity of a model to the data that is used to train it
+-prevent over-fitting
+-partition dataset into mutually exclusive subsets
+-combines (averages) measure of fit to derive a more accurate/robust estimator of a predictor's performance
+
+second paragraph: how to apply it to clustering
+-for each subset, train model on the other $v-1$ subsets
+  -train models with different numbers of clusters
+-evaluate each model with the subset left out (e.g., squared distances to the centroids)
+-average the scores across the $v$ models
+-choose the number of clusters which minimizes the score
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
