@@ -883,7 +883,7 @@ This thesis implemented an option to use the \texttt{PCA} class in the \texttt{s
 \subsection{Independent Component Analysis}
 \label{subsec:chap10-ica}
 
-\textit{Independent Component Analysis} (ICA)~\cite{hyvarinen2000ica} is a matrix decomposition method inspired by signal processing and commonly employed in machine learning applications. ICA attempts to find \textit{maximally independent} subcomponents to represent the relationships between samples within feature space. In particular, ICA assumes that the data can be represented using non-Gaussian and statistically independent additive subcomponents. In contrast to PCA which maximizes the remaining sample variance explained by each subsequent principal component, ICA maximizes the statistical independence of the independent components. Though ICA is designed to separate superimposed signals, some of the independent components may be selected as the new feature space to reduce the dimensionality of a dataset.
+\textit{Independent Component Analysis} (ICA)~\cite{hyvarinen2000ica} is a matrix decomposition method inspired by signal processing and commonly employed in machine learning applications. ICA attempts to find \textit{maximally independent} subcomponents to represent the relationships between samples within feature space. In particular, ICA assumes that the data can be represented using non-Gaussian and statistically independent additive subcomponents. In contrast to PCA which maximizes the remaining sample variance explained by each subsequent principal component, ICA maximizes the statistical independence of the independent components. Though ICA is designed to separate superimposed signals, the independent components may be selected as the new feature space to reduce the dimensionality of a dataset.
 
 %The independence of components may be measured by various functions, including the Kullback-Leibler divergence, maximum entropy and kurtosis.
 
@@ -891,10 +891,10 @@ ICA represents the observed feature vector $\boldsymbol{\hat{f}}_{k}$ as a linea
 
 \begin{equation}
 \label{eqn:chap10-ica-project}
-\boldsymbol{\hat{f}}_{k} = \boldsymbol{W}^{-1}\boldsymbol{s}_{k} + \boldsymbol{\epsilon}_{k}
+\boldsymbol{\hat{f}}_{k} = \boldsymbol{W}^{-1}\boldsymbol{s}_{k} + \boldsymbol{\epsilon}
 \end{equation}
 
-\noindent where it is assumed that $J^{*} < K$ for dimensionality reduction (\textit{i.e.}, there are fewer components than samples). The $K \times J^{*}$ matrix $\boldsymbol{W}^{-1}$ is referred to as the \textit{mixing matrix}, and $\boldsymbol{\epsilon}_{k}$ is assumed to be a zero-mean and uncorrelated Gaussian noise vector. Each sample is projected into the vector space defined by the indendent components as follows:
+\noindent where it is assumed that $J^{*} < K$ for dimensionality reduction (\textit{i.e.}, there are fewer components than samples). The $K \times J^{*}$ matrix $\boldsymbol{W}^{-1}$ is referred to as the \textit{mixing matrix}, and $\boldsymbol{\epsilon}$ is assumed to be a zero-mean and uncorrelated Gaussian noise vector. Each sample is projected into the vector space defined by the indendent components as follows:
 
 \begin{equation}
 \label{eqn:chap10-ica-inverse}
@@ -907,41 +907,36 @@ The problem of ICA is to estimate both the constant mixing matrix and the random
 \subsection{Factor Analysis}
 \label{subsec:chap10-factor-analysis}
 
-first paragraph: what is it?
--~\cite{harman1960factor}
--inspired by applications in the social sciences like psychology
--a probabilistic model with a likelihood function (equivalent to probablistic PCA or PPCA)
--describe variablity among observed correlated variables in terms of latent ``factor'' variables
-  -unobserved variables modeled as linear combinations of factors plus error terms
--model the variance in every direction of the input space independently (heteroscedastic noise)
-  -better model selection than PCA in the presence of heteroscedastic noise
-  -heteroscedastic: variability of a variable is unequal across the range of values of a second variable that predicts it
-    -this would be the case for LSVM
+\textit{Factor Analysis} (FA)~\cite{harman1960factor} is a matrix decomposition method that uses a probabilistic model to describe variability among correlated features in terms of \textit{latent} or hidden ``factor'' variables. The observed feature vectors are modeled as a linear combination of the latent factors along with some error or noise term(s). FA often produces factors similar to the principal components identified by PCA. However, FA can be advantageous since it does not assume that the variance within each feature is equal across the range of values taken on by other features (\textit{i.e.}, heteroscedastic noise), which is likely not the case for \ac{MGXS} clustering. Like PCA and ICA, the factors found by FA may be selected as the new feature space to reduce the dimensionality of a dataset.
 
-second paragraph: math
-
-third paragraph: how do we use it?
--ICA is similar but does *not* specify a gaussian prior over the latent variables
--\texttt{FactorAnalysis} in \texttt{sklearn.decomposition} module
--need to add option for factor analysis decomposition to scripts
-  -run a few test cases and see what comes out!!!
+FA introduces the continuous, random $K$-dimensional factor vectors $\boldsymbol{h}_{k}$ for each sample, and a \textit{factor loading matrix} $\boldsymbol{W}$, to represent each feature vector $\boldsymbol{\hat{f}}_{k}$ as follows:
 
 \begin{equation}
-\label{eqn:chap10-lvm}
+\label{eqn:chap10-fa-project}
 \boldsymbol{\hat{f}}_{k} = \boldsymbol{W}\boldsymbol{h}_{k} + \boldsymbol{\mu} + \boldsymbol{\epsilon}
 \end{equation}
 
-where $\boldsymbol{h}_{k}$ is ``latent'' and $\boldsymbol{\epsilon}$ is a Gaussian noise term distributed with zero mean and covariance $\boldsymbol{\Sigma}$ or $\boldsymbol{\epsilon} \sim \mathcal{N}\left(0,\boldsymbol{\Sigma}\right)$:
--assume that $\boldsymbol{\Sigma}$ is a diagonal matrix for factor analysis
-  -it is also diagonal for PCA with identical values along the diagonal
--$\boldsymbol{W}$ is the ``factor loading matrix''
+\noindent where the vector $\boldsymbol{\mu} = \left[\overline{\boldsymbol{\hat{f}}}_{1}, \overline{\boldsymbol{\hat{f}}}_{2}, \dots, \overline{\boldsymbol{\hat{f}}}_{K}\right]^{T} $ is comprised of the feature means. The noise term $\boldsymbol{\epsilon}$ is normally distributed with zero mean and a diagonal covariance matrix $\boldsymbol{\Sigma}$ such that the conditional probability of observing the feature vector $\boldsymbol{\hat{f}}_{k}$ is given by:
 
 \begin{equation}
-\label{eqn:chap10-lvm-prob}
+\label{eqn:chap10-fa-prob}
 p\left(\boldsymbol{\hat{f}}_{k}|\boldsymbol{h}_{k}\right) = \mathcal{N}\left(\boldsymbol{W}\boldsymbol{h}_{k} + \boldsymbol{\mu}, \boldsymbol{\Sigma}\right)
 \end{equation}
 
-SUMMARY BOXES
+\noindent Each sample is projected into the vector space defined by the latent factors as follows:
+
+\begin{equation}
+\label{eqn:chap10-fa-inverse}
+\boldsymbol{h}_{k} = \boldsymbol{W}^{-1}\left(\boldsymbol{\hat{f}}_{k} - \boldsymbol{\mu}\right)
+\end{equation}
+
+A variety of algorithms may be employed to estimate the factor loading matrix, including the Expectation-Maximization (EM) algorithm~\cite{dempster1977em} (see Sec.~\ref{subsec:chap10-gmms}) which finds the maximum likelihood estimators of the multi-variate Gaussian distribution in Eqn.~\ref{eqn:chap10-fa-prob}. This thesis implemented an option to use the \texttt{FactorAnalysis} class in the \texttt{sklearn.decomposition} Python module for dimensionality reduction in the \textit{i}\ac{MGXS} scheme. Similar to ICA, this option was motivated by the potential for FA to identify spatial self-shielding effects (\textit{e.g.}, adjacency to \acp{CRGT}, neighboring assembly, or baffle/reflector) as factors in a linear model of the clustering of pin-wise \ac{MGXS}. Like PCA and ICA, the use of FA is not further explored in this thesis, though it was shown to induce significantly different clustering model predictions than those models which were trained on datasets in the original feature space.
+
+\clearpage
+
+\begin{emphbox}
+\textbf{Dimensionality reduction represents samples in a lower-dimensional vector space with the same descriptive power as the original features to reduce training time and dataset storage requirements, and improve clustering model performance. Three matrix decomposition methods for dimensionality reduction -- PCA, ICA and FA -- are presented for optional (future) use in the \textit{i}\ac{MGXS} scheme, but are not employed in any of the case studies in this thesis.}
+\end{emphbox}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %\subsubsection{Decision Tree Regression}
