@@ -840,66 +840,44 @@ The \textit{dimemsionality reduction} stage in the data processing pipeline in F
 \end{figure}
 
 Three matrix decomposition dimensionality reduction methods were implemented as optional elements of the \textit{i}\ac{MGXS} data processing pipeline used in this thesis and are briefly discussed here. The Principal Component Analysis and Independent Component Analysis methods are highlighted in Sec.~\ref{subsec:chap10-pca} and~\ref{subsec:chap10-ica}, respectively. The Factor Analysis method is summarized in Sec.~\ref{subsec:chap10-factor-analysis}. None of these methods are employed in the case studies of the \textit{i}\ac{MGXS} scheme applied to heterogeneous \ac{PWR} benchmarks in the following chapter. Nonetheless, they are mentioned here since it is the author's opinion that they present opportunities to improve the predictive accuracy and training time of the \textit{i}\ac{MGXS} scheme.
-  
-SUMMARY BOXES
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Principal Component Analysis}
 \label{subsec:chap10-pca}
 
-first paragraph: what is it?
--~\cite{jolliffe2002pca}
--PCA provides lower-dimensional picture of the structure in a dataset (reduce dimensionality)
--variance-focused approach which seeks to reproduce total variable variance
-  -as compared to factor analysis which is a correlation-focused approach
--orthogonal linear transformation
-  -projects set of correlated variables into a linearly uncorrelated orthogonal basis set
-  -principal components are linear combinations of the input variables (features)
-  -number of principal components is less than or equal to number of original variables
-  -principal components are rank-ordered in terms of the amount of variance they account for in the original feature space, with each component orthogonal to all the rest
-  -equivalent to the Singular-Value Decomposition (SVD) of the ``data matrix'' ($K \times J$)
-    -data MUST be standardized or the principal components will be sensitive to the mean of each feature
+\textit{Principal Component Analysis} (PCA)~\cite{jolliffe2002pca} is a matrix decomposition of the dataset that is perhaps the most common technique for dimensionality reduction. PCA is a variance-centric approach which seeks to reproduce the total variable variance in a dataset with an orthogonal linear transformation of the feature space. In particular, PCA projects the features -- which may or may not be correlated -- onto a linearly uncorrelated basis set of \textit{principal components}. The principal components are linear combinations of the features that are rank-ordered by the amount of variance they account for in the original dataset. The first few principal components may be selected as the new feature space to reduce the dimensionality of the dataset while preserving most of the variance.
 
-second paragraph: math as a SVD
--$\boldsymbol{\Sigma}$ is a $K \times J$ rectangular diagonal matrix of positive numbers $\sigma_{(j)}$ known as the singular values (square roots of the eigenvalues)
--$\boldsymbol{U}$ is a $K \times K$ matrix composed of orthogonal vectors called the left singular vectors
--$\boldsymbol{W}$ is a $K \times K$ matrix composed of orthogonal vectors called the right singular vectors
--take the first $L$ largest singular values and their singular vectors as the principal components
--following will transform samples from original feature space to new orthogonal space:
--data matrix is a $K \times J$ matrix
-  -each row is a sample!!!
+There are many methods to decompose a dataset into its principal components, but the most common is known as the Singular-Value Decomposition (SVD)~\cite{golub1970svd}. The SVD decomposes the $K \times J$ dataset matrix $\boldsymbol{F} = \left[\boldsymbol{\hat{f}}_{1}, \boldsymbol{\hat{f}}_{2}, \dots, \boldsymbol{\hat{f}}_{K}\right]^{T} $ of feature vectors as follows:
 
-third paragraph: how do we use it?  
--if each variable in original feature space is i.i.d. ``noisy'' (i.e., white Gaussian noise)
-  -PCA helps to increaese the signal-to-noise ratio
-  -concentrating the variance in only a few features
-  -latter features dominated by the noise
--\texttt{PCA} or \texttt{KernelPCA}~\cite{scholkopf1997kernelpca} from \texttt{sklearn.decomposition}
-  -with radial basis function (RBF) kernels to permit project into a non-linear principal component space:
-    -kernel is a measure of similarity or affinity between samples
-    -may need to normalize sample feature vectors first??
--requires fitting all of data in main memory, though out-of-core variants with batch processing do exist
--refer reader to the literature for more information :-)
+%  -as compared to factor analysis which is a correlation-focused approach
+%original feature space, with each component orthogonal to all the rest
+%    -data MUST be standardized or the principal components will be sensitive to the mean of each feature
+%-data matrix is a $K \times J$ matrix
+%  -each row is a sample!!!
 
 \begin{equation}
 \label{eqn:chap10-svd}
-\boldsymbol{X} = \boldsymbol{U}\boldsymbol{\Sigma}\boldsymbol{W}^{T}
+\boldsymbol{\hat{F}} = \boldsymbol{U}\boldsymbol{\Sigma}\boldsymbol{W}^{T}
 \end{equation}
 
-\begin{equation}
-\label{eqn:chap10-svd-transform}
-\boldsymbol{T} = \boldsymbol{U}\boldsymbol{\Sigma} = \boldsymbol{X}\boldsymbol{W} \approx \boldsymbol{X}\boldsymbol{W}_{L}
-\end{equation}
+\noindent The $\boldsymbol{U}$ and $\boldsymbol{W}$ matrices are $K \times K$ unitary matrices composed of orthogonal vectors called the \text{left singular vectors} and \textit{right singular vectors}, respectively. PCA designates the right singular vectors as the principal components. The $\boldsymbol{\Sigma}$ matrix is a $K \times J$ rectangular diagonal matrix of the positive \textit{singular values} (square roots of the eigenvalues of $\boldsymbol{\hat{F}}$) whose magnitudes are proportional to the amount of variance explained by the corresponding singular vector. Each sample $\boldsymbol{\hat{f}}_{k}$ in the original feature space is mapped to $\boldsymbol{t}_{k}$ in the vector space defined by the principal components as follows:
 
 \begin{equation}
 \label{eqn:chap10-svd-transform-sample}
-\boldsymbol{t}_{k} = \boldsymbol{W}^{T}\boldsymbol{\hat{f}}_{k}
+\boldsymbol{t}_{k} = \boldsymbol{\hat{f}}_{k}^{T}\boldsymbol{W} \approx \boldsymbol{\hat{f}}_{k}^{T}\boldsymbol{W}_{L}
 \end{equation}
 
-\begin{equation}
-\label{eqn:chap10-rbf-kernel}
-K\left(\boldsymbol{\hat{f}}_{k_{2}}, \boldsymbol{\hat{f}}_{k_{2}}\right) = exp\left(-gamma\|\boldsymbol{\hat{f}}_{k_{2}} - \boldsymbol{\hat{f}}_{k_{2}}\|^{2}\right)
-\end{equation}
+\noindent The SVD defines a loss-less transformation of the dataset. However, dimensionality reduction selects the $L$ largest singular values and their respective singular vectors and uses the truncated $K \times L$ matrix $\boldsymbol{W}_{L}$ to map the data into a lower-dimensional feature space.
+
+This thesis implemented an option to use the \texttt{PCA} class in the \texttt{sklearn.decomposition} Python module for dimensionality reduction in the \textit{i}\ac{MGXS} scheme. This option was motivated by the potential for PCA to increase the signal-to-noise ratio -- the effects from spatial self-shielding convolved with \ac{MC} tally uncertainties -- hidden within \ac{MGXS} datasets by concentrating the sample variance within only a few principal components, with the remaining components dominated by the noise from \ac{MC}\footnote{PCA increases the signal-to-noise ratio if the original features are distributed with i.i.d. white Gaussian noise.}. A variant of PCA known as \textit{kernel PCA}~\cite{scholkopf1997kernelpca} applies the ``kernel trick'' with radial basis functions (RBF) or other kernels to define a non-linear projection to the principal component space. Kernel PCA may improve the performance of clustering algorithms if the clusters are defined on complex (\textit{e.g.}, non-convex) manifolds, such as those observed in some \ac{MGXS} datasets. Although the use of PCA is not further explored in this thesis, kernel PCA was shown to induce significantly different clustering model predictions than those models which were trained on datasets in the original feature space.
+
+%-requires fitting all of data in main memory, though out-of-core variants with batch processing do exist
+%-refer reader to the literature for more information :-)
+
+%\begin{equation}
+%\label{eqn:chap10-rbf-kernel}
+%K\left(\boldsymbol{\hat{f}}_{k_{2}}, \boldsymbol{\hat{f}}_{k_{2}}\right) = exp\left(-gamma\|\boldsymbol{\hat{f}}_{k_{2}} - \boldsymbol{\hat{f}}_{k_{2}}\|^{2}\right)
+%\end{equation}
   
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Independent Component Analysis}
@@ -983,6 +961,8 @@ where $\boldsymbol{h}_{k}$ is ``latent'' and $\boldsymbol{\epsilon}$ is a Gaussi
 \label{eqn:chap10-lvm-prob}
 p\left(\boldsymbol{\hat{f}}_{k}|\boldsymbol{h}_{k}\right) = \mathcal{N}\left(\boldsymbol{W}\boldsymbol{h}_{k} + \boldsymbol{\mu}, \boldsymbol{\Sigma}\right)
 \end{equation}
+
+SUMMARY BOXES
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %\subsubsection{Decision Tree Regression}
