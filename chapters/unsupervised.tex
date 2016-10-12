@@ -1293,7 +1293,7 @@ The EM algorithm is guaranteed to monotonically increase the likelihood function
 Although the \ac{GMM} does not make assumptions about the size or shape of clusters, it does assume that each cluster is normally distributed. In addition, the EM algorithm employed by this thesis does require the number of clusters $M$ to be specified. As a result, model selection techniques must be used to select from a sequence of cluster models trained for different values of $M$, as discussed in Sec.~\ref{sec:chap10-model-select}. Alternatively, Variational Bayesian estimation methods developed for \acp{GMM}~\cite{attias2000variational,blei2006variational} may be used to automatically infer the number of mixture components using a Dirichlet Process prior over the parameters for infinite \acp{GMM}~\cite{ferguson1973dirichlet}. These methods are broadly available, including the \texttt{BayesianGaussianMixture} implementation in the \texttt{sklearn.mixture} module.
 
 \begin{emphbox}
-\textbf{Various clustering algorithms exist, each of which makes different assumptions about what constitutes a ``cluster'' and optimizes a different objective function to find clusters in data. The $k$-means, agglomerative, BIRCH and Gaussian Mixture Model clustering algorithms were employed by the \textit{i}\ac{MGXS} scheme in this thesis.}
+\textbf{Clustering algorithms make different assumptions about what constitutes a ``cluster,'' and optimize different objective functions to find clusters in data. The $k$-means, agglomerative, BIRCH and Gaussian Mixture Model clustering algorithms were each used to evaluate the \textit{i}\ac{MGXS} scheme in this thesis.}
 \end{emphbox}
 
 
@@ -1511,8 +1511,10 @@ The first term in the BIC uses the maximum log-likelihood to measure the ability
 \end{algorithmic}
 \end{algorithm}
 
+\clearpage
+
 \begin{emphbox}
-\textbf{Model selection techniques are used to determine clustering model parameters, such a the number of clusters. Each method aims to find the clustering model that maximizes intra-cluster similarity and inter-cluster dissimilarity. The Davies-Boulding, Dunn and Calinski-Harabaz indices and silhouette coefficients are implemented for use by each clustering algorithm employed by the \textit{i}\ac{MGXS} scheme, and the Bayesian Information Criterion is implemented for Gaussian Mixture Models.}
+\textbf{Model selection techniques are used to choose clustering model parameters, including the number of clusters. Various methods score clustering models based upon their intra-and inter-cluster similarities, or penalize model complexity using regularization. The Davies-Boulding, Dunn and Calinski-Harabaz indices and silhouette coefficients are implemented for each clustering algorithm employed by the \textit{i}\ac{MGXS} scheme, and the Bayesian Information Criterion is implemented for Gaussian Mixture Models.}
 \end{emphbox}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
