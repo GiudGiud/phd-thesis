@@ -808,7 +808,7 @@ The \textit{select-from-model} approach is a wrapper method for feature selectio
 \subsection{Pinch Feature Selection}
 \label{subsec:chap10-pinch-selection}
 
-Each of the preceding feature selection techniques automatically selects or rejects features based on some test criterion. An obvious alternative is to base feature selection entirely on user domain knowledge. The \textit{i}\ac{MGXS} implementation in this thesis allows users to employ \textit{pinch feature selection} to specify a single nuclide / energy group / reaction type grouping from which to derive features. For example, the case studies in the following chapter employ the pinch method to select only those features derived from U-238 capture \ac{MGXS} in group 1 of 2. This is based on the knowledge acquired from Chaps.~\ref{chap:quantify} and~\ref{chap:spatial} that a detailed model of \ac{MGXS} clustering is necessary for accurate predictions of pin-wise U-238 capture reaction rates. Alternatively, a user may specify a nuclide / energy group / reaction type grouping which indicates the clustering of other \ac{MGXS} which may be more important to cluster for accurate reaction rate predictions. For example, clustering of U-235 fission \ac{MGXS} may be a good (\textit{e.g.}, low uncertainty) signal of U-238 capture \ac{MGXS} clustering, even if pin-wise fission rates are less sensitive to \ac{MGXS} clustering than U-238 capture rates.
+Each of the preceding feature selection techniques automatically selects or rejects features based on some test criterion. An obvious alternative is to base feature selection entirely on user domain knowledge. The \textit{i}\ac{MGXS} implementation in this thesis allows users to employ \textit{pinch feature selection} to specify a single nuclide / energy group / reaction type grouping from which to derive features. For example, the case studies in the following chapter employ the pinch method to select only those features derived from U-238 capture \ac{MGXS} in group 1 of 2. This is based on the knowledge acquired from Chaps.~\ref{chap:quantify} and~\ref{chap:spatial} that a detailed model of \ac{MGXS} clustering is necessary for accurate predictions of pin-wise U-238 capture reaction rates. Alternatively, a user may specify a nuclide, energy group, and reaction type grouping which indicates the clustering of other \ac{MGXS} which may be more important to cluster for accurate reaction rate predictions. For example, clustering of U-235 fission \ac{MGXS} may be a good (\textit{e.g.}, low uncertainty) signal of U-238 capture \ac{MGXS} clustering, even if pin-wise fission rates are less sensitive to \ac{MGXS} clustering than U-238 capture rates.
 
 %-could foreseeably mean multiple specific nuclides, reactions and energy groups
 
@@ -821,39 +821,27 @@ Each of the preceding feature selection techniques automatically selects or reje
 \section{Dimensionality Reduction}
 \label{sec:chap10-dimension-reduce}
 
-first paragraph: what is goal???
--transform number of features to find new ones with more descriptive power than original set
-  -new features may be more easily ordered than original ones
-    -allowing for easier feature selection (Sec.~\ref{sec:chap10-litmus})
--can account for correlations between features
-  -rather than treating each features independent
--want to reduce dimensionality of dataset while preserving structure (i.e., relationships between points)
-  -make models easier to visualize/explain (same arguments as for feature selection??)
--$P: \mathbb{R}^{J^{*}} \rightarrow \mathbb{R}^{J^{**}}$ where $J^{*} > J^{**}$
--Fig.~\ref{fig:chap10-agglomerate}
+The \textit{dimemsionality reduction} stage in the data processing pipeline in Fig.~\ref{fig:chap10-pipeline} aims to reduce the number of random variables used to train a machine learning model, and is closely related to feature selection\footnote{Feature transformation can be used in place of \textit{or} in conjunction with feature selection techniques.}. A dimensionality reduction method is a transformation $P: \mathbb{R}^{J} \rightarrow \mathbb{R}^{T}$ from the original $J$-dimensional feature space to a $T$-dimensional space with an equivalent descriptive power of the structure, or the relationships between samples, in the dataset. In general, dimensionality reduction is used in statistical clustering analysis for the following reasons:
 
 \begin{itemize}[noitemsep]
 \item Reduce dataset storage requirements and model training time
 \item Improve model performance and reduce sensitivity to outliers
+\item Make dataset and models easier to visualize in 2D or 3D
 \end{itemize}
- 
-second paragraph: outline
--Sec.~\ref{subsec:chap10-pca} - PCA
--Sec.~\ref{subsec:chap10-ica} - ICA
--Sec.~\ref{subsec:chap10-factor-analysis} - Factor Analysis
--these are but a few options for dimensionality reduction
-  -none of these are used in the following sections, but are briefly mentioned here because of their relevance for future work
-  
+
+\noindent Many common dimemsionality reduction techniques perform a decomposition of the dataset matrix. These methods attempt to identify \textit{latent} or hidden variables which adequately represent the variation of and correlation between features in a lower-dimensional vector space than the original feature space. The mapping can be represented as a basis of $T$ functions $g_{t}$ of the feature vectors $\boldsymbol{\hat{f}}_{k}$ as illustrated in Fig.~\ref{fig:chap10-agglomerate}.
+
 \begin{figure}[h!]
 \centering
-\includegraphics[width=0.95\linewidth]{figures/unsupervised/features/engineering/agglomerate}
+\includegraphics[width=0.95\linewidth]{figures/unsupervised/features/engineering/reduce}
 \vspace{2mm}
-\caption[\textit{i}MGXS feature agglomeration]{Agglomeration transforms the original feature vectors into new features.}
+\caption[\textit{i}MGXS dimensionality reduction]{Dimensionality reduction maps the features into a new vector space.}
 \label{fig:chap10-agglomerate}
 \end{figure}
 
+Three matrix decomposition dimensionality reduction methods were implemented as optional elements of the \textit{i}\ac{MGXS} data processing pipeline used in this thesis and are briefly discussed here. The Principal Component Analysis and Independent Component Analysis methods are highlighted in Sec.~\ref{subsec:chap10-pca} and~\ref{subsec:chap10-ica}, respectively. The Factor Analysis method is summarized in Sec.~\ref{subsec:chap10-factor-analysis}. None of these methods are employed in the case studies of the \textit{i}\ac{MGXS} scheme applied to heterogeneous \ac{PWR} benchmarks in the following chapter. Nonetheless, they are mentioned here since it is the author's opinion that they present opportunities to improve the predictive accuracy and training time of the \textit{i}\ac{MGXS} scheme.
+  
 SUMMARY BOXES
--change feature agglomeration -> dimensionality reduction in figures!!!
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Principal Component Analysis}
@@ -869,16 +857,16 @@ first paragraph: what is it?
   -principal components are linear combinations of the input variables (features)
   -number of principal components is less than or equal to number of original variables
   -principal components are rank-ordered in terms of the amount of variance they account for in the original feature space, with each component orthogonal to all the rest
-  -equivalent to the Singular-Value Decomposition (SVD) of the ``data matrix'' ($K \times J^{*}$)
+  -equivalent to the Singular-Value Decomposition (SVD) of the ``data matrix'' ($K \times J$)
     -data MUST be standardized or the principal components will be sensitive to the mean of each feature
 
 second paragraph: math as a SVD
--$\boldsymbol{\Sigma}$ is a $K \times J^{*}$ rectangular diagonal matrix of positive numbers $\sigma_{(j)}$ known as the singular values (square roots of the eigenvalues)
+-$\boldsymbol{\Sigma}$ is a $K \times J$ rectangular diagonal matrix of positive numbers $\sigma_{(j)}$ known as the singular values (square roots of the eigenvalues)
 -$\boldsymbol{U}$ is a $K \times K$ matrix composed of orthogonal vectors called the left singular vectors
 -$\boldsymbol{W}$ is a $K \times K$ matrix composed of orthogonal vectors called the right singular vectors
 -take the first $L$ largest singular values and their singular vectors as the principal components
 -following will transform samples from original feature space to new orthogonal space:
--data matrix is a $K \times J^{*}$ matrix
+-data matrix is a $K \times J$ matrix
   -each row is a sample!!!
 
 third paragraph: how do we use it?  
@@ -1032,8 +1020,6 @@ Depending on the clustering algorithm, many different predictors may be built fo
 \label{fig:chap10-cluster}
 \end{figure}
 
-SUMMARY BOXES
-
 %third paragraph: types of clustering algorithms
 %  -Distribution Models: e.g., GMMs, generative models
 %    -good theoretical foundation (i.e., analytical expressions for likelihood)
@@ -1053,7 +1039,7 @@ The $k$-means algorithm~\cite{macqueen1967kmeans, lloyd1982kmeans} constructs a 
 \displaystyle\sum\limits_{k=0}^{K} \min_{\boldsymbol{\mu}_{m} \in \mathbb{C}} \|\boldsymbol{\hat{f}}_{k} - \boldsymbol{\mu}_{m}\|^{2}
 \end{equation}
 
-\noindent where $\boldsymbol{\mu}_{m}$ and $\boldsymbol{\hat{f}}_{k}$ are the $J^{*}$-dimensional centroid of cluster $m$ and feature vector for fuel pin instance $k$ in feature space, respectively. Each of the cluster centroids is stored in set $\mathbb{C} = \left\{ \boldsymbol{\mu}_{1}, \boldsymbol{\mu}_{2}, \dots, \boldsymbol{\mu}_{M} \right\}$, where $M$ is used in place of $k$ to denote the total number of clusters to avoid confusion with the $k$ used to index the fuel pin instances.
+\noindent where $\boldsymbol{\mu}_{m}$ and $\boldsymbol{\hat{f}}_{k}$ are the $J$-dimensional centroid of cluster $m$ and feature vector for fuel pin instance $k$ in feature space, respectively. Each of the cluster centroids is stored in set $\mathbb{C} = \left\{ \boldsymbol{\mu}_{1}, \boldsymbol{\mu}_{2}, \dots, \boldsymbol{\mu}_{M} \right\}$, where $M$ is used in place of $k$ to denote the total number of clusters to avoid confusion with the $k$ used to index the fuel pin instances.
 
 The key steps of the $k$-means algorithm are summarized in Alg.~\ref{alg:chap10-kmeans}. The first step initializes $M$ cluster centroids in feature space. A variety of techniques exist to initialize the centroids, including random selection of $M$ samples as centroids, or the $k$-means++ method~\cite{arthur2007kmeans++} which uniformly disperses the centroids across high density regions of feature space. The algorithm then iterates over \textit{assignment} and \textit{update} steps. The assignment step loops over each sample and assigns it to the nearest cluster centroid:
 
@@ -1089,7 +1075,7 @@ res = \max_{1 \le m \le M} \|\boldsymbol{\mu}_{m}^{(t+1)} - \boldsymbol{\mu}_{m}
 \end{algorithmic}
 \end{algorithm}
 
-This thesis employs the $k$-means algorithm implemented in the \texttt{KMeans} class of the \texttt{sklearn.cluster} module in the \texttt{scikit-learn} Python package. The Euclidean distance metric is used to compare the similarity of samples in feature space, and the $k$-means++ algorithm is used to initialize cluster centroids. Two attractive features of $k$-means are its simplicity and speed. It has a linear computational complexity of $\mathcal{O}(KJ^{*}MT)$ for $K$ fuel pin instances, $J^{*}$ features, $M$ clusters and $T$ iterations. The algorithm is relatively easy to parallelize since is primarily consists of by independent calculations of the distances between each sample and cluster centroid. In addition, out-of-core variants of the algorithm exist for very big datasets such as those that might be realized if the \textit{i}\ac{MGXS} scheme were used to model a full core \ac{PWR} in 3D. For example, mini-batch $k$-means~\cite{sculley2010minibatchkmeans} is an out-of-core version of the algorithm and is implemented as \texttt{MiniBatchKMeans} in the \texttt{sklearn.cluster} package.
+This thesis employs the $k$-means algorithm implemented in the \texttt{KMeans} class of the \texttt{sklearn.cluster} module in the \texttt{scikit-learn} Python package. The Euclidean distance metric is used to compare the similarity of samples in feature space, and the $k$-means++ algorithm is used to initialize cluster centroids. Two attractive features of $k$-means are its simplicity and speed. It has a linear computational complexity of $\mathcal{O}(KJMT)$ for $K$ fuel pin instances, $J$ features, $M$ clusters and $T$ iterations. The algorithm is relatively easy to parallelize since is primarily consists of by independent calculations of the distances between each sample and cluster centroid. In addition, out-of-core variants of the algorithm exist for very big datasets such as those that might be realized if the \textit{i}\ac{MGXS} scheme were used to model a full core \ac{PWR} in 3D. For example, mini-batch $k$-means~\cite{sculley2010minibatchkmeans} is an out-of-core version of the algorithm and is implemented as \texttt{MiniBatchKMeans} in the \texttt{sklearn.cluster} package.
 
 The $k$-means algorithm makes a number of assumptions about what constitutes a ``cluster'' that have consequences for the types of cluster models that it finds. In particular, $k$-means optimizes the inertia which implicitly assumes that clusters are convex and isotropic, and in particular, that clusters are spherical and of similar size in feature space. As a result, $k$-means is not well-suited to identify clusters with irregular shapes without special distance metrics and/or feature agglomeration techniques. Another complication is that while $k$-means is provably guaranteed to converge\footnote{This is only true if the Euclidean distance metric is used.}, it only finds local minima of the inertia. Furthermore, the performance is especially sensitive to the placement of the initial centroids. The $k$-means++ algorithm is designed to mitigate this by ensuring that the centroids are uniformly and randomly dispersed across the important regions of feature space. Nonetheless, since the algorithm is fast, it is common to run $k$-means many times with different initial cluster centroids and choose the solution with the smallest inertia. Finally, $k$-means requires a user to define the number of clusters $M$ to find within the dataset. In practice, the optimal value of $M$ is unknown \textit{a priori}, and model selection techniques must be used to select from a sequence of cluster models trained for different values of $M$, as discussed in Sec.~\ref{sec:chap10-model-select}.
 
@@ -1260,11 +1246,11 @@ The generic \ac{GMM} is parameterized by the number of components (or clusters) 
 p\left(\boldsymbol{\hat{f}}_{k} | \boldsymbol{\theta}\right) = \displaystyle\sum\limits_{m=1}^{M} \pi_{m} \mathcal{N}\left(\boldsymbol{\hat{f}}_{k}; \boldsymbol{\theta}\right) = \displaystyle\sum\limits_{m=1}^{M} \pi_{m} \mathcal{N}\left(\boldsymbol{\hat{f}}_{k}; \boldsymbol{\mu}_{m}, \boldsymbol{\Sigma}_{m}\right)
 \end{equation}
 
-\noindent where each $J^{*}$-dimensional Gaussian component distribution is given by:
+\noindent where each $J$-dimensional Gaussian component distribution is given by:
 
 \begin{equation}
 \label{eqn:chap10-gaussian}
-\mathcal{N}\left(\boldsymbol{\hat{f}}_{k}; \boldsymbol{\mu}_{m}, \boldsymbol{\Sigma}_{m}\right) = \frac{1}{(2\pi)^{\nicefrac{J^{*}}{2}} |\boldsymbol{\Sigma}_{m}|^{\nicefrac{1}{2}}} exp\left\{ -\frac{1}{2}\left(\boldsymbol{\hat{f}}_{k} - \boldsymbol{\mu}_{m})^{T}\boldsymbol{\Sigma}_{m}^{-1}(_{k} - \boldsymbol{\mu}_{m}\right) \right\}
+\mathcal{N}\left(\boldsymbol{\hat{f}}_{k}; \boldsymbol{\mu}_{m}, \boldsymbol{\Sigma}_{m}\right) = \frac{1}{(2\pi)^{\nicefrac{J}{2}} |\boldsymbol{\Sigma}_{m}|^{\nicefrac{1}{2}}} exp\left\{ -\frac{1}{2}\left(\boldsymbol{\hat{f}}_{k} - \boldsymbol{\mu}_{m})^{T}\boldsymbol{\Sigma}_{m}^{-1}(_{k} - \boldsymbol{\mu}_{m}\right) \right\}
 \end{equation}
 
 The generic \ac{GMM} is illustrated in Fig.~\ref{fig:chap10-gmm-plates} with the \textit{plate notation} commonly used by the machine learning community to describe complex probability distributions. In summary, small rectangles represent unknown model parameters, unshaded circles describe unobserved random variables, and shaded circles signify observed random variables. The dimensionality of non-scalar random variables are indicated in brackets inside each square and circle. Large rectangular \textit{plates} group subgraphs of variables which repeat together according to the repetition numbers in the bottom right corners of each plate (\textit{e.g.}, $M$ and $K$). The inter-dependences of each model parameter and random variable within the graph are indicated by directed arrows. Categorical variables, such as the cluster labels $\ell_{k}$, are related using a squiggly arrow with a T junction. The interested reader is referred to~\cite{jordan1999graphs} or many other sources in the machine learning literature for more information about describing graphical models with plate notation.
@@ -1282,9 +1268,9 @@ The generic \ac{GMM} is illustrated in Fig.~\ref{fig:chap10-gmm-plates} with the
   \tikzstyle{switch}=[circle, minimum size = 1mm, fill = black!100, draw=black!100]
   \node[param] (pi) [label=below:$\boldsymbol\pi$] {[$M$]};
   \node[main] (ell) [xshift=10mm, right of=pi,label=below:$\ell_{k}$] {M};
-  \node[param] (mu) [above of=pi,yshift=20mm, label=below:$\boldsymbol{\mu}_{m}$] {[$J^{*}$]};
-  \node[main, fill = black!10] (f) [right of= ell,label=below:$\boldsymbol{\hat{f}}_{k}$] {[$J^{*}$]};
-  \node[param] (sigma) [above of=ell,yshift=20mm, label=below:$\boldsymbol{\Sigma}_{m}$] {[$J^{*},J^{*}$] };
+  \node[param] (mu) [above of=pi,yshift=20mm, label=below:$\boldsymbol{\mu}_{m}$] {[$J$]};
+  \node[main, fill = black!10] (f) [right of= ell,label=below:$\boldsymbol{\hat{f}}_{k}$] {[$J$]};
+  \node[param] (sigma) [above of=ell,yshift=20mm, label=below:$\boldsymbol{\Sigma}_{m}$] {[$J,J$] };
   \path (pi) edge [connect] (ell) (ell) edge [selector] (f) (mu) edge [connect] (f) (sigma) edge [connect] (f);
   \node[rectangle, inner sep=0mm, fit= (ell) (f),label=below right:K, xshift=9mm] {};
   \node[rectangle, inner sep=7mm,draw=black!100, fit= (ell) (f), xshift=1mm] {};
@@ -1352,6 +1338,10 @@ The EM algorithm is guaranteed to monotonically increase the likelihood function
 
 Although the \ac{GMM} does not make assumptions about the size or shape of clusters, it does assume that each cluster is normally distributed. In addition, the EM algorithm employed by this thesis does require the number of clusters $M$ to be specified. As a result, model selection techniques must be used to select from a sequence of cluster models trained for different values of $M$, as discussed in Sec.~\ref{sec:chap10-model-select}. Alternatively, Variational Bayesian estimation methods developed for \acp{GMM}~\cite{attias2000variational,blei2006variational} may be used to automatically infer the number of mixture components using a Dirichlet Process prior over the parameters for infinite \acp{GMM}~\cite{ferguson1973dirichlet}. These methods are broadly available, including the \texttt{BayesianGaussianMixture} implementation in the \texttt{sklearn.mixture} module.
 
+\begin{emphbox}
+\textbf{Various clustering algorithms exist, each of which makes different assumptions about what constitutes a ``cluster'' and optimizes a different objective function to find clusters in data. The $k$-means, agglomerative, BIRCH and Gaussian Mixture Model clustering algorithms were employed by the \textit{i}\ac{MGXS} scheme in this thesis.}
+\end{emphbox}
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %\section{Mapping Features to MGXS Targets}
@@ -1409,8 +1399,6 @@ The machine learning community has developed a plethora of model selection techn
 The following sections describe several model selection criteria that are use to evaluate the cluster models produce by \textit{i}\ac{MGXS} scheme. Secs.~\Crefrange{subsec:chap10-db-index}{subsec:chap10-silhouette-coeff} introduce the Davies-Boulding index, Dunn index, Calinski-Harabaz index and silhouette coefficients. These criteria aims employ different metrics to quantify inter- and intra-cluster similarities to quantify the quality of a clustering model. Sec.~\ref{subsec:chap10-bic} presents the Bayesian Information Criterion, a technique with a strong theoretical formulation that may be used to evaluate \acp{GMM}. Finally, Sec.~\ref{subsec:chap10-cross-validate} discusses cross-validation and how it may be used in conjunction with any of these model selection criteria to prevent over-fitting.
 
 It is important to note that model selection may \textit{only} examine the clustering models. The clustered \ac{MGXS} may \textit{not} be employed in a multi-group transport simulation and then compared with respect to some reference \ac{MC} solution. Although such an exercise is important as a proof of principle of the \textit{i}\ac{MGXS} scheme, it would be unacceptable as a model selection technique since it is not unsupervised. Furthermore, it would nullify the over-arching goal of this thesis -- to obtain \ac{MC} quality solutions with computationally efficient deterministic multi-group transport codes -- since it would require the computationally expensive calculation of a \ac{MC} reference solution.
-
-SUMMARY BOXES
 
 %    -evaluation is biased towards algorithms that use the same cluster model
 %      -i.e., if the metric is distance-based, it will over-rate $k$-means and other variance minimization clustering algorithms
@@ -1535,7 +1523,7 @@ The BIC is based upon the maximized value of the \textit{maximum likelihood func
 
 \begin{dmath}
 \label{eqn:chap10-log-likelihood-gmm}
-\ln(\hat{L}) = \displaystyle\sum\limits_{k=1}^{K} \log \displaystyle\sum\limits_{m=1}^{M} \left\{-\frac{1}{2}\ln(|\boldsymbol{\Sigma}_{m}|) - \frac{1}{2}\left(\boldsymbol{\hat{f}}_{k} - \boldsymbol{\mu}_{m}\right)^{T}\boldsymbol{\Sigma}_{m}^{-1}\left(\boldsymbol{\hat{f}}_{k} - \boldsymbol{\mu}_{m}\right) - \frac{J^{*}}{2}\ln(2\pi) \right\}\mathbb{1}_{\mathbb{S}_{m}(k)}
+\ln(\hat{L}) = \displaystyle\sum\limits_{k=1}^{K} \log \displaystyle\sum\limits_{m=1}^{M} \mathbb{1}_{\mathbb{S}_{m}(k)}\left\{-\frac{1}{2}\ln(|\boldsymbol{\Sigma}_{m}|) - \frac{1}{2}\left(\boldsymbol{\hat{f}}_{k} - \boldsymbol{\mu}_{m}\right)^{T}\boldsymbol{\Sigma}_{m}^{-1}\left(\boldsymbol{\hat{f}}_{k} - \boldsymbol{\mu}_{m}\right) - \frac{J}{2}\ln(2\pi) \right\}
 \end{dmath}
 
 \noindent where the indicator function $\mathbb{1}_{\mathbb{S}_{m}}(k)$ is equal to 1 if $k \in \mathbb{S}_{m}$ and 0 otherwise. The BIC is then given by the following expression:
@@ -1568,6 +1556,10 @@ The first term in the BIC uses the maximum log-likelihood to measure the ability
   \State Choose model with best model selection criteria
 \end{algorithmic}
 \end{algorithm}
+
+\begin{emphbox}
+\textbf{Model selection techniques are used to determine clustering model parameters, such a the number of clusters. Each method aims to find the clustering model that maximizes intra-cluster similarity and inter-cluster dissimilarity. The Davies-Boulding, Dunn and Calinski-Harabaz indices and silhouette coefficients are implemented for use by each clustering algorithm employed by the \textit{i}\ac{MGXS} scheme, and the Bayesian Information Criterion is implemented for Gaussian Mixture Models.}
+\end{emphbox}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{\textit{i}\ac{MGXS} Spatial Homogenization}
