@@ -845,7 +845,7 @@ Three matrix decomposition dimensionality reduction methods were implemented as 
 \subsection{Principal Component Analysis}
 \label{subsec:chap10-pca}
 
-\textit{Principal Component Analysis} (PCA)~\cite{jolliffe2002pca} is a matrix decomposition of the dataset that is perhaps the most common technique for dimensionality reduction. PCA is a variance-centric approach which seeks to reproduce the total variable variance in a dataset with an orthogonal linear transformation of the feature space. In particular, PCA projects the features -- which may or may not be correlated -- onto a linearly uncorrelated basis set of \textit{principal components}. The principal components are linear combinations of the features that are rank-ordered by the amount of variance they account for in the original dataset. The first few principal components may be selected as the new feature space to reduce the dimensionality of the dataset while preserving most of the variance.
+\textit{Principal Component Analysis} (PCA)~\cite{jolliffe2002pca} is a matrix decomposition of the dataset that is perhaps the most common technique for dimensionality reduction. PCA is a \textit{variance-centric} approach which seeks to reproduce the total variable variance in a dataset with an orthogonal linear transformation of the feature space. In particular, PCA projects the features -- which may or may not be correlated -- onto a linearly uncorrelated basis set of \textit{principal components}. The principal components are linear combinations of the features that are rank-ordered by the amount of variance they account for in the original dataset. The first few principal components may be selected as the new feature space to reduce the dimensionality of the dataset while preserving most of the variance.
 
 There are many methods to decompose a dataset into its principal components, but the most common is known as the Singular-Value Decomposition (SVD)~\cite{golub1970svd}. The SVD decomposes the $K \times J$ dataset matrix $\boldsymbol{F} = \left[\boldsymbol{\hat{f}}_{1}, \boldsymbol{\hat{f}}_{2}, \dots, \boldsymbol{\hat{f}}_{K}\right]^{T} $ of feature vectors as follows:
 
@@ -869,7 +869,7 @@ There are many methods to decompose a dataset into its principal components, but
 
 \noindent The SVD defines a loss-less transformation of the dataset. However, dimensionality reduction selects the $L$ largest singular values and their respective singular vectors and uses the truncated $K \times L$ matrix $\boldsymbol{W}_{L}$ to map the data into a lower-dimensional feature space.
 
-This thesis implemented an option to use the \texttt{PCA} class in the \texttt{sklearn.decomposition} Python module for dimensionality reduction in the \textit{i}\ac{MGXS} scheme. This option was motivated by the potential for PCA to increase the signal-to-noise ratio -- the effects from spatial self-shielding convolved with \ac{MC} tally uncertainties -- hidden within \ac{MGXS} datasets by concentrating the sample variance within only a few principal components, with the remaining components dominated by the noise from \ac{MC}\footnote{PCA increases the signal-to-noise ratio if the original features are distributed with i.i.d. white Gaussian noise.}. A variant of PCA known as \textit{kernel PCA}~\cite{scholkopf1997kernelpca} applies the ``kernel trick'' with radial basis functions (RBF) or other kernels to define a non-linear projection to the principal component space. Kernel PCA may improve the performance of clustering algorithms if the clusters are defined on complex (\textit{e.g.}, non-convex) manifolds, such as those observed in some \ac{MGXS} datasets. Although the use of PCA is not further explored in this thesis, kernel PCA was shown to induce significantly different clustering model predictions than those models which were trained on datasets in the original feature space.
+This thesis implemented an option to use the \texttt{PCA} class in the \texttt{sklearn.decomposition} Python module for dimensionality reduction in the \textit{i}\ac{MGXS} scheme. This option was motivated by the potential for PCA to increase the signal-to-noise ratio -- the effects from spatial self-shielding convolved with \ac{MC} tally uncertainties -- hidden within \ac{MGXS} datasets by concentrating the sample variance within only a few principal components, with the remaining components dominated by the noise from \ac{MC}\footnote{PCA increases the signal-to-noise ratio if the features are distributed with i.i.d. white Gaussian noise.}. A variant of PCA known as \textit{kernel PCA}~\cite{scholkopf1997kernelpca} applies the ``kernel trick'' with radial basis functions (RBF) or other kernels to define a non-linear projection to the principal component space. Kernel PCA may improve the performance of clustering algorithms if the clusters are defined on complex (\textit{e.g.}, non-convex) manifolds, such as those observed in some \ac{MGXS} datasets. Although the use of PCA is not further explored in this thesis, kernel PCA was shown to induce significantly different clustering model predictions than those models which were trained on datasets in the original feature space.
 
 %-requires fitting all of data in main memory, though out-of-core variants with batch processing do exist
 %-refer reader to the literature for more information :-)
@@ -883,46 +883,25 @@ This thesis implemented an option to use the \texttt{PCA} class in the \texttt{s
 \subsection{Independent Component Analysis}
 \label{subsec:chap10-ica}
 
-first paragraph: what is it?
--~\cite{hyvarinen2000ica}
--often used in signal processing to separate signals into additive subcomponents
--assumes 1) subcomponents are non-Gaussian and 2) statistically independent
--ICA finds independent components (aka sources, factors, latent variables)
-  -AIMS TO MAXIMIZE STATISTICAL INDEPENDENCE OF THE ESTIMATED COMPONENTS!!!
-    -this is different than PCA, which maximizes the remaining sample variance explained by each component
+\textit{Independent Component Analysis} (ICA)~\cite{hyvarinen2000ica} is a matrix decomposition method inspired by signal processing and commonly employed in machine learning applications. ICA attempts to find \textit{maximally independent} subcomponents to represent the relationships between samples within feature space. In particular, ICA assumes that the data can be represented using non-Gaussian and statistically independent additive subcomponents. In contrast to PCA which maximizes the remaining sample variance explained by each subsequent principal component, ICA maximizes the statistical independence of the independent components. Though ICA is designed to separate superimposed signals, some of the independent components may be selected as the new feature space to reduce the dimensionality of a dataset.
 
-second paragraph: math
--the mixing matrix $\boldsymbol{W}$ transforms the sample input $\boldsymbol{\hat{f}}_{k}$ into a vector $\boldsymbol{s}_{k}$ of the maximally independent subcomponents (or sources)
-  -maximal independence is measured by some function of independence, including:
-    -Kullback-Leibler (KL) Divergence
-    -maximum entropy
-    -kurtosis
-  -need to estimate both the mixing matrix $\boldsymbol{W}^{-1}$ and the sources $\boldsymbol{s}_{k}$
--noiseless vs. noisy ICA (whether or not data is assumed to be noisy)
--``noisy'' ICA adds zero-mean and uncorrelated Gaussian noise vector $\boldsymbol{\epsilon}$:
+%The independence of components may be measured by various functions, including the Kullback-Leibler divergence, maximum entropy and kurtosis.
 
-third paragraph: how do we use it?
--\texttt{FastICA}~\cite{hyvarinen1999fastica} from the \texttt{sklearn.decomposition} module
-  -uses the kurtosis as the ``cost'' function
-  -fixed-point iteration scheme
--refer reader to the literature for more information :-)
--need to add option for ICA decomposition to scripts
-  -run a few test cases and see what comes out!!!
+ICA represents the observed feature vector $\boldsymbol{\hat{f}}_{k}$ as a linear superposition of a $J^{*}$-dimensional independent component vector $\boldsymbol{s}_{k}$ plus some additive white Gaussian noise:
 
 \begin{equation}
-\label{eqn:chap10-ica}
-\boldsymbol{s}_{k} = \boldsymbol{W}\boldsymbol{\hat{f}}_{k}
+\label{eqn:chap10-ica-project}
+\boldsymbol{\hat{f}}_{k} = \boldsymbol{W}^{-1}\boldsymbol{s}_{k} + \boldsymbol{\epsilon}_{k}
 \end{equation}
+
+\noindent where it is assumed that $J^{*} < K$ for dimensionality reduction (\textit{i.e.}, there are fewer components than samples). The $K \times J^{*}$ matrix $\boldsymbol{W}^{-1}$ is referred to as the \textit{mixing matrix}, and $\boldsymbol{\epsilon}_{k}$ is assumed to be a zero-mean and uncorrelated Gaussian noise vector. Each sample is projected into the vector space defined by the indendent components as follows:
 
 \begin{equation}
 \label{eqn:chap10-ica-inverse}
-\boldsymbol{\hat{f}}_{k} = \boldsymbol{W}^{-1}\boldsymbol{s}_{k}
+\boldsymbol{s}_{k} \approx \boldsymbol{W}\boldsymbol{\hat{f}}_{k}
 \end{equation}
 
-\begin{equation}
-\label{eqn:chap10-ica-inverse-noisy}
-\boldsymbol{\hat{f}}_{k} = \boldsymbol{W}^{-1}\boldsymbol{s}_{k} + \boldsymbol{\epsilon}_{k}
-\end{equation}
+The problem of ICA is to estimate both the constant mixing matrix and the random component vectors for each sample by maximizing the mutual indepdence of each component. There are a variety of methods to solve for the ICA transformation, such as ``Fast ICA''~\cite{hyvarinen1999fastica} which uses a fixed-point iteration scheme to optimize the kurtosis as the cost function that measures component independence. This thesis implemented an option to use the \texttt{FastICA} class in the \texttt{sklearn.decomposition} Python module for dimensionality reduction in the \textit{i}\ac{MGXS} scheme. This option was motivated by the potential for ICA to identify spatial self-shielding effects (\textit{e.g.}, adjacency to \acp{CRGT}, neighboring assembly, or baffle/reflector) as ``signals'' or the independent components in a linear model of the clustering of pin-wise \ac{MGXS}. Like PCA, the use of ICA is not further explored in this thesis, though it was shown to induce significantly different clustering model predictions than those models which were trained on datasets in the original feature space.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Factor Analysis}
