@@ -13,12 +13,15 @@ The novel homogenization methodology presented here -- referred to as \textit{in
 \label{fig:chap10-flow-chart}
 \end{figure}
 
-This chapter begins by introducing a general latent variable model for \ac{MGXS} clustering which motivates \textit{i}\ac{MGXS} spatial homogenization in Sec.~\ref{sec:chap10-latent-model}. An overview of the \textit{i}\ac{MGXS} scheme is given in Sec.~\ref{sec:chap10-overview}, with in-depth presentations of the each stage of tally data pre-processing, including feature extraction (Sec.~\ref{sec:chap10-feature-extract}), selection (Sec.~\ref{sec:chap10-feature-select}) and agglomeration (Sec.~\ref{sec:chap10-feature-agglomerate}). Sec.~\ref{subsec:chap10-train-predictor} highlights a few statistical clustering algorithms which may be interchangeably employed within the code framework for i\ac{MGXS} implemented for this thesis. A few heuristics for unsupervised cluster model selection are discussed in Sec.~\ref{sec:chap10-model-select}. Sec.~\ref{sec:chap10-geometries} illustrates the material configurations produced by the \textit{i}\ac{MGXS} scheme for the heterogeneous \ac{PWR} benchmarks studied in this thesis. Finally, Sec.~\ref{sec:chap10-cluster} details two approaches used to evaluate the ideal and realized convergence rates of the \textit{i}\ac{MGXS} scheme. The eigenvalues and pin-wise fission and U-238 capture rates produced with the \textit{i}\ac{MGXS} scheme are evaluated in the following chapter.
+This chapter begins by introducing a general latent variable model for \ac{MGXS} clustering which motivates \textit{i}\ac{MGXS} spatial homogenization in Sec.~\ref{sec:chap10-lsvm}. An overview of the \textit{i}\ac{MGXS} scheme is given in Sec.~\ref{sec:chap10-overview}, with in-depth presentations of the each stage of tally data pre-processing, including feature extraction (Sec.~\ref{sec:chap10-feature-extract}) and selection (Sec.~\ref{sec:chap10-feature-select}), and dimensionality reduction (Sec.~\ref{sec:chap10-dimension-reduce}). Sec.~\ref{subsec:chap10-train-predictor} highlights a few statistical clustering algorithms which may be interchangeably employed within the code framework for i\ac{MGXS} implemented for this thesis. A few heuristics for unsupervised cluster model selection are discussed in Sec.~\ref{sec:chap10-model-select}. Sec.~\ref{sec:chap10-geometries} illustrates the material configurations produced by the \textit{i}\ac{MGXS} scheme for the heterogeneous \ac{PWR} benchmarks studied in this thesis. Finally, Sec.~\ref{sec:chap10-cluster} details two approaches used to evaluate the ideal and realized convergence rates of the \textit{i}\ac{MGXS} scheme. The eigenvalues and pin-wise fission and U-238 capture rates produced with the \textit{i}\ac{MGXS} scheme are evaluated in the following chapter.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%\section{Latent Spectral Variable Model}
-%\label{sec:chap10-lsvm}
+\section{Latent Spectral Variable Model}
+\label{sec:chap10-lsvm}
+
+[REDACTED: TO INCLUDE OR NO??]
+
 %
 %This section postulates the existence of a probability distribution from which pin-wise \ac{MGXS} are drawn when generated from Monte Carlo tallies. In particular, this section introduces a \textit{latent variable model} -- termed the \ac{LSVM} -- which encapsulates the spatial self-shielding effects in heterogeneous geometries that leads to clustering of pin-wise \ac{MGXS}. \ac{LSVM} inspires the development of the unsupervised statistical clustering methodology for spatial homogenization that is the topic of this and the following chapter. Latent variable models are a widely used theoretical construct for representing \textit{hidden variables} which parameterize the probability distributions that are thought to have produced some observed dataset. This section loosely follows Bishop's presentation of probabilistic mixture models~\cite{bishop2006pattern}, including the mathematical notation frequently employed by discussions of latent variable models in the statistics and machine learning literature. Sec.~\ref{subsec:chap10-lsvm-math} introduces the concept of latent spectral variables which dictate a parametrization of a mixture distribution which generated the pin-wise \ac{MGXS}. Sec.~\ref{subsec:chap10-lsvm-graph} illustrates \ac{LSVM} with a few graphical models.
 %
@@ -815,17 +818,32 @@ Each of the preceding feature selection techniques automatically selects or reje
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Feature Agglomeration}
-\label{sec:chap10-feature-agglomerate}
+\section{Dimensionality Reduction}
+\label{sec:chap10-dimension-reduce}
 
 first paragraph: what is goal???
--curse of dimensionality - dimensionality reduction
 -transform number of features to find new ones with more descriptive power than original set
   -new features may be more easily ordered than original ones
     -allowing for easier feature selection (Sec.~\ref{sec:chap10-litmus})
 -can account for correlations between features
   -rather than treating each features independent
+-want to reduce dimensionality of dataset while preserving structure (i.e., relationships between points)
+  -make models easier to visualize/explain (same arguments as for feature selection??)
+-$P: \mathbb{R}^{J^{*}} \rightarrow \mathbb{R}^{J^{**}}$ where $J^{*} > J^{**}$
+-Fig.~\ref{fig:chap10-agglomerate}
 
+\begin{itemize}[noitemsep]
+\item Reduce dataset storage requirements and model training time
+\item Improve model performance and reduce sensitivity to outliers
+\end{itemize}
+ 
+second paragraph: outline
+-Sec.~\ref{subsec:chap10-pca} - PCA
+-Sec.~\ref{subsec:chap10-ica} - ICA
+-Sec.~\ref{subsec:chap10-factor-analysis} - Factor Analysis
+-these are but a few options for dimensionality reduction
+  -none of these are used in the following sections, but are briefly mentioned here because of their relevance for future work
+  
 \begin{figure}[h!]
 \centering
 \includegraphics[width=0.95\linewidth]{figures/unsupervised/features/engineering/agglomerate}
@@ -834,30 +852,157 @@ first paragraph: what is goal???
 \label{fig:chap10-agglomerate}
 \end{figure}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Feature Decomposition}
-\label{subsec:chap10-feature-decomp}
+SUMMARY BOXES
+-change feature agglomeration -> dimensionality reduction in figures!!!
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsubsection{Principal Component Analysis}
-\label{subsubsec:chap10-feature-pca}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Principal Component Analysis}
+\label{subsec:chap10-pca}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsubsection{Independent Component Analysis}
-\label{subsubsec:chap10-feature-transform-ica}
+first paragraph: what is it?
+-~\cite{jolliffe2002pca}
+-PCA provides lower-dimensional picture of the structure in a dataset (reduce dimensionality)
+-variance-focused approach which seeks to reproduce total variable variance
+  -as compared to factor analysis which is a correlation-focused approach
+-orthogonal linear transformation
+  -projects set of correlated variables into a linearly uncorrelated orthogonal basis set
+  -principal components are linear combinations of the input variables (features)
+  -number of principal components is less than or equal to number of original variables
+  -principal components are rank-ordered in terms of the amount of variance they account for in the original feature space, with each component orthogonal to all the rest
+  -equivalent to the Singular-Value Decomposition (SVD) of the ``data matrix'' ($K \times J^{*}$)
+    -data MUST be standardized or the principal components will be sensitive to the mean of each feature
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Feature Importance Ranking}
-\label{subsec:chap10-feature-importance}
+second paragraph: math as a SVD
+-$\boldsymbol{\Sigma}$ is a $K \times J^{*}$ rectangular diagonal matrix of positive numbers $\sigma_{(j)}$ known as the singular values (square roots of the eigenvalues)
+-$\boldsymbol{U}$ is a $K \times K$ matrix composed of orthogonal vectors called the left singular vectors
+-$\boldsymbol{W}$ is a $K \times K$ matrix composed of orthogonal vectors called the right singular vectors
+-take the first $L$ largest singular values and their singular vectors as the principal components
+-following will transform samples from original feature space to new orthogonal space:
+-data matrix is a $K \times J^{*}$ matrix
+  -each row is a sample!!!
+
+third paragraph: how do we use it?  
+-if each variable in original feature space is i.i.d. ``noisy'' (i.e., white Gaussian noise)
+  -PCA helps to increaese the signal-to-noise ratio
+  -concentrating the variance in only a few features
+  -latter features dominated by the noise
+-\texttt{PCA} or \texttt{KernelPCA}~\cite{scholkopf1997kernelpca} from \texttt{sklearn.decomposition}
+  -with radial basis function (RBF) kernels to permit project into a non-linear principal component space:
+    -kernel is a measure of similarity or affinity between samples
+    -may need to normalize sample feature vectors first??
+-requires fitting all of data in main memory, though out-of-core variants with batch processing do exist
+-refer reader to the literature for more information :-)
+
+\begin{equation}
+\label{eqn:chap10-svd}
+\boldsymbol{X} = \boldsymbol{U}\boldsymbol{\Sigma}\boldsymbol{W}^{T}
+\end{equation}
+
+\begin{equation}
+\label{eqn:chap10-svd-transform}
+\boldsymbol{T} = \boldsymbol{U}\boldsymbol{\Sigma} = \boldsymbol{X}\boldsymbol{W} \approx \boldsymbol{X}\boldsymbol{W}_{L}
+\end{equation}
+
+\begin{equation}
+\label{eqn:chap10-svd-transform-sample}
+\boldsymbol{t}_{k} = \boldsymbol{W}^{T}\boldsymbol{\hat{f}}_{k}
+\end{equation}
+
+\begin{equation}
+\label{eqn:chap10-rbf-kernel}
+K\left(\boldsymbol{\hat{f}}_{k_{2}}, \boldsymbol{\hat{f}}_{k_{2}}\right) = exp\left(-gamma\|\boldsymbol{\hat{f}}_{k_{2}} - \boldsymbol{\hat{f}}_{k_{2}}\|^{2}\right)
+\end{equation}
+  
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Independent Component Analysis}
+\label{subsec:chap10-ica}
+
+first paragraph: what is it?
+-~\cite{hyvarinen2000ica}
+-often used in signal processing to separate signals into additive subcomponents
+-assumes 1) subcomponents are non-Gaussian and 2) statistically independent
+-ICA finds independent components (aka sources, factors, latent variables)
+  -AIMS TO MAXIMIZE STATISTICAL INDEPENDENCE OF THE ESTIMATED COMPONENTS!!!
+    -this is different than PCA, which maximizes the remaining sample variance explained by each component
+
+second paragraph: math
+-the mixing matrix $\boldsymbol{W}$ transforms the sample input $\boldsymbol{\hat{f}}_{k}$ into a vector $\boldsymbol{s}_{k}$ of the maximally independent subcomponents (or sources)
+  -maximal independence is measured by some function of independence, including:
+    -Kullback-Leibler (KL) Divergence
+    -maximum entropy
+    -kurtosis
+  -need to estimate both the mixing matrix $\boldsymbol{W}^{-1}$ and the sources $\boldsymbol{s}_{k}$
+-noiseless vs. noisy ICA (whether or not data is assumed to be noisy)
+-``noisy'' ICA adds zero-mean and uncorrelated Gaussian noise vector $\boldsymbol{\epsilon}$:
+
+third paragraph: how do we use it?
+-\texttt{FastICA}~\cite{hyvarinen1999fastica} from the \texttt{sklearn.decomposition} module
+  -uses the kurtosis as the ``cost'' function
+  -fixed-point iteration scheme
+-refer reader to the literature for more information :-)
+-need to add option for ICA decomposition to scripts
+  -run a few test cases and see what comes out!!!
+
+\begin{equation}
+\label{eqn:chap10-ica}
+\boldsymbol{s}_{k} = \boldsymbol{W}\boldsymbol{\hat{f}}_{k}
+\end{equation}
+
+\begin{equation}
+\label{eqn:chap10-ica-inverse}
+\boldsymbol{\hat{f}}_{k} = \boldsymbol{W}^{-1}\boldsymbol{s}_{k}
+\end{equation}
+
+\begin{equation}
+\label{eqn:chap10-ica-inverse-noisy}
+\boldsymbol{\hat{f}}_{k} = \boldsymbol{W}^{-1}\boldsymbol{s}_{k} + \boldsymbol{\epsilon}_{k}
+\end{equation}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Factor Analysis}
+\label{subsec:chap10-factor-analysis}
+
+first paragraph: what is it?
+-~\cite{harman1960factor}
+-inspired by applications in the social sciences like psychology
+-a probabilistic model with a likelihood function (equivalent to probablistic PCA or PPCA)
+-describe variablity among observed correlated variables in terms of latent ``factor'' variables
+  -unobserved variables modeled as linear combinations of factors plus error terms
+-model the variance in every direction of the input space independently (heteroscedastic noise)
+  -better model selection than PCA in the presence of heteroscedastic noise
+  -heteroscedastic: variability of a variable is unequal across the range of values of a second variable that predicts it
+    -this would be the case for LSVM
+
+second paragraph: math
+
+third paragraph: how do we use it?
+-ICA is similar but does *not* specify a gaussian prior over the latent variables
+-\texttt{FactorAnalysis} in \texttt{sklearn.decomposition} module
+-need to add option for factor analysis decomposition to scripts
+  -run a few test cases and see what comes out!!!
+
+\begin{equation}
+\label{eqn:chap10-lvm}
+\boldsymbol{\hat{f}}_{k} = \boldsymbol{W}\boldsymbol{h}_{k} + \boldsymbol{\mu} + \boldsymbol{\epsilon}
+\end{equation}
+
+where $\boldsymbol{h}_{k}$ is ``latent'' and $\boldsymbol{\epsilon}$ is a Gaussian noise term distributed with zero mean and covariance $\boldsymbol{\Sigma}$ or $\boldsymbol{\epsilon} \sim \mathcal{N}\left(0,\boldsymbol{\Sigma}\right)$:
+-assume that $\boldsymbol{\Sigma}$ is a diagonal matrix for factor analysis
+  -it is also diagonal for PCA with identical values along the diagonal
+-$\boldsymbol{W}$ is the ``factor loading matrix''
+
+\begin{equation}
+\label{eqn:chap10-lvm-prob}
+p\left(\boldsymbol{\hat{f}}_{k}|\boldsymbol{h}_{k}\right) = \mathcal{N}\left(\boldsymbol{W}\boldsymbol{h}_{k} + \boldsymbol{\mu}, \boldsymbol{\Sigma}\right)
+\end{equation}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsubsection{Decision Tree Regression}
-\label{subsubsec:chap10-decision-trees}
+%\subsubsection{Decision Tree Regression}
+%\label{subsubsec:chap10-decision-trees}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsubsection{Ensemble Regression}
-\label{subsubsec:chap10-ensemble-methods}
-
+%-custom to this application
+%-use tree to predict the MGXS
+%-use a ``smoother'' 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Training a Predictor}
@@ -886,6 +1031,8 @@ Depending on the clustering algorithm, many different predictors may be built fo
 \caption[\textit{i}MGXS clustering]{Each clustering model assigns labels to each sample.}
 \label{fig:chap10-cluster}
 \end{figure}
+
+SUMMARY BOXES
 
 %third paragraph: types of clustering algorithms
 %  -Distribution Models: e.g., GMMs, generative models
@@ -950,7 +1097,7 @@ The $k$-means algorithm makes a number of assumptions about what constitutes a `
 % -assignment step is the expectation step
 % -update step is the maximization step
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Agglomerative Clustering}
 \label{subsec:chap10-agglomerative}
 
@@ -1263,6 +1410,8 @@ The following sections describe several model selection criteria that are use to
 
 It is important to note that model selection may \textit{only} examine the clustering models. The clustered \ac{MGXS} may \textit{not} be employed in a multi-group transport simulation and then compared with respect to some reference \ac{MC} solution. Although such an exercise is important as a proof of principle of the \textit{i}\ac{MGXS} scheme, it would be unacceptable as a model selection technique since it is not unsupervised. Furthermore, it would nullify the over-arching goal of this thesis -- to obtain \ac{MC} quality solutions with computationally efficient deterministic multi-group transport codes -- since it would require the computationally expensive calculation of a \ac{MC} reference solution.
 
+SUMMARY BOXES
+
 %    -evaluation is biased towards algorithms that use the same cluster model
 %      -i.e., if the metric is distance-based, it will over-rate $k$-means and other variance minimization clustering algorithms
 %      -i.e., if criterion assumes convex clusters, then it will over-rate $k$-means solutions since $k$-means also makes this assumption
@@ -1386,7 +1535,7 @@ The BIC is based upon the maximized value of the \textit{maximum likelihood func
 
 \begin{dmath}
 \label{eqn:chap10-log-likelihood-gmm}
-\ln(\hat{L}) = \displaystyle\sum\limits_{k=1}^{K} \log \displaystyle\sum\limits_{m=1}^{M} \left\{ -\frac{1}{2}\ln(|\boldsymbol{\Sigma}_{m}|) - \frac{1}{2}\left(\boldsymbol{\hat{f}}_{k} - \boldsymbol{\mu}_{m}\right)^{T}\boldsymbol{\Sigma}_{m}^{-1}\left(\boldsymbol{\hat{f}}_{k} - \boldsymbol{\mu}_{m}\right) - \frac{J^{*}}{2}\ln(2\pi) \right\}^{\mathbb{1}_{\mathbb{S}_{m}(k)}}
+\ln(\hat{L}) = \displaystyle\sum\limits_{k=1}^{K} \log \displaystyle\sum\limits_{m=1}^{M} \left\{-\frac{1}{2}\ln(|\boldsymbol{\Sigma}_{m}|) - \frac{1}{2}\left(\boldsymbol{\hat{f}}_{k} - \boldsymbol{\mu}_{m}\right)^{T}\boldsymbol{\Sigma}_{m}^{-1}\left(\boldsymbol{\hat{f}}_{k} - \boldsymbol{\mu}_{m}\right) - \frac{J^{*}}{2}\ln(2\pi) \right\}\mathbb{1}_{\mathbb{S}_{m}(k)}
 \end{dmath}
 
 \noindent where the indicator function $\mathbb{1}_{\mathbb{S}_{m}}(k)$ is equal to 1 if $k \in \mathbb{S}_{m}$ and 0 otherwise. The BIC is then given by the following expression:
@@ -1735,40 +1884,3 @@ The first term in the BIC uses the maximum log-likelihood to measure the ability
 \end{figure}
 
 \clearpage
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Evaluating the Methodology}
-\label{sec:chap10-cluster}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Perfect Clustering}
-\label{subsec:chap10-perfect-cluster}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Adaptive Clustering}
-\label{subsec:chap10-adaptive-cluster}
-
-\begin{itemize}[noitemsep]
-  \item dataset restrictions
-  \begin{itemize}[noitemsep]
-    \item \textbf{``pinch'' clustering} - a \textit{single} nuclide/group/reaction triplet
-    \item \textbf{``combined'' clustering} - one or more nuclide/group pairs \textit{together}
-    \item \textbf{``local'' clustering} - one or more nuclide/group pairs \textit{separately}
-  \end{itemize}
-  \item clustering algorithms
-  \begin{itemize}[noitemsep]
-    \item discriminative clustering ($k$-means++, Agglomerative, etc.)
-    \item generative clustering (Gaussian Mixtures, Dirichlet Processes)
-  \end{itemize}
-  \item ``regression-informed'' clustering
-  \begin{itemize}[noitemsep]
-    \item use a regressor to predict ``smoothed'' of target variable(s)
-    \begin{itemize}[noitemsep]
-      \item decision tree regression
-      \item ensemble (boosting, random forest) regression
-      \item Gaussian Process regression
-    \end{itemize}
-    \item cluster predictions produced by regressor
-    \item advantage is that objective function \textit{may} be more appropriate
-  \end{itemize}
-\end{itemize}
