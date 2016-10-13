@@ -1521,41 +1521,10 @@ The first term in the BIC uses the maximum log-likelihood to measure the ability
 \end{emphbox}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{\textit{i}\ac{MGXS} Spatial Homogenization}
+\section{Spatial Homogenization}
 \label{sec:chap10-imgxs-homogenization}
 
-%The final \textit{spatial homogenization} stage in the data processing pipeline in Fig.~\ref{fig:chap10-pipeline} chooses the ``best'' predictive model for \ac{MGXS} clustering.
-
-first paragraph: objective
--final \textit{spatial homogenization} stage in Fig.~\ref{fig:chap10-pipeline}
--Fig.~\ref{fig:chap10-flow-chart}
--reference \ac{LNS} Sec.~\ref{subsec:chap9-lns-overview}
--recall two-pronged goal:
-  -achieve degenerate's accuracy
-  -approach null's convergence rate by averaging across as many fuel pin instances as possible
-    -increase particle track density within each tally volume
-  -similar to LNS, but uses an unsupervised approach which ONLY considers data tallied with MC and does not consider the geometry AT ALL
-
-second paragraph: how does it work
--look back at LNS overview section:
-  -\ac{MGXS} separately tallied for each instance of fissile material zones using OpenMC's distributed cell tally algorithm
-  -\textit{i}\ac{MGXS} assigns integral clustering labels $\ell_{k}$ to each fuel pin instance $k$
-  -pins deemed to be have similar spatial self-shielding effects will have same cluster labels
-  -\ac{MGXS} averaged across all fuel pin instances with same cluster labels using TD-weighting
-  -OpenCG region differentiation used to build an OpenMOC geometry with unique cells and materials for each fuel pin which mirors the \textit{i}\ac{MGXS} representation of the combinatorial geometry model
-  -Like the infinite, null, degenerate and \ac{LNS} schemes, spatial self-shielding effects experienced by different non-fissile spatial zones are averaged across the entire geometry for each non-fissile material.
--reference track density-weighted \ac{MGXS} in Sec.~\ref{subsec:chap9-lns-math}
-  -Eqn.~\ref{eqn:chap9-lns-micro} for TD-weighted average \ac{MGXS}
-  -not simply the geometric average since this won't preserve global reactivity
-  -instead separately sum the flux and reaction rate tallies across clustered fuel pin instances before dividing to compute the \ac{MGXS}
-
-third paragraph: implications
--refer back to Sec.~\ref{sec:chap9-convergence}
-  -Eqn.~\ref{eqn:chap9-homogenize-std-dev} is the average std. dev. of the homogenized \ac{MGXS}
-    -std. dev. reduced (shifted down) by a factor inversely proportional to the number of pin in the cluster
-  -discussion about convergence and uncertainties still applies
-  -Eqn.~\ref{eqn:chap9-lns-micro} for a generic \ac{MGXS}, with a similar approach taken to compute scattering matrices and the fission spectrum
--mention uneven assignemt of pins to clusters will impact the relative 
+The final \textit{spatial homogenization} stage in the data processing pipeline in Fig.~\ref{fig:chap10-pipeline} applies the selected clustering model to spatially homogenize pin-wise \ac{MGXS} as illustrated in Fig.~\ref{fig:chap10-flow-chart}. Like the degenerate and \ac{LNS} spatial homogenization schemes (Secs.~\ref{subsec:chap8-degenerate} and~\ref{subsec:chap9-lns-overview}), a single \ac{MC} calculation of the complete heterogeneous geometry is used to generate \ac{MGXS} for all materials. The \ac{MGXS} are tallied separately for each instance of fissile material zones using OpenMC's distributed cell tallies (Sec.~\ref{subsec:chap4-distribcells}). The clustering model found from the preceding stages of the \textit{i}\ac{MGXS} data processing pipeline assigns an integral cluster label $\ell_{k}$ to each unique pin instance $k$ in the combinatorial geometry (CG). \textit{Track density-weighting} (Sec.~\ref{subsec:chap9-lns-math}) is used to average \ac{MGXS} across all pin instances with the same cluster label in an identical fashion to \ac{LNS} spatial homogenization. The OpenCG region differentiation algorithm (Sec.~\ref{sec:chap4-region-diff}) is used to build an OpenMOC geometry with unique cells and materials for each fuel pin which mirrors the clustering model's representation of the \ac{CG} model. Like the infinite, null, degenerate and \ac{LNS} schemes, spatial self-shielding effects experienced by different non-fissile spatial zones are averaged across the entire geometry for each non-fissile material.
 
 \begin{figure}[h!]
 \centering
@@ -1565,6 +1534,10 @@ third paragraph: implications
 \label{fig:chap10-flow-chart}
 \end{figure}
 
+It is important to recall that \textit{i}\ac{MGXS} spatial homogenization aims to homogenize across as many fuel pin instances as possible while sacrificing little or no accuracy in downstream multi-group calculations. The observations made in scheme Sec.~\ref{sec:chap9-convergence} about the convergence rate for \ac{MGXS} generated with \ac{MC} are equally valid for \textit{i}\ac{MGXS} as they were for the null, degenerate and \ac{LNS} schemes. In particular, the standard deviation of the \ac{MGXS} homogenized across each cluster is reduced by a factor inversely proportional to the number of pin in the clusters according to Eqn.~\ref{eqn:chap9-homogenize-std-dev}. Therefore, the more fuel pin instances assigned to each cluster, the faster the \ac{MGXS} will converge to within an acceptable level of uncertainty. However, an uneven assignment of pin instances to clusters will impact the relative accelarated convergence rates achieved for different clusters with \textit{i}\ac{MGXS}. In other words, the overall reduction in \ac{MGXS} uncertainties -- or conversely, the acceleration of the \ac{MGXS} convergence rates -- will be bounded by the cluster assigned the fewest fuel pin instances.
+
+%to satisfy two objectives: to achieve the accuracy of the degenerate scheme while simultaneously approaching the \ac{MC} convergence rate of the the null scheme. In other words, the goal of \textit{i}\ac{MGXS} is
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Clustered Geometries}
 \label{sec:chap10-cluster-geometries}
@@ -1573,7 +1546,7 @@ first paragraph: openmc parameters to generate \ac{MGXS}
 -what were the parameters of the OpenMC simulations used??
   -same as those used for the \ac{LNS} cases:
 
-%The \texttt{openmc.mgxs} module (see Sec.~\ref{subsec:chap4-mgxs}) was used to compute 70-group \ac{MGXS} with OpenMC for each of the six heterogeneous benchmarks introduced in Chap.~\ref{chap:benchmarks}. The tallied \ac{MGXS} data was condensed to coarse 2-group and 8-group structures with downstream data processing as necessary. The OpenMC simulations were performed with 1000 batches with 10$^{6}$ particle histories per batch for each benchmark. This was only one tenth of the 10$^7$ histories per batch used to tally the reference results in Chap.~\ref{chap:benchmarks} for practical computational reasons\footnote{The total runtime consumed by OpenMC scales with the number of tallied quantities. The number of tallies used to compute \ac{MGXS} was much larger than the three used to compute the reference solutions in Chap.~\ref{chap:benchmarks}. As a result, the simulation time per history was prohibitively slow to generate \ac{MGXS} with the same number of histories as was used to compute the reference solution.}. The fission source was converged with 200 inactive batches for the quarter core \ac{BEAVRS} model, while 100 inactive batches were employed for the other five benchmarks (see Sec.~\ref{subsec:chap7-src-stationarity}). OpenMC's ``iso-in-lab'' feature (see Sec.~\ref{subsec:chap4-iso-in-lab}) was employed to enable consistent comparisons between OpenMC's reference results and OpenMOC's calculations with an isotropic in lab scattering source.
+The \texttt{openmc.mgxs} module (see Sec.~\ref{subsec:chap4-mgxs}) was used to compute 2-group \ac{MGXS} with OpenMC for each of the six heterogeneous benchmarks introduced in Chap.~\ref{chap:benchmarks}. The OpenMC simulations were performed with 1000 batches with 10$^{6}$ particle histories per batch for each benchmark. The fission source was converged with 200 inactive batches for the quarter core \ac{BEAVRS} model, while 100 inactive batches were employed for the other five benchmarks (see Sec.~\ref{subsec:chap7-src-stationarity}). OpenMC's ``iso-in-lab'' feature (see Sec.~\ref{subsec:chap4-iso-in-lab}) was employed to enable consistent comparisons between OpenMC's reference results and OpenMOC's calculations with an isotropic in lab scattering source.
 
 second paragraph: \textit{i}\ac{MGXS} parameters
 -number of clusters
