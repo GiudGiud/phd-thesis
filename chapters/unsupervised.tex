@@ -20,7 +20,7 @@ This chapter begins by introducing a general latent variable model for \ac{MGXS}
 \section{Latent Spectral Variable Model}
 \label{sec:chap10-lsvm}
 
-[REDACTED: TO INCLUDE OR NO??]
+[REDACTED: to include or no??]
 
 %
 %This section postulates the existence of a probability distribution from which pin-wise \ac{MGXS} are drawn when generated from Monte Carlo tallies. In particular, this section introduces a \textit{latent variable model} -- termed the \ac{LSVM} -- which encapsulates the spatial self-shielding effects in heterogeneous geometries that leads to clustering of pin-wise \ac{MGXS}. \ac{LSVM} inspires the development of the unsupervised statistical clustering methodology for spatial homogenization that is the topic of this and the following chapter. Latent variable models are a widely used theoretical construct for representing \textit{hidden variables} which parameterize the probability distributions that are thought to have produced some observed dataset. This section loosely follows Bishop's presentation of probabilistic mixture models~\cite{bishop2006pattern}, including the mathematical notation frequently employed by discussions of latent variable models in the statistics and machine learning literature. Sec.~\ref{subsec:chap10-lsvm-math} introduces the concept of latent spectral variables which dictate a parametrization of a mixture distribution which generated the pin-wise \ac{MGXS}. Sec.~\ref{subsec:chap10-lsvm-graph} illustrates \ac{LSVM} with a few graphical models.
@@ -1521,6 +1521,39 @@ The first term in the BIC uses the maximum log-likelihood to measure the ability
 \section{\textit{i}\ac{MGXS} Spatial Homogenization}
 \label{sec:chap10-imgxs-pipeline}
 
+%The final \textit{spatial homogenization} stage in the data processing pipeline in Fig.~\ref{fig:chap10-pipeline} chooses the ``best'' predictive model for \ac{MGXS} clustering.
+
+first paragraph: objective
+-final \textit{spatial homogenization} stage in Fig.~\ref{fig:chap10-pipeline}
+-Fig.~\ref{fig:chap10-flow-chart}
+-reference \ac{LNS} Sec.~\ref{subsec:chap9-lns-overview}
+-recall two-pronged goal:
+  -achieve degenerate's accuracy
+  -approach null's convergence rate by averaging across as many fuel pin instances as possible
+    -increase particle track density within each tally volume
+  -similar to LNS, but uses an unsupervised approach which ONLY considers data tallied with MC and does not consider the geometry AT ALL
+
+second paragraph: how does it work
+-look back at LNS overview section:
+  -\ac{MGXS} separately tallied for each instance of fissile material zones using OpenMC's distributed cell tally algorithm
+  -\textit{i}\ac{MGXS} assigns integral clustering labels $\ell_{k}$ to each fuel pin instance $k$
+  -pins deemed to be have similar spatial self-shielding effects will have same cluster labels
+  -\ac{MGXS} averaged across all fuel pin instances with same cluster labels using TD-weighting
+  -OpenCG region differentiation used to build an OpenMOC geometry with unique cells and materials for each fuel pin which mirors the \textit{i}\ac{MGXS} representation of the combinatorial geometry model
+  -Like the infinite, null, degenerate and \ac{LNS} schemes, spatial self-shielding effects experienced by different non-fissile spatial zones are averaged across the entire geometry for each non-fissile material.
+-reference track density-weighted \ac{MGXS} in Sec.~\ref{subsec:chap9-lns-math}
+  -Eqn.~\ref{eqn:chap9-lns-micro} for TD-weighted average \ac{MGXS}
+  -not simply the geometric average since this won't preserve global reactivity
+  -instead separately sum the flux and reaction rate tallies across clustered fuel pin instances before dividing to compute the \ac{MGXS}
+
+third paragraph: implications
+-refer back to Sec.~\ref{sec:chap9-convergence}
+  -Eqn.~\ref{eqn:chap9-homogenize-std-dev} is the average std. dev. of the homogenized \ac{MGXS}
+    -std. dev. reduced (shifted down) by a factor inversely proportional to the number of pin in the cluster
+  -discussion about convergence and uncertainties still applies
+  -Eqn.~\ref{eqn:chap9-lns-micro} for a generic \ac{MGXS}, with a similar approach taken to compute scattering matrices and the fission spectrum
+-mention uneven assignemt of pins to clusters will impact the relative 
+
 \begin{figure}[h!]
 \centering
 \includegraphics[width=0.95\linewidth]{figures/unsupervised/features/engineering/flow-chart}
@@ -1529,13 +1562,62 @@ The first term in the BIC uses the maximum log-likelihood to measure the ability
 \label{fig:chap10-flow-chart}
 \end{figure}
 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Clustered Geometries}
-\label{sec:chap10-geometries}
+\label{sec:chap10-cluster-geometries}
 
--agglomerative clustering was used to generate the figures
--which nuclide, group, reaction was used for pinch clustering???
+first paragraph: openmc parameters to generate \ac{MGXS}
+-what were the parameters of the OpenMC simulations used??
+  -same as those used for the \ac{LNS} cases:
+
+%The \texttt{openmc.mgxs} module (see Sec.~\ref{subsec:chap4-mgxs}) was used to compute 70-group \ac{MGXS} with OpenMC for each of the six heterogeneous benchmarks introduced in Chap.~\ref{chap:benchmarks}. The tallied \ac{MGXS} data was condensed to coarse 2-group and 8-group structures with downstream data processing as necessary. The OpenMC simulations were performed with 1000 batches with 10$^{6}$ particle histories per batch for each benchmark. This was only one tenth of the 10$^7$ histories per batch used to tally the reference results in Chap.~\ref{chap:benchmarks} for practical computational reasons\footnote{The total runtime consumed by OpenMC scales with the number of tallied quantities. The number of tallies used to compute \ac{MGXS} was much larger than the three used to compute the reference solutions in Chap.~\ref{chap:benchmarks}. As a result, the simulation time per history was prohibitively slow to generate \ac{MGXS} with the same number of histories as was used to compute the reference solution.}. The fission source was converged with 200 inactive batches for the quarter core \ac{BEAVRS} model, while 100 inactive batches were employed for the other five benchmarks (see Sec.~\ref{subsec:chap7-src-stationarity}). OpenMC's ``iso-in-lab'' feature (see Sec.~\ref{subsec:chap4-iso-in-lab}) was employed to enable consistent comparisons between OpenMC's reference results and OpenMOC's calculations with an isotropic in lab scattering source.
+
+second paragraph: \textit{i}\ac{MGXS} parameters
+-number of clusters
+-feature extraction
+  -2-group data
+  -U-234, U-235, U-238 O-16, O-17???
+  -total, capture, nu-fission reaction types
+-feature selection: none and pinch
+  -U-238 capture group 1/2 was used for pinch clustering
+  -mention that the clustering found is dependent on this!!!!
+-dimensionality reduction: none
+  -mention that the clustering found is dependent on this!!!!
+-clustering algorithm
+  -agglomerative clustering
+  -mention that the clustering found is dependent on this!!!!
+
+third paragraph: outline the figures
+-2, 4 and 8 clusters:
+-Fig.~\ref{fig:chap10-assm-16-geometries} - 1.6\% enriched assembly
+-Fig.~\ref{fig:chap10-assm-31-20BPs-geometries} - 3.1\% enriched assembly with 20 \acp{BP}
+-Fig.~\ref{fig:chap10-2x2-geometries} - 2$\times$2 colorset
+-Fig.~\ref{fig:chap10-reflector-geometries} - 2$\times$2 colorset with a reflector
+-fuel pin types with neighboring heterogeneities are assigned unique MGXS
+  -which generally reflects the clustering of MGXS due to spatial self-shielding effects
+  -\textit{i}\ac{MGXS} homogenization would be expected to enable more accurate predictions of reaction rate distributions than is possible with the \ac{LNS} scheme for arbitrary core geometries
+
+fourth paragraph: pinch vs. combined
+-clustering predictions are very dependent on the types of features used
+  -including with PCA, ICA and FA
+-pinch vs. combined differ in whether U-235 and O-16/27 is used in addition to U-238
+-pinch basically reflects clustering of U-238 capture data
+  -PLUS the nuclide fraction for U-238 capture group 1 of 2
+  -and nuclide-independent fractional reactivities spectral indices
+-compare the clusters for the 2$\times$2 colorset with reflector
+  -pins along assembly-assembly and reflector-assembly interfaces better discriminated than with \ac{LNS}
+  -compare and contrast with \ac{LNS}
+-some poorly predicted pins, or ``outlier'' pins, esp. as one uses more and more clusters
+  -though predictions are more ``robust'' with combined feature selection
+
+fifth paragraph: full core
+-Fig.~\Crefrange{fig:chap10-full-core-geometries-2}{fig:chap10-full-core-geometries-64} - full core with 2 -- 64 clusters, in powers of 2
+-differentiation from infinite lattice
+  -when only using 2 clusters in \ac{BEAVRS}, the \ac{MGXS} mimic those for the individual assemblies
+  -EXCEPT that it picks out those pins along the assembly-baffle interface
+  -and combined clutering picks out pins near \acp{BP}
+  -perhaps since it is using the fractional reactivity?? but isn't pinch clustering using this as well??
+-clustering predictions appear to ``fall apart'' for 16+ clusters for the quarter core
 
 \begin{figure}[h!]
 \centering
@@ -1575,7 +1657,7 @@ The first term in the BIC uses the maximum log-likelihood to measure the ability
   \caption{}
   \label{fig:chap10-assm-16-combined-8}
 \end{subfigure}
-\caption[Materials for the 1.6\% fuel assembly with clustering homogenization]{Materials for the 1.6\% enriched fuel assembly with clustering homogenization. The materials for 2, 4, and 8 clusters are illustrated in (a), (c) and (e) for pinch clustering, and in (b), (d) and (f) for combined clustering, respectively.}
+\caption[Materials for the 1.6\% fuel assembly with clustering homogenization]{Materials for the 1.6\% enriched fuel assembly with clustering homogenization. The materials for 2, 4, and 8 clusters are illustrated in (a), (c) and (e) for pinch clustering, and in (b), (d) and (f) for combined clustering, respectively. Each uniquely colored material represents a unique set of MGXS.}
 \label{fig:chap10-assm-16-geometries}
 \end{figure}
 
@@ -1619,7 +1701,7 @@ The first term in the BIC uses the maximum log-likelihood to measure the ability
   \caption{}
   \label{fig:chap10-assm-31-20BPs-combined-8}
 \end{subfigure}
-\caption[Materials for the 3.1\% fuel assembly with clustering homogenization]{Materials for the 3.1\% enriched fuel assembly with 20 \acp{BP} with clustering homogenization. The materials for 2, 4, and 8 clusters are illustrated in (a), (c) and (e) for pinch clustering, and in (b), (d) and (f) for combined clustering, respectively.}
+\caption[Materials for the 3.1\% fuel assembly with clustering homogenization]{Materials for the 3.1\% enriched fuel assembly with 20 \acp{BP} with clustering homogenization. The materials for 2, 4, and 8 clusters are illustrated in (a), (c) and (e) for pinch clustering, and in (b), (d) and (f) for combined clustering, respectively. Each uniquely colored material represents a unique set of MGXS.}
 \label{fig:chap10-assm-31-20BPs-geometries}
 \end{figure}
 
@@ -1663,7 +1745,7 @@ The first term in the BIC uses the maximum log-likelihood to measure the ability
   \caption{}
   \label{fig:chap10-assm-2x2-combined-8}
 \end{subfigure}
-\caption[Materials for the 2$\times$2 periodic colorset with clustering homogenization]{Materials for the 2$\times$2 periodic colorset with clustering homogenization. The materials for 2, 4, and 8 clusters are illustrated in (a), (c) and (e) for pinch clustering, and in (b), (d) and (f) for combined clustering, respectively.}
+\caption[Materials for the 2$\times$2 periodic colorset with clustering homogenization]{Materials for the 2$\times$2 periodic colorset with clustering homogenization. The materials for 2, 4, and 8 clusters are illustrated in (a), (c) and (e) for pinch clustering, and in (b), (d) and (f) for combined clustering, respectively. Each uniquely colored material represents a unique set of MGXS.}
 \label{fig:chap10-2x2-geometries}
 \end{figure}
 
@@ -1707,7 +1789,7 @@ The first term in the BIC uses the maximum log-likelihood to measure the ability
   \caption{}
   \label{fig:chap10-reflector-combined-8}
 \end{subfigure}
-\caption[Materials for the 2$\times$2 colorset with reflector with clustering homogenization]{Materials for the 2$\times$ colorset with water reflector with clustering homogenization. The materials for 2, 4, and 8 clusters are illustrated in (a), (c) and (e) for pinch clustering, and in (b), (d) and (f) for combined clustering, respectively.}
+\caption[Materials for the 2$\times$2 colorset with reflector with clustering homogenization]{Materials for the 2$\times$ colorset with water reflector with clustering homogenization. The materials for 2, 4, and 8 clusters are illustrated in (a), (c) and (e) for pinch clustering, and in (b), (d) and (f) for combined clustering, respectively. Each uniquely colored material represents a unique set of MGXS.}
 \label{fig:chap10-reflector-geometries}
 \end{figure}
 
@@ -1727,7 +1809,7 @@ The first term in the BIC uses the maximum log-likelihood to measure the ability
   \caption{}
   \label{fig:chap10-full-core-combined-2}
 \end{subfigure}
-\caption[Materials for BEAVRS with clustering homogenization (2 clusters)]{Materials for the \ac{BEAVRS} model with \textit{i}\ac{MGXS} spatial homogenization from 2 clusters with pinch feature selection (a) and automated feature selection (b).}
+\caption[Materials for BEAVRS with clustering homogenization (2 clusters)]{Materials for the \ac{BEAVRS} model with \textit{i}\ac{MGXS} spatial homogenization from 2 clusters with pinch feature selection (a) and automated feature selection (b). Each uniquely colored material represents a unique set of MGXS.}
 \label{fig:chap10-full-core-geometries-2}
 \end{figure}
 
@@ -1747,7 +1829,7 @@ The first term in the BIC uses the maximum log-likelihood to measure the ability
   \caption{}
   \label{fig:chap10-full-core-combined-4}
 \end{subfigure}
-\caption[Materials for BEAVRS with clustering homogenization (4 clusters)]{Materials for the \ac{BEAVRS} model with \textit{i}\ac{MGXS} spatial homogenization from 4 clusters with pinch feature selection (a) and automated feature selection (b).}
+\caption[Materials for BEAVRS with clustering homogenization (4 clusters)]{Materials for the \ac{BEAVRS} model with \textit{i}\ac{MGXS} spatial homogenization from 4 clusters with pinch feature selection (a) and automated feature selection (b). Each uniquely colored material represents a unique set of MGXS.}
 \label{fig:chap10-full-core-geometries-4}
 \end{figure}
 
@@ -1767,7 +1849,7 @@ The first term in the BIC uses the maximum log-likelihood to measure the ability
   \caption{}
   \label{fig:chap10-full-core-combined-8}
 \end{subfigure}
-\caption[Materials for BEAVRS with clustering homogenization (8 clusters)]{Materials for the \ac{BEAVRS} model with \textit{i}\ac{MGXS} spatial homogenization from 8 clusters with pinch feature selection (a) and automated feature selection (b).}
+\caption[Materials for BEAVRS with clustering homogenization (8 clusters)]{Materials for the \ac{BEAVRS} model with \textit{i}\ac{MGXS} spatial homogenization from 8 clusters with pinch feature selection (a) and automated feature selection (b). Each uniquely colored material represents a unique set of MGXS.}
 \label{fig:chap10-full-core-geometries-8}
 \end{figure}
 
@@ -1787,7 +1869,7 @@ The first term in the BIC uses the maximum log-likelihood to measure the ability
   \caption{}
   \label{fig:chap10-full-core-combined-16}
 \end{subfigure}
-\caption[Materials for BEAVRS with clustering homogenization (16 clusters)]{Materials for the \ac{BEAVRS} model with \textit{i}\ac{MGXS} spatial homogenization from 16 clusters with pinch feature selection (a) and automated feature selection (b).}
+\caption[Materials for BEAVRS with clustering homogenization (16 clusters)]{Materials for the \ac{BEAVRS} model with \textit{i}\ac{MGXS} spatial homogenization from 16 clusters with pinch feature selection (a) and automated feature selection (b). Each uniquely colored material represents a unique set of MGXS.}
 \label{fig:chap10-full-core-geometries-16}
 \end{figure}
 
@@ -1807,7 +1889,7 @@ The first term in the BIC uses the maximum log-likelihood to measure the ability
   \caption{}
   \label{fig:chap10-full-core-combined-32}
 \end{subfigure}
-\caption[Materials for BEAVRS with clustering homogenization (32 clusters)]{Materials for the \ac{BEAVRS} model with \textit{i}\ac{MGXS} spatial homogenization from 32 clusters with pinch feature selection (a) and automated feature selection (b).}
+\caption[Materials for BEAVRS with clustering homogenization (32 clusters)]{Materials for the \ac{BEAVRS} model with \textit{i}\ac{MGXS} spatial homogenization from 32 clusters with pinch feature selection (a) and automated feature selection (b). Each uniquely colored material represents a unique set of MGXS.}
 \label{fig:chap10-full-core-geometries-32}
 \end{figure}
 
@@ -1827,8 +1909,10 @@ The first term in the BIC uses the maximum log-likelihood to measure the ability
   \caption{}
   \label{fig:chap10-full-core-combined-64}
 \end{subfigure}
-\caption[Materials for BEAVRS with clustering homogenization (64 clusters)]{Materials for the \ac{BEAVRS} model with \textit{i}\ac{MGXS} spatial homogenization from 64 clusters with pinch feature selection (a) and automated feature selection (b).}
+\caption[Materials for BEAVRS with clustering homogenization (64 clusters)]{Materials for the \ac{BEAVRS} model with \textit{i}\ac{MGXS} spatial homogenization from 64 clusters with pinch feature selection (a) and automated feature selection (b). Each uniquely colored material represents a unique set of MGXS.}
 \label{fig:chap10-full-core-geometries-64}
 \end{figure}
 
 \clearpage
+
+SUMMARY BOX!!!
