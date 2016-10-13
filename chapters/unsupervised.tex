@@ -1860,7 +1860,17 @@ Interestingly, the models of 2 -- 4 clusters for the quarter core \ac{BEAVRS} mo
 \vfill
 \begin{highlightsbox}[frametitle=Highlights]
 \begin{itemize}
-  \item \ac{MGXS} data for each of the six heterogeneous benchmarks was analyzed to show that spatial heterogeneities induce \ac{MGXS} \textit{dispersion} and \textit{clustering}.
+  \item The \textit{inferential \ac{MGXS}} (\textit{i}\ac{MGXS}) spatial homogenization scheme is introduced to use unsupervised clustering analysis of \ac{MC} tally data to predict which fuel pins experience similar spatial self-shielding effects.
+  \item The \textit{i}\ac{MGXS} data processing pipeline is composed of the following stages:
+  \begin{itemize}
+    \item \textit{\textbf{Feature extraction}} builds \textit{features} from \ac{MC} tallies for each fuel pin.
+    \item \textit{\textbf{Feature selection}} identifies the features indicative of \ac{MGXS} clustering.
+    \item \textit{\textbf{Dimensionality reduction}} projects the features into a new vector space.
+    \item \textit{\textbf{Predictor training}} applies a clustering algorithm to the feature vectors.
+    \item \textit{\textbf{Model selection}} chooses the best fit clustering model.
+    \item \textit{\textbf{Spatial homogenization}} averages the \ac{MGXS} of fuel pins in each cluster.  \end{itemize}
+  \item The material configurations predicted by the \textit{i}\ac{MGXS} scheme for each of the six heterogeneous benchmarks was presented.
+  \item The \textit{i}\ac{MGXS} scheme easily identifies clusters of fuel pins adjacent to \acp{CRGT} and \acp{BP} -- and more importantly, along assembly-assembly and reflector-assembly interfaces -- which the \ac{LNS} scheme fails to do for arbitrary geometries.
 \end{itemize}
 \end{highlightsbox}
 \vfill
