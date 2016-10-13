@@ -1528,7 +1528,7 @@ The final \textit{spatial homogenization} stage in the data processing pipeline 
 
 \begin{figure}[h!]
 \centering
-\includegraphics[width=0.95\linewidth]{figures/unsupervised/features/engineering/flow-chart}
+\includegraphics[width=0.9\linewidth]{figures/unsupervised/features/engineering/flow-chart}
 \vspace{2mm}
 \caption[\textit{i}MGXS flow chart]{The complete \textit{i}\ac{MGXS} flow chart.}
 \label{fig:chap10-flow-chart}
@@ -1542,58 +1542,24 @@ It is important to recall that \textit{i}\ac{MGXS} spatial homogenization aims t
 \section{Clustered Geometries}
 \label{sec:chap10-cluster-geometries}
 
-first paragraph: openmc parameters to generate \ac{MGXS}
--what were the parameters of the OpenMC simulations used??
-  -same as those used for the \ac{LNS} cases:
+This section employs the \textit{i}\ac{MGXS} spatial homogenization scheme and presents visualizations of the predicted material configurations for each of the six heterogeneous benchmarks introduced in Chap.~\ref{chap:benchmarks}. The \texttt{openmc.mgxs} module (Sec.~\ref{subsec:chap4-mgxs}) was used to compute 70-group \ac{MGXS} with OpenMC, along with all other tallies necessary to compute each of the features described in Sec.~\ref{sec:chap10-feature-extract}. The OpenMC simulations were performed with 1000 batches with 10$^{6}$ particle histories per batch for each benchmark. The fission source was converged with 200 inactive batches for the quarter core \ac{BEAVRS} model, while 100 inactive batches were employed for the other five benchmarks (Sec.~\ref{subsec:chap7-src-stationarity}). OpenMC's ``iso-in-lab'' feature (Sec.~\ref{subsec:chap4-iso-in-lab}) was employed since it is used in the following chapter to enable consistent comparisons between OpenMC's reference results and OpenMOC's calculations with an isotropic in lab scattering source.
 
-The \texttt{openmc.mgxs} module (see Sec.~\ref{subsec:chap4-mgxs}) was used to compute 2-group \ac{MGXS} with OpenMC for each of the six heterogeneous benchmarks introduced in Chap.~\ref{chap:benchmarks}. The OpenMC simulations were performed with 1000 batches with 10$^{6}$ particle histories per batch for each benchmark. The fission source was converged with 200 inactive batches for the quarter core \ac{BEAVRS} model, while 100 inactive batches were employed for the other five benchmarks (see Sec.~\ref{subsec:chap7-src-stationarity}). OpenMC's ``iso-in-lab'' feature (see Sec.~\ref{subsec:chap4-iso-in-lab}) was employed to enable consistent comparisons between OpenMC's reference results and OpenMOC's calculations with an isotropic in lab scattering source.
+The 70-group \ac{MC} tally data was condensed to 2-groups for feature extraction within the \textit{i}\ac{MGXS} data processing pipeline. Two different approaches were separately evaluated for feature selection. Pinch feature selection (Sec.~\ref{subsec:chap10-pinch-selection}) was used to select features derived from U-238 capture \ac{MGXS} in group 1 of 2 (encompassing the resonance regime), as well as the fractional reactivity and spectral index features (Secs.~\ref{subsec:chap10-frac-reactivity} and~\ref{subsec:chap10-spec-index}). A second feature selection approach, referred to here as \textit{dummy feature selection}, selected all features (\textit{i.e.}, no features were removed), including those for all nuclides in the fuel (U-234, U-235, U-238, O-16 and O-17) and all tallied reaction types (total, capture and fission). No dimensionality reduction techniques (Sec.~\ref{sec:chap10-dimension-reduce}) were applied to the selected features\footnote{Significantly different clustering predictions were observed when PCA, ICA or FA were applied to reduce the dimensionality of the dataset.}. The agglomerative clustering algorithm (Sec.~\ref{subsec:chap10-agglomerative}) was used for each of the case studies presented here\footnote{The four clustering algorithms highlighted in Sec.~\ref{sec:chap10-train-predictor} were observed to produce different clustered geometries for each of the benchmarks. For the sake of brevity (LOL), only those geometries produced by agglomerative clustering are illustrated here.}. 
 
-second paragraph: \textit{i}\ac{MGXS} parameters
--number of clusters
--feature extraction
-  -2-group data
-  -U-234, U-235, U-238 O-16, O-17???
-  -total, capture, nu-fission reaction types
--feature selection: none and pinch
-  -U-238 capture group 1/2 was used for pinch clustering
-  -mention that the clustering found is dependent on this!!!!
--dimensionality reduction: none
-  -mention that the clustering found is dependent on this!!!!
--clustering algorithm
-  -agglomerative clustering
-  -mention that the clustering found is dependent on this!!!!
+The geometries produced with 2, 4 and 8 clusters for the 1.6\% enriched fuel assembly and 3.1\% enriched fuel assembly with 20 \acp{BP} are presented in Figs.~\ref{fig:chap10-assm-16-geometries} and~\ref{fig:chap10-assm-31-20BPs-geometries}, respectively. Likewise, the geometries produced with 2, 4 and 8 clusters for the 2$\times$2 colorset without and with a reflector are displayed in Figs.~\ref{fig:chap10-2x2-geometries} and~\ref{fig:chap10-reflector-geometries}. Finally, the geometries produced with 2 -- 64 clusters, spaced in powers of 2, for the quarter core \ac{BEAVRS} model are depicted in Figs.~\Crefrange{fig:chap10-full-core-geometries-2}{fig:chap10-full-core-geometries-64}. Each uniquely colored material represents a unique set of MGXS. In general, it is apparent that the \textit{i}\ac{MGXS} scheme is able to identify clusters of fuel pins which are related by the presence of similar neighboring heterogeneities which induce the clustering of samples in feature space\footnote{The clustering of samples in feature space does not necessarily reflect the clustering of \ac{MGXS}. The two are only equivalent if the features cluster in the same way as the \ac{MGXS}, and the clustering algorithm optimizes over the correct objective function governing the structure of the clusters.}. As a result, \textit{i}\ac{MGXS} spatial homogenization would be expected to approach the accuracy of the degenerate scheme and the convergence rate of the null scheme. 
 
-third paragraph: outline the figures
--2, 4 and 8 clusters:
--Fig.~\ref{fig:chap10-assm-16-geometries} - 1.6\% enriched assembly
--Fig.~\ref{fig:chap10-assm-31-20BPs-geometries} - 3.1\% enriched assembly with 20 \acp{BP}
--Fig.~\ref{fig:chap10-2x2-geometries} - 2$\times$2 colorset
--Fig.~\ref{fig:chap10-reflector-geometries} - 2$\times$2 colorset with a reflector
--fuel pin types with neighboring heterogeneities are assigned unique MGXS
-  -which generally reflects the clustering of MGXS due to spatial self-shielding effects
-  -\textit{i}\ac{MGXS} homogenization would be expected to enable more accurate predictions of reaction rate distributions than is possible with the \ac{LNS} scheme for arbitrary core geometries
+A couple of key observations can be made from Figs.~\Crefrange{fig:chap10-assm-16-geometries}{fig:chap10-reflector-geometries}. First, the material configurations are highly dependent on the types of features used to train the clustering model, as evidenced by the very different geometries found with pinch and dummy feature selection. The use of features for many different nuclides and reaction types with dummy selection clearly impacts not only the separation distance, but more importantly, the relationships between samples in feature space. Pinch feature selection only considers the structure in features derived from U-238 capture \ac{MGXS}, along with the spectral indices and fractional reactivities, while dummy feature selection also considers clustering in U-235 fission and other tallied reactions. As was observed from the histograms and quantile-quantile plots in Secs.~\ref{subsubsec:chap9-histograms-fiss} and~\ref{subsubsec:chap9-qq-plots-fiss}, the thermal U-235 \ac{MGXS} are more sensitive to spatial self-shielding effects than U-238 resonance capture, even though clustering effects are more relevant to the prediction of U-238 capture rates. Although pinch and dummy feature selection lead to divergent clustering models, it is not clear how the two compare with respect to their impact on the predictions of spatially distributed reaction rates. 
 
-fourth paragraph: pinch vs. combined
--clustering predictions are very dependent on the types of features used
-  -including with PCA, ICA and FA
--pinch vs. combined differ in whether U-235 and O-16/27 is used in addition to U-238
--pinch basically reflects clustering of U-238 capture data
-  -PLUS the nuclide fraction for U-238 capture group 1 of 2
-  -and nuclide-independent fractional reactivities spectral indices
--compare the clusters for the 2$\times$2 colorset with reflector
-  -pins along assembly-assembly and reflector-assembly interfaces better discriminated than with \ac{LNS}
-  -compare and contrast with \ac{LNS}
--some poorly predicted pins, or ``outlier'' pins, esp. as one uses more and more clusters
-  -though predictions are more ``robust'' with combined feature selection
+In addition, it is noteworthy that the \textit{i}\ac{MGXS} scheme discriminates pins along assembly-assembly and reflector-assembly interfaces for the 2$\times$2 colorset benchmarks and the quarter core \ac{BEAVRS} model. This contrasts with the \ac{LNS} scheme which fails to distinguish pins along the various borders of fuel assemblies. The ability of \textit{i}\ac{MGXS} to separate out fuel pins along interfaces without engineering prescriptions illustrates the key advantage of \textit{i}\ac{MGXS} over the \ac{LNS} scheme. As a result, the \textit{i}\ac{MGXS} scheme would be expected to outperform the \ac{LNS} spatial homogenization for arbitrary core geometries.
 
-fifth paragraph: full core
--Fig.~\Crefrange{fig:chap10-full-core-geometries-2}{fig:chap10-full-core-geometries-64} - full core with 2 -- 64 clusters, in powers of 2
--differentiation from infinite lattice
-  -when only using 2 clusters in \ac{BEAVRS}, the \ac{MGXS} mimic those for the individual assemblies
-  -EXCEPT that it picks out those pins along the assembly-baffle interface
-  -and combined clutering picks out pins near \acp{BP}
-  -perhaps since it is using the fractional reactivity?? but isn't pinch clustering using this as well??
--clustering predictions appear to ``fall apart'' for 16+ clusters for the quarter core
+Interestingly, the models of 2 -- 4 clusters for the quarter core \ac{BEAVRS} model cluster the pins in the interior fuel assemblies in a way which resembles the clustered geometries for the individual fuel assemblies in Figs.~\ref{fig:chap10-assm-16-geometries} and~\ref{fig:chap10-assm-31-20BPs-geometries}. This indicates that the flux profile in the interior assemblies is similar to that in an infinite lattice. As more clusters are introduced, the pins along the assembly-assembly interfaces are resolved into their own clusters. However, it should be noted that more ``outlier'' pins (pins assigned to the wrong cluster) are observed as more clusters are introduced, although the predictions with dummy feature selection are more ``robust'' for more clusters. Ideally, the model selection criteria discussed in Sec.~\ref{sec:chap10-model-select} may be used to determine the minimum number of clusters necessary without sacrificing accuracy due to the presence of outliers.
+
+%These observations reflects the challenge of identifying well separated clusters in \ac{MC} tally data.
+%-differentiation from infinite lattice
+%  -when only using 2 clusters in \ac{BEAVRS}, the \ac{MGXS} mimic those for the individual assemblies
+%  -EXCEPT that it picks out those pins along the assembly-baffle interface
+%  -and combined clutering picks out pins near \acp{BP}
+%  -perhaps since it is using the fractional reactivity?? but isn't pinch clustering using this as well??
 
 \begin{figure}[h!]
 \centering
@@ -1633,7 +1599,7 @@ fifth paragraph: full core
   \caption{}
   \label{fig:chap10-assm-16-combined-8}
 \end{subfigure}
-\caption[Materials for the 1.6\% fuel assembly with clustering homogenization]{Materials for the 1.6\% enriched fuel assembly with clustering homogenization. The materials for 2, 4, and 8 clusters are illustrated in (a), (c) and (e) for pinch clustering, and in (b), (d) and (f) for combined clustering, respectively. Each uniquely colored material represents a unique set of MGXS.}
+\caption[Materials for the 1.6\% fuel assembly with clustering homogenization]{Materials for the 1.6\% enriched fuel assembly with clustering homogenization. The materials for 2, 4, and 8 clusters are illustrated in (a), (c) and (e) for pinch clustering, and in (b), (d) and (f) for dummy clustering, respectively.}
 \label{fig:chap10-assm-16-geometries}
 \end{figure}
 
@@ -1677,7 +1643,7 @@ fifth paragraph: full core
   \caption{}
   \label{fig:chap10-assm-31-20BPs-combined-8}
 \end{subfigure}
-\caption[Materials for the 3.1\% fuel assembly with clustering homogenization]{Materials for the 3.1\% enriched fuel assembly with 20 \acp{BP} with clustering homogenization. The materials for 2, 4, and 8 clusters are illustrated in (a), (c) and (e) for pinch clustering, and in (b), (d) and (f) for combined clustering, respectively. Each uniquely colored material represents a unique set of MGXS.}
+\caption[Materials for the 3.1\% fuel assembly with clustering homogenization]{Materials for the 3.1\% enriched fuel assembly with 20 \acp{BP} with clustering homogenization. The materials for 2, 4, and 8 clusters are illustrated in (a), (c) and (e) for pinch clustering, and in (b), (d) and (f) for dummy clustering, respectively.}
 \label{fig:chap10-assm-31-20BPs-geometries}
 \end{figure}
 
@@ -1721,7 +1687,7 @@ fifth paragraph: full core
   \caption{}
   \label{fig:chap10-assm-2x2-combined-8}
 \end{subfigure}
-\caption[Materials for the 2$\times$2 periodic colorset with clustering homogenization]{Materials for the 2$\times$2 periodic colorset with clustering homogenization. The materials for 2, 4, and 8 clusters are illustrated in (a), (c) and (e) for pinch clustering, and in (b), (d) and (f) for combined clustering, respectively. Each uniquely colored material represents a unique set of MGXS.}
+\caption[Materials for the 2$\times$2 periodic colorset with clustering homogenization]{Materials for the 2$\times$2 periodic colorset with clustering homogenization. The materials for 2, 4, and 8 clusters are illustrated in (a), (c) and (e) for pinch clustering, and in (b), (d) and (f) for dummy clustering, respectively.}
 \label{fig:chap10-2x2-geometries}
 \end{figure}
 
@@ -1765,7 +1731,7 @@ fifth paragraph: full core
   \caption{}
   \label{fig:chap10-reflector-combined-8}
 \end{subfigure}
-\caption[Materials for the 2$\times$2 colorset with reflector with clustering homogenization]{Materials for the 2$\times$ colorset with water reflector with clustering homogenization. The materials for 2, 4, and 8 clusters are illustrated in (a), (c) and (e) for pinch clustering, and in (b), (d) and (f) for combined clustering, respectively. Each uniquely colored material represents a unique set of MGXS.}
+\caption[Materials for the 2$\times$2 colorset with reflector with clustering homogenization]{Materials for the 2$\times$ colorset with water reflector with clustering homogenization. The materials for 2, 4, and 8 clusters are illustrated in (a), (c) and (e) for pinch clustering, and in (b), (d) and (f) for dummy clustering, respectively.}
 \label{fig:chap10-reflector-geometries}
 \end{figure}
 
@@ -1785,7 +1751,7 @@ fifth paragraph: full core
   \caption{}
   \label{fig:chap10-full-core-combined-2}
 \end{subfigure}
-\caption[Materials for BEAVRS with clustering homogenization (2 clusters)]{Materials for the \ac{BEAVRS} model with \textit{i}\ac{MGXS} spatial homogenization from 2 clusters with pinch feature selection (a) and automated feature selection (b). Each uniquely colored material represents a unique set of MGXS.}
+\caption[Materials for BEAVRS with clustering homogenization (2 clusters)]{Materials for the \ac{BEAVRS} model with \textit{i}\ac{MGXS} spatial homogenization from 2 clusters with pinch feature selection (a) and dummy feature selection (b).}
 \label{fig:chap10-full-core-geometries-2}
 \end{figure}
 
@@ -1805,7 +1771,7 @@ fifth paragraph: full core
   \caption{}
   \label{fig:chap10-full-core-combined-4}
 \end{subfigure}
-\caption[Materials for BEAVRS with clustering homogenization (4 clusters)]{Materials for the \ac{BEAVRS} model with \textit{i}\ac{MGXS} spatial homogenization from 4 clusters with pinch feature selection (a) and automated feature selection (b). Each uniquely colored material represents a unique set of MGXS.}
+\caption[Materials for BEAVRS with clustering homogenization (4 clusters)]{Materials for the \ac{BEAVRS} model with \textit{i}\ac{MGXS} spatial homogenization from 4 clusters with pinch feature selection (a) and dummy feature selection (b).}
 \label{fig:chap10-full-core-geometries-4}
 \end{figure}
 
@@ -1825,7 +1791,7 @@ fifth paragraph: full core
   \caption{}
   \label{fig:chap10-full-core-combined-8}
 \end{subfigure}
-\caption[Materials for BEAVRS with clustering homogenization (8 clusters)]{Materials for the \ac{BEAVRS} model with \textit{i}\ac{MGXS} spatial homogenization from 8 clusters with pinch feature selection (a) and automated feature selection (b). Each uniquely colored material represents a unique set of MGXS.}
+\caption[Materials for BEAVRS with clustering homogenization (8 clusters)]{Materials for the \ac{BEAVRS} model with \textit{i}\ac{MGXS} spatial homogenization from 8 clusters with pinch feature selection (a) and dummy feature selection (b).}
 \label{fig:chap10-full-core-geometries-8}
 \end{figure}
 
@@ -1845,7 +1811,7 @@ fifth paragraph: full core
   \caption{}
   \label{fig:chap10-full-core-combined-16}
 \end{subfigure}
-\caption[Materials for BEAVRS with clustering homogenization (16 clusters)]{Materials for the \ac{BEAVRS} model with \textit{i}\ac{MGXS} spatial homogenization from 16 clusters with pinch feature selection (a) and automated feature selection (b). Each uniquely colored material represents a unique set of MGXS.}
+\caption[Materials for BEAVRS with clustering homogenization (16 clusters)]{Materials for the \ac{BEAVRS} model with \textit{i}\ac{MGXS} spatial homogenization from 16 clusters with pinch feature selection (a) and dummy feature selection (b).}
 \label{fig:chap10-full-core-geometries-16}
 \end{figure}
 
@@ -1865,7 +1831,7 @@ fifth paragraph: full core
   \caption{}
   \label{fig:chap10-full-core-combined-32}
 \end{subfigure}
-\caption[Materials for BEAVRS with clustering homogenization (32 clusters)]{Materials for the \ac{BEAVRS} model with \textit{i}\ac{MGXS} spatial homogenization from 32 clusters with pinch feature selection (a) and automated feature selection (b). Each uniquely colored material represents a unique set of MGXS.}
+\caption[Materials for BEAVRS with clustering homogenization (32 clusters)]{Materials for the \ac{BEAVRS} model with \textit{i}\ac{MGXS} spatial homogenization from 32 clusters with pinch feature selection (a) and dummy feature selection (b).}
 \label{fig:chap10-full-core-geometries-32}
 \end{figure}
 
@@ -1885,10 +1851,16 @@ fifth paragraph: full core
   \caption{}
   \label{fig:chap10-full-core-combined-64}
 \end{subfigure}
-\caption[Materials for BEAVRS with clustering homogenization (64 clusters)]{Materials for the \ac{BEAVRS} model with \textit{i}\ac{MGXS} spatial homogenization from 64 clusters with pinch feature selection (a) and automated feature selection (b). Each uniquely colored material represents a unique set of MGXS.}
+\caption[Materials for BEAVRS with clustering homogenization (64 clusters)]{Materials for the \ac{BEAVRS} model with \textit{i}\ac{MGXS} spatial homogenization from 64 clusters with pinch feature selection (a) and dummy feature selection (b).}
 \label{fig:chap10-full-core-geometries-64}
 \end{figure}
 
 \clearpage
 
-SUMMARY BOX!!!
+\vfill
+\begin{highlightsbox}[frametitle=Highlights]
+\begin{itemize}
+  \item \ac{MGXS} data for each of the six heterogeneous benchmarks was analyzed to show that spatial heterogeneities induce \ac{MGXS} \textit{dispersion} and \textit{clustering}.
+\end{itemize}
+\end{highlightsbox}
+\vfill
