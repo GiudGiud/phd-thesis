@@ -1,9 +1,11 @@
 \chapter{The \textit{i}MGXS Spatial Homogenization Scheme}
 \label{chap:unsupervised}
 
-The preceding chapter illustrated the clustering of pin-wise \ac{MGXS} as a result of spatial self-shielding effects. It was shown that \ac{MGXS} clustering must be appropriately modeled to accurately resolve pin-wise U-238 capture rates. The \ac{LNS} spatial homogenization scheme was introduced to predict \ac{MGXS} clustering with a geometric template-like approach. The \ac{LNS} scheme was shown to achieve the same level of accuracy as degenerate homogenization while simultaneously accelerating the \ac{MC} tally convergence rate for simple benchmark problems. However, the \ac{LNS} scheme suffered from its inability to adapt to predict \ac{MGXS} clustering in geometries with water reflectors and steel baffles. In addition, the \ac{LNS} scheme did not scale well with the complexity of the core geometry, resulting in a large number of materials and thus an under-accelerated convergence rate. This chapter introduces an adaptable and scalable alternative to \ac{LNS} which uses unsupervised statistical learning methods to predict \ac{MGXS} clustering.
+The preceding chapter illustrated the clustering of pin-wise \ac{MGXS} as a result of spatial self-shielding effects. It was shown that \ac{MGXS} clustering must be appropriately modeled to accurately resolve pin-wise U-238 capture rates. The \ac{LNS} spatial homogenization scheme was introduced to predict \ac{MGXS} clustering with a geometric template-like approach. The \ac{LNS} scheme was shown to achieve the same level of accuracy as degenerate homogenization while simultaneously accelerating the \ac{MC} tally convergence rate for simple benchmark problems. However, the \ac{LNS} scheme suffered from its inability to predict \ac{MGXS} clustering in geometries with water reflectors and steel baffles. In addition, the \ac{LNS} scheme did not scale well with the complexity of the core geometry, resulting in a large number of materials and thus an under-accelerated convergence rate. This chapter introduces an adaptable and scalable alternative to \ac{LNS} which uses unsupervised statistical learning methods to predict \ac{MGXS} clustering.
 
-The novel homogenization methodology presented here -- referred to as \textit{inferential \ac{MGXS}} (\textit{i}\ac{MGXS}) spatial homogenization -- seeks to achieve the overarching goal of this thesis: to obtain Monte Carlo quality solutions with computationally efficient deterministic transport methods. The goal of \textit{i}\ac{MGXS} is to use algorithms developed by the machine learning community to infer \ac{MGXS} clusters directly from \ac{MC} tally data rather than predict clustering from an analysis of the core geometry. The \textit{i}\ac{MGXS} scheme is more generalizable and can flexibly accommodate arbitrary core heterogeneities better than \ac{LNS} or other geometric-based approaches which must be extensively customized for particular core geometries. In addition, the \textit{i}\ac{MGXS} scheme aims to greatly accelerate the convergence rate of \ac{MGXS} tallied with \ac{MC} with respect to the the degenerate and \ac{LNS} schemes as shown in Fig.~\ref{fig:chap10-flow-chart}.
+The novel methodology presented here -- referred to as \textit{inferential \ac{MGXS}} (\textit{i}\ac{MGXS}) spatial homogenization -- uses algorithms developed by the machine learning community to infer \ac{MGXS} clusters directly from \ac{MC} tally data rather than predict clustering from an analysis of the core geometry. The \textit{i}\ac{MGXS} scheme can flexibly accommodate arbitrary core heterogeneities better than \ac{LNS} or other geometric-based approaches which must be extensively customized for particular core geometries. In addition, the \textit{i}\ac{MGXS} scheme aims to greatly accelerate the convergence rate of \ac{MGXS} tallied with \ac{MC} with respect to the degenerate and \ac{LNS} schemes as shown in Fig.~\ref{fig:chap10-flow-chart}.
+
+%The novel methodology presented here -- referred to as \textit{inferential \ac{MGXS}} (\textit{i}\ac{MGXS}) spatial homogenization -- seeks to achieve the overarching goal of this thesis: to obtain Monte Carlo quality solutions with computationally efficient deterministic transport methods. The goal of \textit{i}\ac{MGXS} is to use algorithms developed by the machine learning community to infer \ac{MGXS} clusters directly from \ac{MC} tally data rather than predict clustering from an analysis of the core geometry.
 
 \begin{figure}[h!]
 \centering
@@ -13,7 +15,7 @@ The novel homogenization methodology presented here -- referred to as \textit{in
 \label{fig:chap10-flow-chart}
 \end{figure}
 
-This chapter begins by introducing a general latent variable model for \ac{MGXS} clustering which motivates \textit{i}\ac{MGXS} spatial homogenization in Sec.~\ref{sec:chap10-lsvm}. An overview of the \textit{i}\ac{MGXS} scheme is given in Sec.~\ref{sec:chap10-overview}, with in-depth presentations of the each stage of tally data pre-processing, including feature extraction (Sec.~\ref{sec:chap10-feature-extract}) and selection (Sec.~\ref{sec:chap10-feature-select}), and dimensionality reduction (Sec.~\ref{sec:chap10-dimension-reduce}). Sec.~\ref{subsec:chap10-train-predictor} highlights a few statistical clustering algorithms which may be interchangeably employed within the code framework for i\ac{MGXS} implemented for this thesis. A few heuristics for unsupervised cluster model selection are discussed in Sec.~\ref{sec:chap10-model-select}. Sec.~\ref{sec:chap10-imgxs-homogenization} discusses the track density-weighting used to spatially homogenize the pin-wise \ac{MGXS}. Finally, Sec.~\ref{sec:chap10-cluster-geometries} illustrates the material configurations produced by the \textit{i}\ac{MGXS} scheme for the heterogeneous \ac{PWR} benchmarks studied in this thesis. The eigenvalues and pin-wise fission and U-238 capture rates produced with the \textit{i}\ac{MGXS} scheme are evaluated in the following chapter.
+This chapter begins by introducing a general latent variable model for \ac{MGXS} clustering which motivates \textit{i}\ac{MGXS} spatial homogenization in Sec.~\ref{sec:chap10-lsvm}. An overview of the \textit{i}\ac{MGXS} scheme is given in Sec.~\ref{sec:chap10-overview}, with in-depth presentations of each stage of tally data pre-processing, including feature extraction (Sec.~\ref{sec:chap10-feature-extract}) and selection (Sec.~\ref{sec:chap10-feature-select}), and dimensionality reduction (Sec.~\ref{sec:chap10-dimension-reduce}). Sec.~\ref{sec:chap10-train-predictor} highlights a few statistical clustering algorithms which may be interchangeably utilized within the code framework for i\ac{MGXS} implemented for this thesis. A few heuristics for clustering model selection are discussed in Sec.~\ref{sec:chap10-model-select}. Sec.~\ref{sec:chap10-imgxs-homogenization} discusses the track density-weighting used to spatially homogenize the pin-wise \ac{MGXS}. Finally, Sec.~\ref{sec:chap10-cluster-geometries} illustrates the material configurations produced by the \textit{i}\ac{MGXS} scheme for the heterogeneous \ac{PWR} benchmarks studied in this thesis. The eigenvalues and pin-wise fission and U-238 capture rates produced with the \textit{i}\ac{MGXS} scheme are evaluated in the following chapter.
 
 %Finally, Sec.~\ref{sec:chap10-cluster} details two approaches used to evaluate the ideal and realized convergence rates of the \textit{i}\ac{MGXS} scheme. 
 
@@ -203,12 +205,12 @@ This chapter begins by introducing a general latent variable model for \ac{MGXS}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Overview of \textit{i}MGXS}
+\section{Overview of the \textit{i}MGXS Data Processing Pipeline}
 \label{sec:chap10-overview}
 
 The \textit{i}\ac{MGXS} spatial homogenization scheme is a multi-stage data processing \textit{pipeline}. The objective of the scheme is to infer the optimal assignment of cluster labels to fuel pin instances directly from \ac{MC} tally data. The cluster labels output by \textit{i}\ac{MGXS} are then used to generate track density-weighted \ac{MGXS} (see Sec.~\ref{subsec:chap9-lns-math}) for each cluster of fuel pin instances using the same process as that employed by \ac{LNS} homogenization (Eqn.~\ref{eqn:chap9-lns-micro}). The \textit{i}\ac{MGXS} methodology differs from the \ac{LNS} scheme in that it makes no consideration of the geometry and materials configuration and only examines tallied \ac{MC} tally data when assigning cluster labels to fuel pin instances.
 
-A high-level overview of the various stages of the \textit{i}\ac{MGXS} data processing pipeline is illustrated in Fig.~\ref{fig:chap10-pipeline}. The \textit{i}\ac{MGXS} pipeline may be configured in various ways and this thesis makes no presumption that the incarnation presented in Fig.~\ref{fig:chap10-pipeline} is the best or most reliable version. Future work may develop schemes which improve upon the particular formulation of \textit{i}\ac{MGXS} presented in this thesis. Irregardless of the particular configuration, the overarching concept is that the \textit{i}\ac{MGXS} pipeline provides a \textit{mapping} between \ac{MC} tally data and cluster labels for each fuel pin\footnote{Similarly, the \ac{LNS} scheme defines a mapping between the combinatorial geometry and the cluster labels.}. Each of the six stages in Fig.~\ref{fig:chap10-pipeline} is detailed in the following sections of this thesis.
+A high-level overview of the various stages of the \textit{i}\ac{MGXS} data processing pipeline is illustrated in Fig.~\ref{fig:chap10-pipeline}. The \textit{i}\ac{MGXS} pipeline may be configured in various ways and this thesis makes no presumption that the incarnation presented in Fig.~\ref{fig:chap10-pipeline} is the best or most reliable version. Future work may develop schemes which improve upon the particular formulation of \textit{i}\ac{MGXS} presented in this chapter. Irregardless of the particular configuration, the overarching concept is that the \textit{i}\ac{MGXS} pipeline provides a \textit{mapping} between \ac{MC} tally data and cluster labels for each fuel pin\footnote{Similarly, the \ac{LNS} scheme defines a mapping between the combinatorial geometry and the cluster labels.}. Each of the six stages in Fig.~\ref{fig:chap10-pipeline} is detailed in the following sections of this chapter.
 
 \begin{figure}[h!]
 \centering
@@ -223,9 +225,9 @@ A high-level overview of the various stages of the \textit{i}\ac{MGXS} data proc
 \section{Feature Extraction}
 \label{sec:chap10-feature-extract}
 
-The \textit{feature extraction} stage in the data processing pipeline in Fig.~\ref{fig:chap10-pipeline} builds \textit{features} from \ac{MC} tally data. In machine learning, features are simply variables which are used as inputs to a predictive model. Features may be engineered based upon prior domain knowledge or inferred from automated feature learning algorithms such as neural networks. In the context of \textit{i}\ac{MGXS}, features are restricted to tallies, or combinations of tallies, from \ac{MC} simulations which provide information about which fuel pin instances experience similar spatial self-shielding effects. For example, the pin-wise \ac{MGXS} $\hat{\sigma}_{x,i,k,g}$ themselves may be used as features since they exhibit the very clustering effect which \textit{i}\ac{MGXS} attempts to predict\footnote{Using the pin-wise \ac{MGXS} as the only feature(s) for unsupervised clustering would be equivalent to specifying boundaries between the samples illustrated in the rug plots in Sec.~\ref{subsec:chap9-histograms}.}. Other tallied quantities may also be used as features for predicting which fuel pin instances have similarly self-shielded \ac{MGXS}. The goal of extracting \textit{i}\ac{MGXS} features is to enable machine learning algorithms to identify \ac{MGXS} clusters as quickly as possible from ``noisy'' or unconverged tally data.
+The \textit{feature extraction} stage of the data processing pipeline in Fig.~\ref{fig:chap10-pipeline} builds \textit{features} from \ac{MC} tally data. In machine learning, features are simply variables which are used as inputs to a predictive model. Features may be engineered based upon prior domain knowledge or inferred from automated feature learning algorithms such as neural networks. In the context of \textit{i}\ac{MGXS}, features are restricted to tallies, or combinations of tallies, from \ac{MC} simulations which provide information about which fuel pin instances experience similar spatial self-shielding effects. For example, the pin-wise \ac{MGXS} $\hat{\sigma}_{x,i,k,g}$ may be used as features since they exhibit the very clustering effects which the \textit{i}\ac{MGXS} scheme attempts to predict\footnote{Using the pin-wise \ac{MGXS} as the only feature(s) for unsupervised clustering would render the clustering problem equivalent to specifying boundaries between the samples illustrated in the rug plots in Sec.~\ref{subsec:chap9-histograms}.}. Other tallied quantities may also be used as features for predicting which fuel pin instances have similarly self-shielded \ac{MGXS}. The goal of extracting \textit{i}\ac{MGXS} features is to enable machine learning algorithms to identify \ac{MGXS} clusters as quickly as possible from ``noisy'' or unconverged tally data.
 
-The \textit{i}\ac{MGXS} scheme splits the \ac{MC} tally dataset up into \textit{samples} for each particular instance $k$ of a fuel pin as illustrated in Fig.~\ref{fig:chap10-feature-extract}. A \textit{sample} is a random vector with $J$ entries for each feature $\hat{f}_{j,k}$ corresponding to a particular instance $k$ of a fuel pin. A sample may be comprised of features derived from \ac{MC} tally data for one or multiple nuclides, energy groups and/or reaction types. Ideally, the features should maximize the \textit{separation distance} in feature space $\{f_{1}, f_{2}, \dots, f_{J}\}$ between samples from the same cluster. Since features in \textit{i}\ac{MGXS} are tallied quantities from \ac{MC} simulations, some samples may include ``outlier'' feature realizations which take on values far removed from the ``true'' value of the feature\footnote{The ``true'' values are the expected values for each feature.}. Outliers may result in the incorrect assignment of cluster labels to fuel pin instances. The predictive models used in \textit{i}\ac{MGXS} are trained with the complete vector of features in order to mitigate the sensitivity of the models to outlier features and minimize the frequency of mis-labeled cluster assignments.
+The \textit{i}\ac{MGXS} scheme splits the \ac{MC} tally dataset up into \textit{samples} for each particular instance $k$ of a fuel pin as illustrated in Fig.~\ref{fig:chap10-feature-extract}. A \textit{sample} is a random vector with $J$ entries for each feature $\hat{f}_{j,k}$ corresponding to a particular instance $k$ of a fuel pin. A sample may be comprised of features derived from \ac{MC} tally data for one or multiple nuclides, energy groups and/or reaction types. Ideally, the features should maximize the \textit{separation distance} in feature space $\{\hat{f}_{1,\cdot}, \hat{f}_{2,\cdot}, \dots, \hat{f}_{J,\cdot}\}$ between samples from the same cluster. Since features in \textit{i}\ac{MGXS} are tallied quantities from \ac{MC} simulations, some samples may include ``outlier'' feature realizations which take on values far removed from the ``true'' value of the feature\footnote{The ``true'' values are the expected values for each feature.}. Outliers may result in the incorrect assignment of cluster labels to fuel pin instances. The predictive models used in \textit{i}\ac{MGXS} are trained with the complete vector of features in order to mitigate the sensitivity of the models to outlier features and minimize the frequency of mis-labeled cluster assignments.
 
 \begin{figure}[h!]
 \centering
@@ -235,10 +237,10 @@ The \textit{i}\ac{MGXS} scheme splits the \ac{MC} tally dataset up into \textit{
 \label{fig:chap10-feature-extract}
 \end{figure}
 
-In addition, it should be noted that features may not necessarily be defined for the same energy group structure as the \ac{MGXS} one wishes to cluster. For example, some or all features may be tallied on a relatively coarse energy group structure in order to minimize their \ac{MC} statistical uncertainties. It is in fact be beneficial to tally features in few groups in order to identify clusters with fewer \ac{MC} particle histories than would needed to distinguish structure from ``noisy'' fine group features.
-These coarse group features may be input to a clustering algorithm for spatial homogenization of pin-wise \ac{MGXS} defined on a fine(r) energy group structure. For example, the following sections and chapters cluster features defined for a coarse 2-group structure in order to assign each fuel pin to a cluster for spatial homogenization of the ``fine'' 70-group pin-wise \ac{MGXS} data needed to minimize reaction rate errors to 1 -- 2\% or less.
+In addition, it should be noted that features may not necessarily be defined for the same energy group structure as the \ac{MGXS} one wishes to cluster. For example, some or all features may be tallied on a relatively coarse energy group structure in order to minimize their \ac{MC} statistical uncertainties. It may in fact be beneficial to tally features in few groups in order to identify clusters with fewer \ac{MC} particle histories than would needed to distinguish structure from ``noisy'' fine group features.
+These coarse group features may be input to a clustering algorithm for spatial homogenization of pin-wise \ac{MGXS} defined on a fine(r) energy group structure. For example, the following sections and chapters cluster features defined for a coarse 2-group structure for spatial homogenization of the ``fine'' 70-group pin-wise \ac{MGXS}.
 
-The following sections introduce the features employed by \textit{i}\ac{MGXS} in this and the following chapter. These include the pin-wise \ac{MGXS} and their statistical uncertainties (Sec.~\ref{subsec:chap10-stat-uncertainty}), as well as features referred to as fractional reactivites (Sec.~\ref{subsec:chap10-frac-reactivity}), spectral indices (Sec.~\ref{subsec:chap10-spec-index}) and nuclide fractions (Sec.~\ref{subsec:chap10-nuclide-frac}). Each feature is specific to a fuel pin instance, and may further be distinguished for one or more nuclides, energy groups and/or reaction types. Each feature is presented with accompanying illustrations generated using a custom-built tool to visualize \textit{i}\ac{MGXS} features~\cite{abel2016bokeh}, and which correspond to the 1.6\% enriched fuel assembly benchmark.
+The following sections introduce the features employed by \textit{i}\ac{MGXS} in this and the following chapter. These include the pin-wise \ac{MGXS} and their statistical uncertainties (Sec.~\ref{subsec:chap10-stat-uncertainty}), as well as features referred to as fractional reactivities (Sec.~\ref{subsec:chap10-frac-reactivity}), spectral indices (Sec.~\ref{subsec:chap10-spec-index}) and nuclide fractions (Sec.~\ref{subsec:chap10-nuclide-frac}). Each feature is specific to a fuel pin instance, and may further be distinguished for one or more nuclides, energy groups and/or reaction types. Each feature is presented with accompanying illustrations generated using a custom-built tool to visualize \textit{i}\ac{MGXS} features~\cite{abel2016bokeh}, and which correspond to the 1.6\% enriched fuel assembly benchmark.
 
 %The clustering algoritms used in \textit{i}\ac{MGXS} may more easily identify clusters from the less ``noisy'' feature data, and the cluster labels used to spatially homogenize fine(r) group pin-wise \ac{MGXS}. 
 
@@ -249,11 +251,11 @@ The following sections introduce the features employed by \textit{i}\ac{MGXS} in
 \subsection{MGXS Statistical Uncertainty}
 \label{subsec:chap10-stat-uncertainty}
 
-The statistical uncertainty for each pin-wise \ac{MGXS} may be a useful feature to indicate clustering effects. In particular, the standard deviation of the sample mean is easily obtained from OpenMC tallies and can be incldued in the feature vector for each fuel pin instance. The intuition behind this is that the track densities -- and therefore, the statistical uncertainties -- in different fuel pins may reflect the spatial self-shielding effects experienced by different types of fuel pins. For example, the thermal flux track density will vary for fuel pins with differential moderation from \acp{CRGT}, reflectors, etc., which may present itself through a systematic clustering of the statistical uncertainties. Similarly, the track density will vary for fuel pins which experience varying degrees of spatial self-shielding in U-238 resonance groups -- which greatly impacts the resultant \ac{MGXS} in those groups -- and may be identifiable in the \ac{MGXS} uncertainties.
+The statistical uncertainty for each pin-wise \ac{MGXS} may be a useful feature to indicate clustering effects. In particular, the standard deviation of the sample mean is easily obtained from OpenMC tallies and can be included in the feature vector for each fuel pin instance. The intuition behind this is that the track densities -- and therefore, the statistical uncertainties -- in different fuel pins may reflect the spatial self-shielding effects experienced by different types of fuel pins. For example, the thermal flux track density will vary for fuel pins with differential moderation from \acp{CRGT}, reflectors, etc., which may present itself through a systematic clustering of the statistical uncertainties. Similarly, the track density will vary for fuel pins which experience varying degrees of spatial self-shielding in U-238 resonance groups -- which greatly impacts the resultant \ac{MGXS} in those groups -- and may be identifiable in the \ac{MGXS} uncertainties.
 
-The statistical uncertainty feature is illustrated with scatter plots in Figs.~\ref{fig:chap10-fiss-mean-std} and~\ref{fig:chap10-capt-mean-std} for 2-group U-235 fission and U-238 capture \ac{MGXS} data, respectively. The scatter plots include a single data point for each of the 264 fuel pins in the 1.6\% enriched fuel assembly benchmark. The $x$ and $y$ coordinates correspond to the tallied \ac{MGXS} means $\hat{\sigma}_{x,i,k,g}$ and standard deviations $\sigma_{\hat{\sigma}_{x,i,k,g}}$ in units of barns, respectively. The complete datasets are illustrated in Figs.~\ref{fig:chap10-fiss-mean-std-mgxs} and~\ref{fig:chap10-capt-mean-std-mgxs}. The interactive \textit{i}\ac{MGXS} visualization tool was used to select clusters of \ac{MGXS} and plot the geometry to indicate the associated fuel pins, as displayed in Figs.~\Crefrange{fig:chap10-fiss-mean-std-geom-2}{fig:chap10-fiss-mean-std-mgxs-3} and~\Crefrange{fig:chap10-capt-mean-std-geom-2}{fig:chap10-capt-mean-std-mgxs-3} for the fission and capture \ac{MGXS}, respectively. The figures illustrate that the U-235 \ac{MGXS} uncertainties are smallest for the fuel pins with the most differential moderation (\textit{i.e.}, pin facially adjacent to \acp{CRGT}) and a relatively larger thermal flux track density. In contrast, the U-238 capture \ac{MGXS} uncertainties are largest for those pins with the most differential moderation due to the smaller fast-to-thermal flux ratio in these pins.
+The statistical uncertainty feature is illustrated with scatter plots in Figs.~\ref{fig:chap10-fiss-mean-std} and~\ref{fig:chap10-capt-mean-std} for 2-group U-235 fission and U-238 capture \ac{MGXS} data, respectively. The scatter plots include a single data point for each of the 264 fuel pins in the 1.6\% enriched fuel assembly benchmark. The $x$ and $y$ coordinates correspond to the tallied \ac{MGXS} means $\hat{\sigma}_{x,i,k,g}$ and standard deviations $\sigma_{\hat{\sigma}_{x,i,k,g}}$ in units of barns, respectively. The complete datasets are illustrated in Figs.~\ref{fig:chap10-fiss-mean-std-mgxs} and~\ref{fig:chap10-capt-mean-std-mgxs}. The interactive \textit{i}\ac{MGXS} visualization tool was used to select clusters of \ac{MGXS} and plot the geometry to indicate the associated fuel pins, as displayed in Figs.~\Crefrange{fig:chap10-fiss-mean-std-geom-2}{fig:chap10-fiss-mean-std-mgxs-3} and~\Crefrange{fig:chap10-capt-mean-std-geom-2}{fig:chap10-capt-mean-std-mgxs-3} for the fission and capture \ac{MGXS}, respectively. The figures illustrate that the U-235 \ac{MGXS} uncertainties are smallest for the fuel pins with the most differential moderation (\textit{i.e.}, pins facially adjacent to \acp{CRGT}) and a relatively larger thermal flux track density. In contrast, the U-238 capture \ac{MGXS} uncertainties are largest for those pins with the most differential moderation due to the smaller fast-to-thermal flux ratio in these pins.
 
-Notwithstanding the motivation to use the statistical uncertainties, there are also potential challenges associated with this approach. First, it would be possible for two different fuel pin instances to experience the same flux shape -- and therefore have the same \ac{MGXS} -- but very different flux magnitudes. Although the \ac{MGXS} uncertainties for the two pins would be very different, this would not accurately reflect the fact that the two pins should ideally be assigned to the same \ac{MGXS} cluster. Furthermore, error propagation theory only approximates the \ac{MGXS} uncertainties since it neglects the covariance between reaction rate and flux tallies. This approximation overestimates the \ac{MGXS} uncertainties since the reaction rate and flux tallies are highly correlated. As a result, the uncertainties may not exhibit systematic trends with poorly converged \ac{MC} data since the uncertainties will be larger than their ``true'' values. However, these are not reasons to eliminate the uncertainties as a possible feature; rather, it incites the need for robust feature selection as discussed in Sec.~\ref{sec:chap10-feature-select}.
+Notwithstanding the motivation to use the statistical uncertainties, there are also potential challenges associated with this approach. First, it would be possible for two different fuel pin instances to experience the same flux shape -- and therefore have the same \ac{MGXS} -- but very different flux magnitudes. Although the \ac{MGXS} uncertainties for the two pins would be very different, this would not accurately reflect the fact that the two pins should ideally be assigned to the same \ac{MGXS} cluster. Furthermore, error propagation theory only approximates the \ac{MGXS} uncertainties since it neglects the covariance between reaction rate and flux tallies. This approximation overestimates the \ac{MGXS} uncertainties since the reaction rate and flux tallies are highly correlated. As a result, the uncertainties may not exhibit systematic trends with poorly converged \ac{MC} data since the estimated uncertainties will be larger than the ``true'' values. However, these are not reasons to eliminate the uncertainties as a possible feature; rather, it incites the need for robust feature selection as discussed in Sec.~\ref{sec:chap10-feature-select}.
 
 %\begin{equation}
 %\label{eqn:chap10-rel-err}
@@ -361,11 +363,11 @@ Although the pin-wise fission rates may used directly as a feature, the \textit{
 \hat{\alpha}_{k} = \frac{\displaystyle\sum\limits_{g=1}^{G}\nu\hat{\Sigma}_{f,i,k,g}\hat{\phi}_{k,g}}{\displaystyle\sum\limits_{k=1}^{K}\displaystyle\sum\limits_{g=1}^{G}\hat{\Sigma}_{a,i,k,g}\hat{\phi}_{k,g}} \times 10^{5}
 \end{equation}
 
-\noindent The normalized fractional reactivity $\hat{\alpha}_{k}$  is multiplied by 10$^{5}$ so that it may be reported in the familiar reactivity units of per cent mille (pcm)\footnote{It might be preferable to equivalently normalize the fission rates to the mean. The normalization factor is a matter of analyst preference and does not impact the predictions made by statistical clustering algorithms if the features are standardized as discussed in Sec.~\ref{subsec:chap10-feature-standardize}.}. It is important to note that the denominator in Eqn.~\ref{eqn:chap10-frac-reactivity} encompasses all fuel pins of all compositions (\textit{e.g.}, enrichments) in the core geometry, but does not include absorption in the moderator, clad, \acp{BP}, etc. As a result, the fractional reactivity as defined by this thesis is not indicative of the global reactivity, but rather the reactivity restricted to the fuel.
+\noindent The normalized fractional reactivity $\hat{\alpha}_{k}$  is multiplied by 10$^{5}$ so that it may be reported in the familiar reactivity units of per cent mille (pcm)\footnote{It might be preferable to equivalently normalize the fission rates to the mean. The normalization factor is a matter of analyst preference and does not impact the predictions made by unsupervised clustering algorithms if the features are standardized as discussed in Sec.~\ref{subsec:chap10-feature-standardize}.}. It is important to note that the denominator in Eqn.~\ref{eqn:chap10-frac-reactivity} encompasses all fuel pins of all compositions (\textit{e.g.}, enrichments) in the core geometry, but does not include absorption in the moderator, clad, \acp{BP}, etc. As a result, the fractional reactivity as defined by this thesis is not indicative of the global reactivity, but rather the reactivity restricted to the fuel.
 
 The fractional reactivity feature is illustrated with scatter plots in Figs.~\ref{fig:chap10-fiss-mean-pcm} and~\ref{fig:chap10-capt-mean-pcm} for 2-group U-235 fission and U-238 capture \ac{MGXS} data, respectively. The scatter plots include a single data point for each of the 264 fuel pins in the 1.6\% enriched fuel assembly benchmark. The $x$ and $y$ coordinates correspond to the tallied \ac{MGXS} means $\hat{\sigma}_{x,i,k,g}$ and normalized fractional reactivities $\hat{\alpha}_{k}$ in units of barns and \ac{pcm}, respectively. The complete datasets are illustrated in Figs.~\ref{fig:chap10-fiss-mean-pcm-mgxs} and~\ref{fig:chap10-capt-mean-pcm-mgxs}. The interactive \textit{i}\ac{MGXS} visualization tool was used to select clusters of \ac{MGXS} and plot the geometry to indicate the associated fuel pins, as displayed in Figs.~\Crefrange{fig:chap10-fiss-mean-pcm-geom-2}{fig:chap10-fiss-mean-pcm-mgxs-3} and~\Crefrange{fig:chap10-capt-mean-pcm-geom-2}{fig:chap10-capt-mean-pcm-mgxs-3} for the fission and capture \ac{MGXS}, respectively. 
 
-The scatter plots illustrate the highly linear relationship between the U-235 fission \ac{MGXS} and fractional reactivities; those pins facially and corner adjacent to distinct \acp{CRGT} have both the largest fission \ac{MGXS} and fission rates due to the differential moderation of the neighboring \acp{CRGT} (at least for this benchmark). The clustering of U-238 capture \ac{MGXS} generally indicates a similar proportional relationship with fractional reactivity. Perhaps more importantly, Fig.~\ref{fig:chap10-capt-mean-pcm} also makes it possible to distinguish ``sub-clusters'' within each of the four primary clusters of U-238 capture \ac{MGXS}. Although the sub-clusters within a primary cluster have similar \ac{MGXS}\footnote{The track density-weighted average \ac{MGXS} for the sub-clusters would be relatively similar.}, there is some variation due to subtle differences in the spatial self-shielding experienced by the pins in the primary cluster.
+The scatter plots illustrate the highly linear relationship between the U-235 fission \ac{MGXS} and fractional reactivities: those pins facially and corner adjacent to distinct \acp{CRGT} have both the largest fission \ac{MGXS} and fission rates due to the differential moderation of the neighboring \acp{CRGT} (at least for this benchmark). The clustering of U-238 capture \ac{MGXS} generally indicates a similar proportional relationship with fractional reactivity. Perhaps more importantly, Fig.~\ref{fig:chap10-capt-mean-pcm} distinguishes ``sub-clusters'' within each of the four primary clusters of U-238 capture \ac{MGXS}. Although the sub-clusters within a primary cluster have similar \ac{MGXS}\footnote{The track density-weighted average \ac{MGXS} for the sub-clusters would be relatively similar.}, there is some variation due to subtle differences in the spatial self-shielding experienced by the pins in each primary cluster.
 
 The visualizations highlight the \textit{hierarchical} nature of spatial self-shielding effects: some factors are most important and induce primary clusters (\textit{i.e.}, whether a fuel pin is adjacent to zero, one or two \acp{CRGT}), while other factors are less consequential yet still induce sub-clusters (\textit{i.e.}, the type adjacency of neighboring \acp{CRGT}). The hierarchy of spatial self-shielding effects will grow increasingly intricate with the size and complexity of the reactor configuration, further motivating the importance for an unsupervised methodology like \textit{i}\ac{MGXS} to identify \ac{MGXS} clustering for arbitrary core geometries.
 
@@ -468,7 +470,7 @@ The \textit{spectral index} compares the ratio of energy-integrated U-238 captur
 \hat{\beta}_{k} = \frac{\displaystyle\sum\limits_{g=1}^{G}\hat{\sigma}_{\gamma,k,g}^{238}\hat{\phi}_{k,g}}{\displaystyle\sum\limits_{g=1}^{G}\hat{\sigma}_{f,k,g}^{235}\hat{\phi}_{k,g}}
 \end{equation}
 
-\noindent where $\hat{\sigma}_{\gamma,k,g}^{238}$ and $\hat{\sigma}_{f,k,g}^{235}$ are the microscopic U-238 radiative capture and U-235 fission production \ac{MGXS} for fuel pin instance $k$ and energy group $g$, respectively\footnote{The U-235 fission and fission production \ac{MGXS} may be used interchangeably in Eqn.~\ref{eqn:chap10-spec-index-u238-capt} with no impact on the predictions made by unsupervised statistical clustering algorithms.}. This feature postulates that the capture-to-fission ratio will significantly vary for fuel pins and energy groups with different spatial self-shielding effects. The spectral index is especially relevant since it accounts for relative differences in the U-238 capture rates, which previous chapters showed can only be accurately computed if an appropriate pin-wise spatial homogenization scheme is used. Unlike the fractional reactivity, the spectral index may identify pins with similar flux shapes but very different flux magnitudes since it is the ratio of two pin-wise reaction rates.
+\noindent where $\hat{\sigma}_{\gamma,k,g}^{238}$ and $\hat{\sigma}_{f,k,g}^{235}$ are the microscopic U-238 radiative capture and U-235 fission production \ac{MGXS} for fuel pin instance $k$ and energy group $g$, respectively\footnote{The U-235 fission and fission production \ac{MGXS} may be used interchangeably in Eqn.~\ref{eqn:chap10-spec-index-u238-capt} with no impact on the predictions made by unsupervised clustering algorithms.}. This feature postulates that the capture-to-fission ratio will significantly vary for fuel pins and energy groups with different spatial self-shielding effects. The spectral index is especially relevant since it accounts for relative differences in the U-238 capture rates, which previous chapters showed can only be accurately computed if an appropriate pin-wise spatial homogenization scheme is used. Unlike the fractional reactivity, the spectral index may identify pins with similar flux shapes but very different flux magnitudes since it is the ratio of two pin-wise reaction rates.
 
 The spectral index feature is illustrated with scatter plots in Figs.~\ref{fig:chap10-fiss-mean-spect-ind} and~\ref{fig:chap10-capt-mean-spect-ind} for 2-group U-235 fission and U-238 capture \ac{MGXS} data, respectively. The scatter plots include a single data point for each of the 264 fuel pins in the 1.6\% enriched fuel assembly benchmark. The $x$ and $y$ coordinates correspond to the tallied \ac{MGXS} means $\hat{\sigma}_{x,i,k,g}$ and spectral indices $\hat{\beta}_{k}$, respectively. The complete datasets are illustrated in Figs.~\ref{fig:chap10-fiss-mean-spect-ind-mgxs} and~\ref{fig:chap10-capt-mean-spect-ind-mgxs}. The interactive \textit{i}\ac{MGXS} visualization tool was used to select clusters of \ac{MGXS} and plot the geometry to indicate the associated fuel pins, as displayed in Figs.~\Crefrange{fig:chap10-fiss-mean-spect-ind-geom-2}{fig:chap10-fiss-mean-spect-ind-mgxs-3} and~\Crefrange{fig:chap10-capt-mean-spect-ind-geom-2}{fig:chap10-capt-mean-spect-ind-mgxs-3} for the fission and capture \ac{MGXS}, respectively. 
 
@@ -560,7 +562,7 @@ The spectral index feature is illustrated with scatter plots in Figs.~\ref{fig:c
 
 %\clearpage
 
-The figures illustrate a complex relationship between the U-235 fission \ac{MGXS} and the spectral indices. In contrast to the fractional reactivity, both the fission and capture \ac{MGXS} are negatively correlated with the spectral index. In particular, the more differential moderation from neighboring \acp{CRGT}, the smaller the spectral index. Although the capture and fission rates both increase with differential moderation, these scatter plots indicate that U-235 fission increases \textit{faster} than U-238 capture. In addition, the clusters are more spread out than the more linear trends observed for the fractional reactivities. The scatter plots indicate that the spectral index is potentially more effective at separating sub-clusters within each primary cluster than fractional reactivity.
+The figures illustrate a complex relationship between the U-235 fission \ac{MGXS} and the spectral indices. In contrast to the fractional reactivity, both the fission and capture \ac{MGXS} are negatively correlated with the spectral index. In particular, the more differential moderation from neighboring \acp{CRGT}, the smaller the spectral index. Although the capture and fission rates both increase with differential moderation, these scatter plots indicate that U-235 fission increases \textit{faster} than U-238 capture. In addition, the clusters are more spread out than the linear trends observed for the fractional reactivities. The scatter plots indicate that the spectral index is potentially more effective at separating sub-clusters within each primary cluster than fractional reactivity.
 
 %(at least for this benchmark). 
 
@@ -569,7 +571,7 @@ The figures illustrate a complex relationship between the U-235 fission \ac{MGXS
 \subsection{Nuclide Fraction}
 \label{subsec:chap10-nuclide-frac}
 
-The fractional reactivity and spectral index are both energy-integrated features, the \textit{nuclide fraction} feature is specific to each energy group. The nuclide fraction is defined as the ratio of each pin-wise microscopic \ac{MGXS} $\hat{\sigma}_{x,i,k,g}$ for reaction $x$, nuclide $i$ and energy group $k$ to the total \ac{MGXS} for the $\hat{\sigma}_{t,i,k,g}$ corresponding nuclide and energy group:
+In contrast to the energy-integrated fractional reactivity and spectral index features, the \textit{nuclide fraction} is specific to each energy group. The nuclide fraction is defined as the ratio of each pin-wise microscopic \ac{MGXS} $\hat{\sigma}_{x,i,k,g}$ for reaction $x$, nuclide $i$ and energy group $k$ to the total \ac{MGXS} $\hat{\sigma}_{t,i,k,g}$ for the corresponding nuclide and energy group:
 
 \begin{equation}
 \label{eqn:chap10-nuclide-frac}
@@ -668,7 +670,7 @@ The nuclide fraction feature $\hat{\tau}_{x,i,k,g}$ is motivated by the hypothes
 
 The nuclide fraction feature is illustrated with scatter plots in Figs.~\ref{fig:chap10-fiss-mean-nuc-frac} and~\ref{fig:chap10-capt-mean-nuc-frac} for 2-group U-235 fission and U-238 capture \ac{MGXS} data, respectively. The scatter plots include a single data point for each of the 264 fuel pins in the 1.6\% enriched fuel assembly benchmark. The $x$ and $y$ coordinates correspond to the tallied \ac{MGXS} means $\hat{\sigma}_{x,i,k,g}$ and nuclide fractions $\beta_{k}$, respectively. The complete datasets are illustrated in Figs.~\ref{fig:chap10-fiss-mean-nuc-frac-mgxs} and~\ref{fig:chap10-capt-mean-nuc-frac-mgxs}. The interactive \textit{i}\ac{MGXS} visualization tool was used to select clusters of \ac{MGXS} and plot the geometry to indicate the associated fuel pins, as displayed in Figs.~\Crefrange{fig:chap10-fiss-mean-nuc-frac-geom-2}{fig:chap10-fiss-mean-nuc-frac-mgxs-3} and~\Crefrange{fig:chap10-capt-mean-nuc-frac-geom-2}{fig:chap10-capt-mean-nuc-frac-mgxs-3} for the fission and capture \ac{MGXS}, respectively. 
 
-The figures illustrate a positive correlation between both the U-235 fission and U-238 capture \ac{MGXS} and the nuclide fractions (at least for this benchmark). In particular, the more differential moderation from neighboring \acp{CRGT}, the smaller the larger the nuclide fraction. Although the fission, capture and total rates all increase with differential moderation, these scatter plots indicate that U-235 fission and U-238 capture increases \textit{faster} than the corresponding total reaction rates with U-235 and U-238. The clusters are more spread out than the more linear trends observed for the fractional reactivities, but this is likely due to the relatively larger statistical uncertainty for the energy-specific nuclide fractions than the energy-integrated fractional reactivities.
+The figures illustrate a positive correlation between both the U-235 fission and U-238 capture \ac{MGXS} and the nuclide fractions (at least for this benchmark). In particular, the more differential moderation from neighboring \acp{CRGT}, the larger the nuclide fraction. Although the fission, capture and total rates all increase with differential moderation, these scatter plots indicate that U-235 fission and U-238 capture increase \textit{faster} than the corresponding total reaction rates with U-235 and U-238. The clusters are more spread out than the linear trends observed for the fractional reactivities, but this is likely due to the relatively larger statistical uncertainty for the energy-specific nuclide fractions than the energy-integrated fractional reactivities.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %\subsection{Total Fraction}
@@ -699,18 +701,18 @@ Each of the features described in the preceding sections is assembled into featu
 \label{fig:chap10-features-example}
 \end{figure}
 
-Feature standardization -- also known as \textit{mean removal} and/or \textit{variance scaling} -- is commonly needed since many machine learning estimators assume that all features are centered about zero with near unit variance. In the context of \textit{i}\ac{MGXS}, the distance between samples (or clusters) in feature space will be skewed if the features are not standardized. In particular, the distance will be dominated by features with the largest magnitudes (\textit{e.g.}, thermal U-235 fission \ac{MGXS}), and conversely, insensitive to features with small magnitudes (\textit{e.g.}, \ac{MGXS} standard deviations). The canonical form of standardization \textit{translates} each sample by subtracting the mean $\overline{\hat{f}_{j}}$, and \textit{scales} each sample by dividing by the standard deviation $\sigma_{\hat{f}_{j}}$ of feature $j$:
+Feature standardization -- also known as \textit{mean removal} and/or \textit{variance scaling} -- is necessary since many machine learning estimators assume that all features are centered about zero with near unit variance. In the context of \textit{i}\ac{MGXS}, the distance between samples (or clusters) in feature space will be skewed if the features are not standardized. In particular, the distance will be dominated by features with the largest magnitudes (\textit{e.g.}, thermal U-235 fission \ac{MGXS}), and conversely, insensitive to features with small magnitudes (\textit{e.g.}, \ac{MGXS} standard deviations). The canonical form of standardization \textit{translates} each sample by subtracting the mean $\overline{\hat{f}_{j,\cdot}}$, and \textit{scales} each sample by dividing by the standard deviation $\sigma_{\hat{f}_{j,\cdot}}$ of feature $j$:
 
 \begin{equation}
 \label{eqn:chap10-standard-standardize}
-\hat{f}_{j,k}^{*} = \frac{\hat{f}_{j,k} - \overline{\hat{f}_{j}}}{\sigma_{\hat{f}_{j}}}
+\hat{f}_{j,k}^{*} = \frac{\hat{f}_{j,k} - \overline{\hat{f}_{j}}}{\sigma_{\hat{f}_{j,\cdot}}}
 \end{equation}
 
 \noindent where $\hat{f}_{j,k}^{*}$ is the standardized feature $j$ for fuel pin instance $k$. Several standardization schemes are provided by the \texttt{sklearn.preprocessing} module of the \texttt{scikit-learn} Python package for machine learning~\cite{pedregosa2011sklearn}. The \textit{i}\ac{MGXS} implementation in this thesis uses the \texttt{RobustScaler} to subtract the median and divide by the interquartile range (IQR)\footnote{The interquartile range is the difference between the first and third quartiles: $\mathrm{IQR} = Q_{3} - Q_{1}$.} to diminish the influence of outliers on the standardization process:
 
 \begin{equation}
 \label{eqn:chap10-robust-standardize}
-\hat{f}_{j,k}^{*} = \frac{\hat{f}_{j,k} - \mathrm{median}\left\{\hat{f}_{j,1}, \hat{f}_{j,2}, \dots, \hat{f}_{j,K}\right\}}{\mathrm{IQR}_{\hat{f}_{j}}}
+\hat{f}_{j,k}^{*} = \frac{\hat{f}_{j,k} - \mathrm{median}\left\{\hat{f}_{j,1}, \hat{f}_{j,2}, \dots, \hat{f}_{j,K}\right\}}{\mathrm{IQR}_{\hat{f}_{j,\cdot}}}
 \end{equation}
 
 \begin{emphbox}
@@ -722,7 +724,7 @@ Feature standardization -- also known as \textit{mean removal} and/or \textit{va
 \section{Feature Selection}
 \label{sec:chap10-feature-select}
 
-The \textit{feature selection} stage in the data processing pipeline in Fig.~\ref{fig:chap10-pipeline} determines which features to use when training\footnote{In machine learning, \textit{training} a model refers to the process of assigning numerical values to the parameters of the model to best fit an empirical dataset.} a clustering model. The feature extraction stage provides many different features, some of which may be poor predictors of \ac{MGXS} clusters. In addition, some features may be highly correlated and redundant as input variables to a predictive model. Feature selection attempts to identify the smallest possible subset of features necessary to achieve the desired predictive accuracy. Feature selection plays an important role in balancing the canonical \textit{bias--variance tradeoff} in statistics and machine learning by reducing model variance, while potentially increasing model bias. In particular, feature selection is used to train simple(r) machine learning models for the following three reasons:
+The \textit{feature selection} stage of the data processing pipeline in Fig.~\ref{fig:chap10-pipeline} determines which features to use when training\footnote{In machine learning, \textit{training} a model refers to the process of assigning numerical values to the parameters of the model to best fit an empirical dataset.} a clustering model. The feature extraction stage provides many different features, some of which may be poor predictors of \ac{MGXS} clusters. In addition, some features may be highly correlated and redundant as input variables to a predictive model. Feature selection attempts to identify the smallest possible subset of features necessary to achieve the desired predictive accuracy. Feature selection plays an important role in balancing the canonical \textit{bias--variance tradeoff} in statistics and machine learning by reducing model variance, while potentially increasing model bias. In particular, feature selection is used to train simple(r) machine learning models for the following three reasons:
 
 \begin{itemize}[noitemsep]
 \item \textbf{Reduce Model Complexity} -- Simpler models are easier to intuit and explain
@@ -732,7 +734,7 @@ The \textit{feature selection} stage in the data processing pipeline in Fig.~\re
 
 Automated feature selection methods are often classified into three main categories: \textit{filter}, \textit{wrapper}, and \textit{embedded} methods. \textit{Filter methods} are agnostic to the family of predictive models one wishes to train and selects features which provide the most information about a target variable. Correlation Feature Selection~\cite{hall1999correlation} is an example of a filter method which searches for the smallest subset of features which are highly correlated with the target variable, but uncorrelated with each other. In contrast to filter methods, \textit{wrapper methods} evaluate subsets of features to determine their collective ability to minimize the generalization error of some specific family of predictive models. Wrapper methods may be computationally expensive since it entails a search of the space of possible feature subsets. In addition, wrapper methods may be at greater risk of over-fitting than filter methods since the feature selection criteria is based on model accuracy. Finally, \textit{embedded methods} select features as an integral part of the model training procedure. Some examples of embedded methods include $\ell_{1}$-regularization techniques and Recursive Feature Elimination~\cite{guyon2002rfe}. The interested reader is referred to~\cite{guyon2003select} or the plethora of other sources in the literature for more detailed information about automated feature selection methods.
 
-This thesis makes a fairly limited use of feature selection techniques in its implementation of \textit{i}\ac{MGXS}. In particular, a number of relatively simple filter and wrapper methods are presented in the following sections as options to select the best features. This process is illustrated as part of the \textit{i}\ac{MGXS} data processing pipeline in Fig.~\ref{fig:chap10-select}. Sec.~\ref{subsec:chap10-litmus} presents \textit{litmus tests} to filter the features and choose those pairings of nuclides and reaction types which are most likely to exhibit clustering. Sec.~\ref{subsec:chap10-var-threshold} introduces variance thresholding, while Sec.~\ref{subsec:chap10-univariate-selection} highlights a collection of filter methods which select the highest scoring features. Sec.~\ref{subsec:chap10-select-from-model} discusses a wrapper method which selects features based on their importances for decision tree or ensemble regressors. Finally, while domain knowledge is not an automated approach to feature downselection, it is employed by the case studies in the following chapter and is discussed in Sec.~\ref{subsec:chap10-pinch-selection}.
+This thesis makes a fairly limited use of feature selection techniques in its implementation of \textit{i}\ac{MGXS}. In particular, a number of relatively simple filter and wrapper methods are presented in the following sections as options to select the best features. This process is illustrated as part of the \textit{i}\ac{MGXS} data processing pipeline in Fig.~\ref{fig:chap10-select}. Sec.~\ref{subsec:chap10-litmus} presents \textit{litmus tests} to filter the features and choose those pairings of nuclides and reaction types which are most likely to exhibit clustering. Sec.~\ref{subsec:chap10-var-threshold} introduces variance thresholding, while Sec.~\ref{subsec:chap10-univariate-selection} highlights a collection of filter methods which select the highest scoring features. Sec.~\ref{subsec:chap10-select-from-model} discusses a wrapper method which selects features based on their importances for decision tree or ensemble regressors. Finally, while domain knowledge is not an automated approach to feature down-selection, it is employed by the case studies in the following chapter and is discussed in Sec.~\ref{subsec:chap10-pinch-selection}.
 
 %Sec.~\ref{subsec:chap10-litmus-tot-frac} introduces a threshold-based method to downselect those nuclides with the most relevant data to cluster for a given energy group. Similarly, Sec.~\ref{subsec:chap10-litmus-nuc-frac} presents a threshold for the nuclide fraction to choose the ``best'' reaction type to cluster for a given nuclide and energy group.
 
@@ -744,13 +746,13 @@ This thesis makes a fairly limited use of feature selection techniques in its im
 \label{fig:chap10-select}
 \end{figure}
 
-It is important to note that the methods and metrics highlighted here should be considered an exhaustive list of options for feature selection for \textit{i}\ac{MGXS}. Furthermore, while all of the options discussed are supported in the \textit{i}\ac{MGXS} for this thesis, out of practical necessity only a few of the methods are evaluated by the empirical cases studies in this and the following chapter. Future work may aim to provide a more systematic appraisal of various feature selection methods for the \textit{i}\ac{MGXS} pipeline.
+It is important to note that the methods and metrics highlighted here should be considered an exhaustive list of options for feature selection for \textit{i}\ac{MGXS}. Furthermore, while all of the options discussed are supported in the \textit{i}\ac{MGXS} implementation for this thesis, out of practical necessity only a few of the methods are evaluated by the empirical cases studies in this and the following chapter. Future work may aim to provide a more systematic appraisal of various feature selection methods for the \textit{i}\ac{MGXS} scheme.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Litmus Tests}
 \label{subsec:chap10-litmus}
 
-\textit{Litmus tests} are filter methods specifically designed to select data for particular nuclides and reaction types for clustering. The litmus tests presented here are used to downselect the \ac{MGXS} mean and standard deviation features by predicting which nuclides and reaction types are most likely to exhibit clustering effects. The litmus tests are independently applied to each nuclide / energy group / reaction type grouping. Sec.~\ref{subsubsec:chap10-litmus-tot-frac} introduces total fraction thresholding to select a nuclide for a given energy group, while Sec.~\ref{subsubsec:chap10-litmus-nuc-frac} introduces nuclide fraction thresholding to select a reaction type for a given nuclide and energy group. Sec.~\ref{subsubsec:chap10-litmus-nuc-frac} discusses how normality tests can be used to reject features which may have been drawn from a normal distribution.
+\textit{Litmus tests} are filter methods specifically designed to select data for particular nuclides and reaction types for clustering. The litmus tests presented here are used to down-select the \ac{MGXS} mean and standard deviation features by predicting which nuclides and reaction types are most likely to exhibit clustering effects. The litmus tests are independently applied to each nuclide, energy group, and reaction type grouping. Sec.~\ref{subsubsec:chap10-litmus-tot-frac} introduces total fraction thresholding to select a nuclide for a given energy group, while Sec.~\ref{subsubsec:chap10-litmus-nuc-frac} introduces nuclide fraction thresholding to select a reaction type for a given nuclide and energy group. Sec.~\ref{subsubsec:chap10-litmus-nuc-frac} discusses how normality tests can be used to reject features which may have been drawn from a normal distribution.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Total Fraction Thresholding}
@@ -765,7 +767,10 @@ The \textit{total fraction} $\hat{\omega}_{x,i,k,g}$ is defined as the ratio of 
 \hat{\omega}_{x,i,k,g} = \frac{\hat{\Sigma}_{x,i,k,g}}{\displaystyle\sum\limits_{i=1}^{I}\hat{\Sigma}_{t,i,k,g}}
 \end{equation}
 
-The \textit{i}\ac{MGXS} implementation in this thesis simply chooses \ac{MGXS}-based features for nuclide $i$ if the mean $\overline{\hat{\omega}}_{x,i,g}$ across fuel pins is greater than some user-defined threshold. This litmus test assumes that nuclide(s) which contribute little to the total \ac{MGXS} are not important to cluster. This assumption may not always be valid if some small \ac{MGXS} disproportionately reflect spatial self-shielding effects. For example, if the flux is appreciably depressed in narrow resonance groups for nuclides and reaction types which are especially sensitive to spatial self-shielding (\textit{e.g.}, U-238 capture), then the \ac{MGXS} may likewise be depressed such that the total fraction drops below the threshold and the feature(s) are neglected. The case studies explored in the following chapter use a relatively conservative value of 0.1 for the threshold such that \ac{MGXS}-based features for trace nuclides (\textit{e.g.}, O-17, U-234) are neglected while those for U-235 and U-238 are always selected.
+The \textit{i}\ac{MGXS} implementation in this thesis simply chooses \ac{MGXS}-based features for nuclide $i$ if the mean $\overline{\hat{\omega}}_{x,i,g}$ across fuel pins is greater than some user-defined threshold. This litmus test assumes that nuclide(s) which contribute little to the total \ac{MGXS} are not important to cluster. This assumption may not always be valid if some small \ac{MGXS} disproportionately reflect spatial self-shielding effects. For example, if the flux is appreciably depressed in narrow resonance groups for nuclides and reaction types which are especially sensitive to spatial self-shielding (\textit{e.g.}, U-238 capture), then the \ac{MGXS} may likewise be depressed such that the total fraction drops below the threshold and the feature(s) are neglected. A relatively conservative value of 0.1 may be used for the threshold such that \ac{MGXS}-based features for trace nuclides (\textit{e.g.}, O-17, U-234) are neglected while those for U-235 and U-238 are always selected.
+
+
+%The case studies explored in the following chapter use a relatively conservative value of 0.1 for the threshold such that \ac{MGXS}-based features for trace nuclides (\textit{e.g.}, O-17, U-234) are neglected while those for U-235 and U-238 are always selected.
 
 %This is unlikely, however, since spatial self-shielding effects are only manifested as clusters in pin-wise \ac{MGXS} if the continuous energy data varies over a relatively large range for a given energy group. A widely varying cross section, such as those in the resonance regime, will most likely result in a relatively large microscopic \ac{MGXS} and total fraction for the nuclide.
 
@@ -775,7 +780,9 @@ The \textit{i}\ac{MGXS} implementation in this thesis simply chooses \ac{MGXS}-b
 
 \textit{Nuclide fraction thresholding} is a filter method used to select \ac{MGXS}-based features for one or more reaction types for a particular nuclide $i$ and energy group  $g$ pairing. The nuclide fraction $\hat{\tau}_{x,i,k,g}$ (Eqn.~\ref{eqn:chap10-nuclide-frac}) gives an indication of how much a particular reaction contributes to a nuclide's total \ac{MGXS}. This litmus test is employed in a similar fashion to total fraction thresholding. In particular, the \textit{i}\ac{MGXS} implementation in this thesis simply chooses \ac{MGXS}-based features for nuclide $i$ and reaction $x$ if the mean $\overline{\hat{\tau}}_{x,i,g}$ across fuel pins is greater than some user-defined threshold.
 
-The nuclide fraction thresholding litmus test assumes that reaction(s) which contribute little to a nuclide's total \ac{MGXS} are not important to cluster. As was noted for total fraction thresholding, this assumption may not always be valid if some small \ac{MGXS} disproportionately reflect spatial self-shielding effects. For example, if the flux is appreciably depressed in narrow resonance groups for nuclides and reaction types which are especially sensitive to spatial self-shielding (\textit{e.g.}, U-238 capture), then the \ac{MGXS} may likewise be depressed such that the total fraction drops below the threshold and the feature(s) are neglected. The case studies explored in the following chapter use a relatively conservative value of 0.3 for the threshold such that \ac{MGXS}-based features for U-235 fission and U-238 capture are always selected for thermal energy groups.
+The nuclide fraction thresholding litmus test assumes that reaction(s) which contribute little to a nuclide's total \ac{MGXS} are not important to cluster. As was noted for total fraction thresholding, this assumption may not always be valid if some small \ac{MGXS} disproportionately reflect spatial self-shielding effects. For example, if the flux is appreciably depressed in narrow resonance groups for nuclides and reaction types which are especially sensitive to spatial self-shielding (\textit{e.g.}, U-238 capture), then the \ac{MGXS} may likewise be depressed such that the total fraction drops below the threshold and the feature(s) are neglected. A relatively conservative value of 0.3 may be used for the threshold such that \ac{MGXS}-based features for U-235 fission and U-238 capture are always selected for thermal energy groups.
+
+%The case studies explored in the following chapter use a relatively conservative value of 0.3 for the threshold such that \ac{MGXS}-based features for U-235 fission and U-238 capture are always selected for thermal energy groups.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Normality Tests}
@@ -799,7 +806,7 @@ Variance thresholding presents an opportunity for a user to guide the \textit{i}
 
 \textit{Univariate feature selection} is a filter method which selects features based on univariate statistical tests. This thesis uses the \texttt{GenericUnivariateSelect} class from the \texttt{sklearn.feature_selection} module to administer univariate feature selection. This method individually ranks each feature according to some metric and selects some user-specified number or percentage of the highest scoring features. Univariate feature selection does not consider correlations between features, and as a result, may choose a collection of highly redundant features.
 
-The typical statistical tests used for univariate feature selection quantify a mapping between the features and some target variable(s). The \textit{i}\ac{MGXS} implementation in this thesis uses the \ac{MGXS} means $\hat{\sigma}_{x,i,k,g}$ as the target variables and builds a sequence of linear regression models based on the non-\ac{MGXS} features (\textit{e.g.}, fractional reactivities, spectral indices, etc.). Each linear regressor is scored with a $p$-value from an $F$-test which assesses the strength of the linear dependence between the non-\ac{MGXS} feature and \ac{MGXS} target variable(s). An alternative but equally valid approach would use the mutal information between the non-\ac{MGXS} features and \ac{MGXS} target variable(s) to individually score each feature. 
+The typical statistical tests used for univariate feature selection quantify a mapping between the features and some target variable(s). The \textit{i}\ac{MGXS} implementation in this thesis uses the \ac{MGXS} means $\hat{\sigma}_{x,i,k,g}$ as the target variables and builds a sequence of linear regression models based on the non-\ac{MGXS} features (\textit{e.g.}, fractional reactivities, spectral indices, etc.). Each linear regressor is scored with a $p$-value from an $F$-test which assesses the strength of the linear dependence between the non-\ac{MGXS} feature and \ac{MGXS} target variable(s). An alternative but equally valid approach would use the mutual information between the non-\ac{MGXS} features and \ac{MGXS} target variable(s) to individually score each feature. 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Select-from-Model Feature Importance Ranking}
@@ -811,7 +818,7 @@ The \textit{select-from-model} approach is a wrapper method for feature selectio
 \subsection{Pinch Feature Selection}
 \label{subsec:chap10-pinch-selection}
 
-Each of the preceding feature selection techniques automatically selects or rejects features based on some test criterion. An obvious alternative is to base feature selection entirely on user domain knowledge. The \textit{i}\ac{MGXS} implementation in this thesis allows users to employ \textit{pinch feature selection} to specify a single nuclide / energy group / reaction type grouping from which to derive features. For example, the case studies in the following chapter employ the pinch method to select only those features derived from U-238 capture \ac{MGXS} in group 1 of 2. This is based on the knowledge acquired from Chaps.~\ref{chap:quantify} and~\ref{chap:spatial} that a detailed model of \ac{MGXS} clustering is necessary for accurate predictions of pin-wise U-238 capture reaction rates. Alternatively, a user may specify a nuclide, energy group, and reaction type grouping which indicates the clustering of other \ac{MGXS} which may be more important to cluster for accurate reaction rate predictions. For example, clustering of U-235 fission \ac{MGXS} may be a good (\textit{e.g.}, low uncertainty) signal of U-238 capture \ac{MGXS} clustering, even if pin-wise fission rates are less sensitive to \ac{MGXS} clustering than U-238 capture rates.
+Each of the preceding feature selection techniques automatically selects or rejects features based on some test criterion. An obvious alternative is to base feature selection entirely on user domain knowledge. The \textit{i}\ac{MGXS} implementation in this thesis allows users to employ \textit{pinch feature selection} to specify a single nuclide, energy group and reaction type grouping from which to derive features. For example, the case studies in the following chapter employ the pinch method to select only those features derived from U-238 capture \ac{MGXS} in group 1 of 2. This is based on the knowledge acquired from Chaps.~\ref{chap:quantify} and~\ref{chap:spatial} that a detailed model of \ac{MGXS} clustering is necessary for accurate predictions of pin-wise U-238 capture reaction rates. Alternatively, a user may specify a nuclide, energy group, and reaction type grouping which indicates the clustering of other \ac{MGXS} which may be more important to cluster for accurate reaction rate predictions. For example, clustering of U-235 fission \ac{MGXS} may be a good (\textit{e.g.}, low uncertainty) signal of U-238 capture \ac{MGXS} clustering, even if pin-wise fission rates are less sensitive to \ac{MGXS} clustering than U-238 capture rates.
 
 %-could foreseeably mean multiple specific nuclides, reactions and energy groups
 
@@ -824,15 +831,15 @@ Each of the preceding feature selection techniques automatically selects or reje
 \section{Dimensionality Reduction}
 \label{sec:chap10-dimension-reduce}
 
-The \textit{dimemsionality reduction} stage in the data processing pipeline in Fig.~\ref{fig:chap10-pipeline} aims to reduce the number of random variables used to train a machine learning model, and is closely related to feature selection\footnote{Feature transformation can be used in place of \textit{or} in conjunction with feature selection techniques.}. A dimensionality reduction method is a transformation $P: \mathbb{R}^{J} \rightarrow \mathbb{R}^{T}$ from the original $J$-dimensional feature space to a $T$-dimensional space with an equivalent descriptive power of the structure, or the relationships between samples, in the dataset. In general, dimensionality reduction is used in statistical clustering analysis for the following reasons:
+The \textit{dimensionality reduction} stage in the data processing pipeline in Fig.~\ref{fig:chap10-pipeline} aims to reduce the number of random variables used to train a machine learning model, and is closely related to feature selection\footnote{Feature transformation can be used in place of \textit{or} in conjunction with feature selection techniques.}. A dimensionality reduction method is a transformation $P: \mathbb{R}^{J} \rightarrow \mathbb{R}^{T}$ from the original $J$-dimensional feature space to a $T$-dimensional space with an equivalent descriptive power of the structure, or the relationships between samples, in the dataset. In general, dimensionality reduction is used in statistical clustering analysis for the following reasons:
 
 \begin{itemize}[noitemsep]
 \item Reduce dataset storage requirements and model training time
 \item Improve model performance and reduce sensitivity to outliers
-\item Make dataset and models easier to visualize in 2D or 3D
+\item Make datasets and/or models easier to visualize in 2D or 3D
 \end{itemize}
 
-\noindent Many common dimemsionality reduction techniques perform a decomposition of the dataset matrix. These methods attempt to identify \textit{latent} or hidden variables which adequately represent the variation of and correlation between features in a lower-dimensional vector space than the original feature space. The mapping can be represented as a basis of $T$ functions $g_{t}$ of the feature vectors $\boldsymbol{\hat{f}}_{k}$ as illustrated in Fig.~\ref{fig:chap10-agglomerate}.
+\noindent Many common dimensionality reduction techniques perform a decomposition of the dataset matrix. These methods attempt to identify \textit{latent} or hidden variables which adequately represent the variation of and correlation between features in a lower-dimensional vector space than the original feature space. The mapping can be represented as a basis of $T$ functions $g_{t}$ of the feature vectors $\boldsymbol{\hat{f}}_{k}$ as illustrated in Fig.~\ref{fig:chap10-agglomerate}.
 
 \begin{figure}[h!]
 \centering
@@ -842,7 +849,7 @@ The \textit{dimemsionality reduction} stage in the data processing pipeline in F
 \label{fig:chap10-agglomerate}
 \end{figure}
 
-Three matrix decomposition dimensionality reduction methods were implemented as optional elements of the \textit{i}\ac{MGXS} data processing pipeline used in this thesis and are briefly discussed here. The Principal Component Analysis and Independent Component Analysis methods are highlighted in Sec.~\ref{subsec:chap10-pca} and~\ref{subsec:chap10-ica}, respectively. The Factor Analysis method is summarized in Sec.~\ref{subsec:chap10-factor-analysis}. None of these methods are employed in the case studies of the \textit{i}\ac{MGXS} scheme applied to heterogeneous \ac{PWR} benchmarks in the following chapter. Nonetheless, they are mentioned here since it is the author's opinion that they present opportunities to improve the predictive accuracy and training time of the \textit{i}\ac{MGXS} scheme.
+Three matrix decomposition dimensionality reduction methods were implemented as optional elements of the \textit{i}\ac{MGXS} data processing pipeline. The Principal Component Analysis and Independent Component Analysis methods are highlighted in Sec.~\ref{subsec:chap10-pca} and~\ref{subsec:chap10-ica}, respectively. The Factor Analysis method is summarized in Sec.~\ref{subsec:chap10-factor-analysis}. None of these methods are employed in the case studies of the \textit{i}\ac{MGXS} scheme applied to heterogeneous \ac{PWR} benchmarks in the following chapter. Nonetheless, they are mentioned here since it is the author's opinion that they present future opportunities to improve the predictive accuracy and reduce the training time of the \textit{i}\ac{MGXS} scheme.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Principal Component Analysis}
@@ -850,7 +857,7 @@ Three matrix decomposition dimensionality reduction methods were implemented as 
 
 \textit{Principal Component Analysis} (PCA)~\cite{jolliffe2002pca} is a matrix decomposition of the dataset that is perhaps the most common technique for dimensionality reduction. PCA is a \textit{variance-centric} approach which seeks to reproduce the total variable variance in a dataset with an orthogonal linear transformation of the feature space. In particular, PCA projects the features -- which may or may not be correlated -- onto a linearly uncorrelated basis set of \textit{principal components}. The principal components are linear combinations of the features that are rank-ordered by the amount of variance they account for in the original dataset. The first few principal components may be selected as the new feature space to reduce the dimensionality of the dataset while preserving most of the variance.
 
-There are many methods to decompose a dataset into its principal components, but the most common is known as the Singular-Value Decomposition (SVD)~\cite{golub1970svd}. The SVD decomposes the $K \times J$ dataset matrix $\boldsymbol{F} = \left[\boldsymbol{\hat{f}}_{1}, \boldsymbol{\hat{f}}_{2}, \dots, \boldsymbol{\hat{f}}_{K}\right]^{T} $ of feature vectors as follows:
+There are many methods to decompose a dataset into its principal components, but the most common is known as the Singular-Value Decomposition (SVD)~\cite{golub1970svd}. The SVD decomposes the $K \times J$ dataset matrix $\boldsymbol{\hat{F}} = \left[\boldsymbol{\hat{f}}_{1}, \boldsymbol{\hat{f}}_{2}, \dots, \boldsymbol{\hat{f}}_{K}\right]^{T} $ of feature vectors as follows:
 
 %  -as compared to factor analysis which is a correlation-focused approach
 %original feature space, with each component orthogonal to all the rest
@@ -863,16 +870,16 @@ There are many methods to decompose a dataset into its principal components, but
 \boldsymbol{\hat{F}} = \boldsymbol{U}\boldsymbol{\Sigma}\boldsymbol{W}^{T}
 \end{equation}
 
-\noindent The $\boldsymbol{U}$ and $\boldsymbol{W}$ matrices are $K \times K$ unitary matrices composed of orthogonal vectors called the \text{left singular vectors} and \textit{right singular vectors}, respectively. PCA designates the right singular vectors as the principal components. The $\boldsymbol{\Sigma}$ matrix is a $K \times J$ rectangular diagonal matrix of the positive \textit{singular values} (square roots of the eigenvalues of $\boldsymbol{\hat{F}}$) whose magnitudes are proportional to the amount of variance explained by the corresponding singular vector. Each sample $\boldsymbol{\hat{f}}_{k}$ in the original feature space is mapped to $\boldsymbol{t}_{k}$ in the vector space defined by the principal components as follows:
+\noindent The $\boldsymbol{U}$ and $\boldsymbol{W}$ matrices are $K \times K$ unitary matrices composed of orthogonal vectors called the \textit{left singular vectors} and \textit{right singular vectors}, respectively. PCA designates the right singular vectors as the principal components. The $\boldsymbol{\Sigma}$ matrix is a $K \times J$ rectangular diagonal matrix of the positive \textit{singular values} (square roots of the eigenvalues of $\boldsymbol{\hat{F}}$) whose magnitudes are proportional to the amount of variance explained by the corresponding singular vector. Each sample $\boldsymbol{\hat{f}}_{k}$ in the original feature space is mapped to $\boldsymbol{t}_{k}$ in the vector space defined by the principal components as follows:
 
 \begin{equation}
 \label{eqn:chap10-svd-transform-sample}
 \boldsymbol{t}_{k} = \boldsymbol{\hat{f}}_{k}^{T}\boldsymbol{W} \approx \boldsymbol{\hat{f}}_{k}^{T}\boldsymbol{W}_{L}
 \end{equation}
 
-\noindent The SVD defines a loss-less transformation of the dataset. However, dimensionality reduction selects the $L$ largest singular values and their respective singular vectors and uses the truncated $K \times L$ matrix $\boldsymbol{W}_{L}$ to map the data into a lower-dimensional feature space.
+\noindent The SVD defines a loss-less transformation of the dataset. However, dimensionality reduction uses the truncated $K \times L$ matrix $\boldsymbol{W}_{L}$ of the $L$ largest singular values and their respective singular vectors to map the data into a lower-dimensional feature space.
 
-This thesis implemented an option to use the \texttt{PCA} class in the \texttt{sklearn.decomposition} Python module for dimensionality reduction in the \textit{i}\ac{MGXS} scheme. This option was motivated by the potential for PCA to increase the signal-to-noise ratio -- the effects from spatial self-shielding convolved with \ac{MC} tally uncertainties -- hidden within \ac{MGXS} datasets by concentrating the sample variance within only a few principal components, with the remaining components dominated by the noise from \ac{MC}\footnote{PCA increases the signal-to-noise ratio if the features are distributed with i.i.d. white Gaussian noise.}. A variant of PCA known as \textit{kernel PCA}~\cite{scholkopf1997kernelpca} applies the ``kernel trick'' with radial basis functions (RBF) or other kernels to define a non-linear projection to the principal component space. Kernel PCA may improve the performance of clustering algorithms if the clusters are defined on complex (\textit{e.g.}, non-convex) manifolds, such as those observed in some \ac{MGXS} datasets. Although the use of PCA is not further explored in this thesis, kernel PCA was shown to induce significantly different clustering model predictions than those models which were trained on datasets in the original feature space.
+This thesis implemented an option to use the \texttt{PCA} class in the \texttt{sklearn.decomposition} Python module for dimensionality reduction in the \textit{i}\ac{MGXS} pipeline. This option was motivated by the potential for PCA to increase the signal-to-noise ratio -- the effects from spatial self-shielding convolved with \ac{MC} tally uncertainties -- hidden within \ac{MGXS} datasets by concentrating the sample variance within only a few principal components, with the remaining components dominated by the noise from \ac{MC}\footnote{PCA increases the signal-to-noise ratio if the features are distributed with i.i.d. white Gaussian noise.}. A variant of PCA known as \textit{kernel PCA}~\cite{scholkopf1997kernelpca} applies the ``kernel trick'' with radial basis functions (RBF) or other kernels to define a non-linear projection to the principal component space. Kernel PCA may improve the performance of clustering algorithms if the clusters are defined on complex (\textit{e.g.}, non-convex) manifolds, such as those observed in some \ac{MGXS} datasets. Although the use of PCA is not further explored in this thesis, kernel PCA was shown to induce significantly different clustering model predictions than those models which were trained on datasets in the original feature space.
 
 %-requires fitting all of data in main memory, though out-of-core variants with batch processing do exist
 %-refer reader to the literature for more information :-)
@@ -886,7 +893,7 @@ This thesis implemented an option to use the \texttt{PCA} class in the \texttt{s
 \subsection{Independent Component Analysis}
 \label{subsec:chap10-ica}
 
-\textit{Independent Component Analysis} (ICA)~\cite{hyvarinen2000ica} is a matrix decomposition method inspired by signal processing and commonly employed in machine learning applications. ICA attempts to find \textit{maximally independent} subcomponents to represent the relationships between samples within feature space. In particular, ICA assumes that the data can be represented using non-Gaussian and statistically independent additive subcomponents. In contrast to PCA which maximizes the remaining sample variance explained by each subsequent principal component, ICA maximizes the statistical independence of the independent components. Though ICA is designed to separate superimposed signals, the independent components may be selected as the new feature space to reduce the dimensionality of a dataset.
+\textit{Independent Component Analysis} (ICA)~\cite{hyvarinen2000ica} is a matrix decomposition method inspired by signal processing and commonly employed in machine learning applications. ICA attempts to find \textit{maximally independent} components to represent the relationships between samples within feature space. In particular, ICA assumes that the data can be represented using non-Gaussian and statistically independent components. In contrast to PCA which maximizes the remaining sample variance explained by each subsequent principal component, ICA maximizes the statistical independence of the components. Though ICA is designed to separate superimposed signals, the independent components may be selected as the new feature space to reduce the dimensionality of a dataset.
 
 %The independence of components may be measured by various functions, including the Kullback-Leibler divergence, maximum entropy and kurtosis.
 
@@ -897,20 +904,20 @@ ICA represents the observed feature vector $\boldsymbol{\hat{f}}_{k}$ as a linea
 \boldsymbol{\hat{f}}_{k} = \boldsymbol{W}^{-1}\boldsymbol{s}_{k} + \boldsymbol{\epsilon}
 \end{equation}
 
-\noindent where it is assumed that $J^{*} < K$ for dimensionality reduction (\textit{i.e.}, there are fewer components than samples). The $K \times J^{*}$ matrix $\boldsymbol{W}^{-1}$ is referred to as the \textit{mixing matrix}, and $\boldsymbol{\epsilon}$ is assumed to be a zero-mean and uncorrelated Gaussian noise vector. Each sample is projected into the vector space defined by the indendent components as follows:
+\noindent where it is assumed that $J^{*} < K$ for dimensionality reduction (\textit{i.e.}, there are fewer components than samples). The $K \times J^{*}$ matrix $\boldsymbol{W}^{-1}$ is referred to as the \textit{mixing matrix}, and $\boldsymbol{\epsilon}$ is assumed to be a zero-mean and uncorrelated Gaussian noise vector. Each sample is projected into the vector space defined by the independent components as follows:
 
 \begin{equation}
 \label{eqn:chap10-ica-inverse}
 \boldsymbol{s}_{k} \approx \boldsymbol{W}\boldsymbol{\hat{f}}_{k}
 \end{equation}
 
-The problem of ICA is to estimate both the constant mixing matrix and the random component vectors for each sample by maximizing the mutual indepdence of each component. There are a variety of methods to solve for the ICA transformation, such as ``Fast ICA''~\cite{hyvarinen1999fastica} which uses a fixed-point iteration scheme to optimize the kurtosis as the cost function that measures component independence. This thesis implemented an option to use the \texttt{FastICA} class in the \texttt{sklearn.decomposition} Python module for dimensionality reduction in the \textit{i}\ac{MGXS} scheme. This option was motivated by the potential for ICA to identify spatial self-shielding effects (\textit{e.g.}, adjacency to \acp{CRGT}, neighboring assembly, or baffle/reflector) as ``signals'' or the independent components in a linear model of the clustering of pin-wise \ac{MGXS}. Like PCA, the use of ICA is not further explored in this thesis, though it was shown to induce significantly different clustering model predictions than those models which were trained on datasets in the original feature space.
+The problem of ICA is to estimate both the constant mixing matrix and the random component vectors for each sample by maximizing the mutual independence of each component. There are a variety of methods to solve for the ICA transformation, such as ``Fast ICA''~\cite{hyvarinen1999fastica} which uses a fixed-point iteration scheme to optimize the kurtosis as the cost function that measures component independence. This thesis implemented an option to use the \texttt{FastICA} class in the \texttt{sklearn.decomposition} Python module for dimensionality reduction in the \textit{i}\ac{MGXS} pipeline. This option was motivated by the potential for ICA to identify spatial self-shielding effects (\textit{e.g.}, adjacency to \acp{CRGT}, neighboring assembly, or baffle/reflector) as the independent components in a linear model of the clustering of pin-wise \ac{MGXS}. Like PCA, the use of ICA is not further explored in this thesis, though it was shown to induce significantly different clustering model predictions than those models which were trained on datasets in the original feature space.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Factor Analysis}
 \label{subsec:chap10-factor-analysis}
 
-\textit{Factor Analysis} (FA)~\cite{harman1960factor} is a matrix decomposition method that uses a probabilistic model to describe variability among correlated features in terms of \textit{latent} or hidden ``factor'' variables. The observed feature vectors are modeled as a linear combination of the latent factors along with some error or noise term(s). FA often produces factors similar to the principal components identified by PCA. However, FA can be advantageous since it does not assume that the variance within each feature is equal across the range of values taken on by other features (\textit{i.e.}, heteroscedastic noise), which is likely not the case for \ac{MGXS} clustering. Like PCA and ICA, the factors found by FA may be selected as the new feature space to reduce the dimensionality of a dataset.
+\textit{Factor Analysis} (FA)~\cite{harman1960factor} is a matrix decomposition method that uses a probabilistic model to describe variability among correlated features in terms of \textit{latent} or hidden ``factor'' variables. The observed feature vectors are modeled as a linear combination of the latent factors along with some error or noise term(s). FA often produces factors similar to the principal components identified by PCA. However, FA can be advantageous since it does not assume that the variance within each feature is equal across the range of values taken on by other features (\textit{i.e.}, heteroscedastic noise), which is likely not the case for \ac{MGXS} features. Like PCA and ICA, the factors found by FA may be selected as the new feature space to reduce the dimensionality of a dataset.
 
 FA introduces the continuous, random $K$-dimensional factor vectors $\boldsymbol{h}_{k}$ for each sample, and a \textit{factor loading matrix} $\boldsymbol{W}$, to represent each feature vector $\boldsymbol{\hat{f}}_{k}$ as follows:
 
@@ -919,7 +926,7 @@ FA introduces the continuous, random $K$-dimensional factor vectors $\boldsymbol
 \boldsymbol{\hat{f}}_{k} = \boldsymbol{W}\boldsymbol{h}_{k} + \boldsymbol{\mu} + \boldsymbol{\epsilon}
 \end{equation}
 
-\noindent where the vector $\boldsymbol{\mu} = \left[\overline{\boldsymbol{\hat{f}}}_{1}, \overline{\boldsymbol{\hat{f}}}_{2}, \dots, \overline{\boldsymbol{\hat{f}}}_{K}\right]^{T} $ is comprised of the feature means. The noise term $\boldsymbol{\epsilon}$ is normally distributed with zero mean and a diagonal covariance matrix $\boldsymbol{\Sigma}$ such that the conditional probability of observing the feature vector $\boldsymbol{\hat{f}}_{k}$ is given by:
+\noindent where the vector $\boldsymbol{\mu} = \left[\overline{\hat{f}}_{1,\cdot}, \overline{\hat{f}}_{2,\cdot}, \dots, \overline{\hat{f}}_{J,\cdot}\right]^{T} $ is comprised of the feature means. The noise term $\boldsymbol{\epsilon}$ is normally distributed with zero mean and a diagonal covariance matrix $\boldsymbol{\Sigma}$ such that the conditional probability of observing the feature vector $\boldsymbol{\hat{f}}_{k}$ is given by:
 
 \begin{equation}
 \label{eqn:chap10-fa-prob}
@@ -933,7 +940,7 @@ p\left(\boldsymbol{\hat{f}}_{k}|\boldsymbol{h}_{k}\right) = \mathcal{N}\left(\bo
 \boldsymbol{h}_{k} = \boldsymbol{W}^{-1}\left(\boldsymbol{\hat{f}}_{k} - \boldsymbol{\mu}\right)
 \end{equation}
 
-A variety of algorithms may be employed to estimate the factor loading matrix, including the Expectation-Maximization (EM) algorithm~\cite{dempster1977em} (see Sec.~\ref{subsec:chap10-gmms}) which finds the maximum likelihood estimators of the multi-variate Gaussian distribution in Eqn.~\ref{eqn:chap10-fa-prob}. This thesis implemented an option to use the \texttt{FactorAnalysis} class in the \texttt{sklearn.decomposition} Python module for dimensionality reduction in the \textit{i}\ac{MGXS} scheme. Similar to ICA, this option was motivated by the potential for FA to identify spatial self-shielding effects (\textit{e.g.}, adjacency to \acp{CRGT}, neighboring assembly, or baffle/reflector) as factors in a linear model of the clustering of pin-wise \ac{MGXS}. Like PCA and ICA, the use of FA is not further explored in this thesis, though it was shown to induce significantly different clustering model predictions than those models which were trained on datasets in the original feature space.
+A variety of algorithms may be employed to estimate the factor loading matrix, including the Expectation-Maximization (EM) algorithm~\cite{dempster1977em} (see Sec.~\ref{subsec:chap10-gmms}) which finds the maximum likelihood estimators of the multi-variate Gaussian distribution in Eqn.~\ref{eqn:chap10-fa-prob}. This thesis implemented an option to use the \texttt{FactorAnalysis} class in the \texttt{sklearn.decomposition} Python module for dimensionality reduction in the \textit{i}\ac{MGXS} scheme. Similar to ICA, this option was motivated by the potential for FA to identify spatial self-shielding effects (\textit{e.g.}, adjacency to \acp{CRGT}, neighboring assembly, or baffle/reflector) as the factors in a linear model of the clustering of pin-wise \ac{MGXS}. Like PCA and ICA, the use of FA is not further explored in this thesis, though it was shown to induce significantly different clustering model predictions than those models which were trained on datasets in the original feature space.
 
 \clearpage
 
@@ -953,9 +960,11 @@ A variety of algorithms may be employed to estimate the factor loading matrix, i
 \section{Training a Predictor}
 \label{sec:chap10-train-predictor}
 
-The \textit{predictor training} stage in the data processing pipeline in Fig.~\ref{fig:chap10-pipeline} builds a predictive model and assigns cluster labels $\ell_{k}$ to each fuel pin instance. The cluster labels are employed for track density-weighted spatial homogenization in the same way the identifiers produced by OpenCG's Local Neighbor Symmetry algorithm were used by the \ac{LNS} spatial homogenization scheme (see Sec.~\ref{subsec:chap9-lns-math}). An unsupervised clustering algorithm is used to infer structure from the dataset of feature vectors generated by the feature extraction, selection and transform stages. This process attempts to identify which fuel pin instances should be grouped together with the same \ac{MGXS} in order to best predict reaction rate spatial distributions.
+The \textit{predictor training} stage of the data processing pipeline in Fig.~\ref{fig:chap10-pipeline} builds a predictive model and assigns cluster labels $\ell_{k}$ to each fuel pin instance. An unsupervised clustering algorithm is used to infer structure from the dataset of feature vectors generated by the feature extraction and selection, and dimensionality reduction stages. This process attempts to identify which fuel pin instances should be grouped together with the same \ac{MGXS} in order to best predict reaction rate spatial distributions.
 
-Although machine learning researchers have developed many different clustering algorithms over the last few decades, only one thing is agreed upon by the community: ``clustering is in the eye of the beholder''~\cite{castro2002clustering}. Perhaps the best way to differentiate between algorithms for cluster analysis is their implicit or explicit assumption(s) of what constitutes a ``cluster.'' In general, all clustering algorithms aim to group samples such that those within one cluster are more similar than they are to the samples in other clusters. Beyond that, no precise definition of what makes a ``cluster'' is broadly agreed upon. Instead, each clustering algorithm is designed to solve an optimization problem which may minimize the distances between samples within each cluster, identify high density regions of feature space, fit a statistical distribution to a given dataset, among other strategies. For practical reasons, only a select few clustering algorithms are evaluated within the \textit{i}\ac{MGXS} implementation developed for this thesis.
+%The cluster labels are employed for track density-weighted spatial homogenization in the same way the identifiers produced by OpenCG's Local Neighbor Symmetry algorithm were used by the \ac{LNS} spatial homogenization scheme (see Sec.~\ref{subsec:chap9-lns-math}).
+
+Although machine learning researchers have developed many different clustering algorithms over the last few decades, only one thing is agreed upon by the community: ``clustering is in the eye of the beholder''~\cite{castro2002clustering}. Perhaps the best way to differentiate between algorithms for cluster analysis is their implicit or explicit assumption(s) of what constitutes a ``cluster.'' In general, all clustering algorithms aim to group samples such that those assigned to a cluster are more similar than they are to the samples in other clusters. Beyond that, no precise definition of what makes a ``cluster'' is broadly agreed upon. Instead, each clustering algorithm is designed to solve an optimization problem which may minimize the distances between samples within each cluster, identify high density regions of feature space, fit a statistical distribution to a given dataset, among other strategies. For practical reasons, only a select few clustering algorithms are evaluated within the \textit{i}\ac{MGXS} implementation developed for this thesis.
 
 Clustering algorithms are often categorized according to the \textit{(multi-)objective function} they seek to minimize and the \textit{assumptions} they make. This thesis evaluates four different clustering algorithms within the \textit{i}\ac{MGXS} data processing pipeline. These four algorithms are associated within one of the following three categories of clustering algorithms:
  
@@ -967,7 +976,7 @@ Clustering algorithms are often categorized according to the \textit{(multi-)obj
 
 \noindent \textit{Centroid models} make assumptions about the size and convexity of each cluster and optimize the choice of central vectors used to represent the center of each cluster. \textit{Connectivity models} assume that the similarity between samples is inversely related to the distance separating them and build hierarchical models to locally optimize sample connectivity. \textit{Distribution models} assume that the observed dataset was generated from a well-defined probability distribution and optimally select parameters to fit a distribution model to best predict the data. It is important to note that the various algorithms within each category may differ according to how they associate each sample with a cluster. Some algorithms use \textit{hard assignments} which designate each sample to one particular cluster, while other algorithms use \textit{soft assignments} to indicate the likelihood of each sample belonging to each cluster.
 
-Depending on the clustering algorithm, many different predictors may be built for different model parameters -- including the number of clusters to find, a sample distance or similarity function, a density threshold, etc. -- as is illustrated in the context of \textit{i}\ac{MGXS} pipeline in Fig.~\ref{fig:chap10-cluster}. The ``best'' predictor is identified using model selection techniques as discussed in Sec.~\ref{sec:chap10-model-select}. The following sections provide synopses of the four clustering algorithms evaluated in this thesis, including the assumptions they make and the objective functions they optimize. Sec.~\ref{subsec:chap10-kmeans} describes the $k$-means algorithm, a commonly used centroid model which is fast and scalable for large datasets. Sec.~\ref{subsec:chap10-agglomerative} outlines the algorithm for agglomerative clustering and Sec.~\ref{subsec:chap10-birch} presents the BIRCH algorithm -- two connectivity models which are widely used to model data that may lie on manifolds with with irregular (\textit{i.e.}, non-convex) shapes. Sec.~\ref{subsec:chap10-gmms} highlights the Gaussian Mixture Model (GMM), a distribution model which fits the data to a mixture of one or more Gaussian probability distributions. Each of these algorithms is implemented in the \texttt{scikit-learn} Python package and employed as needed in the \textit{i}\ac{MGXS} data processing pipeline.
+Depending on the clustering algorithm, many different predictors may be built for different model parameters -- including the number of clusters to find, a sample distance or similarity function, a density threshold, etc. -- as is illustrated in the context of the \textit{i}\ac{MGXS} pipeline in Fig.~\ref{fig:chap10-cluster}. The ``best'' predictor is identified using model selection techniques as discussed in Sec.~\ref{sec:chap10-model-select}. The following sections provide synopses of the four clustering algorithms evaluated in this thesis, including the assumptions they make and the objective functions they optimize. Sec.~\ref{subsec:chap10-kmeans} describes the $k$-means algorithm, a commonly used centroid model which is fast and scalable for large datasets. Sec.~\ref{subsec:chap10-agglomerative} outlines the algorithm for agglomerative clustering and Sec.~\ref{subsec:chap10-birch} presents the BIRCH algorithm -- two connectivity models which are widely used to model data that may lie on manifolds with with irregular (\textit{i.e.}, non-convex) shapes. Sec.~\ref{subsec:chap10-gmms} highlights the Gaussian Mixture Model (GMM), a distribution model which fits the data to a mixture of one or more Gaussian probability distributions. Each of these algorithms is implemented in the \texttt{scikit-learn} Python package and employed as needed in the \textit{i}\ac{MGXS} data processing pipeline.
 
 \begin{figure}[h!]
 \centering
@@ -1002,7 +1011,7 @@ The key steps of the $k$-means algorithm are summarized in Alg.~\ref{alg:chap10-
 
 \begin{equation}
 \label{eqn:chap10-kmeans-assign}
-\mathbb{S}_{m}^{(t)} = \left\{ \boldsymbol{\hat{f}}_{k} \;\; : \;\; \| \boldsymbol{\hat{f}}_{k} - \boldsymbol{\mu}_{m}^{(t)} \|^{2} \;\; \le \;\; \| \boldsymbol{\hat{f}}_{k} - \boldsymbol{\mu}_{m}^{(t)} \|^{2} \;\;\;\;\;\;\; \forall n, \; 1 \; \le n \le M \right\}
+\mathbb{S}_{m}^{(t)} = \left\{ \boldsymbol{\hat{f}}_{k} \;\; : \;\; \| \boldsymbol{\hat{f}}_{k} - \boldsymbol{\mu}_{m}^{(t)} \|^{2} \;\; \le \;\; \| \boldsymbol{\hat{f}}_{k} - \boldsymbol{\mu}_{n}^{(t)} \|^{2} \;\;\;\;\;\;\; \forall n, \; 1 \; \le n \le M \right\}
 \end{equation}
 
 \noindent where $\mathbb{S}_{m}^{(t)}$ represents cluster $m$ at iteration $t$ as the set of nearby samples. The update step moves each cluster centroid to the mean of those samples assigned to it:
@@ -1012,7 +1021,7 @@ The key steps of the $k$-means algorithm are summarized in Alg.~\ref{alg:chap10-
 \boldsymbol{\mu}_{m}^{(t+1)} = \frac{1}{|\mathbb{S}_{m}^{(t)}|} \displaystyle\sum\limits_{\boldsymbol{\hat{f}}_{k} \in \mathbb{S}_{m}^{(t)}} \boldsymbol{\hat{f}}_{k}
 \end{equation}
 
-The $k$-means iteration proceeds until the cluster centroids stop moving as defined by some criterion, such as the maximum square distance between successive cluster centroids:
+The $k$-means iteration proceeds until the cluster centroids stop moving as defined by some criterion, such as the maximum square distance between successive centroids:
 
 \begin{equation}
 \label{eqn:chap10-kmeans-residuals}
@@ -1032,9 +1041,9 @@ res = \max_{1 \le m \le M} \|\boldsymbol{\mu}_{m}^{(t+1)} - \boldsymbol{\mu}_{m}
 \end{algorithmic}
 \end{algorithm}
 
-This thesis employs the $k$-means algorithm implemented in the \texttt{KMeans} class of the \texttt{sklearn.cluster} module in the \texttt{scikit-learn} Python package. The Euclidean distance metric is used to compare the similarity of samples in feature space, and the $k$-means++ algorithm is used to initialize cluster centroids. Two attractive features of $k$-means are its simplicity and speed. It has a linear computational complexity of $\mathcal{O}(KJMT)$ for $K$ fuel pin instances, $J$ features, $M$ clusters and $T$ iterations. The algorithm is relatively easy to parallelize since is primarily consists of by independent calculations of the distances between each sample and cluster centroid. In addition, out-of-core variants of the algorithm exist for very big datasets such as those that might be realized if the \textit{i}\ac{MGXS} scheme were used to model a full core \ac{PWR} in 3D. For example, mini-batch $k$-means~\cite{sculley2010minibatchkmeans} is an out-of-core version of the algorithm and is implemented as \texttt{MiniBatchKMeans} in the \texttt{sklearn.cluster} package.
+This thesis employs the $k$-means algorithm implemented in the \texttt{KMeans} class of the \texttt{sklearn.cluster} module in the \texttt{scikit-learn} Python package. The Euclidean distance metric is used to compare the similarity of samples in feature space, and the $k$-means++ algorithm is used to initialize cluster centroids. Two attractive features of $k$-means are its simplicity and speed. It has a linear computational complexity of $\mathcal{O}(KJMT)$ for $K$ fuel pin instances, $J$ features, $M$ clusters and $T$ iterations. The algorithm is relatively easy to parallelize since it primarily consists of by independent calculations of the distances between each sample and cluster centroid. In addition, out-of-core variants of the algorithm exist for very big datasets such as those that might be realized if the \textit{i}\ac{MGXS} scheme were used to model a full core 3D \ac{PWR}. For example, mini-batch $k$-means~\cite{sculley2010minibatchkmeans} is an out-of-core version of the algorithm and is implemented as \texttt{MiniBatchKMeans} in the \texttt{sklearn.cluster} module.
 
-The $k$-means algorithm makes a number of assumptions about what constitutes a ``cluster'' that have consequences for the types of cluster models that it finds. In particular, $k$-means optimizes the inertia which implicitly assumes that clusters are convex and isotropic, and in particular, that clusters are spherical and of similar size in feature space. As a result, $k$-means is not well-suited to identify clusters with irregular shapes without special distance metrics and/or feature agglomeration techniques. Another complication is that while $k$-means is provably guaranteed to converge\footnote{This is only true if the Euclidean distance metric is used.}, it only finds local minima of the inertia. Furthermore, the performance is especially sensitive to the placement of the initial centroids. The $k$-means++ algorithm is designed to mitigate this by ensuring that the centroids are uniformly and randomly dispersed across the important regions of feature space. Nonetheless, since the algorithm is fast, it is common to run $k$-means many times with different initial cluster centroids and choose the solution with the smallest inertia. Finally, $k$-means requires a user to define the number of clusters $M$ to find within the dataset. In practice, the optimal value of $M$ is unknown \textit{a priori}, and model selection techniques must be used to select from a sequence of cluster models trained for different values of $M$, as discussed in Sec.~\ref{sec:chap10-model-select}.
+The $k$-means algorithm makes a number of assumptions about what constitutes a ``cluster'' that have consequences for the types of clusters that it finds. For example, $k$-means optimizes the inertia which implicitly assumes that clusters are convex and isotropic, and in particular, that clusters are spherical and of similar size in feature space. As a result, $k$-means is not well-suited to identify clusters with irregular shapes without special distance metrics and/or dimensionality reduction techniques. Another complication is that while $k$-means is provably guaranteed to converge\footnote{This is only true if the Euclidean distance metric is used.}, it only finds local minima of the inertia. Furthermore, the performance is especially sensitive to the placement of the initial centroids. The $k$-means++ algorithm is designed to mitigate this by ensuring that the centroids are uniformly and randomly dispersed across the important regions of feature space. Nonetheless, since the algorithm is fast, it is common to run $k$-means many times with different initial cluster centroids and choose the solution with the smallest inertia. Finally, $k$-means requires a user to define the number of clusters $M$ to find within the dataset. In practice, the optimal value of $M$ is unknown \textit{a priori}, and model selection techniques must be used to select from a sequence of cluster models trained for different values of $M$, as discussed in Sec.~\ref{sec:chap10-model-select}.
 
 %-a variant to the expecation-mazimization algorithm 
 % -assignment step is the expectation step
@@ -1046,7 +1055,7 @@ The $k$-means algorithm makes a number of assumptions about what constitutes a `
 
 The agglomerative clustering algorithm~\cite{johnson1967hierarchical} constructs a dendrogram\footnote{A tree-like diagram used to represent hierarchical relationships between objects.} representing the similarities between samples. Agglomerative clustering is a bottom-up method from the more general class of \textit{hierarchical clustering} algorithms, which also includes the top-down \textit{divisive} clustering method. In contrast to $k$-means which attempts to optimize the global inertia metric, agglomerative clustering is a greedy algorithm which seeks to \textit{locally} minimize a linkage criterion between pairs of samples at each step. In particular, agglomerative clustering builds a dendrogram to represent a dataset  by successively \textit{merging} pairs of data points into clusters.
 
-The key steps of the agglomerative clustering algorithm are summarized in Alg.~\ref{alg:chap10-agglomerative}. The first step initializes a collection $\mathbb{C}$ of clusters $\mathbb{S}_{k}$, where each sample constitutes a singleton cluster. The algorithm then iterates to construct a dendrogram representing $M$ clusters. On each iteration, the \textit{affinities} or \textit{linkage criteria} between each pair of clusters is computed. A large variety of metrics for cluster affinities exist, including the \textit{Ward linkage criterion}~\cite{ward1963hierarchical} given by $d_{a,b}$:
+The key steps of the agglomerative clustering algorithm are summarized in Alg.~\ref{alg:chap10-agglomerative}. The first step initializes a collection $\mathbb{C}$ of clusters $\mathbb{S}_{k}$, where each sample constitutes a singleton cluster. The algorithm then iterates to construct a dendrogram representing $M$ clusters. On each iteration, the \textit{affinities} or \textit{linkage criteria} between each pair of clusters is computed. Many different metrics for cluster affinities exist, including the \textit{Ward linkage criterion}~\cite{ward1963hierarchical} given by $d_{a,b}$:
 
 \begin{equation}
 \label{eqn:chap10-agglomerative-ward}
@@ -1075,9 +1084,9 @@ d_{a,b} = d\left(\mathbb{S}_{a}, \mathbb{S}_{b}\right) = \displaystyle\sum\limit
 \boldsymbol{\mu}_{a+b} = \frac{1}{|\mathbb{S}_{a+b}|} \displaystyle\sum\limits_{\boldsymbol{\hat{f}}_{k} \in \mathbb{S}_{a+b}}  \boldsymbol{\hat{f}}_{k}
 \end{equation}
 
-The Ward criterion minimizes the sum-of-squared differences within all clusters, similar to the variance minimization performed by the $k$-means algorithm. Other common linkage criteria include the \textit{complete-linkage}, \textit{single-linkage}, and \textit{average-linkage} criteria. The distance metric used to compare the separation between clusters is specified independent of the linkage criterion and may include the Manhattan distance ($\ell_{1} $norm), Euclidean distance ($\ell_{2}$ norm), among others. This thesis employs the agglomerative clustering algorithm implemented in the \texttt{AgglomerativeClustering} class of the \texttt{sklearn.cluster} module in the \texttt{scikit-learn} Python package. The Ward linkage criterion and Euclidean distance metric are used to evaluate cluster affinities at each step of the algorithm.
+The Ward criterion minimizes the sum-of-squared differences within all clusters, similar to the variance minimization performed by the $k$-means algorithm. Other common linkage criteria include the \textit{complete-linkage}, \textit{single-linkage}, and \textit{average-linkage} criteria. The distance metric used to compare the separation between clusters is specified independent of the linkage criterion and may include the Manhattan distance ($\ell_{1}$ norm), Euclidean distance ($\ell_{2}$ norm), among others. This thesis employs the \texttt{AgglomerativeClustering} class of the \texttt{sklearn.cluster} module in the \texttt{scikit-learn} Python package. The Ward linkage criterion and Euclidean distance metric are used to evaluate cluster affinities at each step of the algorithm.
 
-The agglomerative clustering algorithm makes no explicit assumption about the shape or size of clusters. As a result, it may out-perform $k$-means for datasets with clusters with non-convex shapes. The linkage criterion as well as the distance metric have a large impact on the shapes of clusters found by the algorithm\footnote{Agglomerative clustering is known to exhibit a ``rich get richer'' behavior with highly uneven cluster sizes, which may be exacerbated for certain linkage criteria.}. In contrast to $k$-means, agglomerative clustering does not depend on any starting conditions. However, these advantages come at a cost since the computational complexity of the algorithm is $\mathcal{O}(K^{2}\log(K))$ which is too slow for large datasets. \textit{Connectivity constraints} may be employed to improve the performance given some domain knowledge about the local structure, such as a nearest neighbors graph. Finally, similar to the $k$-means algorithm, agglomerative clustering requires a user to define the number of clusters $M$ to find within the dataset. In practice, the optimal value of $M$ is unknown \textit{a priori}, and model selection techniques must be used to select from a sequence of cluster models trained for different values of $M$, as discussed in Sec.~\ref{sec:chap10-model-select}.
+The agglomerative clustering algorithm makes no explicit assumption about the shape or size of clusters. As a result, it may outperform $k$-means for datasets with clusters with non-convex shapes. The linkage criterion as well as the distance metric have a large impact on the shapes of clusters found by the algorithm\footnote{Agglomerative clustering is known to exhibit a ``rich get richer'' behavior with highly uneven cluster sizes, which may be exacerbated for certain linkage criteria.}. In contrast to $k$-means, agglomerative clustering does not depend on any starting conditions. However, these advantages come at a cost since the computational complexity of the algorithm is $\mathcal{O}(K^{2}\log(K))$ which is too slow for large datasets. \textit{Connectivity constraints} may be employed to improve the performance given some domain knowledge about the local structure, such as a nearest neighbors graph. Finally, similar to the $k$-means algorithm, agglomerative clustering requires a user to define the number of clusters $M$ to find within the dataset. In practice, the optimal value of $M$ is unknown \textit{a priori}, and model selection techniques must be used to select from a sequence of cluster models trained for different values of $M$, as discussed in Sec.~\ref{sec:chap10-model-select}.
 
 %%%%%%%%%%%%%%%%%%
 \subsection{BIRCH}
@@ -1087,16 +1096,16 @@ The agglomerative clustering algorithm makes no explicit assumption about the sh
 
 The Balanced Iterative Reducing and Clustering Using Hierarchies (BIRCH) clustering algorithm~\cite{zhang1996birch} is an out-of-core hierarchical clustering algorithm designed for large datasets.
 BIRCH reduces the dataset to a series of \textit{subclusters} signified by the CF leaf nodes, which are themselves clustered using a standard clustering algorithm such as $k$-means or agglomerative clustering.
-BIRCH is often considered a \textit{data reduction} method which represents a dataset as a height-balanced Characteristic Feature Tree (CFT) composed of Characteristic Feature (CF) nodes. This approach is advantageous for ``big data'' settings since it does not require the equal inspection of all data points to make clustering decisions at each step as do many other algorithms (\textit{e.g.}, $k$-means, agglomerative clustering). Instead, BIRCH makes local clustering decisions when inserting a sample into the CFT. After each node's Characteristic Feature has been updated and the CFT rebalanced, the sample may be discarded (\textit{i.e.}, no longer stored in main memory). 
+BIRCH is often considered a \textit{data reduction} method which represents a dataset as a height-balanced Characteristic Feature Tree (CFT) composed of Characteristic Feature (CF) nodes. This approach is advantageous for ``big data'' settings since it does not require the equal inspection of all data points to make clustering decisions at each step as do many other algorithms (\textit{i.e.}, $k$-means, agglomerative clustering). Instead, BIRCH makes local clustering decisions when inserting a sample into the CFT. After each node's Characteristic Feature has been updated and the CFT rebalanced, the sample may be discarded (\textit{i.e.}, no longer stored in main memory). 
 
-The CFT is governed by two user-defined parameters: the threshold $T$ representing the maximum \textit{radius} of a subcluster, and the branching factor $B$ specifying the maximum number of \textit{children} per CF node\footnote{A CF node's \textit{children} are the CF nodes that it points to at the next level in the Characteristic Feature Tree.}. The radius $R_{a_{i}}$ of the $i$\textsuperscript{th} subcluster $\mathbb{S}_{a_{i}}$ contained by CF node $\mathbb{N}_{a}$ is defined as the average squared distance of each sample $\boldsymbol{\hat{f}}_{k}$ assigned to the subcluster from the centroid of the subcluster $\boldsymbol{\mu}_{\mathbb{N}_{a}}$:
+The CFT is governed by two user-defined parameters: the threshold $T$ representing the maximum \textit{radius} of a subcluster, and the branching factor $B$ specifying the maximum number of \textit{children} per CF node\footnote{A CF node's \textit{children} are the CF nodes that it points to at the next level in the Characteristic Feature Tree.}. The radius $R_{a_{i}}$ of the $i$\textsuperscript{th} subcluster $\mathbb{S}_{a_{i}}$ contained by CF node $\mathbb{N}_{a}$ is defined as the average squared distance of each sample $\boldsymbol{\hat{f}}_{k}$ assigned to its $i$\textsuperscript{th} subcluster from its centroid $\boldsymbol{\mu}_{\mathbb{N}_{a_{i}}}$:
 
 \begin{equation}
 \label{eqn:chap10-birch-radius}
-R_{a} = \left(\frac{1}{|\mathbb{S}_{a_{i}}|}\displaystyle\sum\limits_{\boldsymbol{\hat{f}}_{k} \in \mathbb{S}_{a_{i}}} \left(\boldsymbol{\hat{f}}_{k} - \boldsymbol{\mu}_{a_{i}}\right)^{2}\right)^{\frac{1}{2}}
+R_{a_{i}} = \left(\frac{1}{|\mathbb{S}_{a_{i}}|}\displaystyle\sum\limits_{\boldsymbol{\hat{f}}_{k} \in \mathbb{S}_{a_{i}}} \left(\boldsymbol{\hat{f}}_{k} - \boldsymbol{\mu}_{a_{i}}\right)^{2}\right)^{\frac{1}{2}}
 \end{equation}
 
-\noindent where the subcluster centroid $\boldsymbol{\mu}_{\mathbb{N}_{a}}$ is computed by Eqn.~\ref{eqn:chap10-kmeans-update}. The branching and threshold factors collectively govern the heigh-balancing of the tree, with the branching factor limiting the growth rate of new CF nodes and the threshold upper bounding the length scale of the subclusters found by the algorithm. 
+\noindent where the subcluster centroid $\boldsymbol{\mu}_{\mathbb{N}_{a_{i}}}$ is computed by Eqn.~\ref{eqn:chap10-kmeans-update}. The branching and threshold factors collectively govern the height-balancing of the tree, with the branching factor limiting the growth rate of new CF nodes and the threshold upper bounding the length scale of the subclusters found by the algorithm. 
 
 The Characteristic Feature nodes can be distinguished between terminal (leaf) and non-terminal nodes. Each CF node represents a sequence of at most $B$ subclusters, and holds the information necessary to represent the subclusters without explicitly storing the samples assigned to each subcluster. Each CF node $\mathbb{N}_{a}$ contains a Characteristic Feature vector $CF_{a_{i}}$ for its $i$\textsuperscript{th} subcluster:
 
@@ -1105,7 +1114,7 @@ The Characteristic Feature nodes can be distinguished between terminal (leaf) an
 CF_{a_{i}} = \left[|\mathbb{S}_{a_{i}}|, LS_{a_{i}}, SS_{a_{i}}\right]^{T}
 \end{equation}
 
-\noindent The first element is the number of subclusters within the subcluster. The second and third elements are referred to as the \textit{linear sum} $LS_{a_{i}}$ and \textit{squared sum} $SS_{a_{i}}$ of the samples assigned to the subcluster, and are expressed as follows:
+\noindent The first element is the number of samples within the subcluster. The second and third elements are referred to as the \textit{linear sum} $LS_{a_{i}}$ and \textit{squared sum} $SS_{a_{i}}$ of the samples assigned to the $i$\textsuperscript{th} subcluster, and are expressed as follows:
 
 \begin{equation}
 \label{eqn:chap10-birch-linear-sum}
@@ -1145,10 +1154,10 @@ SS_{a_{i}} = \displaystyle\sum\limits_{\boldsymbol{\hat{f}}_{k} \in \mathbb{N}_{
     \Statex \hspace{0.2in} \textit{Balance terminal node}
     \If{$R_{a_{i}} > T$} \Comment{Eqn.~\ref{eqn:chap10-birch-radius}}
       \State Split subcluster $\mathbb{S}_{a_{i}}$ into $\mathbb{S}_{a_{i,1}}$ and $\mathbb{S}_{a_{i,2}}$
-      \State Add subclusters $\mathbb{S}_{a_{i,1}}$ and $\mathbb{S}_{a_{i,2}}$ to node $\mathbb{N}_{a}$
+      \State Add subclusters $\mathbb{S}_{a_{i,1}}$ and $\mathbb{S}_{a_{i,2}}$ to node $\mathbb{N}_{a_{i}}$
       \State Remove subcluster $\mathbb{S}_{a_{i}}$ from node
       \If{$|\mathbb{N}| > B$}
-        \State Split node $\mathbb{N}$ into nodes $\mathbb{N}_{a}$ and $\mathbb{N}_{b}$
+        \State Split node $\mathbb{N}$ into nodes $\mathbb{N}_{1}$ and $\mathbb{N}_{2}$
       \EndIf
     \EndIf
     
@@ -1159,7 +1168,7 @@ SS_{a_{i}} = \displaystyle\sum\limits_{\boldsymbol{\hat{f}}_{k} \in \mathbb{N}_{
       \If{a child node was split}
         \State Remove child and insert two new children
         \If{$|\mathbb{N}| > B$}
-          \State Split node $\mathbb{N}$ into nodes $\mathbb{N}_{a}$ and $\mathbb{N}_{b}$
+          \State Split node $\mathbb{N}$ into nodes $\mathbb{N}_{1}$ and $\mathbb{N}_{2}$
         \EndIf
       \Else
         \State Update CF vector for child with sample \Comment{Eqn.~\ref{eqn:chap10-birch-cf-additivity}}        
@@ -1177,18 +1186,18 @@ SS_{a_{i}} = \displaystyle\sum\limits_{\boldsymbol{\hat{f}}_{k} \in \mathbb{N}_{
 \end{algorithmic}
 \end{algorithm}
 
-The key steps of the BIRCH clustering algorithm are summarized in Alg.~\ref{alg:chap10-birch}. BIRCH consists of a primary loop over all samples to build the Characteristic Feature Tree, and typically only needs to make a single pass through a dataset. For each sample, BIRCH starts at the top of the CFT and proceeds to traverse the tree, inserting the sample into each CF node and/or height-balancing the tree by creating new nodes as dictated by the threshold and branching factor. The BIRCH algorithm constructs the CFT by leveraging the \textit{Characteristic Feature Aditivity Theorem}~\cite{zhang1996birch}, which allows subcluster $\mathbb{S}_{a_{i}}$ to be merged with the singleton subcluster $\mathbb{S}_{k}$ for sample $k$ without loss of information:
+The key steps of the BIRCH clustering algorithm are summarized in Alg.~\ref{alg:chap10-birch}. BIRCH consists of a primary loop over all samples to build the Characteristic Feature Tree, and typically only needs to make a single pass through a dataset. For each sample, BIRCH starts at the root note and proceeds to traverse the CFT, inserting the sample into each CF node and/or height-balancing the tree by creating new nodes as dictated by the threshold and branching factor. The BIRCH algorithm constructs the CFT by leveraging the \textit{Characteristic Feature Additivity Theorem}~\cite{zhang1996birch}, which allows subcluster $\mathbb{S}_{a_{i}}$ to be merged with the singleton subcluster $\mathbb{S}_{k}$ for sample $k$ without loss of information:
 
 \begin{equation}
 \label{eqn:chap10-birch-cf-additivity}
 CF_{a_{i}+k} = CF_{a_{i}} + CF_{k} = \left[|\mathbb{S}_{a_{i}}| + |\mathbb{S}_{k}|, LS_{a_{i}} + LS_{k}, SS_{a_{i}} + SS_{k}\right]^{T}
 \end{equation}
 
-This thesis employs the BIRCH clustering algorithm implemented in the \texttt{Birch} class of the \texttt{sklearn.cluster} module in the \texttt{scikit-learn} Python package. The leaf subclusters were clustered using the \texttt{AgglomerativeClustering} from the \texttt{scikit-learn} package, with the Ward linkage criterion and Euclidean distance metric (see Sec.~\ref{subsec:chap10-agglomerative}). The default branching factor of 50 and threshold of 0.5 were used; future work may seek to identify the most appropriate values for $B$ and $T$ to cluster \ac{MGXS} datasets.
+This thesis employs the BIRCH clustering algorithm implemented in the \texttt{Birch} class of the \texttt{sklearn.cluster} module in the \texttt{scikit-learn} Python package. The terminal subclusters were clustered using the \texttt{AgglomerativeClustering} from the \texttt{scikit-learn} package, with the Ward linkage criterion and Euclidean distance metric (see Sec.~\ref{subsec:chap10-agglomerative}). A branching factor of 50 and threshold of 0.5 were used; future work may seek to identify the most appropriate values for $B$ and $T$ to cluster \ac{MGXS} datasets.
 
-Like agglomerative clustering, the BIRCH clustering algorithm makes no explicit assumption about the shape or size of clusters. As a result, it may out-perform $k$-means for datasets with clusters with non-convex shapes. In contrast to $k$-means and agglomerative clustering, BIRCH is local and does not require an explicit scan of all data points and existing clusters to make clustering decisions. As a result, BIRCH has a computational complexity that approaches $\mathcal{O}(K)$ for large datasets. Furthemore, unlike $k$-means, BIRCH does not depend on any starting conditions. In addition, the user does not necessarily need to specify the number of clusters to find since the leaf subclusters can simply be read from the final CFT. However, the commonly used variant of BIRCH employed by this thesis does require the number of clusters $M$ to be specified for use in a final step which clusters the leaf nodes in the CFT. As a result, model selection techniques must be used to select from a sequence of cluster models trained for different values of $M$, as discussed in Sec.~\ref{sec:chap10-model-select}.
+Like agglomerative clustering, the BIRCH clustering algorithm makes no explicit assumption about the shape or size of clusters. As a result, it may out-perform $k$-means for datasets with clusters with non-convex shapes. In contrast to $k$-means and agglomerative clustering, BIRCH is local and does not require an explicit scan of all data points and existing clusters to make clustering decisions. As a result, BIRCH has a computational complexity that approaches $\mathcal{O}(K)$ for large datasets. Furthermore, unlike $k$-means, BIRCH does not depend on any starting conditions. In addition, the user does not necessarily need to specify the number of clusters to find since the terminal subclusters can simply be read from the final CFT. However, the commonly used variant of BIRCH employed by this thesis does require the number of clusters $M$ to be specified for use in a final step which clusters the terminal subclusters in the CFT. As a result, model selection techniques must be used to select from a sequence of cluster models trained for different values of $M$, as discussed in Sec.~\ref{sec:chap10-model-select}.
 
-It should be noted that the datasets clustered in this thesis may be stored in memory on most modern computing systems, and do not require the use of an out-of-core algorithm like BIRCH. Nevertheless, BIRCH may be useful if future efforts use \textit{i}\ac{MGXS} to cluster \ac{MGXS} datasets for full core 3D reactor benchmarks with axial heterogeneities with orders of magnitude more samples (\textit{i.e.}, fuel pin instances with axial subdivisions). In addition, the size of the \ac{MGXS} datasets may substantially grow if new features are employed in the \textit{i}\ac{MGXS} data processing pipeline in the future. Finally, BIRCH may be used in the future to cluster \ac{MGXS} datasets on high-performance memory-limited hardware such as Graphical Processing Units (GPUs).
+It should be noted that the datasets clustered in this thesis may be stored in memory on most modern computing systems, and do not require the use of an out-of-core algorithm like BIRCH. Nevertheless, BIRCH may be useful if future efforts use \textit{i}\ac{MGXS} to cluster \ac{MGXS} datasets for full core 3D reactor benchmarks with orders of magnitude more samples (\textit{e.g.}, fuel pin instances with axial subdivisions). In addition, the size of the \ac{MGXS} datasets may substantially grow if new features are employed in the \textit{i}\ac{MGXS} data processing pipeline in the future. Finally, BIRCH may be used to cluster \ac{MGXS} datasets on memory-limited high-performance hardware such as Graphical Processing Units (GPUs).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Gaussian Mixture Models}
@@ -1207,10 +1216,12 @@ p\left(\boldsymbol{\hat{f}}_{k} | \boldsymbol{\theta}\right) = \displaystyle\sum
 
 \begin{equation}
 \label{eqn:chap10-gaussian}
-\mathcal{N}\left(\boldsymbol{\hat{f}}_{k}; \boldsymbol{\mu}_{m}, \boldsymbol{\Sigma}_{m}\right) = \frac{1}{(2\pi)^{\nicefrac{J}{2}} |\boldsymbol{\Sigma}_{m}|^{\nicefrac{1}{2}}} exp\left\{ -\frac{1}{2}\left(\boldsymbol{\hat{f}}_{k} - \boldsymbol{\mu}_{m})^{T}\boldsymbol{\Sigma}_{m}^{-1}(_{k} - \boldsymbol{\mu}_{m}\right) \right\}
+\mathcal{N}\left(\boldsymbol{\hat{f}}_{k}; \boldsymbol{\mu}_{m}, \boldsymbol{\Sigma}_{m}\right) = \frac{1}{(2\pi)^{\nicefrac{J}{2}} |\boldsymbol{\Sigma}_{m}|^{\nicefrac{1}{2}}} \exp\left\{ -\frac{1}{2}\left(\boldsymbol{\hat{f}}_{k} - \boldsymbol{\mu}_{m})^{T}\boldsymbol{\Sigma}_{m}^{-1}(\boldsymbol{\hat{f}}_{k} - \boldsymbol{\mu}_{m}\right) \right\}
 \end{equation}
 
-The generic \ac{GMM} is illustrated in Fig.~\ref{fig:chap10-gmm-plates} with the \textit{plate notation} commonly used by the machine learning community to describe complex probability distributions. In summary, small rectangles represent unknown model parameters, unshaded circles describe unobserved random variables, and shaded circles signify observed random variables. The dimensionality of non-scalar random variables are indicated in brackets inside each square and circle. Large rectangular \textit{plates} group subgraphs of variables which repeat together according to the repetition numbers in the bottom right corners of each plate (\textit{e.g.}, $M$ and $K$). The inter-dependences of each model parameter and random variable within the graph are indicated by directed arrows. Categorical variables, such as the cluster labels $\ell_{k}$, are related using a squiggly arrow with a T junction. The interested reader is referred to~\cite{jordan1999graphs} or many other sources in the machine learning literature for more information about describing graphical models with plate notation.
+The generic \ac{GMM} is illustrated in Fig.~\ref{fig:chap10-gmm-plates} with the \textit{plate notation} commonly used by the machine learning community to describe complex probability distributions~\cite{jordan1999graphs}. In summary, small rectangles represent unknown model parameters, unshaded circles describe unobserved random variables, and shaded circles signify observed random variables. The dimensionality of non-scalar variables are indicated in brackets inside each square and circle. Large rectangular \textit{plates} group subgraphs of variables which repeat together according to the repetition numbers in the bottom right corners of each plate (\textit{e.g.}, $M$ and $K$). The inter-dependences of each model parameter and random variable within the graph are indicated by directed arrows. Categorical variables, such as the cluster labels $\ell_{k}$, are related using a squiggly arrow with a T junction.
+
+%The interested reader is referred to~\cite{jordan1999graphs} or many other sources in the machine learning literature for more information about describing graphical models with plate notation.
 
 \begin{figure}[h!]
 \centering
@@ -1244,8 +1255,8 @@ The generic \ac{GMM} is illustrated in Fig.~\ref{fig:chap10-gmm-plates} with the
 \begin{algorithmic}[1]
   \State Initialize means $\left\{ \boldsymbol{\mu}_{1}^{(0)}, \boldsymbol{\mu}_{2}^{(0)}, \dots, \boldsymbol{\mu}_{m}^{(0)} \right\}$ \Comment{Alg.~\ref{alg:chap10-kmeans}}
   \State Initialize soft weights $\left\{ h_{1,1}^{(1)}, h_{1,2}^{(1)}, \dots, h_{M,K}^{(1)} \right\}$
-  \State Initialize component weights $\left\{ \pi_{1}^{(1)}, \pi_{2}^{(1)}, \dots, \pi_{m}^{(1)} \right\}$ \Comment{Eqn.~\ref{alg:chap10-em-weights}}
-  \State Initialize component covariances $\left\{ \boldsymbol{\Sigma}_{1}^{(1)}, \boldsymbol{\Sigma}_{2}^{(1)}, \dots, \boldsymbol{\Sigma}_{m}^{(1)} \right\}$ \Comment{Eqn.~\ref{alg:chap10-em-covariances}}
+  \State Initialize component weights $\left\{ \pi_{1}^{(1)}, \pi_{2}^{(1)}, \dots, \pi_{m}^{(1)} \right\}$ \Comment{Eqn.~\ref{eqn:em-weights}}
+  \State Initialize component covariances $\left\{ \boldsymbol{\Sigma}_{1}^{(1)}, \boldsymbol{\Sigma}_{2}^{(1)}, \dots, \boldsymbol{\Sigma}_{m}^{(1)} \right\}$ \Comment{Eqn.~\ref{eqn:em-covariances}}
   \While{model parameters are not converged}
     \State Expectation Step: Update soft weights \Comment{Eqn.~\ref{eqn:em-posterior-probs}}
     \State Maximization Step: Update mixture parameters \Comment{Eqns.~\Crefrange{eqn:em-weights}{eqn:em-covariances}}
@@ -1254,7 +1265,7 @@ The generic \ac{GMM} is illustrated in Fig.~\ref{fig:chap10-gmm-plates} with the
 \end{algorithmic}
 \end{algorithm}
 
-The number of mixture components $M$ may either be specified by the user or inferred using Variational Bayesian methods. The means $\boldsymbol{\mu}_{m}$ and variances $\boldsymbol{\Sigma}_{m}$ are \textit{a priori} unknown and must be inferred from the data. These parameters cannot be solved for directly and must instead by approximated by an iterative algorithm such as \textit{Expecation-Maximization} (EM)~\cite{dempster1977em} summarized in Alg.~\ref{alg:chap10-em-gmm}. The algorithm introduces \textit{soft weights} $h_{m,k}$ which signify the probability that sample $k$ was drawn from mixture component $m$, and are normalized to unity for each sample. The EM algorithm finds the maximum likelihood parameters for $\boldsymbol{\mu}_{m}$ and $\boldsymbol{\Sigma}_{m}$ on each iteration $t$ and repeats until convergence. 
+The number of mixture components $M$ may either be specified by the user or inferred using Variational Bayesian methods. The means $\boldsymbol{\mu}_{m}$ and variances $\boldsymbol{\Sigma}_{m}$ are \textit{a priori} unknown and must be inferred from the data. These parameters cannot be solved for directly and must be approximated by an iterative algorithm such as \textit{Expectation-Maximization} (EM)~\cite{dempster1977em} as summarized in Alg.~\ref{alg:chap10-em-gmm}. The algorithm introduces \textit{soft weights} $h_{m,k}$ which signify the probability that sample $k$ was drawn from mixture component $m$, and are normalized to unity for each sample. The EM algorithm finds the maximum likelihood parameters for $\boldsymbol{\mu}_{m}$ and $\boldsymbol{\Sigma}_{m}$ on each iteration $t$ and repeats until convergence. 
 
 The first step of the EM algorithm initializes the means $\boldsymbol{\mu}_{m}$ for the $M$ mixture components. A variety of approaches exist to initialize the means; it is common to use the $k$-means algorithm (Sec.~\ref{subsec:chap10-kmeans}) and extract the cluster centroids for this purpose. Next, each sample $k$ is associated with the nearest component mean $\boldsymbol{\mu}_{m}$ by setting soft weight $h_{m,k}$ to unity and all others to zero. Given the initial component means and soft weights, the mixture weights $\pi_{m}$ may be computed for each component $m$ from the following normalization:
 
@@ -1263,7 +1274,7 @@ The first step of the EM algorithm initializes the means $\boldsymbol{\mu}_{m}$ 
 \pi_{m}^{(t+1)} = \frac{1}{K}\displaystyle\sum\limits_{k=1}^{K} h_{m,k}^{(t)}
 \end{equation}
 
-\noindent The covariance matrices $\boldsymbol{\Sigma}_{m}$ for mixture component $m$ are then computed from the component mean and soft weights as follows:
+\noindent The covariance matrices $\boldsymbol{\Sigma}_{m}$ for mixture component $m$ are then computed from the component means and soft weights as follows:
 
 \begin{equation}
 \label{eqn:em-covariances}
@@ -1291,12 +1302,12 @@ h_{m,k}^{(t)} = \frac{\pi_{m}^{(t)} \mathcal{N}\left( \boldsymbol{\hat{f}}_{k}; 
 \ell_{k} = \underset{m}{\text{argmax}} \;\; h_{m,k}^{(T)}
 \end{equation}
 
-The EM algorithm is guaranteed to monotonically increase the likelihood function of the observed data, but may not necessarily find the global optimum. The algorithm is only guaranteed to converge to a local maxima of the likelihood function. Like the $k$-means algorithm, the converged solution is highly dependent on the initial component means, though some heuristics, such as the use of $k$-means to initialize the means, may make the algorithm more robust against converging to spurious local maxima. Nevertheless, it is common to run EM many times with different initial component means and choose the solution with the maximum likelihood. This thesis employs \acp{GMM} fit with the EM algorithm implemented in the \texttt{GaussianMixture} class of the \texttt{sklearn.mixture} module in the \texttt{scikit-learn} Python package. A full or dense covariance matrix is fit during the process; approximations such as diagonal or spherical covariance matrices may alternatively be used to tractably model very large \ac{MGXS} datasets.
+The EM algorithm is guaranteed to monotonically increase the likelihood function of the observed data, but may not necessarily find the global optimum. The algorithm is only guaranteed to converge to a local maximum of the likelihood function. The converged solution is highly dependent on the initial component means, though some heuristics, such as the use of $k$-means to initialize the means, may make the algorithm more robust against converging to spurious local maxima. Nevertheless, it is common to run EM many times with different initial component means and choose the solution with the maximum likelihood. This thesis employs \acp{GMM} fit with the EM algorithm implemented in the \texttt{GaussianMixture} class of the \texttt{sklearn.mixture} module in the \texttt{scikit-learn} Python package. A full or dense covariance matrix is fit during the process; approximations such as diagonal or spherical covariance matrices may alternatively be used to tractably model very large \ac{MGXS} datasets.
 
 Although the \ac{GMM} does not make assumptions about the size or shape of clusters, it does assume that each cluster is normally distributed. In addition, the EM algorithm employed by this thesis does require the number of clusters $M$ to be specified. As a result, model selection techniques must be used to select from a sequence of cluster models trained for different values of $M$, as discussed in Sec.~\ref{sec:chap10-model-select}. Alternatively, Variational Bayesian estimation methods developed for \acp{GMM}~\cite{attias2000variational,blei2006variational} may be used to automatically infer the number of mixture components using a Dirichlet Process prior over the parameters for infinite \acp{GMM}~\cite{ferguson1973dirichlet}. These methods are broadly available, including the \texttt{BayesianGaussianMixture} implementation in the \texttt{sklearn.mixture} module.
 
 \begin{emphbox}
-\textbf{Clustering algorithms make different assumptions about what constitutes a ``cluster,'' and optimize different objective functions to find clusters in data. The $k$-means, agglomerative, BIRCH and Gaussian Mixture Model clustering algorithms were each used to evaluate the \textit{i}\ac{MGXS} scheme in this thesis.}
+\textbf{Clustering algorithms make different assumptions about what constitutes a ``cluster,'' and optimize different objective functions to find clusters in data. The $k$-means, agglomerative, BIRCH and Gaussian Mixture Model clustering algorithms were each used within the \textit{i}\ac{MGXS} scheme in this thesis.}
 \end{emphbox}
 
 
@@ -1325,7 +1336,7 @@ Although the \ac{GMM} does not make assumptions about the size or shape of clust
 \section{Model Selection}
 \label{sec:chap10-model-select}
 
-The \textit{model selection} stage in the data processing pipeline in Fig.~\ref{fig:chap10-pipeline} chooses the ``best'' predictive model for \ac{MGXS} clustering. The four clustering algorithms discussed in Sec.~\ref{sec:chap10-train-predictor} require the number of clusters to be specified \textit{a priori} by the user. Model selection techniques are used to compare multiple clustering models (\textit{i.e}, trained for different numbers of clusters) and choose the most appropriate one for a particular application. In the context of \textit{i}\ac{MGXS} scheme, the number of \ac{MGXS} clusters is unknown, nor is it clear that there will be a well-defined number of clusters in highly heterogeneous core configurations. In this case, model selection aims to determine the \textit{fewest} number of \ac{MGXS} clusters needed to meet the requirements for predictive accuracy and enable the fastest possible \ac{MC} convergence rate. More specifically, model selection must identify the optimal number of clusters such that adding another cluster would only marginally improve the predictive accuracy of multi-group transport codes such as OpenMOC. 
+The \textit{model selection} stage of the data processing pipeline in Fig.~\ref{fig:chap10-pipeline} chooses the ``best'' predictive model for \ac{MGXS} clustering. The four clustering algorithms discussed in Sec.~\ref{sec:chap10-train-predictor} require the number of clusters to be specified \textit{a priori} by the user. Model selection techniques are used to compare multiple clustering models (\textit{i.e}, trained for different numbers of clusters) and choose the most appropriate one for a particular application. In the context of the \textit{i}\ac{MGXS} scheme, the number of \ac{MGXS} clusters is unknown, nor is it clear that there will always be a well-defined number of clusters in highly heterogeneous core configurations. In this case, model selection aims to determine the \textit{fewest} number of \ac{MGXS} clusters needed to meet the requirements for predictive accuracy and enable the fastest possible \ac{MC} convergence rate. More specifically, model selection must identify the optimal number of clusters such that adding another cluster would only marginally improve the predictive accuracy of multi-group transport codes such as OpenMOC. 
 
 The model selection stage of the \textit{i}\ac{MGXS} data processing pipeline is described in Fig.~\ref{fig:chap10-model}. Since \textit{i}\ac{MGXS} is an unsupervised scheme for spatial homogenization, a numerical criterion must be used to quantify the ``quality'' of each clustering model. The criterion may be subjected to thresholding or other techniques to automate model selection and obviate the need for human intervention. When choosing the appropriate number of clusters, model selection must strike a balance between:
 
@@ -1351,21 +1362,21 @@ The machine learning community has developed a plethora of model selection techn
 \item \textbf{Internal Evaluation} -- Score model on its intra- and inter-cluster \textit{similarities}
 \end{itemize}
 
-\noindent \textit{External evaluation} criteria are useful in supervised learning settings where some or all of the dataset may include the ground truth cluster labels. In this case, some of the dataset may be left out of the training phase and used to validate the model trained on the rest of the data. In the context of \textit{i}\ac{MGXS}, none of the samples are labeled and all of the cluster labels are unknown. As a result, \textit{internal evaluation} criteria must be used to optimize cluster models based upon the unlabeled dataset with which each was trained. Internal evaluation critera generally attempt to identify cluster models with high \textit{intra-cluster} similarities and low \textit{inter-cluster} similarities\footnote{Conversely, some criteria minimize and maximize the intra and inter-cluster \textit{dis-similiarities}, respectively.}. Alternatively, some internal evaluation criteria act as \textit{regularizers} to balance model complexity with generality.
+\noindent \textit{External evaluation} criteria are useful in supervised learning settings where some or all of the dataset may include the ground truth cluster labels. In this case, some of the dataset may be left out of the training phase and used to validate the model trained on the rest of the data. In the context of \textit{i}\ac{MGXS}, none of the samples are labeled and all of the cluster labels are unknown. As a result, \textit{internal evaluation} criteria must be used to optimize cluster models based upon the unlabeled dataset with which each was trained. Internal evaluation criteria generally attempt to identify cluster models with high \textit{intra-cluster} similarities and low \textit{inter-cluster} similarities\footnote{Conversely, some criteria minimize and maximize the intra and inter-cluster \textit{dissimiliarities}, respectively.}. Alternatively, some internal evaluation criteria act as \textit{regularizers} to balance model complexity with generality.
 
-The following sections describe several model selection criteria that are use to evaluate the cluster models produce by \textit{i}\ac{MGXS} scheme. Secs.~\Crefrange{subsec:chap10-db-index}{subsec:chap10-silhouette-coeff} introduce the Davies-Boulding index, Dunn index, Calinski-Harabaz index and silhouette coefficients. These criteria aims employ different metrics to quantify inter- and intra-cluster similarities to quantify the quality of a clustering model. Sec.~\ref{subsec:chap10-bic} presents the Bayesian Information Criterion, a technique with a strong theoretical formulation that may be used to evaluate \acp{GMM}. Finally, Sec.~\ref{subsec:chap10-cross-validate} discusses cross-validation and how it may be used in conjunction with any of these model selection criteria to prevent over-fitting.
+The following sections describe several model selection criteria that are use to evaluate the clustering models produce by the \textit{i}\ac{MGXS} scheme. Secs.~\Crefrange{subsec:chap10-db-index}{subsec:chap10-silhouette-coeff} introduce the Davies-Bouldin, Dunn and Calinski-Harabaz indices and silhouette coefficients. These criteria use different metrics to quantify intra- and inter-cluster similarities to quantify the quality of a clustering model. Sec.~\ref{subsec:chap10-bic} presents the Bayesian Information Criterion, a technique with a strong theoretical formulation that may be used to evaluate \acp{GMM}. Finally, Sec.~\ref{subsec:chap10-cross-validate} discusses cross-validation and how it may be used in conjunction with any of these model selection criteria to prevent over-fitting.
 
-It is important to note that model selection may \textit{only} examine the clustering models. The clustered \ac{MGXS} may \textit{not} be employed in a multi-group transport simulation and then compared with respect to some reference \ac{MC} solution. Although such an exercise is important as a proof of principle of the \textit{i}\ac{MGXS} scheme, it would be unacceptable as a model selection technique since it is not unsupervised. Furthermore, it would nullify the over-arching goal of this thesis -- to obtain \ac{MC} quality solutions with computationally efficient deterministic multi-group transport codes -- since it would require the computationally expensive calculation of a \ac{MC} reference solution.
+It is important to note that model selection may \textit{only} examine the clustering models. The clustered \ac{MGXS} may \textit{not} be employed in a multi-group transport simulation and then compared with respect to some reference \ac{MC} solution. Although such an exercise is important as a proof of principle of the \textit{i}\ac{MGXS} scheme, is unacceptable as a model selection technique since it is supervised. Furthermore, it would nullify the over-arching goal of this thesis -- to obtain \ac{MC} quality solutions with computationally efficient deterministic multi-group transport codes -- since it would require the computationally expensive calculation of a \ac{MC} reference solution.
 
 %    -evaluation is biased towards algorithms that use the same cluster model
 %      -i.e., if the metric is distance-based, it will over-rate $k$-means and other variance minimization clustering algorithms
 %      -i.e., if criterion assumes convex clusters, then it will over-rate $k$-means solutions since $k$-means also makes this assumption
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Davies-Boulding Index}
+\subsection{Davies-Bouldin Index}
 \label{subsec:chap10-db-index}
 
-The Davies-Boulding (DB) index~\cite{davies1979dbindex} is the ratio of intra-cluster to inter-cluster dissimilarity, or equivalently, the ratio of within-cluster scatter to between-cluster separation. The DB index penalizes cluster models with high \textit{intra-cluster distances} (\textit{i.e.}, low intra-cluster similarities) and low \textit{inter-cluster distances} (\textit{i.e.}, high inter-cluster similarities). The inter-custer distance $d\left(\boldsymbol{\mu}_{m},\boldsymbol{\mu}_{n}\right)$ is simply the distance between cluster centroids $\boldsymbol{\mu}_{m}$ and $\boldsymbol{\mu}_{n}$ in feature space. The most common metric for the intra-cluster distance $R_{m}$ is the average distance of all samples in cluster $\mathbb{S}_{m}$ to its centroid $\boldsymbol{\mu}_{m}$:
+The Davies-Bouldin (DB) index~\cite{davies1979dbindex} is the ratio of intra-cluster to inter-cluster dissimilarity, or equivalently, the ratio of within-cluster scatter to between-cluster separation. The DB index penalizes cluster models with high \textit{intra-cluster distances} (\textit{i.e.}, low intra-cluster similarities) and low \textit{inter-cluster distances} (\textit{i.e.}, high inter-cluster similarities). The inter-custer distance $d\left(\boldsymbol{\mu}_{m},\boldsymbol{\mu}_{n}\right)$ is simply the distance between cluster centroids $\boldsymbol{\mu}_{m}$ and $\boldsymbol{\mu}_{n}$ in feature space. The most common metric for the intra-cluster distance $R_{m}$ is the average distance of all samples in cluster $\mathbb{S}_{m}$ to its centroid $\boldsymbol{\mu}_{m}$:
 
 \begin{equation}
 \label{eqn:chap10-db-mean-distance}
@@ -1427,7 +1438,7 @@ The higher the between-group variance and the lower the within-group variance, t
 \subsection{Silhouette Coefficient}
 \label{subsec:chap10-silhouette-coeff}
 
-The silhouette coefficient~\cite{rousseeuw1987silhouette} is defined for each sample, and compares the average distance between the sample and all other samples within its assigned cluster to the average distance to samples in all other clusters. Since the silhouette coefficient is defined for each sample, it provides a more granular metric to evaluate a clustering model on a sample-by-sample basis than the Davies-Boulding, Dunn and Calinski-Harabaz indices. In particular, a high silhouette coefficient signifies a ``well-clustered'' sample, while a low silhouette coefficient may indicate that a sample is an outlier. The distribution of silhouette coefficients is often visualized with a \textit{silhouette plot} to aid in identifying the quality of each cluster in a model. If many samples have a low silhouette coefficient, then it may indicate the inclusion of too few or too many clusters in the model.
+The silhouette coefficient~\cite{rousseeuw1987silhouette} is defined for each sample, and compares the average distance between a sample and all other samples within its assigned cluster to the average distance to samples in all other clusters. Since the silhouette coefficient is defined for each sample, it provides a more granular metric to evaluate a clustering model on a sample-by-sample basis than the Davies-Bouldin, Dunn and Calinski-Harabaz indices. In particular, a high silhouette coefficient signifies a ``well-clustered'' sample, while a low silhouette coefficient may indicate that a sample is an outlier. The distribution of silhouette coefficients is often visualized with a \textit{silhouette plot} to aid in identifying the quality of each cluster in a model. If many samples have a low silhouette coefficient, then it may indicate the inclusion of too few or too many clusters in the model.
 
 The silhouette coefficient defines the dissimilarity $a_{k}$ of sample $\boldsymbol{\hat{f}}_{k}$ to its cluster $\mathbb{S}_{m}$ as the average distance from $\boldsymbol{\hat{f}}_{k}$ to all points in $\mathbb{S}_{m}$:
 
@@ -1457,7 +1468,7 @@ s_{k} = \frac{b_{k}-a_{k}}{\textrm{max}(a_{k},b_{k})}
 \overline{s}_{k} = \frac{1}{K} \displaystyle\sum\limits_{k=1}^{K} s_{k}
 \end{equation}
 
-The silhouette coefficient is defined over the range $-1 \le s_{k} \le +1$ where a value near +1 indicates that the sample is well-matched to its assigned cluster. Likewise, a value near -1 indicates that sample $\boldsymbol{\hat{f}}_{k}$ is ill-matched to its assigned cluster and may be more appropriately matched with the nearest neighboring cluster. Furthermore, a value near zero indicates that the sample is on the border of two equally valid (but poorly matched) clusters. Therefore, in general, higher average silhouette coefficient $\overline{s}_{k}$ indicate a better matching of samples to assigned clusters. Hence, the ``best'' clustering model is the one which \textit{maximizes} the silhouette coefficient. The silhouette coefficient is used to evaluate the clustering models produced by \textit{i}\ac{MGXS} in the following chapter.
+The silhouette coefficient is defined over the range $-1 \le s_{k} \le +1$ where a value near +1 indicates that the sample is well-matched to its assigned cluster. Likewise, a value near -1 indicates that sample $\boldsymbol{\hat{f}}_{k}$ is ill-matched to its assigned cluster and may be more appropriately matched with the nearest neighboring cluster. Furthermore, a value near zero indicates that the sample is on the border of two equally valid (but poorly matched) clusters. Therefore, in general, higher average silhouette coefficient $\overline{s}_{k}$ indicate a better matching of samples to assigned clusters. Hence, the ``best'' clustering model is the one which \textit{maximizes} the average silhouette coefficient. The silhouette coefficient is used to evaluate the clustering models produced by \textit{i}\ac{MGXS} in the following chapter.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Bayesian Information Criterion}
@@ -1465,11 +1476,11 @@ The silhouette coefficient is defined over the range $-1 \le s_{k} \le +1$ where
 
 The Bayesian Information Criterion (BIC)~\cite{schwarz1978bic} may be used to optimize parameter selection for models with well-defined likelihood functions. As a result, of the four clustering algorithms presented in Sec.~\ref{sec:chap10-train-predictor}, the BIC may only be used to select the number of components for \acp{GMM}. In contrast to the previously defined model selection criterion, the BIC is based on an information theory analysis of model complexity and attempts to measure the ``efficiency'' with which a parametrized model predicts an observed dataset. The BIC is an asymptotic result that is only guaranteed to recover the ``true'' number of mixture components in a \ac{GMM} given an infinite number of samples which were drawn i.i.d. from a mixture of Gaussians. In practice, the asymptotic result is only valid if the sample size is much larger than the number of mixture components. 
 
-These assumptions are important to consider in the context of the \textit{i}\ac{MGXS} data processing pipeline. Pin-wise \ac{MGXS} datasets are not necessarily distributed according to a \ac{GMM}. The case studies in Chap.~\ref{chap:spatial} would indicate that the number of samples per component should increase with the size of the core geometry\footnote{This assumes that the complexity of heterogeneities -- each of which induce \ac{MGXS} clusters -- does not also scale with the size of the core geometry.}. Hence, one might expect that the BIC would perform better for a full core geometry than for a single assembly.
+These assumptions are important to consider in the context of the \textit{i}\ac{MGXS} data processing pipeline. Pin-wise \ac{MGXS} datasets are not necessarily distributed according to a \ac{GMM}. The case studies in Chap.~\ref{chap:spatial} indicate that the number of samples per component should increase with the size of the core geometry\footnote{This assumes that the complexity of heterogeneities -- each of which induce \ac{MGXS} (sub)clusters -- does not also scale with the size of the core geometry.}. Hence, one might expect that the BIC would perform better for a full core geometry than for a single assembly.
 
 % the GMM is simply a model which may be applied to cluster the data
 
-The BIC is based upon the maximized value of the \textit{maximum likelihood function} $\hat{L}$\footnote{The probability of observing a dataset given a set of model parameters.}:
+The BIC is based upon the value of the \textit{maximum likelihood function} $\hat{L}$\footnote{The probability of observing a dataset given the model parameters $\boldsymbol{\theta}$.}:
 
 \begin{equation}
 \label{eqn:chap10-likelihood}
@@ -1496,10 +1507,10 @@ The first term in the BIC uses the maximum log-likelihood to measure the ability
 \subsection{Cross-Validation}
 \label{subsec:chap10-cross-validate}
 
-\textit{Cross-validation} is a technique for model validation~\cite{kohavi1995cv}, and is closely related to the \textit{bootstrap} method commonly used to approximate the properties of statistical estimators~\cite{efron1994bootstrap}. Cross-validation is used to asses the generalization of a model by evaluating it with a dataset independent of the one used to train the model. In general, cross-validation is used to control model complexity and prevent over-fitting to outliers. The integration of the model selection and predictor training stages with cross-validation is highlighted in Alg.~\ref{alg:chap10-cross-validate}. Cross-validation aims to estimate a predictor's performance by averaging a model selection criterion across multiple models trained on disjoint subsets of a dataset. A model selection criterion averaged across multiple models will be more robust than a single model trained on the complete dataset. Although cross-validation was not evaluated as part of the \textit{i}\ac{MGXS} data processing pipeline for this thesis, it may be worthwhile to consider its value for model selection in the future.
+\textit{Cross-validation} is a technique for model validation~\cite{kohavi1995cv}, and is closely related to the \textit{bootstrap} method commonly used to approximate the properties of statistical estimators~\cite{efron1994bootstrap}. Cross-validation is used to assess the generalization of a model by evaluating it with a dataset independent of the one used to train the model. In general, cross-validation is used to control model complexity and prevent over-fitting to outliers. The integration of the predictor training and model selection stages with cross-validation is highlighted in Alg.~\ref{alg:chap10-cross-validate}. Cross-validation aims to estimate a predictor's performance by averaging a model selection criterion across multiple models trained on disjoint subsets of a dataset. A model selection criterion averaged across multiple models will be more robust than a single model trained on the complete dataset. Although cross-validation was not evaluated as part of the \textit{i}\ac{MGXS} data processing pipeline for this thesis, it may be worthwhile to consider its value for model selection in the future.
 
 \begin{algorithm}[h!]
-\caption[Cross-Validation]{Cross-validation for clustering model validation.}
+\caption[Cross-Validation]{Cross-Validation for Clustering Model Selection}
 \label{alg:chap10-cross-validate}
 \begin{algorithmic}[1]
   \State Divide dataset into $P$ mutually exclusive partitions
@@ -1517,7 +1528,7 @@ The first term in the BIC uses the maximum log-likelihood to measure the ability
 \clearpage
 
 \begin{emphbox}
-\textbf{Model selection techniques are used to choose clustering model parameters, including the number of clusters. Various methods score clustering models based upon their intra-and inter-cluster similarities, or penalize model complexity using regularization. The Davies-Boulding, Dunn and Calinski-Harabaz indices and silhouette coefficients are implemented for each clustering algorithm employed by the \textit{i}\ac{MGXS} scheme, and the Bayesian Information Criterion is implemented for Gaussian Mixture Models.}
+\textbf{Model selection techniques are used to choose clustering model parameters, including the number of clusters. Various methods score clustering models based upon their intra- and inter-cluster similarities, or penalize model complexity using regularization. The Davies-Bouldin, Dunn and Calinski-Harabaz indices and silhouette coefficients are implemented for each clustering algorithm employed by the \textit{i}\ac{MGXS} scheme, and the Bayesian Information Criterion is implemented for Gaussian Mixture Models.}
 \end{emphbox}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1530,11 +1541,11 @@ The final \textit{spatial homogenization} stage in the data processing pipeline 
 \centering
 \includegraphics[width=0.9\linewidth]{figures/unsupervised/features/engineering/flow-chart}
 \vspace{2mm}
-\caption[\textit{i}MGXS flow chart]{The complete \textit{i}\ac{MGXS} flow chart.}
+\caption[\textit{i}MGXS flow chart]{The detailed \textit{i}\ac{MGXS} data processing pipeline.}
 \label{fig:chap10-flow-chart}
 \end{figure}
 
-It is important to recall that \textit{i}\ac{MGXS} spatial homogenization aims to homogenize across as many fuel pin instances as possible while sacrificing little or no accuracy in downstream multi-group calculations. The observations made in scheme Sec.~\ref{sec:chap9-convergence} about the convergence rate for \ac{MGXS} generated with \ac{MC} are equally valid for \textit{i}\ac{MGXS} as they were for the null, degenerate and \ac{LNS} schemes. In particular, the standard deviation of the \ac{MGXS} homogenized across each cluster is reduced by a factor inversely proportional to the number of pin in the clusters according to Eqn.~\ref{eqn:chap9-homogenize-std-dev}. Therefore, the more fuel pin instances assigned to each cluster, the faster the \ac{MGXS} will converge to within an acceptable level of uncertainty. However, an uneven assignment of pin instances to clusters will impact the relative accelarated convergence rates achieved for different clusters with \textit{i}\ac{MGXS}. In other words, the overall reduction in \ac{MGXS} uncertainties -- or conversely, the acceleration of the \ac{MGXS} convergence rates -- will be bounded by the cluster assigned the fewest fuel pin instances.
+It is important to recall that \textit{i}\ac{MGXS} spatial homogenization aims to homogenize across as many fuel pin instances as possible while sacrificing little or no accuracy in downstream multi-group calculations. The observations made in scheme Sec.~\ref{sec:chap9-convergence} about the convergence rate for \ac{MGXS} generated with \ac{MC} are equally valid for \textit{i}\ac{MGXS} as they were for the null, degenerate and \ac{LNS} schemes. In particular, the standard deviation of the \ac{MGXS} homogenized across each cluster is reduced by a factor inversely proportional to the number of pins in the clusters according to Eqn.~\ref{eqn:chap9-homogenize-std-dev}. Therefore, the more fuel pin instances assigned to each cluster, the faster the \ac{MGXS} will converge to within an acceptable level of uncertainty. However, an uneven assignment of pin instances to clusters will impact the relative accelerated convergence rates achieved for different clusters. In other words, the overall reduction in \ac{MGXS} uncertainties -- or conversely, the acceleration of the \ac{MGXS} convergence rates -- will be bounded by the cluster with the fewest fuel pin instances.
 
 %to satisfy two objectives: to achieve the accuracy of the degenerate scheme while simultaneously approaching the \ac{MC} convergence rate of the the null scheme. In other words, the goal of \textit{i}\ac{MGXS} is
 
@@ -1548,11 +1559,11 @@ The 70-group \ac{MC} tally data was condensed to 2-groups for feature extraction
 
 The geometries produced with 2, 4 and 8 clusters for the 1.6\% enriched fuel assembly and 3.1\% enriched fuel assembly with 20 \acp{BP} are presented in Figs.~\ref{fig:chap10-assm-16-geometries} and~\ref{fig:chap10-assm-31-20BPs-geometries}, respectively. Likewise, the geometries produced with 2, 4 and 8 clusters for the 2$\times$2 colorset without and with a reflector are displayed in Figs.~\ref{fig:chap10-2x2-geometries} and~\ref{fig:chap10-reflector-geometries}. Finally, the geometries produced with 2 -- 64 clusters, spaced in powers of 2, for the quarter core \ac{BEAVRS} model are depicted in Figs.~\Crefrange{fig:chap10-full-core-geometries-2}{fig:chap10-full-core-geometries-64}. Each uniquely colored material represents a unique set of MGXS. In general, it is apparent that the \textit{i}\ac{MGXS} scheme is able to identify clusters of fuel pins which are related by the presence of similar neighboring heterogeneities which induce the clustering of samples in feature space\footnote{The clustering of samples in feature space does not necessarily reflect the clustering of \ac{MGXS}. The two are only equivalent if the features cluster in the same way as the \ac{MGXS}, and the clustering algorithm optimizes over the correct objective function governing the structure of the clusters.}. As a result, \textit{i}\ac{MGXS} spatial homogenization would be expected to approach the accuracy of the degenerate scheme and the convergence rate of the null scheme. 
 
-A couple of key observations can be made from Figs.~\Crefrange{fig:chap10-assm-16-geometries}{fig:chap10-reflector-geometries}. First, the material configurations are highly dependent on the types of features used to train the clustering model, as evidenced by the very different geometries found with pinch and dummy feature selection. The use of features for many different nuclides and reaction types with dummy selection clearly impacts not only the separation distance, but more importantly, the relationships between samples in feature space. Pinch feature selection only considers the structure in features derived from U-238 capture \ac{MGXS}, along with the spectral indices and fractional reactivities, while dummy feature selection also considers clustering in U-235 fission and other tallied reactions. As was observed from the histograms and quantile-quantile plots in Secs.~\ref{subsubsec:chap9-histograms-fiss} and~\ref{subsubsec:chap9-qq-plots-fiss}, the thermal U-235 \ac{MGXS} are more sensitive to spatial self-shielding effects than U-238 resonance capture, even though clustering effects are more relevant to the prediction of U-238 capture rates. Although pinch and dummy feature selection lead to divergent clustering models, it is not clear how the two compare with respect to their impact on the predictions of spatially distributed reaction rates. 
+A couple of key observations can be made from Figs.~\Crefrange{fig:chap10-assm-16-geometries}{fig:chap10-reflector-geometries}. First, the material configurations are highly dependent on the types of features used to train the clustering model, as evidenced by the very different geometries found with pinch and dummy feature selection. The inclusion of features for many different nuclides and reaction types with dummy selection clearly impacts not only the separation distance, but more importantly, the relationships between samples in feature space. Pinch feature selection only considers the structure in features derived from U-238 capture \ac{MGXS}, along with the spectral indices and fractional reactivities, while dummy feature selection also considers clustering in U-235 fission and other tallied reactions. As was observed from the histograms and quantile-quantile plots in Secs.~\ref{subsubsec:chap9-histograms-fiss} and~\ref{subsubsec:chap9-qq-plots-fiss}, the thermal U-235 \ac{MGXS} are more sensitive to spatial self-shielding effects than U-238 resonance capture, even though clustering effects are more relevant to the prediction of U-238 capture rates. Although pinch and dummy feature selection lead to divergent clustering models, it is not clear how the two compare with respect to their impact on the predictions of spatially distributed reaction rates. 
 
-In addition, it is noteworthy that the \textit{i}\ac{MGXS} scheme discriminates pins along assembly-assembly and reflector-assembly interfaces for the 2$\times$2 colorset benchmarks and the quarter core \ac{BEAVRS} model. This contrasts with the \ac{LNS} scheme which fails to distinguish pins along the various borders of fuel assemblies. The ability of \textit{i}\ac{MGXS} to separate out fuel pins along interfaces without engineering prescriptions illustrates the key advantage of \textit{i}\ac{MGXS} over the \ac{LNS} scheme. As a result, the \textit{i}\ac{MGXS} scheme would be expected to outperform the \ac{LNS} spatial homogenization for arbitrary core geometries.
+In addition, it is noteworthy that the \textit{i}\ac{MGXS} scheme discriminates pins along assembly-assembly and reflector-assembly interfaces for the 2$\times$2 colorset benchmarks and the quarter core \ac{BEAVRS} model. This contrasts with the \ac{LNS} scheme which fails to distinguish pins along the various borders of fuel assemblies. The ability of \textit{i}\ac{MGXS} to separate out fuel pins along interfaces without engineering prescriptions illustrates the key advantage of \textit{i}\ac{MGXS} over the \ac{LNS} scheme. As a result, the \textit{i}\ac{MGXS} scheme is expected to outperform \ac{LNS} spatial homogenization for arbitrary core geometries.
 
-Interestingly, the models of 2 -- 4 clusters for the quarter core \ac{BEAVRS} model cluster the pins in the interior fuel assemblies in a way which resembles the clustered geometries for the individual fuel assemblies in Figs.~\ref{fig:chap10-assm-16-geometries} and~\ref{fig:chap10-assm-31-20BPs-geometries}. This indicates that the flux profile in the interior assemblies is similar to that in an infinite lattice. As more clusters are introduced, the pins along the assembly-assembly interfaces are resolved into their own clusters. However, it should be noted that more ``outlier'' pins (pins assigned to the wrong cluster) are observed as more clusters are introduced, although the predictions with dummy feature selection are more ``robust'' for more clusters. Ideally, the model selection criteria discussed in Sec.~\ref{sec:chap10-model-select} may be used to determine the minimum number of clusters necessary without sacrificing accuracy due to the presence of outliers.
+Interestingly, the models of 2 -- 4 clusters for the quarter core \ac{BEAVRS} model cluster the pins in the interior fuel assemblies in a way which resembles the clustered geometries for the individual fuel assemblies in Figs.~\ref{fig:chap10-assm-16-geometries} and~\ref{fig:chap10-assm-31-20BPs-geometries}. This indicates that the flux profile in the interior assemblies is similar to that in an infinite lattice. As more clusters are introduced, the pins along the assembly-assembly interfaces are resolved into their own clusters. However, it should be noted that more ``outlier'' pins (pins assigned to the ``wrong'' cluster) are observed as more clusters are introduced, although the predictions with dummy feature selection are more ``robust'' for more clusters. Ideally, the model selection criteria discussed in Sec.~\ref{sec:chap10-model-select} may be used to determine the minimum number of clusters necessary without sacrificing accuracy due to the presence of outliers.
 
 %These observations reflects the challenge of identifying well separated clusters in \ac{MC} tally data.
 %-differentiation from infinite lattice
@@ -1563,43 +1574,43 @@ Interestingly, the models of 2 -- 4 clusters for the quarter core \ac{BEAVRS} mo
 
 \begin{figure}[h!]
 \centering
-\begin{subfigure}{0.48\textwidth}
+\begin{subfigure}{0.47\textwidth}
   \centering
   \includegraphics[width=0.9\linewidth]{figures/unsupervised/geometries/with-features/2-clusters/pinch/assm-16}
   \caption{}
   \label{fig:chap10-assm-16-pinch-2}
 \end{subfigure}%
-\begin{subfigure}{0.48\textwidth}
+\begin{subfigure}{0.47\textwidth}
   \centering
   \includegraphics[width=0.9\linewidth]{figures/unsupervised/geometries/with-features/2-clusters/combined/assm-16}
   \caption{}
   \label{fig:chap10-assm-16-combined-2}
 \end{subfigure}
-\begin{subfigure}{0.48\textwidth}
+\begin{subfigure}{0.47\textwidth}
   \centering
   \includegraphics[width=0.9\linewidth]{figures/unsupervised/geometries/with-features/4-clusters/pinch/assm-16}
   \caption{}
   \label{fig:chap10-assm-16-pinch-4}
 \end{subfigure}%
-\begin{subfigure}{0.48\textwidth}
+\begin{subfigure}{0.47\textwidth}
   \centering
   \includegraphics[width=0.9\linewidth]{figures/unsupervised/geometries/with-features/4-clusters/combined/assm-16}
   \caption{}
   \label{fig:chap10-assm-16-combined-4}
 \end{subfigure}
-\begin{subfigure}{0.48\textwidth}
+\begin{subfigure}{0.47\textwidth}
   \centering
   \includegraphics[width=0.9\linewidth]{figures/unsupervised/geometries/with-features/8-clusters/pinch/assm-16}
   \caption{}
   \label{fig:chap10-assm-16-pinch-8}
 \end{subfigure}%
-\begin{subfigure}{0.48\textwidth}
+\begin{subfigure}{0.47\textwidth}
   \centering
   \includegraphics[width=0.9\linewidth]{figures/unsupervised/geometries/with-features/8-clusters/combined/assm-16}
   \caption{}
   \label{fig:chap10-assm-16-combined-8}
 \end{subfigure}
-\caption[Materials for the 1.6\% fuel assembly with clustering homogenization]{Materials for the 1.6\% enriched fuel assembly with clustering homogenization. The materials for 2, 4, and 8 clusters are illustrated in (a), (c) and (e) for pinch clustering, and in (b), (d) and (f) for dummy clustering, respectively.}
+\caption[Materials for the 1.6\% fuel assembly with \textit{i}\ac{MGXS} homogenization]{Materials for the 1.6\% enriched fuel assembly with \textit{i}\ac{MGXS} spatial homogenization. The materials for 2, 4, and 8 clusters are illustrated in (a), (c) and (e) for pinch and in (b), (d) and (f) for dummy feature selection, respectively.}
 \label{fig:chap10-assm-16-geometries}
 \end{figure}
 
@@ -1607,43 +1618,43 @@ Interestingly, the models of 2 -- 4 clusters for the quarter core \ac{BEAVRS} mo
 
 \begin{figure}[h!]
 \centering
-\begin{subfigure}{0.48\textwidth}
+\begin{subfigure}{0.47\textwidth}
   \centering
   \includegraphics[width=0.9\linewidth]{figures/unsupervised/geometries/with-features/2-clusters/pinch/assm-31-20BPs}
   \caption{}
   \label{fig:chap10-assm-31-20BPs-pinch-2}
 \end{subfigure}%
-\begin{subfigure}{0.48\textwidth}
+\begin{subfigure}{0.47\textwidth}
   \centering
   \includegraphics[width=0.9\linewidth]{figures/unsupervised/geometries/with-features/2-clusters/combined/assm-31-20BPs}
   \caption{}
   \label{fig:chap10-assm-31-20BPs-combined-2}
 \end{subfigure}
-\begin{subfigure}{0.48\textwidth}
+\begin{subfigure}{0.47\textwidth}
   \centering
   \includegraphics[width=0.9\linewidth]{figures/unsupervised/geometries/with-features/4-clusters/pinch/assm-31-20BPs}
   \caption{}
   \label{fig:chap10-assm-31-20BPs-pinch-4}
 \end{subfigure}%
-\begin{subfigure}{0.48\textwidth}
+\begin{subfigure}{0.47\textwidth}
   \centering
   \includegraphics[width=0.9\linewidth]{figures/unsupervised/geometries/with-features/4-clusters/combined/assm-31-20BPs}
   \caption{}
   \label{fig:chap10-assm-31-20BPs-combined-4}
 \end{subfigure}
-\begin{subfigure}{0.48\textwidth}
+\begin{subfigure}{0.47\textwidth}
   \centering
   \includegraphics[width=0.9\linewidth]{figures/unsupervised/geometries/with-features/8-clusters/pinch/assm-31-20BPs}
   \caption{}
   \label{fig:chap10-assm-31-20BPs-pinch-8}
 \end{subfigure}%
-\begin{subfigure}{0.48\textwidth}
+\begin{subfigure}{0.47\textwidth}
   \centering
   \includegraphics[width=0.9\linewidth]{figures/unsupervised/geometries/with-features/8-clusters/combined/assm-31-20BPs}
   \caption{}
   \label{fig:chap10-assm-31-20BPs-combined-8}
 \end{subfigure}
-\caption[Materials for the 3.1\% fuel assembly with clustering homogenization]{Materials for the 3.1\% enriched fuel assembly with 20 \acp{BP} with clustering homogenization. The materials for 2, 4, and 8 clusters are illustrated in (a), (c) and (e) for pinch clustering, and in (b), (d) and (f) for dummy clustering, respectively.}
+\caption[Materials for the 3.1\% fuel assembly with \textit{i}\ac{MGXS} homogenization]{Materials for the 3.1\% enriched fuel assembly with 20 \acp{BP} with \textit{i}\ac{MGXS} spatial homogenization. The materials for 2, 4, and 8 clusters are illustrated in (a), (c) and (e) for pinch and in (b), (d) and (f) for dummy feature selection, respectively.}
 \label{fig:chap10-assm-31-20BPs-geometries}
 \end{figure}
 
@@ -1651,43 +1662,43 @@ Interestingly, the models of 2 -- 4 clusters for the quarter core \ac{BEAVRS} mo
 
 \begin{figure}[h!]
 \centering
-\begin{subfigure}{0.48\textwidth}
+\begin{subfigure}{0.47\textwidth}
   \centering
   \includegraphics[width=0.9\linewidth]{figures/unsupervised/geometries/with-features/2-clusters/pinch/2x2}
   \caption{}
   \label{fig:chap10-2x2-pinch-2}
 \end{subfigure}%
-\begin{subfigure}{0.48\textwidth}
+\begin{subfigure}{0.47\textwidth}
   \centering
   \includegraphics[width=0.9\linewidth]{figures/unsupervised/geometries/with-features/2-clusters/combined/2x2}
   \caption{}
   \label{fig:chap10-2x2-combined-2}
 \end{subfigure}
-\begin{subfigure}{0.48\textwidth}
+\begin{subfigure}{0.47\textwidth}
   \centering
   \includegraphics[width=0.9\linewidth]{figures/unsupervised/geometries/with-features/4-clusters/pinch/2x2}
   \caption{}
   \label{fig:chap10-2x2-pinch-4}
 \end{subfigure}%
-\begin{subfigure}{0.48\textwidth}
+\begin{subfigure}{0.47\textwidth}
   \centering
   \includegraphics[width=0.9\linewidth]{figures/unsupervised/geometries/with-features/4-clusters/combined/2x2}
   \caption{}
   \label{fig:chap10-assm-2x2-combined-4}
 \end{subfigure}
-\begin{subfigure}{0.48\textwidth}
+\begin{subfigure}{0.47\textwidth}
   \centering
   \includegraphics[width=0.9\linewidth]{figures/unsupervised/geometries/with-features/8-clusters/pinch/2x2}
   \caption{}
   \label{fig:chap10-assm-2x2-pinch-8}
 \end{subfigure}%
-\begin{subfigure}{0.48\textwidth}
+\begin{subfigure}{0.47\textwidth}
   \centering
   \includegraphics[width=0.9\linewidth]{figures/unsupervised/geometries/with-features/8-clusters/combined/2x2}
   \caption{}
   \label{fig:chap10-assm-2x2-combined-8}
 \end{subfigure}
-\caption[Materials for the 2$\times$2 periodic colorset with clustering homogenization]{Materials for the 2$\times$2 periodic colorset with clustering homogenization. The materials for 2, 4, and 8 clusters are illustrated in (a), (c) and (e) for pinch clustering, and in (b), (d) and (f) for dummy clustering, respectively.}
+\caption[Materials for the 2$\times$2 periodic colorset with \textit{i}\ac{MGXS} homogenization]{Materials for the 2$\times$2 periodic colorset with \textit{i}\ac{MGXS} spatial homogenization. The materials for 2, 4, and 8 clusters are illustrated in (a), (c) and (e) for pinch and in (b), (d) and (f) for dummy feature selection, respectively.}
 \label{fig:chap10-2x2-geometries}
 \end{figure}
 
@@ -1695,43 +1706,43 @@ Interestingly, the models of 2 -- 4 clusters for the quarter core \ac{BEAVRS} mo
 
 \begin{figure}[h!]
 \centering
-\begin{subfigure}{0.48\textwidth}
+\begin{subfigure}{0.47\textwidth}
   \centering
   \includegraphics[width=0.9\linewidth]{figures/unsupervised/geometries/with-features/2-clusters/pinch/reflector}
   \caption{}
   \label{fig:chap10-reflector-pinch-2}
 \end{subfigure}%
-\begin{subfigure}{0.48\textwidth}
+\begin{subfigure}{0.47\textwidth}
   \centering
   \includegraphics[width=0.9\linewidth]{figures/unsupervised/geometries/with-features/2-clusters/combined/reflector}
   \caption{}
   \label{fig:chap10-reflector-combined-2}
 \end{subfigure}
-\begin{subfigure}{0.48\textwidth}
+\begin{subfigure}{0.47\textwidth}
   \centering
   \includegraphics[width=0.9\linewidth]{figures/unsupervised/geometries/with-features/4-clusters/pinch/reflector}
   \caption{}
   \label{fig:chap10-reflector-pinch-4}
 \end{subfigure}%
-\begin{subfigure}{0.48\textwidth}
+\begin{subfigure}{0.47\textwidth}
   \centering
   \includegraphics[width=0.9\linewidth]{figures/unsupervised/geometries/with-features/4-clusters/combined/reflector}
   \caption{}
   \label{fig:chap10-reflector-combined-4}
 \end{subfigure}
-\begin{subfigure}{0.48\textwidth}
+\begin{subfigure}{0.47\textwidth}
   \centering
   \includegraphics[width=0.9\linewidth]{figures/unsupervised/geometries/with-features/8-clusters/pinch/reflector}
   \caption{}
   \label{fig:chap10-reflector-pinch-8}
 \end{subfigure}%
-\begin{subfigure}{0.48\textwidth}
+\begin{subfigure}{0.47\textwidth}
   \centering
   \includegraphics[width=0.9\linewidth]{figures/unsupervised/geometries/with-features/8-clusters/combined/reflector}
   \caption{}
   \label{fig:chap10-reflector-combined-8}
 \end{subfigure}
-\caption[Materials for the 2$\times$2 colorset with reflector with clustering homogenization]{Materials for the 2$\times$ colorset with water reflector with clustering homogenization. The materials for 2, 4, and 8 clusters are illustrated in (a), (c) and (e) for pinch clustering, and in (b), (d) and (f) for dummy clustering, respectively.}
+\caption[Materials for the 2$\times$2 colorset with reflector with \textit{i}\ac{MGXS} homogenization]{Materials for the 2$\times$2 colorset with water reflector with \textit{i}\ac{MGXS} spatial homogenization. The materials for 2, 4, and 8 clusters are illustrated in (a), (c) and (e) for pinch and in (b), (d) and (f) for dummy feature selection, respectively.}
 \label{fig:chap10-reflector-geometries}
 \end{figure}
 
@@ -1739,19 +1750,19 @@ Interestingly, the models of 2 -- 4 clusters for the quarter core \ac{BEAVRS} mo
 
 \begin{figure}[h!]
 \centering
-\begin{subfigure}{0.68\textwidth}
+\begin{subfigure}{0.67\textwidth}
   \centering
   \includegraphics[width=\linewidth]{figures/unsupervised/geometries/with-features/2-clusters/pinch/full-core}
   \caption{}
   \label{fig:chap10-full-core-pinch-2}
 \end{subfigure}
-\begin{subfigure}{0.68\textwidth}
+\begin{subfigure}{0.67\textwidth}
   \centering
   \includegraphics[width=\linewidth]{figures/unsupervised/geometries/with-features/2-clusters/combined/full-core}
   \caption{}
   \label{fig:chap10-full-core-combined-2}
 \end{subfigure}
-\caption[Materials for BEAVRS with clustering homogenization (2 clusters)]{Materials for the \ac{BEAVRS} model with \textit{i}\ac{MGXS} spatial homogenization from 2 clusters with pinch feature selection (a) and dummy feature selection (b).}
+\caption[Materials for BEAVRS with \textit{i}\ac{MGXS} homogenization (2 clusters)]{Materials for the \ac{BEAVRS} model with \textit{i}\ac{MGXS} spatial homogenization of 2 clusters with pinch feature selection (a) and dummy feature selection (b).}
 \label{fig:chap10-full-core-geometries-2}
 \end{figure}
 
@@ -1759,19 +1770,19 @@ Interestingly, the models of 2 -- 4 clusters for the quarter core \ac{BEAVRS} mo
 
 \begin{figure}[h!]
 \centering
-\begin{subfigure}{0.68\textwidth}
+\begin{subfigure}{0.67\textwidth}
   \centering
   \includegraphics[width=\linewidth]{figures/unsupervised/geometries/with-features/4-clusters/pinch/full-core}
   \caption{}
   \label{fig:chap10-full-core-pinch-4}
 \end{subfigure}
-\begin{subfigure}{0.68\textwidth}
+\begin{subfigure}{0.67\textwidth}
   \centering
   \includegraphics[width=\linewidth]{figures/unsupervised/geometries/with-features/4-clusters/combined/full-core}
   \caption{}
   \label{fig:chap10-full-core-combined-4}
 \end{subfigure}
-\caption[Materials for BEAVRS with clustering homogenization (4 clusters)]{Materials for the \ac{BEAVRS} model with \textit{i}\ac{MGXS} spatial homogenization from 4 clusters with pinch feature selection (a) and dummy feature selection (b).}
+\caption[Materials for BEAVRS with \textit{i}\ac{MGXS} homogenization (4 clusters)]{Materials for the \ac{BEAVRS} model with \textit{i}\ac{MGXS} spatial homogenization of 4 clusters with pinch feature selection (a) and dummy feature selection (b).}
 \label{fig:chap10-full-core-geometries-4}
 \end{figure}
 
@@ -1779,19 +1790,19 @@ Interestingly, the models of 2 -- 4 clusters for the quarter core \ac{BEAVRS} mo
 
 \begin{figure}[h!]
 \centering
-\begin{subfigure}{0.68\textwidth}
+\begin{subfigure}{0.67\textwidth}
   \centering
   \includegraphics[width=\linewidth]{figures/unsupervised/geometries/with-features/8-clusters/pinch/full-core}
   \caption{}
   \label{fig:chap10-full-core-pinch-8}
 \end{subfigure}
-\begin{subfigure}{0.68\textwidth}
+\begin{subfigure}{0.67\textwidth}
   \centering
   \includegraphics[width=\linewidth]{figures/unsupervised/geometries/with-features/8-clusters/combined/full-core}
   \caption{}
   \label{fig:chap10-full-core-combined-8}
 \end{subfigure}
-\caption[Materials for BEAVRS with clustering homogenization (8 clusters)]{Materials for the \ac{BEAVRS} model with \textit{i}\ac{MGXS} spatial homogenization from 8 clusters with pinch feature selection (a) and dummy feature selection (b).}
+\caption[Materials for BEAVRS with \textit{i}\ac{MGXS} homogenization (8 clusters)]{Materials for the \ac{BEAVRS} model with \textit{i}\ac{MGXS} spatial homogenization of 8 clusters with pinch feature selection (a) and dummy feature selection (b).}
 \label{fig:chap10-full-core-geometries-8}
 \end{figure}
 
@@ -1799,19 +1810,19 @@ Interestingly, the models of 2 -- 4 clusters for the quarter core \ac{BEAVRS} mo
 
 \begin{figure}[h!]
 \centering
-\begin{subfigure}{0.68\textwidth}
+\begin{subfigure}{0.67\textwidth}
   \centering
   \includegraphics[width=\linewidth]{figures/unsupervised/geometries/with-features/16-clusters/pinch/full-core}
   \caption{}
   \label{fig:chap10-full-core-pinch-16}
 \end{subfigure}
-\begin{subfigure}{0.68\textwidth}
+\begin{subfigure}{0.67\textwidth}
   \centering
   \includegraphics[width=\linewidth]{figures/unsupervised/geometries/with-features/16-clusters/combined/full-core}
   \caption{}
   \label{fig:chap10-full-core-combined-16}
 \end{subfigure}
-\caption[Materials for BEAVRS with clustering homogenization (16 clusters)]{Materials for the \ac{BEAVRS} model with \textit{i}\ac{MGXS} spatial homogenization from 16 clusters with pinch feature selection (a) and dummy feature selection (b).}
+\caption[Materials for BEAVRS with \textit{i}\ac{MGXS} homogenization (16 clusters)]{Materials for the \ac{BEAVRS} model with \textit{i}\ac{MGXS} spatial homogenization of 16 clusters with pinch feature selection (a) and dummy feature selection (b).}
 \label{fig:chap10-full-core-geometries-16}
 \end{figure}
 
@@ -1819,19 +1830,19 @@ Interestingly, the models of 2 -- 4 clusters for the quarter core \ac{BEAVRS} mo
 
 \begin{figure}[h!]
 \centering
-\begin{subfigure}{0.68\textwidth}
+\begin{subfigure}{0.67\textwidth}
   \centering
   \includegraphics[width=\linewidth]{figures/unsupervised/geometries/with-features/32-clusters/pinch/full-core}
   \caption{}
   \label{fig:chap10-full-core-pinch-32}
 \end{subfigure}
-\begin{subfigure}{0.68\textwidth}
+\begin{subfigure}{0.67\textwidth}
   \centering
   \includegraphics[width=\linewidth]{figures/unsupervised/geometries/with-features/32-clusters/combined/full-core}
   \caption{}
   \label{fig:chap10-full-core-combined-32}
 \end{subfigure}
-\caption[Materials for BEAVRS with clustering homogenization (32 clusters)]{Materials for the \ac{BEAVRS} model with \textit{i}\ac{MGXS} spatial homogenization from 32 clusters with pinch feature selection (a) and dummy feature selection (b).}
+\caption[Materials for BEAVRS with \textit{i}\ac{MGXS} homogenization (32 clusters)]{Materials for the \ac{BEAVRS} model with \textit{i}\ac{MGXS} spatial homogenization of 32 clusters with pinch feature selection (a) and dummy feature selection (b).}
 \label{fig:chap10-full-core-geometries-32}
 \end{figure}
 
@@ -1839,19 +1850,19 @@ Interestingly, the models of 2 -- 4 clusters for the quarter core \ac{BEAVRS} mo
 
 \begin{figure}[h!]
 \centering
-\begin{subfigure}{0.68\textwidth}
+\begin{subfigure}{0.67\textwidth}
   \centering
   \includegraphics[width=\linewidth]{figures/unsupervised/geometries/with-features/64-clusters/pinch/full-core}
   \caption{}
   \label{fig:chap10-full-core-pinch-64}
 \end{subfigure}
-\begin{subfigure}{0.68\textwidth}
+\begin{subfigure}{0.67\textwidth}
   \centering
   \includegraphics[width=\linewidth]{figures/unsupervised/geometries/with-features/64-clusters/combined/full-core}
   \caption{}
   \label{fig:chap10-full-core-combined-64}
 \end{subfigure}
-\caption[Materials for BEAVRS with clustering homogenization (64 clusters)]{Materials for the \ac{BEAVRS} model with \textit{i}\ac{MGXS} spatial homogenization from 64 clusters with pinch feature selection (a) and dummy feature selection (b).}
+\caption[Materials for BEAVRS with \textit{i}\ac{MGXS} homogenization (64 clusters)]{Materials for the \ac{BEAVRS} model with \textit{i}\ac{MGXS} spatial homogenization of 64 clusters with pinch feature selection (a) and dummy feature selection (b).}
 \label{fig:chap10-full-core-geometries-64}
 \end{figure}
 
@@ -1860,16 +1871,16 @@ Interestingly, the models of 2 -- 4 clusters for the quarter core \ac{BEAVRS} mo
 \vfill
 \begin{highlightsbox}[frametitle=Highlights]
 \begin{itemize}
-  \item The \textit{inferential \ac{MGXS}} (\textit{i}\ac{MGXS}) spatial homogenization scheme is introduced to use unsupervised clustering analysis of \ac{MC} tally data to predict which fuel pins experience similar spatial self-shielding effects.
+  \item The \textit{inferential \ac{MGXS}} (\textit{i}\ac{MGXS}) spatial homogenization scheme uses unsupervised clustering analysis of \ac{MC} tally data to predict which fuel pins experience similar spatial self-shielding effects.
   \item The \textit{i}\ac{MGXS} data processing pipeline is composed of the following stages:
   \begin{itemize}
     \item \textit{\textbf{Feature extraction}} builds \textit{features} from \ac{MC} tallies for each fuel pin.
     \item \textit{\textbf{Feature selection}} identifies the features indicative of \ac{MGXS} clustering.
-    \item \textit{\textbf{Dimensionality reduction}} projects the features into a new vector space.
-    \item \textit{\textbf{Predictor training}} applies a clustering algorithm to the feature vectors.
+    \item \textit{\textbf{Dimensionality reduction}} projects features into a reduced vector space.
+    \item \textit{\textbf{Predictor training}} applies a clustering algorithm to the dataset.
     \item \textit{\textbf{Model selection}} chooses the best fit clustering model.
     \item \textit{\textbf{Spatial homogenization}} averages the \ac{MGXS} of fuel pins in each cluster.  \end{itemize}
-  \item The material configurations predicted by the \textit{i}\ac{MGXS} scheme for each of the six heterogeneous benchmarks was presented.
+  \item The material configurations predicted by the \textit{i}\ac{MGXS} scheme for each of the six heterogeneous benchmarks are illustrated.
   \item The \textit{i}\ac{MGXS} scheme easily identifies clusters of fuel pins adjacent to \acp{CRGT} and \acp{BP} -- and more importantly, along assembly-assembly and reflector-assembly interfaces -- which the \ac{LNS} scheme fails to do for arbitrary geometries.
 \end{itemize}
 \end{highlightsbox}
