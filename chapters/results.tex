@@ -66,11 +66,7 @@ first paragraph: outline
   -don't expect clustering algorithm to have any impact on the eigenvaue bias
 
 second paragraph: outline and analysis
--figures of eigenvalue bias by number of clusters
-  -benchmark
-  -clustering algorithm
-  -number of clusters
--Tabs.~\ref{table:chap11-eigenvalues-combined} and~\ref{table:chap11-eigenvalues-combined}
+-Tab.~\ref{table:chap11-eigenvalues-litmus-only}
   -benchmark
   -clustering algorithm
   -number of clusters
@@ -78,67 +74,6 @@ second paragraph: outline and analysis
 
 -perhaps reduce number of columns in table to null, degenerate, LNS, and 2, and 6 clusters??
   -determine clusterings to columnize from plots of U-238 capture rate errors by \# clusters
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsubsection{Variation with the Number of Clusters}
-\label{subsec:chap11-imgxs-eigenvalues-num-clusters}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsubsection{Benchmark with Null, Degenerate and LNS Schemes}
-\label{subsec:chap11-imgxs-eigenvalues-benchmar}
-
-\begin{table}[ht!]
-  \centering
-  \caption[OpenMOC eigenvalue bias for pinch feature selection]{OpenMOC eigenvalue bias $\Delta\rho$ for \textit{i}\ac{MGXS} spatial homogenization with pinch feature selection.}
-  \small
-  \label{table:chap11-eigenvalues-pinch}
-  \vspace{6pt}
-  \begin{tabular}{l l R{1.5cm} R{1.5cm} R{1.5cm} R{1.5cm} R{1.5cm}}
-  \toprule
-  \rowcolor{lightgray}
-  & \multicolumn{1}{c}{\cellcolor{lightgray} \bf Clustering} & \multicolumn{5}{S[table-format=6.1]}{\cellcolor{lightgray} \textbf{\# Clusters}} \\
-  \multirow{-2}{*}{\cellcolor{lightgray} \bf Benchmark} &
-  \multicolumn{1}{c}{\cellcolor{lightgray} \bf Algorithm} &
-  \multicolumn{1}{c}{\cellcolor{lightgray} \bf 2} &
-  \multicolumn{1}{c}{\cellcolor{lightgray} \bf 4} &
-  \multicolumn{1}{c}{\cellcolor{lightgray} \bf 6} &
-  \multicolumn{1}{c}{\cellcolor{lightgray} \bf 8} &
-  \multicolumn{1}{c}{\cellcolor{lightgray} \bf 10} \\
-  \midrule
-\multirow{4}{*}{\parbox{2.5cm}{1.6\% Assm}} & $k$-Means & -300 & -303 & -296 & -302 & -289 \\
-& Agglomerative & -305 & -301 & -298 & -300 & -293 \\
-& BIRCH & -305 & -300 & -296 & -297 & -297 \\
-& \ac{GMM} & -300 & -301 & -301 & -291 & -288 \\
-  \midrule
-\multirow{4}{*}{\parbox{2.5cm}{3.1\% Assm}} & $k$-Means & & & & & \\
-& Agglomerative & & & & & \\
-& BIRCH & & & & & \\
-& GMM & & & & & \\
-  \midrule
-\multirow{4}{*}{\parbox{2.5cm}{3.1\% Assm w/ 20 BPs}} & $k$-Means & 137 & 146 & 144 & 148 & 141 \\
-& Agglomerative & 136 & 152 & 146 & 140 & 136 \\
-& BIRCH & 139 & 151 & 146 & 147 & 147 \\
-& \ac{GMM} & 138 & 150 & 151 & 147 & 140 \\
-  \midrule
-\multirow{4}{*}{\parbox{2.5cm}{2$\times$2 Colorset}} & $k$-Means & & & & & \\
-& Agglomerative & & & & & \\
-& BIRCH & & & & & \\
-& GMM & & & & & \\
-  \midrule
-\multirow{4}{*}{\parbox{2.5cm}{2$\times$2 Colorset w/ Reflector}} & $k$-Means & & & & & \\
-& Agglomerative & & & & & \\
-& BIRCH & & & & & \\
-& GMM & & & & & \\
-  \midrule
-\multirow{4}{*}{\parbox{2.5cm}{BEAVRS Full Core}} & $k$-Means & & & & & \\
-& Agglomerative & & & & & \\
-& BIRCH & & & & & \\
-& GMM & & & & & \\
-  \bottomrule
-\end{tabular}
-\end{table}
-
-\clearpage
 
 \begin{table}[ht!]
   \centering
@@ -158,32 +93,32 @@ second paragraph: outline and analysis
   \multicolumn{1}{c}{\cellcolor{lightgray} \bf 8} &
   \multicolumn{1}{c}{\cellcolor{lightgray} \bf 10} \\
   \midrule
-\multirow{4}{*}{\parbox{2.5cm}{1.6\% Assm}} & $k$-Means & -298 & -292 & -285 & -299 & -277 \\
-& Agglomerative & -294 & -292 & -285 & -299 & -286 \\
-& BIRCH & -294 & -294 & -292 & -288 & -288 \\
-& \ac{GMM} & -298 & -298 & -290 & -297 & -283 \\
+\multirow{4}{*}{\parbox{2.5cm}{1.6\% Assm}} & Agglomerative & -168 & -168 & -168 & -168 & -168 \\
+& BIRCH & -168 & -168 & -168 & -168 & -168 \\
+& \ac{GMM} & -168 & -168 & -168 & -168 & -168 \\
+& $k$-means & -168 & -168 & -168 & -168 & -168 \\
   \midrule
-\multirow{4}{*}{\parbox{2.5cm}{3.1\% Assm}} & $k$-Means & -212 & -207 & -209 & -193 & -190 \\
-& Agglomerative & -213 & -207 & -190 & -195 & -188 \\
-& BIRCH & -213 & -207 & -204 & -202 & -196 \\
-& \ac{GMM} & -212 & -210 & -218 & -209 & -191 \\
+\multirow{4}{*}{\parbox{2.5cm}{3.1\% Assm}} & Agglomerative & -194 & -194 & -194 & -194 & -194 \\
+& BIRCH & -194 & -194 & -194 & -194 & -194 \\
+& \ac{GMM} & -194 & -194 & -194 & -194 & -194 \\
+& $k$-means & -194 & -194 & -194 & -194 & -194 \\
   \midrule
-\multirow{4}{*}{\parbox{2.5cm}{3.1\% Assm w/ 20 BPs}} & $k$-Means & & & & & \\
-& Agglomerative & & & & & \\
-& BIRCH & & & & & \\
-& GMM & & & & & \\
+\multirow{4}{*}{\parbox{2.5cm}{3.1\% Assm w/ 20 \acp{BP}}} & Agglomerative & -237 & -236 & -235 & -235 & -235 \\
+& BIRCH & -237 & -236 & -235 & -235 & -235 \\
+& \ac{GMM} & -236 & -235 & -236 & -235 & -235 \\
+& $k$-means & -236 & -236 & -236 & -235 & -235 \\
   \midrule
-\multirow{4}{*}{\parbox{2.5cm}{2$\times$2 Colorset}} & $k$-Means & 25 & 29 & 27 & 29 & 30 \\
-& Agglomerative & 28 & 28 & 29 & 29 & 30 \\
-& BIRCH & 27 & 28 & 28 & 28 & 30 \\
-& \ac{GMM} & 26 & 29 & 29 & 28 & 30 \\
+\multirow{4}{*}{\parbox{2.5cm}{2$\times$2 Colorset}} & Agglomerative & -189 & -189 & -189 & -189 & -189 \\
+& BIRCH & -189 & -189 & -189 & -189 & -189 \\
+& \ac{GMM} & -188 & -189 & -188 & -189 & -189 \\
+& $k$-means & -188 & -189 & -188 & -189 & -189 \\
   \midrule
 \multirow{4}{*}{\parbox{2.5cm}{2$\times$2 Colorset w/ Reflector}} & $k$-Means & & & & & \\
 & Agglomerative & & & & & \\
 & BIRCH & & & & & \\
 & GMM & & & & & \\
   \midrule
-\multirow{4}{*}{\parbox{2.5cm}{BEAVRS Full Core}} & $k$-Means & & & & & \\
+\multirow{4}{*}{\parbox{2.5cm}{BEAVRS Quarter Core}} & $k$-Means & & & & & \\
 & Agglomerative & & & & & \\
 & BIRCH & & & & & \\
 & GMM & & & & & \\
@@ -225,6 +160,82 @@ third paragraph: analysis
   -clustering algorithm
   -number of clusters
 
+\begin{figure}[h!]
+\centering
+\begin{subfigure}{0.9\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{figures/results/err-by-cluster/assm-16/max-rel-err}
+  \caption{}
+  \label{fig:chap11-max-capt-err-by-cluster-assm-16}
+\end{subfigure}
+\begin{subfigure}{0.9\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{figures/results/err-by-cluster/assm-16/mean-rel-err}
+  \caption{}
+  \label{fig:chap11-mean-capt-err-by-cluster-assm-16}
+\end{subfigure}
+\caption[U-238 capture rate errors for the 1.6\% enriched assembly]{The max (a) and mean (b) U-238 capture rate errors for the 1.6\% enriched assembly with \textit{i}\ac{MGXS} spatial homogenization with litmus-only feature selection.}
+\label{fig:chap11-capt-err-by-cluster-assm-16}
+\end{figure}
+
+\begin{figure}[h!]
+\centering
+\begin{subfigure}{0.9\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{figures/results/err-by-cluster/assm-31/max-rel-err}
+  \caption{}
+  \label{fig:chap11-max-capt-err-by-cluster-assm-31}
+\end{subfigure}
+\begin{subfigure}{0.9\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{figures/results/err-by-cluster/assm-31/mean-rel-err}
+  \caption{}
+  \label{fig:chap11-mean-capt-err-by-cluster-assm-31}
+\end{subfigure}
+\caption[U-238 capture rate errors for the 3.1\% enriched assembly]{The max (a) and mean (b) U-238 capture rate errors for the 3.1\% enriched assembly with \textit{i}\ac{MGXS} spatial homogenization with litmus-only feature selection.}
+\label{fig:chap11-capt-err-by-cluster-assm-31}
+\end{figure}
+
+\begin{figure}[h!]
+\centering
+\begin{subfigure}{0.9\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{figures/results/err-by-cluster/assm-31-20BPs/max-rel-err}
+  \caption{}
+  \label{fig:chap11-max-capt-err-by-cluster-assm-31-20BPs}
+\end{subfigure}
+\begin{subfigure}{0.9\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{figures/results/err-by-cluster/assm-31-20BPs/mean-rel-err}
+  \caption{}
+  \label{fig:chap11-mean-capt-err-by-cluster-assm-31-20BPs}
+\end{subfigure}
+\caption[U-238 capture rate errors for the 3.1\% enriched assembly with 20 BPs]{The max (a) and mean (b) U-238 capture rate errors for the 3.1\% enriched assembly with 20 \acp{BP} with \textit{i}\ac{MGXS} spatial homogenization with litmus-only feature selection.}
+\label{fig:chap11-capt-err-by-cluster-assm-31-20BPs}
+\end{figure}
+
+\begin{figure}[h!]
+\centering
+\begin{subfigure}{0.9\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{figures/results/err-by-cluster/2x2/max-rel-err}
+  \caption{}
+  \label{fig:chap11-max-capt-err-by-cluster-assm-2x2}
+\end{subfigure}
+\begin{subfigure}{0.9\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{figures/results/err-by-cluster/2x2/mean-rel-err}
+  \caption{}
+  \label{fig:chap11-mean-capt-err-by-cluster-assm-2x2}
+\end{subfigure}
+\caption[U-238 capture rate errors for the 2$\times$2 colorset]{The max (a) and mean (b) U-238 capture rate error for the 2$\times$2 colorset with \textit{i}\ac{MGXS} spatial homogenization with litmus-only feature selection.}
+\label{fig:chap11-capt-err-by-cluster-assm-2x2}
+\end{figure}
+
+-plots for reflector and full core
+
+SUMMARY BOX
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Benchmark with Null, Degenerate and LNS Schemes}
 \label{subsec:chap11-imgxs-capt-rates-benchmark}
@@ -234,117 +245,6 @@ third paragraph: analysis
     -benchmark
     -clustering algorithm
     -number of clusters
--Tabs.~\ref{table:chap11-max-capt-rates-pinch} and~\ref{table:chap11-mean-capt-rates-pinch}
-  -pinch feature selection
-    -benchmark
-    -clustering algorithm
-    -number of clusters
-
-\begin{table}[ht!]
-  \centering
-  \caption[Maximum OpenMOC U-238 capture rate errors for pinch feature selection]{Maximum absolute U-238 capture rate percent relative errors for \textit{i}\ac{MGXS} spatial homogenization with pinch feature selection.}
-  \small
-  \label{table:chap11-max-capt-rates-pinch}
-  \vspace{6pt}
-  \begin{tabular}{l l R{1.5cm} R{1.5cm} R{1.5cm} R{1.5cm} R{1.5cm}}
-  \toprule
-  \rowcolor{lightgray}
-  & & \multicolumn{5}{S[table-format=6.1]}{\cellcolor{lightgray} \textbf{\# Clusters}} \\
-  \multirow{-2}{*}{\cellcolor{lightgray} \bf Benchmark} &
-  \multirow{-2}{*}{\cellcolor{lightgray} \bf Predictor} &
-  \multicolumn{1}{c}{\cellcolor{lightgray} \bf 2} &
-  \multicolumn{1}{c}{\cellcolor{lightgray} \bf 4} &
-  \multicolumn{1}{c}{\cellcolor{lightgray} \bf 6} &
-  \multicolumn{1}{c}{\cellcolor{lightgray} \bf 8} &
-  \multicolumn{1}{c}{\cellcolor{lightgray} \bf 10} \\
-  \midrule
-\multirow{4}{*}{\parbox{2.5cm}{1.6\% Assm}} & $k$-Means & 0.744 & 0.815 & 0.514 & 0.442 & 0.441 \\
-& Agglomerative & 0.672 & 0.529 & 0.444 & 0.443 & 0.442 \\
-& BIRCH & 0.672 & 0.527 & 0.443 & 0.444 & 0.444 \\
-& \ac{GMM} & 0.741 & 0.529 & 0.436 & 0.436 & 0.434 \\
-  \midrule
-\multirow{4}{*}{\parbox{2.5cm}{3.1\% Assm}} & $k$-Means & & & & & \\
-& Agglomerative & & & & & \\
-& BIRCH & & & & & \\
-& GMM & & & & & \\
-  \midrule
-\multirow{4}{*}{\parbox{2.5cm}{3.1\% Assm w/ 20 BPs}} & $k$-Means & 1.151 & 0.922 & 0.610 & 0.685 & 0.696 \\
-& Agglomerative & 1.072 & 0.936 & 0.502 & 0.504 & 0.504 \\
-& BIRCH & 1.044 & 0.876 & 0.533 & 0.495 & 0.495 \\
-& \ac{GMM} & 0.836 & 0.922 & 0.530 & 0.504 & 0.503 \\
-  \midrule
-\multirow{4}{*}{\parbox{2.5cm}{2$\times$2 Colorset}} & $k$-Means & & & & & \\
-& Agglomerative & & & & & \\
-& BIRCH & & & & & \\
-& GMM & & & & & \\
-  \midrule
-\multirow{4}{*}{\parbox{2.5cm}{2$\times$2 Colorset w/ Reflector}} & $k$-Means & & & & & \\
-& Agglomerative & & & & & \\
-& BIRCH & & & & & \\
-& GMM & & & & & \\
-  \midrule
-\multirow{4}{*}{\parbox{2.5cm}{BEAVRS Full Core}} & $k$-Means & & & & & \\
-& Agglomerative & & & & & \\
-& BIRCH & & & & & \\
-& GMM & & & & & \\
-  \bottomrule
-\end{tabular}
-\end{table}
-
-\clearpage
-
-\begin{table}[ht!]
-  \centering
-  \caption[Mean OpenMOC U-238 capture rate errors for pinch feature selection]{Mean absolute U-238 capture rate percent relative errors for \textit{i}\ac{MGXS} spatial homogenization with pinch feature selection.}
-  \small
-  \label{table:chap11-mean-capt-rates-pinch}
-  \vspace{6pt}
-  \begin{tabular}{l l R{1.5cm} R{1.5cm} R{1.5cm} R{1.5cm} R{1.5cm}}
-  \toprule
-  \rowcolor{lightgray}
-  & & \multicolumn{5}{S[table-format=6.1]}{\cellcolor{lightgray} \textbf{\# Clusters}} \\
-  \multirow{-2}{*}{\cellcolor{lightgray} \bf Benchmark} &
-  \multirow{-2}{*}{\cellcolor{lightgray} \bf Predictor} &
-  \multicolumn{1}{c}{\cellcolor{lightgray} \bf 2} &
-  \multicolumn{1}{c}{\cellcolor{lightgray} \bf 4} &
-  \multicolumn{1}{c}{\cellcolor{lightgray} \bf 6} &
-  \multicolumn{1}{c}{\cellcolor{lightgray} \bf 8} &
-  \multicolumn{1}{c}{\cellcolor{lightgray} \bf 10} \\
-  \midrule
-\multirow{4}{*}{\parbox{2.5cm}{1.6\% Assm}} & $k$-Means & 0.268 & 0.111 & 0.091 & 0.077 & 0.078 \\
-& Agglomerative & 0.218 & 0.105 & 0.078 & 0.077 & 0.077 \\
-& BIRCH & 0.218 & 0.148 & 0.122 & 0.076 & 0.076 \\
-& \ac{GMM} & 0.268 & 0.105 & 0.077 & 0.076 & 0.077 \\
-  \midrule
-\multirow{4}{*}{\parbox{2.5cm}{3.1\% Assm}} & $k$-Means & & & & & \\
-& Agglomerative & & & & & \\
-& BIRCH & & & & & \\
-& GMM & & & & & \\
-  \midrule
-\multirow{4}{*}{\parbox{2.5cm}{3.1\% Assm w/ 20 BPs}} & $k$-Means & 0.271 & 0.150 & 0.128 & 0.109 & 0.091 \\
-& Agglomerative & 0.261 & 0.135 & 0.111 & 0.110 & 0.087 \\
-& BIRCH & 0.262 & 0.191 & 0.157 & 0.113 & 0.113 \\
-& \ac{GMM} & 0.224 & 0.140 & 0.112 & 0.105 & 0.085 \\
-  \midrule
-\multirow{4}{*}{\parbox{2.5cm}{2$\times$2 Colorset}} & $k$-Means & & & & & \\
-& Agglomerative & & & & & \\
-& BIRCH & & & & & \\
-& GMM & & & & & \\
-  \midrule
-\multirow{4}{*}{\parbox{2.5cm}{2$\times$2 Colorset w/ Reflector}} & $k$-Means & & & & & \\
-& Agglomerative & & & & & \\
-& BIRCH & & & & & \\
-& GMM & & & & & \\
-  \midrule
-\multirow{4}{*}{\parbox{2.5cm}{BEAVRS Full Core}} & $k$-Means & & & & & \\
-& Agglomerative & & & & & \\
-& BIRCH & & & & & \\
-& GMM & & & & & \\
-  \bottomrule
-\end{tabular}
-\end{table}
-
-\clearpage
 
 \begin{table}[ht!]
   \centering
@@ -364,32 +264,32 @@ third paragraph: analysis
   \multicolumn{1}{c}{\cellcolor{lightgray} \bf 8} &
   \multicolumn{1}{c}{\cellcolor{lightgray} \bf 10} \\
   \midrule
-\multirow{4}{*}{\parbox{2.5cm}{1.6\% Assm}} & $k$-Means & 0.836 & 0.529 & 0.529 & 0.444 & 0.445 \\
-& Agglomerative & 0.955 & 0.529 & 0.529 & 0.458 & 0.445 \\
-& BIRCH & 0.955 & 0.541 & 0.441 & 0.442 & 0.443 \\
-& \ac{GMM} & 0.836 & 0.529 & 0.529 & 0.442 & 0.444 \\
+\multirow{4}{*}{\parbox{2.5cm}{1.6\% Assm}} & Agglomerative & 0.955 & -0.529 & -0.529 & -0.458 & -0.445 \\
+& BIRCH & 0.955 & -0.541 & -0.441 & -0.442 & -0.443 \\
+& \ac{GMM} & -0.836 & -0.529 & -0.529 & -0.442 & -0.444 \\
+& $k$-means & -0.836 & -0.529 & -0.529 & -0.442 & -0.445 \\
   \midrule
-\multirow{4}{*}{\parbox{2.5cm}{3.1\% Assm}} & $k$-Means & 0.964 & 0.611 & 0.611 & 0.515 & 0.500 \\
-& Agglomerative & 1.067 & 0.611 & 0.517 & 0.518 & 0.447 \\
-& BIRCH & 1.067 & 0.611 & 0.448 & 0.447 & 0.446 \\
-& \ac{GMM} & 0.964 & 0.612 & 0.612 & 0.440 & 0.430 \\
+\multirow{4}{*}{\parbox{2.5cm}{3.1\% Assm}} & Agglomerative & 1.067 & -0.611 & -0.517 & -0.518 & 0.447 \\
+& BIRCH & 1.067 & -0.611 & 0.448 & 0.447 & 0.446 \\
+& \ac{GMM} & -0.964 & -0.612 & -0.440 & -0.440 & 0.430 \\
+& $k$-means & -0.964 & -0.611 & -0.611 & -0.515 & 0.447 \\
   \midrule
-\multirow{4}{*}{\parbox{2.5cm}{3.1\% Assm w/ 20 BPs}} & $k$-Means & & & & & \\
-& Agglomerative & & & & & \\
-& BIRCH & & & & & \\
-& GMM & & & & & \\
+\multirow{4}{*}{\parbox{2.5cm}{3.1\% Assm w/ 20 \acp{BP}}} & Agglomerative & -1.017 & 0.688 & 0.680 & 0.679 & -0.499 \\
+& BIRCH & -1.017 & 0.688 & -0.531 & -0.531 & -0.499 \\
+& \ac{GMM} & -1.102 & 0.680 & 0.727 & -0.531 & -0.499 \\
+& $k$-means & -1.102 & 0.687 & 0.713 & -0.691 & -0.499 \\
   \midrule
-\multirow{4}{*}{\parbox{2.5cm}{2$\times$2 Colorset}} & $k$-Means & 1.070 & 0.916 & 0.924 & 0.946 & 0.707 \\
-& Agglomerative & 1.094 & 0.811 & 0.662 & 0.662 & 0.663 \\
-& BIRCH & 1.116 & 0.774 & 0.627 & 0.689 & 0.689 \\
-& \ac{GMM} & 1.137 & 0.931 & 0.932 & 0.658 & 0.724 \\
+\multirow{4}{*}{\parbox{2.5cm}{2$\times$2 Colorset}} & Agglomerative & -1.094 & 0.811 & 0.662 & 0.662 & 0.663 \\
+& BIRCH & -1.116 & 0.774 & 0.627 & 0.689 & 0.689 \\
+& \ac{GMM} & -1.137 & 0.931 & 0.932 & 0.771 & 0.720 \\
+& $k$-means & -1.070 & -0.916 & 0.924 & -0.829 & 0.726 \\
   \midrule
 \multirow{4}{*}{\parbox{2.5cm}{2$\times$2 Colorset w/ Reflector}} & $k$-Means & & & & & \\
 & Agglomerative & & & & & \\
 & BIRCH & & & & & \\
 & GMM & & & & & \\
   \midrule
-\multirow{4}{*}{\parbox{2.5cm}{BEAVRS Full Core}} & $k$-Means & & & & & \\
+\multirow{4}{*}{\parbox{2.5cm}{BEAVRS Quarter Core}} & $k$-Means & & & & & \\
 & Agglomerative & & & & & \\
 & BIRCH & & & & & \\
 & GMM & & & & & \\
@@ -417,32 +317,32 @@ third paragraph: analysis
   \multicolumn{1}{c}{\cellcolor{lightgray} \bf 8} &
   \multicolumn{1}{c}{\cellcolor{lightgray} \bf 10} \\
   \midrule
-\multirow{4}{*}{\parbox{2.5cm}{1.6\% Assm}} & $k$-Means & 0.286 & 0.139 & 0.138 & 0.109 & 0.078 \\
-& Agglomerative & 0.351 & 0.139 & 0.138 & 0.107 & 0.093 \\
+\multirow{4}{*}{\parbox{2.5cm}{1.6\% Assm}} & Agglomerative & 0.351 & 0.139 & 0.138 & 0.107 & 0.093 \\
 & BIRCH & 0.351 & 0.146 & 0.128 & 0.111 & 0.093 \\
-& \ac{GMM} & 0.286 & 0.120 & 0.132 & 0.108 & 0.097 \\
+& \ac{GMM} & 0.286 & 0.120 & 0.132 & 0.108 & 0.082 \\
+& $k$-means & 0.286 & 0.139 & 0.138 & 0.109 & 0.092 \\
   \midrule
-\multirow{4}{*}{\parbox{2.5cm}{3.1\% Assm}} & $k$-Means & 0.321 & 0.157 & 0.151 & 0.123 & 0.087 \\
-& Agglomerative & 0.393 & 0.157 & 0.142 & 0.123 & 0.101 \\
+\multirow{4}{*}{\parbox{2.5cm}{3.1\% Assm}} & Agglomerative & 0.393 & 0.157 & 0.142 & 0.123 & 0.101 \\
 & BIRCH & 0.393 & 0.157 & 0.139 & 0.121 & 0.102 \\
-& \ac{GMM} & 0.321 & 0.132 & 0.134 & 0.118 & 0.098 \\
+& \ac{GMM} & 0.321 & 0.132 & 0.130 & 0.102 & 0.098 \\
+& $k$-means & 0.321 & 0.157 & 0.150 & 0.123 & 0.101 \\
   \midrule
-\multirow{4}{*}{\parbox{2.5cm}{3.1\% Assm w/ 20 BPs}} & $k$-Means & & & & & \\
-& Agglomerative & & & & & \\
-& BIRCH & & & & & \\
-& GMM & & & & & \\
+\multirow{4}{*}{\parbox{2.5cm}{3.1\% Assm w/ 20 \acp{BP}}} & Agglomerative & 0.266 & 0.188 & 0.168 & 0.165 & 0.121 \\
+& BIRCH & 0.266 & 0.188 & 0.126 & 0.121 & 0.121 \\
+& \ac{GMM} & 0.331 & 0.167 & 0.165 & 0.121 & 0.119 \\
+& $k$-means & 0.331 & 0.182 & 0.204 & 0.199 & 0.121 \\
   \midrule
-\multirow{4}{*}{\parbox{2.5cm}{2$\times$2 Colorset}} & $k$-Means & 0.296 & 0.212 & 0.165 & 0.171 & 0.152 \\
-& Agglomerative & 0.337 & 0.207 & 0.162 & 0.163 & 0.163 \\
+\multirow{4}{*}{\parbox{2.5cm}{2$\times$2 Colorset}} & Agglomerative & 0.337 & 0.207 & 0.162 & 0.163 & 0.163 \\
 & BIRCH & 0.341 & 0.209 & 0.164 & 0.159 & 0.155 \\
-& \ac{GMM} & 0.311 & 0.240 & 0.192 & 0.154 & 0.158 \\
+& \ac{GMM} & 0.311 & 0.240 & 0.192 & 0.151 & 0.158 \\
+& $k$-means & 0.296 & 0.212 & 0.169 & 0.165 & 0.158 \\
   \midrule
 \multirow{4}{*}{\parbox{2.5cm}{2$\times$2 Colorset w/ Reflector}} & $k$-Means & & & & & \\
 & Agglomerative & & & & & \\
 & BIRCH & & & & & \\
 & GMM & & & & & \\
   \midrule
-\multirow{4}{*}{\parbox{2.5cm}{BEAVRS Full Core}} & $k$-Means & & & & & \\
+\multirow{4}{*}{\parbox{2.5cm}{BEAVRS Quarter Core}} & $k$-Means & & & & & \\
 & Agglomerative & & & & & \\
 & BIRCH & & & & & \\
 & GMM & & & & & \\
@@ -461,44 +361,9 @@ third paragraph: analysis
 
 \begin{figure}[h!]
 \centering
-\begin{subfigure}{0.45\textwidth}
-  \centering
-  \includegraphics[width=\linewidth]{figures/results/assm-16/no-transform/capt-err-null}
-  \caption{}
-  \label{fig:chap11-assm-1.6-capt-null}
-\end{subfigure}%
-\begin{subfigure}{0.45\textwidth}
-  \centering
-  \includegraphics[width=\linewidth]{figures/results/assm-16/no-transform/capt-err-degenerate}
-  \caption{}
-  \label{fig:chap11-assm-1.6-capt-degenerate}
-\end{subfigure}
-\begin{subfigure}{0.45\textwidth}
-  \centering
-  \includegraphics[width=\linewidth]{figures/results/assm-16/no-transform/capt-err-lns}
-  \caption{}
-  \label{fig:chap11-assm-1.6-capt-lns}
-\end{subfigure}%
-\begin{subfigure}{0.45\textwidth}
-  \centering
-  \includegraphics[width=\linewidth]{figures/results/assm-16/no-transform/capt-err-pinch-agglomerative-(2)}
-  \caption{}
-  \label{fig:chap11-assm-1.6-capt-pinch-2}
-\end{subfigure}
-\begin{subfigure}{0.45\textwidth}
-  \centering
-  \includegraphics[width=\linewidth]{figures/results/assm-16/no-transform/capt-err-pinch-agglomerative-(6)}
-  \caption{}
-  \label{fig:chap11-assm-1.6-capt-pinch-6}
-\end{subfigure}%
-\begin{subfigure}{0.45\textwidth}
-  \centering
-  \includegraphics[width=\linewidth]{figures/results/assm-16/no-transform/capt-err-pinch-agglomerative-(10)}
-  \caption{}
-  \label{fig:chap11-assm-1.6-capt-pinch-10}
-\end{subfigure}
+\includegraphics[width=0.9\linewidth]{figures/results/spatial/assm-16/capt-err}
 \vspace{2mm}
-\caption[U-238 capture rate errors for a 1.6\% enriched assembly]{U-238 capture rate error spatial distributions for a 1.6\% enriched assembly for null (a), degenerate (b), \ac{LNS} (c) and \textit{i}\ac{MGXS} spatial homogenization with 2 (d), 6 (e) and 10 (f) clusters.}
+\caption[U-238 capture rate errors for a 1.6\% enriched assembly]{U-238 capture rate error spatial distributions for a 1.6\% enriched assembly with null, degenerate, \ac{LNS} and \textit{i}\ac{MGXS} spatial homogenization with 2, 6 and 10 clusters.}
 \label{fig:chap11-assm-1.6-capt-rates}
 \end{figure}
 
@@ -506,44 +371,9 @@ third paragraph: analysis
 
 \begin{figure}[h!]
 \centering
-\begin{subfigure}{0.45\textwidth}
-  \centering
-  \includegraphics[width=\linewidth]{figures/results/assm-31/pca-transform/capt-err-null}
-  \caption{}
-  \label{fig:chap11-assm-3.1-capt-null}
-\end{subfigure}%
-\begin{subfigure}{0.45\textwidth}
-  \centering
-  \includegraphics[width=\linewidth]{figures/results/assm-31/pca-transform/capt-err-degenerate}
-  \caption{}
-  \label{fig:chap11-assm-3.1-capt-degenerate}
-\end{subfigure}
-\begin{subfigure}{0.45\textwidth}
-  \centering
-  \includegraphics[width=\linewidth]{figures/results/assm-31/pca-transform/capt-err-lns}
-  \caption{}
-  \label{fig:chap11-assm-3.1-capt-lns}
-\end{subfigure}%
-\begin{subfigure}{0.45\textwidth}
-  \centering
-  \includegraphics[width=\linewidth]{figures/results/assm-31/pca-transform/capt-err-pinch-agglomerative-(2)}
-  \caption{}
-  \label{fig:chap11-assm-3.1-capt-pinch-2}
-\end{subfigure}
-\begin{subfigure}{0.45\textwidth}
-  \centering
-  \includegraphics[width=\linewidth]{figures/results/assm-31/pca-transform/capt-err-pinch-agglomerative-(6)}
-  \caption{}
-  \label{fig:chap11-assm-3.1-capt-pinch-6}
-\end{subfigure}%
-\begin{subfigure}{0.45\textwidth}
-  \centering
-  \includegraphics[width=\linewidth]{figures/results/assm-31/pca-transform/capt-err-pinch-agglomerative-(10)}
-  \caption{}
-  \label{fig:chap11-assm-3.1-capt-pinch-10}
-\end{subfigure}
+\includegraphics[width=0.9\linewidth]{figures/results/spatial/assm-31/capt-err}
 \vspace{2mm}
-\caption[U-238 capture rate errors for a 3.1\% enriched assembly]{U-238 capture rate error spatial distributions for a 3.1\% enriched assembly for null (a), degenerate (b), \ac{LNS} (c) and \textit{i}\ac{MGXS} spatial homogenization with 2 (d), 6 (e) and 10 (f) clusters.}
+\caption[U-238 capture rate errors for a 3.1\% enriched assembly]{U-238 capture rate error spatial distributions for a 3.1\% enriched assembly with null, degenerate, \ac{LNS} and \textit{i}\ac{MGXS} spatial homogenization with 2, 6 and 10 clusters.}
 \label{fig:chap11-assm-3.1-capt-rates}
 \end{figure}
 
@@ -551,44 +381,9 @@ third paragraph: analysis
 
 \begin{figure}[h!]
 \centering
-\begin{subfigure}{0.45\textwidth}
-  \centering
-  \includegraphics[width=\linewidth]{figures/results/assm-31-20BPs/no-transform/capt-err-null}
-  \caption{}
-  \label{fig:chap11-assm-3.1-20BPs-capt-null}
-\end{subfigure}%
-\begin{subfigure}{0.45\textwidth}
-  \centering
-  \includegraphics[width=\linewidth]{figures/results/assm-31-20BPs/no-transform/capt-err-degenerate}
-  \caption{}
-  \label{fig:chap11-assm-3.1-20BPs-capt-degenerate}
-\end{subfigure}
-\begin{subfigure}{0.45\textwidth}
-  \centering
-  \includegraphics[width=\linewidth]{figures/results/assm-31-20BPs/no-transform/capt-err-lns}
-  \caption{}
-  \label{fig:chap11-assm-3.1-20BPs-capt-lns}
-\end{subfigure}%
-\begin{subfigure}{0.45\textwidth}
-  \centering
-  \includegraphics[width=\linewidth]{figures/results/assm-31-20BPs/no-transform/capt-err-pinch-agglomerative-(2)}
-  \caption{}
-  \label{fig:chap11-assm-3.1-20BPs-capt-pinch-2}
-\end{subfigure}
-\begin{subfigure}{0.45\textwidth}
-  \centering
-  \includegraphics[width=\linewidth]{figures/results/assm-31-20BPs/no-transform/capt-err-pinch-agglomerative-(6)}
-  \caption{}
-  \label{fig:chap11-assm-3.1-20BPs-capt-pinch-6}
-\end{subfigure}%
-\begin{subfigure}{0.45\textwidth}
-  \centering
-  \includegraphics[width=\linewidth]{figures/results/assm-31-20BPs/no-transform/capt-err-pinch-agglomerative-(10)}
-  \caption{}
-  \label{fig:chap11-assm-3.1-20BPs-capt-pinch-10}
-\end{subfigure}
+\includegraphics[width=0.9\linewidth]{figures/results/spatial/assm-31-20BPs/capt-err}
 \vspace{2mm}
-\caption[U-238 capture rate errors for a 3.1\% enriched assembly with 20 BPs]{U-238 capture rate error spatial distributions for a 3.1\% enriched assembly with 20 \acp{BP} for null (a), degenerate (b), \ac{LNS} (c) and \textit{i}\ac{MGXS} spatial homogenization with 2 (d), 6 (e) and 10 (f) clusters.}
+\caption[U-238 capture rate errors for a 3.1\% enriched assembly with 20 BPs]{U-238 capture rate error spatial distributions for a 3.1\% enriched assembly with 20 \acp{BP} with null, degenerate, \ac{LNS} and \textit{i}\ac{MGXS} spatial homogenization with 2, 6 and 10 clusters.}
 \label{fig:chap11-assm-3.1-20BPs-capt-rates}
 \end{figure}
 
@@ -596,54 +391,65 @@ third paragraph: analysis
 
 \begin{figure}[h!]
 \centering
-\begin{subfigure}{0.45\textwidth}
-  \centering
-  \includegraphics[width=\linewidth]{figures/results/2x2/ensemble-transform/capt-err-null}
-  \caption{}
-  \label{fig:chap11-assm-2x2-capt-null}
-\end{subfigure}%
-\begin{subfigure}{0.45\textwidth}
-  \centering
-  \includegraphics[width=\linewidth]{figures/results/2x2/ensemble-transform/capt-err-degenerate}
-  \caption{}
-  \label{fig:chap11-assm-2x2-capt-degenerate}
-\end{subfigure}
-\begin{subfigure}{0.45\textwidth}
-  \centering
-  \includegraphics[width=\linewidth]{figures/results/2x2/ensemble-transform/capt-err-lns}
-  \caption{}
-  \label{fig:chap11-assm-2x2-capt-lns}
-\end{subfigure}%
-\begin{subfigure}{0.45\textwidth}
-  \centering
-  \includegraphics[width=\linewidth]{figures/results/2x2/ensemble-transform/capt-err-pinch-agglomerative-(2)}
-  \caption{}
-  \label{fig:chap11-assm-2x2-capt-pinch-2}
-\end{subfigure}
-\begin{subfigure}{0.45\textwidth}
-  \centering
-  \includegraphics[width=\linewidth]{figures/results/2x2/ensemble-transform/capt-err-pinch-agglomerative-(6)}
-  \caption{}
-  \label{fig:chap11-assm-2x2-capt-pinch-6}
-\end{subfigure}%
-\begin{subfigure}{0.45\textwidth}
-  \centering
-  \includegraphics[width=\linewidth]{figures/results/2x2/ensemble-transform/capt-err-pinch-agglomerative-(10)}
-  \caption{}
-  \label{fig:chap11-assm-2x2-capt-pinch-10}
-\end{subfigure}
+\includegraphics[width=0.9\linewidth]{figures/results/spatial/2x2/capt-err}
 \vspace{2mm}
-\caption[U-238 capture rate errors for a 2$\times$2 colorset]{U-238 capture rate error spatial distributions for a 2$\times$2 colorset for null (a), degenerate (b), \ac{LNS} (c) and \textit{i}\ac{MGXS} spatial homogenization with 2 (d), 6 (e) and 10 (f) clusters.}
-\label{fig:chap11-assm-2x2-capt-rates}
+\caption[U-238 capture rate errors for a 2$\times$2 colorset]{U-238 capture rate error spatial distributions for a 2$\times$2 colorset with null, degenerate, \ac{LNS} and \textit{i}\ac{MGXS} spatial homogenization with 2, 6 and 10 clusters.}
+\label{fig:chap11-2x2-capt-rates}
 \end{figure}
 
 \clearpage
+
+-plots for reflector and full core
+
+SUMMARY BOX
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Comparing OpenMOC Solutions}
 \label{subsec:chap11-imgxs-capt-rates-compare}
 
--plots to compare OpenMOC solutions
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.9\linewidth]{figures/results/compare/assm-16/compare-capt}
+\vspace{2mm}
+\caption[U-238 capture rate comparison for a 1.6\% enriched assembly]{A comparison of U-238 capture rate spatial distributions for \textit{i}\ac{MGXS} and null spatial homogenization schemes for a 1.6\% enriched assembly.}
+\label{fig:chap11-assm-1.6-capt-rates-comp}
+\end{figure}
+
+\clearpage
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.9\linewidth]{figures/results/compare/assm-31/compare-capt}
+\vspace{2mm}
+\caption[U-238 capture rate comparison for a 3.1\% enriched assembly]{A comparison of U-238 capture rate spatial distributions for \textit{i}\ac{MGXS} and null spatial homogenization schemes for a 3.1\% enriched assembly.}
+\label{fig:chap11-assm-3.1-capt-rates-comp}
+\end{figure}
+
+\clearpage
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.9\linewidth]{figures/results/compare/assm-31-20BPs/compare-capt}
+\vspace{2mm}
+\caption[U-238 capture rate comparison for a 3.1\% enriched assembly with 20 BPs]{A comparison of U-238 capture rate spatial distributions for \textit{i}\ac{MGXS} and null spatial homogenization schemes for a 3.1\% enriched assembly with 20 \acp{BP}.}
+\label{fig:chap11-assm-31-20BPs-capt-rates}
+\end{figure}
+
+\clearpage
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.9\linewidth]{figures/results/compare/2x2/compare-capt}
+\vspace{2mm}
+\caption[U-238 capture rate comparison for a 2$\times$2 colorset]{A comparison of U-238 capture rate spatial distributions for \textit{i}\ac{MGXS} and null spatial homogenization schemes for a 2$\times$2 colorset.}
+\label{fig:chap11-assm-2x2-capt-rates}
+\end{figure}
+
+\clearpage
+
+-plots for reflector and full core
+
+SUMMARY BOX
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -670,17 +476,17 @@ OpenMC batchwise
 
 \begin{figure}[h!]
 \centering
-\includegraphics[width=0.85\linewidth]{figures/results/assm-16/no-transform/keff-bias}
+\includegraphics[width=0.87\linewidth]{figures/results/convergence/assm-16/keff-bias-evo}
 \vspace{2mm}
-\caption[Eigenvalue bias covergence for a 1.6\% enriched assembly]{Convergence of the eigenvalue bias $\Delta\rho$ for a 1.6\% enriched assembly for varying spatial homogenization schemes.}
+\caption[Eigenvalue bias covergence for a 1.6\% enriched assembly]{Convergence of the eigenvalue bias $\Delta\rho$ for a 1.6\% enriched assembly.}
 \label{fig:chap11-assm-1.6-eigenvalue-converge}
 \end{figure}
 
 \begin{figure}[h!]
 \centering
-\includegraphics[width=0.85\linewidth]{figures/results/assm-31/pca-transform/keff-bias}
+\includegraphics[width=0.87\linewidth]{figures/results/convergence/assm-31/keff-bias-evo}
 \vspace{2mm}
-\caption[Eigenvalue bias covergence for a 3.1\% enriched assembly]{Convergence of the eigenvalue bias $\Delta\rho$ for a 3.1\% enriched assembly for varying spatial homogenization schemes.}
+\caption[Eigenvalue bias covergence for a 3.1\% enriched assembly]{Convergence of the eigenvalue bias $\Delta\rho$ for a 3.1\% enriched assembly.}
 \label{fig:chap11-assm-3.1-eigenvalue-converge}
 \end{figure}
 
@@ -688,112 +494,29 @@ OpenMC batchwise
 
 \begin{figure}[h!]
 \centering
-\includegraphics[width=0.85\linewidth]{figures/results/assm-31-20BPs/no-transform/keff-bias}
+\includegraphics[width=0.87\linewidth]{figures/results/convergence/assm-31-20BPs/keff-bias-evo}
 \vspace{2mm}
-\caption[Eigenvalue bias covergence for a 3.1\% enriched assembly with 20 \acp{BP}]{Convergnce of the eigenvalue bias $\Delta\rho$ for a 3.1\% enriched assembly with 20 \acp{BP} for varying spatial homogenization schemes.}
+\caption[Eigenvalue bias covergence for a 3.1\% enriched assembly with 20 \acp{BP}]{Convergence of the eigenvalue bias $\Delta\rho$ for a 3.1\% enriched assembly with 20 \acp{BP}.}
 \label{fig:chap11-assm-3.1-20BPs-eigenvalue-converge}
 \end{figure}
 
 \begin{figure}[h!]
 \centering
-\includegraphics[width=0.85\linewidth]{figures/results/2x2/ensemble-transform/keff-bias}
+\includegraphics[width=0.87\linewidth]{figures/results/convergence/2x2/keff-bias-evo}
 \vspace{2mm}
-\caption[Eigenvalue bias covergence for a 2$\times$2 colorset]{Convergnce of the eigenvalue bias $\Delta\rho$ for a 2$\times$2 colorset for varying spatial homogenization schemes.}
+\caption[Eigenvalue bias covergence for a 2$\times$2 colorset]{Convergence of the eigenvalue bias $\Delta\rho$ for a 2$\times$2 colorset.}
 \label{fig:chap11-2x2-eigenvalue-converge}
 \end{figure}
 
 \clearpage
 
+-plots for reflector and full core
+
+SUMMARY BOX
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Fission Rate Convergence}
-\label{subsec:chap11-fission-converge}
-
-\clearpage
-
-\begin{figure}[h!]
-\centering
-\begin{subfigure}{\textwidth}
-  \centering
-  \includegraphics[width=0.9\linewidth]{figures/results/assm-16/no-transform/evo-fission-max}
-  \caption{}
-  \label{fig:chap11-assm-1.6-fission-converge-max}
-\end{subfigure}
-\begin{subfigure}{\textwidth}
-  \centering
-  \includegraphics[width=0.9\linewidth]{figures/results/assm-16/no-transform/evo-fission-mean}
-  \caption{}
-  \label{fig:chap11-assm-1.6-fission-converge-mean}
-\end{subfigure}
-\vspace{2mm}
-\caption[Fission rate covergence for a 1.6\% enriched assembly]{Convergence of the max (a) and mean (b) absolute fission rate percent relative errors for a 1.6\% enriched assembly for varying spatial homogenization schemes.}
-\label{fig:chap11-assm-1.6-fission-converge}
-\end{figure}
-
-\clearpage
-
-\begin{figure}[h!]
-\centering
-\begin{subfigure}{\textwidth}
-  \centering
-  \includegraphics[width=0.9\linewidth]{figures/results/assm-31/pca-transform/evo-fission-max}
-  \caption{}
-  \label{fig:chap11-assm-3.1-fission-converge-max}
-\end{subfigure}
-\begin{subfigure}{\textwidth}
-  \centering
-  \includegraphics[width=0.9\linewidth]{figures/results/assm-31/pca-transform/evo-fission-mean}
-  \caption{}
-  \label{fig:chap11-assm-3.1-fission-converge-mean}
-\end{subfigure}
-\vspace{2mm}
-\caption[Fission rate covergence for a 3.1\% enriched assembly]{Convergence of the max (a) and mean (b) absolute fission rate percent relative errors for a 3.1\% enriched assembly for varying spatial homogenization schemes.}
-\label{fig:chap11-assm-3.1-fission-converge}
-\end{figure}
-
-\clearpage
-
-\begin{figure}[h!]
-\centering
-\begin{subfigure}{\textwidth}
-  \centering
-  \includegraphics[width=0.9\linewidth]{figures/results/assm-31-20BPs/no-transform/evo-fission-max}
-  \caption{}
-  \label{fig:chap11-assm-3.1-20BPs-fission-converge-max}
-\end{subfigure}
-\begin{subfigure}{\textwidth}
-  \centering
-  \includegraphics[width=0.9\linewidth]{figures/results/assm-31-20BPs/no-transform/evo-fission-mean}
-  \caption{}
-  \label{fig:chap11-assm-3.1-20BPs-fission-converge-mean}
-\end{subfigure}
-\vspace{2mm}
-\caption[Fission rate covergence for a 3.1\% enriched assembly with 20 \acp{BP}]{Convergence of the max (a) and mean (b) absolute fission rate percent relative errors for a 3.1\% enriched assembly with 20 \acp{BP} for varying spatial homogenization schemes.}
-\label{fig:chap11-assm-3.1-20BPs-fission-converge}
-\end{figure}
-
-\clearpage
-
-\begin{figure}[h!]
-\centering
-\begin{subfigure}{\textwidth}
-  \centering
-  \includegraphics[width=0.9\linewidth]{figures/results/2x2/ensemble-transform/evo-fission-max}
-  \caption{}
-  \label{fig:chap11-2x2-fission-converge-max}
-\end{subfigure}
-\begin{subfigure}{\textwidth}
-  \centering
-  \includegraphics[width=0.9\linewidth]{figures/results/2x2/ensemble-transform/evo-fission-mean}
-  \caption{}
-  \label{fig:chap11-2x2-fission-converge-mean}
-\end{subfigure}
-\vspace{2mm}
-\caption[Fission rate covergence for a 2$\times$2 colorset]{Convergence of the max (a) and mean (b) absolute fission rate percent relative errors for a 2$\times$2 colorset for varying spatial homogenization schemes.}
-\label{fig:chap11-2x2-fission-converge}
-\end{figure}
-
-\clearpage
+%\subsection{Fission Rate Convergence}
+%\label{subsec:chap11-fission-converge}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{U-238 Capture Rate Convergence}
@@ -805,18 +528,18 @@ OpenMC batchwise
 \centering
 \begin{subfigure}{\textwidth}
   \centering
-  \includegraphics[width=0.9\linewidth]{figures/results/assm-16/no-transform/evo-capture-max}
+  \includegraphics[width=0.9\linewidth]{figures/results/convergence/assm-16/max-capt-err-evo}
   \caption{}
   \label{fig:chap11-assm-1.6-capture-converge-max}
 \end{subfigure}
 \begin{subfigure}{\textwidth}
   \centering
-  \includegraphics[width=0.9\linewidth]{figures/results/assm-16/no-transform/evo-capture-mean}
+  \includegraphics[width=0.9\linewidth]{figures/results/convergence/assm-16/mean-capt-err-evo}
   \caption{}
   \label{fig:chap11-assm-1.6-capture-converge-mean}
 \end{subfigure}
 \vspace{2mm}
-\caption[Fission rate covergence for a 1.6\% enriched assembly]{Convergence of the max (a) and mean (b) absolute U-238 capture rate percent relative errors for a 1.6\% enriched assembly for varying spatial homogenization schemes.}
+\caption[Fission rate covergence for a 1.6\% enriched assembly]{Convergence of the max (a) and mean (b) absolute U-238 capture rate percent relative errors for a 1.6\% enriched assembly.}
 \label{fig:chap11-assm-1.6-capture-converge}
 \end{figure}
 
@@ -826,18 +549,18 @@ OpenMC batchwise
 \centering
 \begin{subfigure}{\textwidth}
   \centering
-  \includegraphics[width=0.9\linewidth]{figures/results/assm-31/pca-transform/evo-capture-max}
+  \includegraphics[width=0.9\linewidth]{figures/results/convergence/assm-31/max-capt-err-evo}
   \caption{}
   \label{fig:chap11-assm-3.1-capture-converge-max}
 \end{subfigure}
 \begin{subfigure}{\textwidth}
   \centering
-  \includegraphics[width=0.9\linewidth]{figures/results/assm-31/pca-transform/evo-capture-mean}
+  \includegraphics[width=0.9\linewidth]{figures/results/convergence/assm-31/mean-capt-err-evo}
   \caption{}
   \label{fig:chap11-assm-3.1-capture-converge-mean}
 \end{subfigure}
 \vspace{2mm}
-\caption[Fission rate covergence for a 3.1\% enriched assembly]{Convergence of the max (a) and mean (b) absolute U-238 capture rate percent relative errors for a 3.1\% enriched assembly for varying spatial homogenization schemes.}
+\caption[Fission rate covergence for a 3.1\% enriched assembly]{Convergence of the max (a) and mean (b) absolute U-238 capture rate percent relative errors for a 3.1\% enriched assembly.}
 \label{fig:chap11-assm-3.1-capture-converge}
 \end{figure}
 
@@ -847,18 +570,18 @@ OpenMC batchwise
 \centering
 \begin{subfigure}{\textwidth}
   \centering
-  \includegraphics[width=0.9\linewidth]{figures/results/assm-31-20BPs/no-transform/evo-capture-max}
+  \includegraphics[width=0.9\linewidth]{figures/results/convergence/assm-31-20BPs/max-capt-err-evo}
   \caption{}
   \label{fig:chap11-assm-3.1-20BPs-capture-converge-max}
 \end{subfigure}
 \begin{subfigure}{\textwidth}
   \centering
-  \includegraphics[width=0.9\linewidth]{figures/results/assm-31-20BPs/no-transform/evo-capture-mean}
+  \includegraphics[width=0.9\linewidth]{figures/results/convergence/assm-31-20BPs/mean-capt-err-evo}
   \caption{}
   \label{fig:chap11-assm-3.1-20BPs-capture-converge-mean}
 \end{subfigure}
 \vspace{2mm}
-\caption[Fission rate covergence for a 3.1\% enriched assembly with 20 \acp{BP}]{Convergence of the max (a) and mean (b) absolute U-238 capture rate percent relative errors for a 3.1\% enriched assembly with 20 \acp{BP} for varying spatial homogenization schemes.}
+\caption[Fission rate covergence for a 3.1\% enriched assembly with 20 \acp{BP}]{Convergence of the max (a) and mean (b) absolute U-238 capture rate percent relative errors for a 3.1\% enriched assembly with 20 \acp{BP}.}
 \label{fig:chap11-assm-3.1-20BPs-capture-converge}
 \end{figure}
 
@@ -868,22 +591,26 @@ OpenMC batchwise
 \centering
 \begin{subfigure}{\textwidth}
   \centering
-  \includegraphics[width=0.9\linewidth]{figures/results/2x2/ensemble-transform/evo-capture-max}
+  \includegraphics[width=0.9\linewidth]{figures/results/convergence/2x2/max-capt-err-evo}
   \caption{}
   \label{fig:chap11-2x2-capture-converge-max}
 \end{subfigure}
 \begin{subfigure}{\textwidth}
   \centering
-  \includegraphics[width=0.9\linewidth]{figures/results/2x2/ensemble-transform/evo-capture-mean}
+  \includegraphics[width=0.9\linewidth]{figures/results/convergence/2x2/mean-capt-err-evo}
   \caption{}
   \label{fig:chap11-2x2-capture-converge-mean}
 \end{subfigure}
 \vspace{2mm}
-\caption[Fission rate covergence for a 2$\times$2 colorset]{Convergence of the max (a) and mean (b) absolute U-238 capture rate percent relative errors for a 2$\times$2 colorset for varying spatial homogenization schemes.}
+\caption[Fission rate covergence for a 2$\times$2 colorset]{Convergence of the max (a) and mean (b) absolute U-238 capture rate percent relative errors for a 2$\times$2 colorset.}
 \label{fig:chap11-2x2-capture-converge}
 \end{figure}
 
 \clearpage
+
+-reflector and full core plots
+
+SUMMARY BOX
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -899,18 +626,135 @@ second paragraph: outline
 -Sec.~\ref{subsec:chap11-db-dunn-ch-indices} - BIC
 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Davies-Boulding, Dunn and Calinski-Harabaz Indices}
-\label{subsec:chap11-db-dunn-ch-indices}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Davies-Bouldin Index}
+\label{subsec:chap11-db-index}
 
 first paragraph:
 -
 
--plot the indices normalized to their maxima for:
+-plot the coefficients for:
   -the four clustering algorithms
-  -for each of the six benchmarks
-  -for combined vs. pinch
-  -total of 12 plots (2 per benchmark)
+  -for 1.6\% enr. assembly, 2x2 colorset, reflector and full core
+  -for litmus-only
+  -total of 4 plots
+
+\clearpage
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.87\linewidth]{figures/results/model-select/assm-16/db-combined-U238-capture-1}
+\vspace{2mm}
+\caption[Davies-Bouldin indices for the 1.6\% enriched assembly]{Davies-Bouldin indices for the 1.6\% enriched assembly.}
+\label{fig:chap11-assm-16-db-index}
+\end{figure}
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.87\linewidth]{figures/results/model-select/assm-31-20BPs/db-combined-U238-capture-1}
+\vspace{2mm}
+\caption[Davies-Bouldin indices for the 3.1\% enriched assembly with 20 BPs]{Davies-Bouldin indices for the 3.1\% enriched assembly with 20 \acp{BP}.}
+\label{fig:chap11-assm-31-20BPs-db-index}
+\end{figure}
+
+\clearpage
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.87\linewidth]{figures/results/model-select/2x2/db-combined-U238-capture-1}
+\vspace{2mm}
+\caption[Davies-Bouldin indices for the 2$\times$2 colorset]{Davies-Bouldin indices for the 2$\times$2 colorset.}
+\label{fig:chap11-2x2-db-index}
+\end{figure}
+
+\clearpage
+
+-plot for reflector
+
+
+%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Dunn Index}
+\label{subsec:chap11-dunn-index}
+
+-plot the coefficients for:
+  -the four clustering algorithms
+  -for 1.6\% enr. assembly, 2x2 colorset, reflector and full core
+  -for litmus-only
+  -total of 4 plots
+
+\clearpage
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.87\linewidth]{figures/results/model-select/assm-16/dunn-combined-U238-capture-1}
+\vspace{2mm}
+\caption[Dunn indices for the 1.6\% enriched assembly]{Dunn indices for the 1.6\% enriched assembly.}
+\label{fig:chap11-assm-16-dunn-index}
+\end{figure}
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.87\linewidth]{figures/results/model-select/assm-31-20BPs/dunn-combined-U238-capture-1}
+\vspace{2mm}
+\caption[Dunn indices for the 3.1\% enriched assembly with 20 BPs]{Dunn indices for the 3.1\% enriched assembly with 20 \acp{BP}.}
+\label{fig:chap11-assm-31-20BPs-dunn-index}
+\end{figure}
+
+\clearpage
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.87\linewidth]{figures/results/model-select/2x2/dunn-combined-U238-capture-1}
+\vspace{2mm}
+\caption[Dunn indices for the 2$\times$2 colorset]{Dunn indices for the 2$\times$2 colorset.}
+\label{fig:chap11-2x2-dunn-index}
+\end{figure}
+
+\clearpage
+
+-plot for reflector
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Calinski-Harabaz Index}
+\label{subsec:chap11-ch-index}
+
+-plot the coefficients for:
+  -the four clustering algorithms
+  -for 1.6\% enr. assembly, 2x2 colorset, reflector and full core
+  -for litmus-only
+  -total of 4 plots
+
+\clearpage
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.87\linewidth]{figures/results/model-select/assm-16/ch-combined-U238-capture-1}
+\vspace{2mm}
+\caption[Calinski-Harabaz indices for the 1.6\% enriched assembly]{Calinski-Harabaz indices for the 1.6\% enriched assembly.}
+\label{fig:chap11-assm-16-ch-index}
+\end{figure}
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.87\linewidth]{figures/results/model-select/assm-31-20BPs/ch-combined-U238-capture-1}
+\vspace{2mm}
+\caption[Calinski-Harabaz indices for the 3.1\% enriched assembly with 20 BPs]{Calinski-Harabaz indices for the 3.1\% enriched assembly with 20 \acp{BP}.}
+\label{fig:chap11-assm-31-20BPs-ch-index}
+\end{figure}
+
+\clearpage
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.87\linewidth]{figures/results/model-select/2x2/ch-combined-U238-capture-1}
+\vspace{2mm}
+\caption[Calinski-Harabaz indices for the 2$\times$2 colorset]{Calinski-Harabaz indices for the 2$\times$2 colorset.}
+\label{fig:chap11-2x2-ch-index}
+\end{figure}
+
+\clearpage
+
+-plot for reflector
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Silhouette Coefficient}
@@ -918,9 +762,41 @@ first paragraph:
 
 -plot the coefficients for:
   -the four clustering algorithms
-  -for each of the six benchmarks
-  -for combined vs. pinch
-  -total of 12 plots (2 per benchmark)
+  -for 1.6\% enr. assembly, 2x2 colorset, reflector and full core
+  -for litmus-only
+  -total of 4 plots
+
+\clearpage
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.87\linewidth]{figures/results/model-select/assm-16/silhouette-combined-U238-capture-1}
+\vspace{2mm}
+\caption[Silhouette coefficients for the 1.6\% enriched assembly]{Silhouette coefficients for the 1.6\% enriched assembly.}
+\label{fig:chap11-assm-16-silhouette-coeff}
+\end{figure}
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.87\linewidth]{figures/results/model-select/assm-31-20BPs/silhouette-combined-U238-capture-1}
+\vspace{2mm}
+\caption[Silhouette coefficients for the 3.1\% enriched assembly with 20 BPs]{Silhouette coefficients for the 3.1\% enriched assembly with 20 \acp{BP}.}
+\label{fig:chap11-assm-31-20BPs-silhouette-coeff}
+\end{figure}
+
+\clearpage
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.87\linewidth]{figures/results/model-select/2x2/silhouette-combined-U238-capture-1}
+\vspace{2mm}
+\caption[Silhouette coefficients for the 2$\times$2 colorset]{Silhouette coefficients for the 2$\times$2 colorset.}
+\label{fig:chap11-2x2-silhouette-coeff}
+\end{figure}
+
+\clearpage
+
+-plot for reflector
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Bayesian Information Criterion}
@@ -932,6 +808,40 @@ first paragraph:
   -for combined vs. pinch
   -total of 12 plots (2 per benchmark)
 
+\clearpage
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.87\linewidth]{figures/results/model-select/assm-16/bic-combined-U238-capture-1}
+\vspace{2mm}
+\caption[Silhouette coefficients for the 1.6\% enriched assembly]{Bayesian Information Criteria (BIC) for the 1.6\% enriched assembly.}
+\label{fig:chap11-assm-16-bic}
+\end{figure}
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.87\linewidth]{figures/results/model-select/assm-31-20BPs/bic-combined-U238-capture-1}
+\vspace{2mm}
+\caption[Silhouette coefficients for the 3.1\% enriched assembly with 20 BPs]{Bayesian Information Criteria (BIC) for the 3.1\% enriched assembly with 20 \acp{BP}.}
+\label{fig:chap11-assm-31-20BPs-bic}
+\end{figure}
+
+\clearpage
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.87\linewidth]{figures/results/model-select/2x2/bic-combined-U238-capture-1}
+\vspace{2mm}
+\caption[BIC for the 2$\times$2 colorset]{Bayesian Information Criteria (BIC) for the 2$\times$2 colorset.}
+\label{fig:chap11-2x2-bic}
+\end{figure}
+
+\clearpage
+
+-plot for reflector
+
+SUMMARY BOX!!!
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Synthesis}
 \label{sec:chap11-synthesis}
@@ -939,3 +849,57 @@ first paragraph:
 -bring it all together - what does it all mean??
 -recall Fig. 10-1
   -quantify how much faster \textit{i}\ac{MGXS} would be then full core MC
+  -table of runtimes
+
+-plot of model complexity with generalization error by batch
+
+\begin{table}[ht!]
+  \centering
+  \caption[OpenMOC eigenvalue bias for litmus-only feature selection]{OpenMOC eigenvalue bias $\Delta\rho$ for \textit{i}\ac{MGXS} spatial homogenization with litmus-only feature selection.}
+  \small
+  \label{table:chap11-runtimes}
+  \vspace{6pt}
+  \begin{tabular}{l l R{1.5cm} R{1.5cm} R{1.5cm}}
+  \toprule
+  \rowcolor{lightgray}
+  & & \multicolumn{2}{c}{\cellcolor{lightgray} \bf Runtime [core-hours]} \\
+  \multirow{-2}{*}{\cellcolor{lightgray} \bf Benchmark} &
+  \multirow{-2}{*}{\cellcolor{lightgray} \bf Scheme} &
+  \multicolumn{1}{c}{\cellcolor{lightgray} \bf OpenMOC} &
+  \multicolumn{1}{c}{\cellcolor{lightgray} \bf OpenMC} &
+  \multicolumn{1}{c}{\cellcolor{lightgray} \bf Total} \\
+  \midrule
+\multirow{4}{*}{\parbox{2.5cm}{1.6\% Assm}} & Reference & & -- & \\
+& Null & & & \\
+& Degenerate & & & \\
+& \textit{i}\ac{MGXS} & & & \\
+  \midrule
+\multirow{4}{*}{\parbox{2.5cm}{3.1\% Assm}} & Reference & & -- & \\
+& Null & & & \\
+& Degenerate & & & \\
+& \textit{i}\ac{MGXS} & & & \\
+  \midrule
+\multirow{4}{*}{\parbox{2.5cm}{3.1\% Assm w/ 20 \acp{BP}}} & Reference & & -- & \\
+& Null & & & \\
+& Degenerate & & & \\
+& \textit{i}\ac{MGXS} & & & \\
+  \midrule
+\multirow{4}{*}{\parbox{2.5cm}{2$\times$2 Colorset}} & Reference & & -- & \\
+& Null & & & \\
+& Degenerate & & & \\
+& \textit{i}\ac{MGXS} & & & \\
+  \midrule
+\multirow{4}{*}{\parbox{2.5cm}{2$\times$2 Colorset w/ Reflector}} & Reference & & -- & \\
+& Null & & & \\
+& Degenerate & & & \\
+& \textit{i}\ac{MGXS} & & & \\
+  \midrule
+\multirow{4}{*}{\parbox{2.5cm}{BEAVRS Quarter Core}} & Reference & & -- & \\
+& Null & & & \\
+& Degenerate & & & \\
+& \textit{i}\ac{MGXS} & & & \\
+  \bottomrule
+\end{tabular}
+\end{table}
+
+SUMMARY BOX!!!
