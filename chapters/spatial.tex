@@ -24,15 +24,15 @@ This section quantifies and visualizes the impact of heterogeneities on pin-wise
 \subsection{Pin-Wise MGXS Statistical Uncertainty}
 \label{subsec:chap9-mgxs-uncertainty}
 
-Before investigating \ac{MGXS} clustering, it is important to first quantify the statistical uncertainties of the tallied pin-wise \ac{MGXS} for each benchmark. The max and mean standard deviations of the pin-wise U-238 capture and U-235 fission \ac{MGXS} for an infinite lattice and each of the heterogeneous benchmarks are presented in Tab.~\ref{table:chap9-std-dev-mgxs}. The standard deviations were computed by propagating the standard deviations of the reaction rate and flux tallies (Eqn.~\ref{eqn:chap3-variance-mean}) as discussed in Sec.~\ref{subsec:chap3-uncertainty-prop}. The standard deviations were computed for all of the pins in each benchmark, and the max and mean values were selected for the table. The table highlights the standard deviations for both 1.6\% and 3.1\% enriched fuel pins\footnote{Although the \ac{BEAVRS} model includes 2.4\% enriched fuel pins, they were not included in this analysis.}. The \ac{MGXS} data was computed in two energy groups. The U-238 capture \ac{MGXS} is analyzed for the first (fast) energy group since it encompasses the resonance region which is most sensitive to spatial self-shielding effects. The U-235 fission \ac{MGXS} is analyzed for the second (thermal) energy group since it encompasses thermal energies which drives the majority of fission in \acp{LWR}.
+Before investigating \ac{MGXS} clustering, it is important to first quantify the statistical uncertainties of the tallied pin-wise \ac{MGXS} for each benchmark. The max and mean relative uncertainties\footnote{The \textit{relative uncertainty} as used here is defined as the standard deviation of the sample mean divided by the sample mean.} of the pin-wise U-238 capture and U-235 fission \ac{MGXS} for an infinite lattice and each of the heterogeneous benchmarks are presented in Tab.~\ref{table:chap9-std-dev-mgxs}. The standard deviations were computed by propagating the standard deviations of the reaction rate and flux tallies (Eqn.~\ref{eqn:chap3-variance-mean}) as discussed in Sec.~\ref{subsec:chap3-uncertainty-prop}. The standard deviations were computed for all of the pins in each benchmark, and the max and mean values were selected for the table. The table highlights the standard deviations for both 1.6\% and 3.1\% enriched fuel pins\footnote{Although the \ac{BEAVRS} model includes 2.4\% enriched fuel pins, they were not included in this analysis.}. The \ac{MGXS} data was computed in two energy groups. The U-238 capture \ac{MGXS} is analyzed for the first (fast) energy group since it encompasses the resonance region which is most sensitive to spatial self-shielding effects. The U-235 fission \ac{MGXS} is analyzed for the second (thermal) energy group since it encompasses thermal energies which drives the majority of fission in \acp{LWR}.
 
-There are a few key observations which can be made from the statistical uncertainties. First, the statistical uncertainties for both \ac{MGXS} are relatively small with respect to the means. In particular, the relative uncertainties\footnote{The \textit{relative uncertainty} as used here is defined as the standard deviation of the sample mean divided by the sample mean.} are 0.1 -- 0.7\% and 0.05 -- 0.1\% for the U-238 capture and U-235 fission \ac{MGXS}, respectively. Furthermore, the reported standard deviations are likely overestimates since the reaction rate and flux tallies used to compute each \ac{MGXS} are positively correlated (see Sec.~\ref{table:chap9-std-dev-mgxs}). Therefore, the clustering of \ac{MGXS} demonstrated in the following sections results from variation in \ac{MC} sampling distributions with spatial heterogeneities rather than poor \ac{MC} sample statistics.
+There are a few key observations which can be made from the statistical uncertainties. First, the statistical uncertainties for both \ac{MGXS} are relatively small with respect to the means. In particular, the relative uncertainties are 0.1 -- 0.75\% and 0.05 -- 0.25\% for the U-238 capture and U-235 fission \ac{MGXS}, respectively. Furthermore, the reported standard deviations are likely overestimates since the reaction rate and flux tallies used to compute each \ac{MGXS} are positively correlated (see Sec.~\ref{table:chap9-std-dev-mgxs}). Therefore, the clustering of \ac{MGXS} demonstrated in the following sections results from variation in \ac{MC} sampling distributions with spatial heterogeneities rather than poor \ac{MC} sample statistics.
 
 
 {\setlength{\extrarowheight}{-0.1em}
 \begin{table}[H]
   \centering
-  \caption[Standard deviations for pin-wise MGXS]{The standard deviation for pin-wise U-235 fission and U-238 capture \ac{MGXS}\footnotemark.}
+  \caption[Relative uncertainties for pin-wise MGXS]{The percent relative uncertainties (1-sigma) for pin-wise U-235 fission and U-238 capture \ac{MGXS}\footnotemark.}
   \small
   \label{table:chap9-std-dev-mgxs}
   \vspace{6pt}
@@ -42,42 +42,78 @@ There are a few key observations which can be made from the statistical uncertai
   \multicolumn{1}{C{2.5cm}}{\textbf{Fuel Enrichment}} &
   \multicolumn{1}{c}{\textbf{Benchmark}} &
   \multicolumn{1}{l}{\textbf{Metric}} &
-  \boldmath$\mathrm{Var}\left[\hat{\sigma}_{c,1}^{238}\right]^{\nicefrac{1}{2}}$ \textbf{[barns]} &
-  \boldmath$\mathrm{Var}\left[\hat{\sigma}_{f,2}^{235}\right]^{\nicefrac{1}{2}}$ \textbf{[barns]} \\  
+  \boldmath$\mathrm{Var}\left[\hat{\sigma}_{c,1}^{238}\right]^{\nicefrac{1}{2}}$ \textbf{[\%]} &
+  \boldmath$\mathrm{Var}\left[\hat{\sigma}_{f,2}^{235}\right]^{\nicefrac{1}{2}}$ \textbf{[\%]} \\  
   \toprule
-\multirow{10}{*}{1.6\%} & \multirow{2}{*}{Infinite Lattice} & Max & 0.000790 & 0.179 \\
-& & Mean & 0.000771 & 0.167 \\
+\multirow{10}{*}{1.6\%} & \multirow{2}{*}{Infinite Lattice} & Max & 0.10 & 0.05 \\
+& & Mean & 0.10 & 0.05 \\
 \cline{2-5}
-& \multirow{2}{*}{Assm. (no \acp{BP})} & Max & 0.000813 & 0.179 \\
-& & Mean & 0.000785 & 0.162 \\
+& \multirow{2}{*}{Assm. (no \acp{BP})} & Max & 0.10 & 0.05 \\
+& & Mean & 0.10 & 0.04 \\
 \cline{2-5}
-& \multirow{2}{*}{2$\times$2 Colorset} & Max & 0.001650 & 0.356 \\
-& & Mean & 0.001580 & 0.332 \\
+& \multirow{2}{*}{2$\times$2 Colorset} & Max & 0.20 & 0.10 \\
+& & Mean & 0.19 & 0.09 \\
 \cline{2-5}
-& \multirow{2}{*}{2$\times$2 Colorset w/ Reflector} & Max & 0.005670 & 0.832 \\
-& & Mean & 0.001910 & 0.387 \\
+& \multirow{2}{*}{2$\times$2 Colorset w/ Reflector} & Max & 0.71 & 0.23 \\
+& & Mean & 0.24 & 0.11 \\
 \cline{2-5}
-& \multirow{2}{*}{\ac{BEAVRS} Quarter Core} & Max & 0.018700 & 3.752 \\
-& & Mean & 0.007330 & 1.509 \\
+& \multirow{2}{*}{\ac{BEAVRS} Quarter Core} & Max & 0.73 & 0.33 \\
+& & Mean & 0.28 & 0.13 \\
 \toprule
-\multirow{12}{*}{3.1\%} & \multirow{2}{*}{Infinite Lattice} & Max & 0.000797 & 0.202 \\
-& & Mean & 0.000774 & 0.190 \\
+\multirow{12}{*}{3.1\%} & \multirow{2}{*}{Infinite Lattice} & Max & 0.10 & 0.06 \\
+& & Mean & 0.10 & 0.06 \\
 \cline{2-5}
-& \multirow{2}{*}{Assm. (no \acp{BP})} & Max & 0.000813 & 0.203 \\
-& & Mean & 0.000789 & 0.184 \\
+& \multirow{2}{*}{Assm. (no \acp{BP})} & Max & 0.10 & 0.06 \\
+& & Mean & 0.10 & 0.05 \\
 \cline{2-5}
-& \multirow{2}{*}{Assm. (20 \acp{BP})} & Max & 0.000800 & 0.209 \\
-& & Mean & 0.000773 & 0.197 \\
+& \multirow{2}{*}{Assm. (20 \acp{BP})} & Max & 0.10 & 0.06 \\
+& & Mean & 0.10 & 0.06 \\
 \cline{2-5}
-& \multirow{2}{*}{2$\times$2 Colorset} & Max & 0.001590 & 0.413 \\
-& & Mean & 0.001530 & 0.380 \\
+& \multirow{2}{*}{2$\times$2 Colorset} & Max & 0.20 & 0.12 \\
+& & Mean & 0.19 & 0.11 \\
 \cline{2-5}
-& \multirow{2}{*}{2$\times$2 Colorset w/ Reflector} & Max & 0.002650 & 0.557 \\
-& & Mean & 0.001670 & 0.422 \\
+& \multirow{2}{*}{2$\times$2 Colorset w/ Reflector} & Max & 0.34 & 0.16 \\
+& & Mean & 0.22 & 0.12 \\
 \cline{2-5}
-& \multirow{2}{*}{\ac{BEAVRS} Quarter Core} & Max & 0.012500 & 2.708 \\
-& & Mean & 0.004860 & 1.168 \\
+& \multirow{2}{*}{\ac{BEAVRS} Quarter Core} & Max & 0.50 & 0.24 \\
+& & Mean & 0.19 & 0.11 \\
 \bottomrule
+%  \boldmath$\mathrm{Var}\left[\hat{\sigma}_{c,1}^{238}\right]^{\nicefrac{1}{2}}$ \textbf{[barns]} &
+%  \boldmath$\mathrm{Var}\left[\hat{\sigma}_{f,2}^{235}\right]^{\nicefrac{1}{2}}$ \textbf{[barns]} \\  
+%  \toprule
+%\multirow{10}{*}{1.6\%} & \multirow{2}{*}{Infinite Lattice} & Max & 0.000790 & 0.179 \\
+%& & Mean & 0.000771 & 0.167 \\
+%\cline{2-5}
+%& \multirow{2}{*}{Assm. (no \acp{BP})} & Max & 0.000813 & 0.179 \\
+%& & Mean & 0.000785 & 0.162 \\
+%\cline{2-5}
+%& \multirow{2}{*}{2$\times$2 Colorset} & Max & 0.001650 & 0.356 \\
+%& & Mean & 0.001580 & 0.332 \\
+%\cline{2-5}
+%& \multirow{2}{*}{2$\times$2 Colorset w/ Reflector} & Max & 0.005670 & 0.832 \\
+%& & Mean & 0.001910 & 0.387 \\
+%\cline{2-5}
+%& \multirow{2}{*}{\ac{BEAVRS} Quarter Core} & Max & 0.018700 & 3.752 \\
+%& & Mean & 0.007330 & 1.509 \\
+%\toprule
+%\multirow{12}{*}{3.1\%} & \multirow{2}{*}{Infinite Lattice} & Max & 0.000797 & 0.202 \\
+%& & Mean & 0.000774 & 0.190 \\
+%\cline{2-5}
+%& \multirow{2}{*}{Assm. (no \acp{BP})} & Max & 0.000813 & 0.203 \\
+%& & Mean & 0.000789 & 0.184 \\
+%\cline{2-5}
+%& \multirow{2}{*}{Assm. (20 \acp{BP})} & Max & 0.000800 & 0.209 \\
+%& & Mean & 0.000773 & 0.197 \\
+%\cline{2-5}
+%& \multirow{2}{*}{2$\times$2 Colorset} & Max & 0.001590 & 0.413 \\
+%& & Mean & 0.001530 & 0.380 \\
+%\cline{2-5}
+%& \multirow{2}{*}{2$\times$2 Colorset w/ Reflector} & Max & 0.002650 & 0.557 \\
+%& & Mean & 0.001670 & 0.422 \\
+%\cline{2-5}
+%& \multirow{2}{*}{\ac{BEAVRS} Quarter Core} & Max & 0.012500 & 2.708 \\
+%& & Mean & 0.004860 & 1.168 \\
+%\bottomrule
 \end{tabular}
 \end{table}
 }
@@ -86,7 +122,7 @@ There are a few key observations which can be made from the statistical uncertai
 
 \footnotetext{The reported uncertainties for the quarter core model may be underestimated due to correlations between fission source sites~\cite{herman2014correlation, miao2016correlation}.}
 
-In addition, the standard deviation increases with both the number of pins (and the corresponding decrease in particle track density in each tally volume) as well as the complexity of the heterogeneities in each benchmark. For example, there are 264 and 528 pins of a particular enrichment in the individual assembly benchmarks with \ac{CRGT} and \acp{BP}, respectively. The standard deviations for the pins in the 2$\times$2 colorset without a reflector are nearly 2$\times$ greater than those for the individual assemblies. The 1.6\% and 3.1\% enriched pins in the reflected colorset have standard deviations which are approximately 3$\times$ and 1.7$\times$ greater than those in the periodic colorset, respectively. This demonstrates the uneven distribution of particle track densities across the tally volumes in the reflected colorset, as evidenced by the power distributions in Figs.~\ref{fig:chap7-fiss-rates-2x2} and~\ref{fig:chap7-fiss-rates-reflector}.
+In addition, the relative uncertainty increases with both the number of pins (and the corresponding decrease in particle track density in each tally volume) as well as the complexity of the heterogeneities in each benchmark. For example, there are 264 and 528 pins of a particular enrichment in the individual assembly benchmarks with \ac{CRGT} and \acp{BP}, respectively. The uncertainties for the pins in the 2$\times$2 colorset without a reflector are nearly 2$\times$ greater than those for the individual assemblies. The 1.6\% and 3.1\% enriched pins in the reflected colorset have uncertainties which are approximately 3$\times$ and 1.7$\times$ greater than those in the periodic colorset, respectively. This demonstrates the uneven distribution of particle track densities across the tally volumes in the reflected colorset, as evidenced by the power distributions in Figs.~\ref{fig:chap7-fiss-rates-2x2} and~\ref{fig:chap7-fiss-rates-reflector}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Pin-Wise MGXS Population Variance}
@@ -99,38 +135,52 @@ The population variance is a useful metric to quantify the degree of dispersion 
 \sigma^2 = \frac{\displaystyle\sum\limits_{i=1}^{N}(x_{i} - \mu)^{2}}{N}
 \end{equation}
 
-The population variance of U-238 capture and U-235 fission pin-wise \ac{MGXS} for an infinite lattice and each of the heterogeneous benchmarks are presented in Tab.~\ref{table:chap9-pop-var-mgxs}. Each of the random samples in the variance calculation is the \ac{MGXS} in one fuel pin instance in the respective benchmark. The table highlights the population variance for both 1.6\% and 3.1\% enriched fuel pins. The \ac{MGXS} data was computed in two energy groups. The U-238 capture \ac{MGXS} is analyzed for the first group since it encompasses the resonance region which is most sensitive to spatial self-shielding effects. The U-235 fission \ac{MGXS} is analyzed for the second group since it encompasses thermal energies which drives the majority of fissions in \acp{LWR}.
+The population variance of U-238 capture and U-235 fission pin-wise \ac{MGXS}, normalized to the mean of the population, are presented in Tab.~\ref{table:chap9-pop-var-mgxs} for an infinite lattice and each of the heterogeneous benchmarks. Each of the random samples in the variance calculation is the \ac{MGXS} in one fuel pin instance in the respective benchmark. The table highlights the population variance for both 1.6\% and 3.1\% enriched fuel pins. The \ac{MGXS} data was computed in two energy groups. The U-238 capture \ac{MGXS} is analyzed for the first group since it encompasses the resonance region which is most sensitive to spatial self-shielding effects. The U-235 fission \ac{MGXS} is analyzed for the second group since it encompasses thermal energies which drives the majority of fissions in \acp{LWR}.
 
 \begin{table}[h!]
   \centering
-  \caption[Population variance for pin-wise MGXS]{The population variance for pin-wise U-235 fission and U-238 capture \ac{MGXS}.}
+  \caption[Population variance for pin-wise MGXS]{The population variance normalized to the population mean for pin-wise U-235 fission and U-238 capture \ac{MGXS}.}
   \small
   \label{table:chap9-pop-var-mgxs}
   \vspace{6pt}
-  \begin{tabular}{C{2.5cm} l C{2.5cm} C{2.5cm}}
+  \begin{tabular}{C{2.5cm} l C{2cm} C{2cm}}
   \toprule
   \rowcolor{lightgray}
-  \multicolumn{1}{C{2.5cm}}{\textbf{Fuel Enrichment}} & \multicolumn{1}{c}{\textbf{Benchmark}} & \boldmath$\mathrm{Var}\left[\sigma_{c,1}^{238}\right]$ \textbf{[barns]} & \boldmath$\mathrm{Var}\left[\sigma_{f,2}^{235}\right]$ \textbf{[barns]} \\
-  \toprule
-\multirow{5}{*}{1.6\%} & Infinite Lattice & 6.29E-07 & 5.06E--03 \\
-& Assm. (no \acp{BP}) & 1.61E-04 & 1.81E+00 \\
-& 2$\times$2 Colorset & 1.89E-04 & 1.18E+01 \\
-& 2$\times$2 Colorset w/ Reflector & 2.03E-04 & 1.93E+01 \\
-& \ac{BEAVRS} Quarter Core & 1.64E-04 & 6.78E+00 \\
+  \multicolumn{1}{C{2.5cm}}{\textbf{Fuel Enrichment}} & \multicolumn{1}{c}{\textbf{Benchmark}} & \boldmath$\mathrm{Var}\left[\sigma_{c,1}^{238}\right]$ \textbf{[\%]} & \boldmath$\mathrm{Var}\left[\sigma_{f,2}^{235}\right]$ \textbf{[\%]} \\
+\multirow{5}{*}{1.6\%} & Infinite Lattice & 0.10 & 0.02 \\
+& Assm. (no \acp{BP}) & 1.55 & 0.37 \\
+& 2$\times$2 Colorset & 1.66 & 0.94 \\
+& 2$\times$2 Colorset w/ Reflector & 1.75 & 1.20 \\
+& \ac{BEAVRS} Quarter Core & 1.31 & 0.68 \\
 \toprule
-\multirow{6}{*}{3.1\%} & Infinite Lattice & 5.83E-07 & 6.12E--03 \\
-& Assm. (no \acp{BP}) & 1.53E-04 & 4.22E+00 \\
-& Assm. (20 \acp{BP}) & 1.37E-04 & 1.11E+01 \\
-& 2$\times$2 Colorset & 1.53E-04 & 2.15E+01 \\
-& 2$\times$2 Colorset w/ Reflector & 1.79E-04 & 4.78E+01 \\
-& \ac{BEAVRS} Quarter Core & 2.34E-04 & 1.68E+01 \\
+\multirow{6}{*}{3.1\%} & Infinite Lattice & 0.10 & 0.02 \\
+& Assm. (no \acp{BP}) & 1.54 & 0.59 \\
+& Assm. (20 \acp{BP}) & 1.44 & 0.99 \\
+& 2$\times$2 Colorset & 1.53 & 1.36 \\
+& 2$\times$2 Colorset w/ Reflector & 1.69 & 2.01 \\
+& \ac{BEAVRS} Quarter Core & 1.80 & 1.18 \\
 \bottomrule
+%  \multicolumn{1}{C{2.5cm}}{\textbf{Fuel Enrichment}} & \multicolumn{1}{c}{\textbf{Benchmark}} & \boldmath$\mathrm{Var}\left[\sigma_{c,1}^{238}\right]$ \textbf{[barns]} & \boldmath$\mathrm{Var}\left[\sigma_{f,2}^{235}\right]$ \textbf{[barns]} \\
+%  \toprule
+%\multirow{5}{*}{1.6\%} & Infinite Lattice & 6.29E-07 & 5.06E--03 \\
+%& Assm. (no \acp{BP}) & 1.61E-04 & 1.81E+00 \\
+%& 2$\times$2 Colorset & 1.89E-04 & 1.18E+01 \\
+%& 2$\times$2 Colorset w/ Reflector & 2.03E-04 & 1.93E+01 \\
+%& \ac{BEAVRS} Quarter Core & 1.64E-04 & 6.78E+00 \\
+%\toprule
+%\multirow{6}{*}{3.1\%} & Infinite Lattice & 5.83E-07 & 6.12E--03 \\
+%& Assm. (no \acp{BP}) & 1.53E-04 & 4.22E+00 \\
+%& Assm. (20 \acp{BP}) & 1.37E-04 & 1.11E+01 \\
+%& 2$\times$2 Colorset & 1.53E-04 & 2.15E+01 \\
+%& 2$\times$2 Colorset w/ Reflector & 1.79E-04 & 4.78E+01 \\
+%& \ac{BEAVRS} Quarter Core & 2.34E-04 & 1.68E+01 \\
+%\bottomrule
 \end{tabular}
 \end{table}
 
-A number of key trends emerge from the population variance data which support the overarching premise of this chapter -- that spatial self-shielding effects from core heterogeneities induce clustering of pin-wise \ac{MGXS}. First, the variance is over two orders of magnitude larger for each of the six benchmarks as compared to an infinite lattice, clearly indicating that spatial self-shielding from local heterogeneities disperses pin-wise \ac{MGXS}. This dispersion is observed even for the individual fuel assemblies with only a mixture of fuel pins and \acp{CRGT}. The introduction of \acp{BP} slightly reduces the variance for U-238 capture, but increases the variance by nearly 3$\times$ for U-235 fission \ac{MGXS}. Inter-assembly effects in the 2$\times$2 colorset increase the dispersion of U-238 capture \ac{MGXS} by 10 -- 20\%, but dramatically increases the variance for the fission \ac{MGXS} by 5 -- 10$\times$ for the 1.6\% and 3.1\% enriched fuel pins, respectively. The introduction of a water reflector to the colorset further increases the dispersion by 5 -- 15\% and 65 -- 120\% for U-238 capture and U-235 fission in the 1.6\% and 3.1\% enriched pins, respectively. Interestingly, the population variances generally decrease by $\nicefrac{1}{3}$ -- $\nicefrac{1}{2}$ for the \ac{BEAVRS} quarter core with respect to the 2$\times$2 colorset with a reflector. This is likely due to the smaller ratio of fuel pins along the assembly-reflector interface -- which experience a dramatically softer flux spectrum than pins in the interior of the core -- to total number of pins for the \ac{BEAVRS} model.
+A number of key trends emerge from the population variance data which support the overarching premise of this chapter -- that spatial self-shielding effects from core heterogeneities induce clustering of pin-wise \ac{MGXS}. First, the variance is over two orders of magnitude larger for each of the six benchmarks as compared to an infinite lattice, clearly indicating that spatial self-shielding from local heterogeneities disperses pin-wise \ac{MGXS}. This dispersion is observed even for the individual fuel assemblies with only a mixture of fuel pins and \acp{CRGT}. The introduction of \acp{BP} slightly reduces the variance for U-238 capture, but increases the variance by nearly 2$\times$ for U-235 fission \ac{MGXS}. Inter-assembly effects in the 2$\times$2 colorset increase the dispersion of U-238 capture \ac{MGXS} by 10 -- 20\%, but dramatically increases the variance for the fission \ac{MGXS} by up to 2.5$\times$. The introduction of a water reflector to the colorset further increases the dispersion by 5 -- 15\% and 65 -- 120\% for U-238 capture and U-235 fission in the 1.6\% and 3.1\% enriched pins, respectively. Interestingly, the most of the population variances decrease by $\nicefrac{1}{3}$ -- $\nicefrac{1}{2}$ for the \ac{BEAVRS} quarter core with respect to the 2$\times$2 colorset with a reflector. This is likely due to the smaller ratio of fuel pins along the assembly-reflector interface -- which experience a dramatically softer flux spectrum than pins in the interior of the core -- to total number of pins for the \ac{BEAVRS} model.
 
-Lastly, the variance of the U-235 fission \ac{MGXS} is notably dependent on the enrichment. For example, the variance is more than 2$\times$ larger for the assembly with 3.1\% enriched fuel pins and \acp{CRGT} than the same assembly with 1.6\% enriched fuel. This trend remains true for the larger, more complicated benchmarks. This observation is interesting in light of the results in Chap.~\ref{chap:quantify} which demonstrated little improvement in the fission rate spatial distributions with degenerate homogenization. Notwithstanding, these results indicate that the sensitivity of U-235 fission \ac{MGXS} to spatial self-shielding may be leveraged to improve U-238 capture rate predictions. 
+Lastly, the variance of the U-235 fission \ac{MGXS} is notably dependent on the enrichment. For example, the variance is nearly 2$\times$ larger for the assembly with 3.1\% enriched fuel pins and \acp{CRGT} than the same assembly with 1.6\% enriched fuel. This trend remains true for the larger, more complicated benchmarks. This observation is interesting in light of the results in Chap.~\ref{chap:quantify} which demonstrated little improvement in the fission rate spatial distributions with degenerate homogenization. Notwithstanding, these results indicate that the sensitivity of U-235 fission \ac{MGXS} to spatial self-shielding may be leveraged to improve U-238 capture rate predictions. 
 
 %-plot the convergence of null MGXS by batch along with max for distribcell MGXS
 %-plot the pop. var. convergence of the distribcell MGXS and show that they don't go to zero
@@ -143,7 +193,7 @@ Lastly, the variance of the U-235 fission \ac{MGXS} is notably dependent on the 
 \subsection{Histograms of Pin-Wise MGXS}
 \label{subsec:chap9-histograms}
 
-This section expounds upon the preceding quantitative analysis of the dispersive effect of heterogeneities with a visual examination of the empirical distributions of pin-wise \ac{MGXS}. In particular, the following two sections present histograms of the pin-wise U-238 capture and U-235 fission \ac{MGXS} to illustrate clustering due to spatial self-shielding effects. In addition, rug plots -- which draw vertical ticks along the $x$-axis of each histogram -- are used to further discern clustering within the empirical distributions. The visualizations are presented for an infinite lattice as well as the six heterogeneous benchmarks for both 1.6\% and 3.1\% enriched fuel. The trends observed in the plots can be attributed to the presence of \acp{CRGT}, \acp{BP}, assembly-assembly and/or assembly-reflector interfaces or fuel enrichment.
+This section expounds upon the preceding quantitative analysis of the dispersive effect of heterogeneities with a visual examination of the distributions of pin-wise \ac{MGXS}. In particular, the following two sections present histograms of the pin-wise U-238 capture and U-235 fission \ac{MGXS} to illustrate clustering due to spatial self-shielding effects. In addition, rug plots -- which draw vertical ticks along the $x$-axis of each histogram -- are used to further discern clustering within the distributions. The visualizations are presented for an infinite lattice as well as the six heterogeneous benchmarks for both 1.6\% and 3.1\% enriched fuel. The trends observed in the plots can be attributed to the presence of \acp{CRGT}, \acp{BP}, assembly-assembly and/or assembly-reflector interfaces or fuel enrichment.
 
 As in Sec.~\ref{subsec:chap9-pop-var}, the random samples in each visualization (\textit{e.g.}, each green tick in the rug plots) correspond to a single fuel pin instance in the corresponding benchmark model. Although this analysis could plausibly be performed for a variety of nuclides, reaction rates and/or energy groups, only U-238 capture and U-235 fission \ac{MGXS} were selected due to their importance for reactor performance. It is also worth noting that the two group constants were selected since their tallied \ac{MC} uncertainties are smaller than those for the 8- and 70-group \ac{MGXS}. As a result, it is simpler to identify clustering trends in the 2-group \ac{MGXS} data.
 
@@ -151,7 +201,7 @@ As in Sec.~\ref{subsec:chap9-pop-var}, the random samples in each visualization 
 \subsubsection{U-238 Capture MGXS}
 \label{subsubsec:chap9-histograms-capt}
 
-The pin-wise microscopic U-238 capture \ac{MGXS} for 1.6\% and 3.1\% enriched fuel pins are illustrated with histograms and rug plots in Figs.~\ref{fig:chap9-hist-1.6-capt} and~\ref{fig:chap9-hist-3.1-capt}, respectively. As expected based on the population variances, the empirical distributions of pin-wise \ac{MGXS} for the infinite lattices in Figs.~\ref{fig:chap9-hist-assm-1.6-inf-capt} and~\ref{fig:chap9-hist-assm-3.1-inf-capt} are narrow and symmetric unlike the distributions for each of the heterogeneous benchmarks. The introduction of \acp{CRGT} to the individual fuel assemblies induces four clearly discernible clusters of \ac{MGXS} in Figs.~\ref{fig:chap9-hist-assm-1.6-capt} and~\ref{fig:chap9-hist-assm-3.1-capt} which are separated by approximately 0.01 -- 0.015 barns (or 1 -- 2\%) for both fuel enrichments. There may be further sub-clusters as evidenced by the dispersion of the rug plot ticks between the two lowest-lying clusters. These clusters are attributed to the softening of the flux due to differential moderation from neighboring \acp{CRGT} in increasing order for the following four groupings of fuel pins: (a) pins not adjacent to a \ac{CRGT}, (b) pins corner adjacent to a \ac{CRGT}, (c) pins facially adjacent to a \ac{CRGT} and (d) pins facially and corner adjacent to separate \acp{CRGT}. The addition of \acp{BP} to the 3.1\% enriched fuel assembly ``smears'' the four clusters of U-238 capture \ac{MGXS} in Fig.~\ref{fig:chap9-hist-assm-3.1-20BPs-capt}. In addition, the \ac{MGXS} are shifted downwards by $\sim$0.005 barns (or $\sim$0.5\%) with respect to the assembly without \acp{BP}.
+The pin-wise microscopic U-238 capture \ac{MGXS} for 1.6\% and 3.1\% enriched fuel pins are illustrated with histograms and rug plots in Figs.~\ref{fig:chap9-hist-1.6-capt} and~\ref{fig:chap9-hist-3.1-capt}, respectively. As expected based on the population variances, the distributions of pin-wise \ac{MGXS} for the infinite lattices in Figs.~\ref{fig:chap9-hist-assm-1.6-inf-capt} and~\ref{fig:chap9-hist-assm-3.1-inf-capt} are narrow and symmetric -- unlike the distributions for each of the heterogeneous benchmarks. The introduction of \acp{CRGT} to the individual fuel assemblies induces four clearly discernible clusters of \ac{MGXS} in Figs.~\ref{fig:chap9-hist-assm-1.6-capt} and~\ref{fig:chap9-hist-assm-3.1-capt} which are separated by approximately 0.01 -- 0.015 barns (or 1 -- 2\%) for both fuel enrichments. There may be further sub-clusters as evidenced by the dispersion of the rug plot ticks between the two lowest-lying clusters. These clusters are attributed to the softening of the flux due to differential moderation from neighboring \acp{CRGT} in increasing order for the following four groupings of fuel pins: (a) pins not adjacent to a \ac{CRGT}, (b) pins corner adjacent to a \ac{CRGT}, (c) pins facially adjacent to a \ac{CRGT} and (d) pins facially and corner adjacent to separate \acp{CRGT}. The addition of \acp{BP} to the 3.1\% enriched fuel assembly ``smears'' the four clusters of U-238 capture \ac{MGXS} in Fig.~\ref{fig:chap9-hist-assm-3.1-20BPs-capt}. In addition, the \ac{MGXS} are shifted downwards by $\sim$0.005 barns (or $\sim$0.5\%) with respect to the assembly without \acp{BP}.
 
 \begin{figure}[h!]
 \centering
@@ -229,13 +279,13 @@ The pin-wise microscopic U-238 capture \ac{MGXS} for 1.6\% and 3.1\% enriched fu
 
 The inter-assembly interfaces in the 2$\times$2 colorset benchmark results in a further ``smearing'' of the clusters for both enrichments in Figs.~\ref{fig:chap9-hist-2x2-1.6-capt} and~\ref{fig:chap9-hist-2x2-3.1-capt}. It should be noted that there are twice as many samples (\textit{e.g.}, 528 fuel pin instances for each enrichment) in the colorsets than the individual fuel assemblies. Hence, it is more challenging to distinguish clusters from the rug plots for the larger colorset benchmarks. Nonetheless, the histograms indicate the continuing presence of four distinct clusters for both enrichments, though they are easier to identify for the 1.6\% enriched fuel pins (in assemblies without \acp{BP}). The \ac{MGXS} are generally shifted up by $\sim$0.01 barns for the 1.6\% enriched pins, and down by $\sim$0.0075 barns for the 3.1\% enriched pins, with respect to the individual fuel assemblies.
 
-The introduction of a reflector to the 2$\times$2 colorset leads to very different empirical distributions for the two fuel enrichments in Figs.~\ref{fig:chap9-hist-reflector-1.6-capt} and~\ref{fig:chap9-hist-reflector-3.1-capt}. The reason for this is that periodicity along the $x$ and $y$ axes is broken with the inclusion of the reflector. In particular, both of the 3.1\% enriched assemblies are symmetrically adjacent to the reflector, and therefore have identical pin-wise \ac{MGXS}. However, one of the 1.6\% enriched assemblies is corner adjacent to the reflector while the other is located within the interior of the colorset. Nevertheless, some general observations can be made from the data. First, the \ac{MGXS} are generally even more ``smeared'' for both enrichments than is the case for the colorset without a reflector. The histogram indicates the existence of at least three clusters for the 1.6\% enriched pins, with a similar but less concentrated three-way clustering for the 3.1\% enriched pins. Finally, the lowest pin-wise \ac{MGXS} for both enrichments are $\sim$0.025 barns (or $\sim$3\%) less than those in the colorset without a reflector. This may be due to a harder spectrum in fuel pins along the left and top boundaries which have periodic \acp{BC} in the colorset without a reflector, but reflective \acp{BC} for the colorset with a water reflector.
+The introduction of a reflector to the 2$\times$2 colorset leads to very different distributions for the two fuel enrichments in Figs.~\ref{fig:chap9-hist-reflector-1.6-capt} and~\ref{fig:chap9-hist-reflector-3.1-capt}. The reason for this is that periodicity along the $x$ and $y$ axes is broken with the inclusion of the reflector. In particular, both of the 3.1\% enriched assemblies are symmetrically adjacent to the reflector, and therefore have identical pin-wise \ac{MGXS}. However, one of the 1.6\% enriched assemblies is corner adjacent to the reflector while the other is located within the interior of the colorset. Nevertheless, some general observations can be made from the data. First, the \ac{MGXS} are generally even more ``smeared'' for both enrichments than is the case for the colorset without a reflector. The histogram indicates the existence of at least three clusters for the 1.6\% enriched pins, with a similar but less concentrated three-way clustering for the 3.1\% enriched pins. Finally, the lowest pin-wise \ac{MGXS} for both enrichments are $\sim$0.025 barns (or $\sim$3\%) less than those in the colorset without a reflector. This may be due to a harder spectrum in fuel pins along the left and top boundaries which have periodic \acp{BC} in the colorset without a reflector, but reflective \acp{BC} for the colorset with a water reflector.
 
 %-trends w/ reflector
 %  -pins with smallest \ac{MGXS} shifted down by $\sim$0.025 barns
 %  -perhaps the uncertainties are just larger for the reflector and those pins are outliers??
 
-The quarter core \ac{BEAVRS} model has the smoothest varying empirical distributions of any of the benchmarks in Figs.~\ref{fig:chap9-hist-full-core-1.6-capt} and~\ref{fig:chap9-hist-full-core-3.1-capt}. This is due in part to the fact that there are over 8$\times$ more samples for each fuel enrichment than are present for the colorsets\footnote{There are 4,332 1.6\%, 4,260 2.4\% and 4,236 3.1\% enriched fuel pins in the quarter core model.}. The most notable observation is that the distributions appear to first order to be bimodal with large peaks centered at approximately 0.815 and 0.83 barns, and 0.785 and 0.805 barns, for the 1.6\% and 3.1\% enriched pins, respectively. The distribution for the 3.1\% enriched fuel pins has an additional smaller shoulder centered at 0.83 barns. Additionally, a few 3.1\% enriched pins have significantly greater \ac{MGXS} between 0.86 and 0.9 barns. This is likely due to the fact that the 3.1\% enriched assemblies surround the exterior of the core configuration. As a result, the flux is more strongly shielded in the U-238 resonance energies for 3.1\% enriched pins adjacent to the baffle/reflector than the 1.6\% enriched pins in the interior, resulting in some larger ``outlier'' pin-wise \ac{MGXS}.
+The quarter core \ac{BEAVRS} model has the smoothest varying distributions of any of the benchmarks in Figs.~\ref{fig:chap9-hist-full-core-1.6-capt} and~\ref{fig:chap9-hist-full-core-3.1-capt}. This is due in part to the fact that there are over 8$\times$ more samples for each fuel enrichment than are present for the colorsets\footnote{There are 4,332 1.6\%, 4,260 2.4\% and 4,236 3.1\% enriched fuel pins in the quarter core model.}. The most notable observation is that the distributions appear to first order to be bimodal with large peaks centered at approximately 0.815 and 0.83 barns, and 0.785 and 0.805 barns, for the 1.6\% and 3.1\% enriched pins, respectively. The distribution for the 3.1\% enriched fuel pins has an additional smaller shoulder centered at 0.83 barns. Additionally, a few 3.1\% enriched pins have significantly greater \ac{MGXS} between 0.86 and 0.9 barns. This is likely due to the fact that the 3.1\% enriched assemblies surround the exterior of the core configuration. As a result, the flux is more strongly shielded in the U-238 resonance energies for 3.1\% enriched pins adjacent to the baffle/reflector than the 1.6\% enriched pins in the interior, resulting in some larger ``outlier'' pin-wise \ac{MGXS}.
 
 Finally, it should be noted that the microscopic U-238 capture \ac{MGXS} are generally 0.01 -- 0.02 barns (or 1.25 -- 2.5\%) larger for the 1.6\% than the 3.1\% enriched fuel pins for each respective benchmark, including the infinite lattice. These results indicate that the flux is less shielded at resonance energies for the lesser enriched fuel, perhaps due to a slightly larger fraction of neutrons up-scattering from group two to one due to the smaller probability of fission. This variation of U-238 capture \ac{MGXS} with fuel enrichment remains true even for the quarter core \ac{BEAVRS} model. However, the single largest U-238 capture \ac{MGXS} is in a 3.1\% enriched fuel pin corner adjacent to the baffle, which likely has the softest spectrum of any pin due to the nearby reflector.
 
@@ -248,7 +298,7 @@ Finally, it should be noted that the microscopic U-238 capture \ac{MGXS} are gen
 %This effect is likely due to the removal of neutrons in U-238 capture resonances as they traverse each fuel pin. As a result, the flux in those energy intervals where the U-238 capture cross section is greatest and hence reducing the flux-weighted energy-integrated \ac{MGXS}. Interestingly, this impact  
 
 \begin{emphbox}
-\textbf{The dispersion of pin-wise U-238 capture \ac{MGXS} is highly uneven and structured. Core heterogeneities such as \acp{CRGT}, \acp{BP} and reflectors induce clustering due to spatial self-shielding effects such as differential moderation, which are observed from empirical distributions of the pin-wise \ac{MGXS}.}
+\textbf{The dispersion of pin-wise U-238 capture \ac{MGXS} is highly uneven and structured. Core heterogeneities such as \acp{CRGT}, \acp{BP} and reflectors induce clustering due to spatial self-shielding effects such as differential moderation, which are observed from distributions of the pin-wise \ac{MGXS}.}
 \end{emphbox}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -331,13 +381,13 @@ The pin-wise microscopic U-235 fission \ac{MGXS} for 1.6\% and 3.1\% enriched fu
 \label{fig:chap9-hist-3.1-fiss}
 \end{figure}
 
-As was observed for U-238 capture, the empirical distributions of pin-wise \ac{MGXS} for the infinite lattices in Figs.~\ref{fig:chap9-hist-assm-1.6-inf-fiss} and~\ref{fig:chap9-hist-assm-3.1-inf-fiss} are narrow and symmetric unlike the distributions for each of the heterogeneous benchmarks. Unlike the situation for U-238 capture, the introduction of \acp{CRGT} induces a more intricate clustering of the U-235 fission \ac{MGXS} in Figs.~\ref{fig:chap9-hist-assm-1.6-fiss} and~\ref{fig:chap9-hist-assm-3.1-fiss}. However, the total range of U-235 fission \ac{MGXS} in the fuel assemblies with \acp{CRGT} varies by only 1 -- 2\% as compared to more than 5\% for U-238 capture. The histograms indicate the presence of roughly three clusters of \ac{MGXS} which are separated by 1 -- 2 barns for both fuel enrichments. The rug plots illustrate a more complicated dispersion, however, with a significantly more distinct concentration into approximately eight clusters for the 3.1\% enriched fuel pins. These observations indicate that U-235 fission may be more sensitive than U-238 capture to spatial self-shielding effects from the differential moderation of \acp{CRGT}, even though the impact on the resultant \ac{MGXS} is of a smaller relative magnitude. This is the result of the $\nicefrac{1}{v}$ profile of the U-235 fission cross section at thermal energies which is particularly sensitive to thermalization when weighted by the flux to compute \ac{MGXS}.
+As was observed for U-238 capture, the distributions of pin-wise \ac{MGXS} for the infinite lattices in Figs.~\ref{fig:chap9-hist-assm-1.6-inf-fiss} and~\ref{fig:chap9-hist-assm-3.1-inf-fiss} are narrow and symmetric unlike the distributions for each of the heterogeneous benchmarks. Unlike the situation for U-238 capture, the introduction of \acp{CRGT} induces a more intricate clustering of the U-235 fission \ac{MGXS} in Figs.~\ref{fig:chap9-hist-assm-1.6-fiss} and~\ref{fig:chap9-hist-assm-3.1-fiss}. However, the total range of U-235 fission \ac{MGXS} in the fuel assemblies with \acp{CRGT} varies by only 1 -- 2\% as compared to more than 5\% for U-238 capture. The histograms indicate the presence of roughly three clusters of \ac{MGXS} which are separated by 1 -- 2 barns for both fuel enrichments. The rug plots illustrate a more complicated dispersion, however, with a significantly more distinct concentration into approximately eight clusters for the 3.1\% enriched fuel pins. These observations indicate that U-235 fission may be more sensitive than U-238 capture to spatial self-shielding effects from the differential moderation of \acp{CRGT}, even though the impact on the resultant \ac{MGXS} is of a smaller relative magnitude. This is the result of the $\nicefrac{1}{v}$ profile of the U-235 fission cross section at thermal energies which is particularly sensitive to thermalization when weighted by the flux to compute \ac{MGXS}.
 
 The further addition of \acp{BP} to the 3.1\% enriched fuel assembly results in a more distinct set of isolated clusters of U-235 fission \ac{MGXS} in Fig.~\ref{fig:chap9-hist-assm-3.1-20BPs-fiss}. In particular, there appear to be three overall clusters centered at approximately 272, 276 and 300 barns each with a number of sub-clusters. This stands in contrast to the case for U-238 capture where the presence of \acp{BP} resulted in a ``smearing'' of the clusters. In addition, the \ac{MGXS} are generally shifted downwards by 5 -- 10  barns (or 1.5 -- 3\%) with respect to the assembly without \acp{BP}. The inter-assembly interfaces in the 2$\times$2 colorset benchmark have a similarly concentrating effect for both enrichments in Figs.~\ref{fig:chap9-hist-2x2-1.6-fiss} and~\ref{fig:chap9-hist-2x2-3.1-fiss}. The histograms reveal three clusters centered at approximately 294, 298 and 301 barns for the 1.6\% enriched pins, and four clusters centered at 271, 275, 278 and 283 barns for the 3.1\% enriched pins. Furthermore, the rug plots indicate the presence of more clusters which are easier to distinguish than they are for the individual fuel assemblies, or for the U-238 capture \ac{MGXS} in the 2$\times$2 colorset benchmark. Finally, the \ac{MGXS} in the colorset are generally shifted downwards by 3 -- 6  barns (or 1 -- 2\%) with respect to the individual fuel assemblies.
 
-The introduction of a reflector to the 2$\times$2 colorset leads to very different empirical distributions for the two fuel enrichments in Figs.~\ref{fig:chap9-hist-reflector-1.6-fiss} and~\ref{fig:chap9-hist-reflector-3.1-fiss}. As was noted in Sec.~\ref{subsubsec:chap9-histograms-capt}, the reason for this is that symmetry is broken with the inclusion of the reflector. A first observation is that the empirical distributions of U-235 fission \ac{MGXS} for the two enrichments differ much more profoundly than they do for U-238 capture. The histogram for the 1.6\% enriched pins indicate perhaps six primary clusters centered at 294, 298, 301, 304, 306 and 310 barns, though the rug plot certainly indicates the presence of even more sub-clusters. The histogram for the 3.1\% enriched pins indicate perhaps four clusters roughly centered at 276, 284, 290 and 296 barns, though the intervals between these apparent clusters contain many additional samples, complicating the analysis. Finally, the largest U-235 fission \ac{MGXS} are approximately 315 and 300 barns for the 1.6\% and 3.1\% enriched pins in the colorset, respectively, about 15 barns (or 5\%) greater than the largest \ac{MGXS} for the colorset without a reflector. This is due to the softer flux spectrum experienced by those pins adjacent to the reflector.
+The introduction of a reflector to the 2$\times$2 colorset leads to very different distributions for the two fuel enrichments in Figs.~\ref{fig:chap9-hist-reflector-1.6-fiss} and~\ref{fig:chap9-hist-reflector-3.1-fiss}. As was noted in Sec.~\ref{subsubsec:chap9-histograms-capt}, the reason for this is that symmetry is broken with the inclusion of the reflector. A first observation is that the distributions of U-235 fission \ac{MGXS} for the two enrichments differ much more profoundly than they do for U-238 capture. The histogram for the 1.6\% enriched pins indicate perhaps six primary clusters centered at 294, 298, 301, 304, 306 and 310 barns, though the rug plot certainly indicates the presence of even more sub-clusters. The histogram for the 3.1\% enriched pins indicate perhaps four clusters roughly centered at 276, 284, 290 and 296 barns, though the intervals between these apparent clusters contain many additional samples, complicating the analysis. Finally, the largest U-235 fission \ac{MGXS} are approximately 315 and 300 barns for the 1.6\% and 3.1\% enriched pins in the colorset, respectively, about 15 barns (or 5\%) greater than the largest \ac{MGXS} for the colorset without a reflector. This is due to the softer flux spectrum experienced by those pins adjacent to the reflector.
 
-As was noted for the U-238 capture \ac{MGXS}, the quarter core \ac{BEAVRS} model has the smoothest varying empirical distributions of any of the benchmarks in Figs.~\ref{fig:chap9-hist-full-core-1.6-fiss} and~\ref{fig:chap9-hist-full-core-3.1-fiss}. The most notable observation is that the distributions appear to first order to be bimodal and trimodal with large peaks centered at approximately 297 and 302 barns, and 278, 283 and 284 barns, for the 1.6\% and 3.1\% enriched pins, respectively. The two peaks are more clearly discernible for the 1.6\% enriched fuel pins. This effect may be due to an increase in moderation for those 1.6\% enriched assemblies that are only one assembly removed from the reflector as compared to those in the interior of the core. Furthermore, the range of \ac{MGXS} in the quarter core model only spans 10 -- 15 barns (or 5\%) as compared to the 20 -- 25 barns for the 2$\times$ colorset benchmark. This is likely due to the presence of a stainless steel baffle separating the assemblies on the exterior of the \ac{BEAVRS} model from the water reflector. The baffle dampens the additional moderation experienced by those pins nearest the reflector in the \ac{BEAVRS} model with respect to those in the 2$\times$2 colorset with a reflector but no baffle.
+As was noted for the U-238 capture \ac{MGXS}, the quarter core \ac{BEAVRS} model has the smoothest varying distributions of any of the benchmarks in Figs.~\ref{fig:chap9-hist-full-core-1.6-fiss} and~\ref{fig:chap9-hist-full-core-3.1-fiss}. The most notable observation is that the distributions appear to first order to be bimodal and trimodal with large peaks centered at approximately 297 and 302 barns, and 278, 283 and 284 barns, for the 1.6\% and 3.1\% enriched pins, respectively. The two peaks are more clearly discernible for the 1.6\% enriched fuel pins. This effect may be due to an increase in moderation for those 1.6\% enriched assemblies that are only one assembly removed from the reflector as compared to those in the interior of the core. Furthermore, the range of \ac{MGXS} in the quarter core model only spans 10 -- 15 barns (or 5\%) as compared to the 20 -- 25 barns for the 2$\times$ colorset benchmark. This is likely due to the presence of a stainless steel baffle separating the assemblies on the exterior of the \ac{BEAVRS} model from the water reflector. The baffle dampens the additional moderation experienced by those pins nearest the reflector in the \ac{BEAVRS} model with respect to those in the 2$\times$2 colorset with a reflector but no baffle.
 
 Finally, it should be noted that the microscopic U-235 fission \ac{MGXS} are generally 18 -- 22 barns (or 6+\%) larger for the 1.6\% than the 3.1\% enriched fuel pins for each respective benchmark, including the infinite lattice. These results indicate that the flux is more strongly moderated for the lesser enriched fuel, perhaps due to the smaller probability of fission. This variation of U-235 fission \ac{MGXS} with fuel enrichment remains true even for the quarter core \ac{BEAVRS} model. 
 

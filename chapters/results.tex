@@ -908,51 +908,68 @@ SUMMARY BOX!!!
 
 -OpenMOC runtimes for litmus-only feature selection with GMMs with 10 clusters
 
+OpenMC particles / sec / core
+benchmark         no MGXs        MGXS
+1.6               2673.3         1154.4
+3.1               3012.9         1265.1
+3.1 BPs           3051.4         1011.4
+2x2               2976.3          784.9
+reflector         3004.6          795.6
+quarter core      2361.5          622.2
+
+-use particle tracking rate to compute total time
+  -read number of batches from the convergence plots as the max(max err,mean err) <= degenerate err
+  -multiply number of batches by particle tracking rate
+  -this uses the tracking rate without MGXS for the ``reference''
+  -this use the tracking rate with MGXS for all others
+  -10 clusters each???
+
 \begin{table}[ht!]
   \centering
   \caption[OpenMOC eigenvalue bias for litmus-only feature selection]{OpenMOC eigenvalue bias $\Delta\rho$ for \textit{i}\ac{MGXS} spatial homogenization with litmus-only feature selection.}
   \small
   \label{table:chap11-runtimes}
   \vspace{6pt}
-  \begin{tabular}{l l R{1.5cm} R{1.5cm} R{1.5cm}}
+  \begin{tabular}{l l R{2.5cm} S[table-format=3.2] S[table-format=3.2] S[table-format=3.2]}
   \toprule
   \rowcolor{lightgray}
-  & & \multicolumn{2}{c}{\cellcolor{lightgray} \bf Runtime [core-hours]} \\
+  & & & \multicolumn{3}{c}{\cellcolor{lightgray} \bf Runtime [core-hours]} \\
   \multirow{-2}{*}{\cellcolor{lightgray} \bf Benchmark} &
   \multirow{-2}{*}{\cellcolor{lightgray} \bf Scheme} &
-  \multicolumn{1}{c}{\cellcolor{lightgray} \bf OpenMOC} &
+  \multirow{-2}{*}{\cellcolor{lightgray} \bf \# Particles} &
   \multicolumn{1}{c}{\cellcolor{lightgray} \bf OpenMC} &
+  \multicolumn{1}{c}{\cellcolor{lightgray} \bf OpenMOC} &
   \multicolumn{1}{c}{\cellcolor{lightgray} \bf Total} \\
   \midrule
-\multirow{4}{*}{\parbox{2.5cm}{1.6\% Assm}} & Reference & 1005 & -- & 1005 \\
-& Null & & 0.364 & \\
-& Degenerate & & 0.402 & \\
-& \textit{i}\ac{MGXS} & & 0.382 & \\
+\multirow{4}{*}{\parbox{2.5cm}{1.6\% Assm}} & Reference & 550,000,000 & 57.2 & & 57.2 \\
+& Null & 100,000 & 0.02 & 0.36 & 0.38 \\
+& Degenerate & 115,000,000 & 27.7 & 0.40 & 28.1 \\
+& \textit{i}\ac{MGXS} & 4,000,000 & 0.96 & 0.38 & 1.34 \\
   \midrule
-\multirow{4}{*}{\parbox{2.5cm}{3.1\% Assm}} & Reference & 891 & -- & 891 \\
-& Null & & 0.398 & \\
-& Degenerate & & 0.397 & \\
-& \textit{i}\ac{MGXS} & & 0.372 & \\
+\multirow{4}{*}{\parbox{2.5cm}{3.1\% Assm}} & Reference & 550,000,000 & 50.7 & & 50.7 \\
+& Null & 100,000 & 0.02 & 0.40 & 0.42 \\
+& Degenerate & 115,000,000 & 25.3 & 0.40 & 25.7 \\
+& \textit{i}\ac{MGXS} & 4,000,000 & 0.88 & 0.37 & 1.25 \\
   \midrule
-\multirow{4}{*}{\parbox{2.5cm}{3.1\% Assm w/ 20 \acp{BP}}} & Reference & 879 & -- & 879 \\
-& Null & & 0.406 & \\
-& Degenerate & & 0.410 & \\
-& \textit{i}\ac{MGXS} & & 0.416 & \\
+\multirow{4}{*}{\parbox{2.5cm}{3.1\% Assm w/ 20 \acp{BP}}} & Reference & 550,000,000 & 50.1 & & 50.1 \\
+& Null & 100,000 & 0.02 & 0.41 & 0.43 \\
+& Degenerate & 115,000,000 & 27.7 & 0.41 & 28.1 \\
+& \textit{i}\ac{MGXS} & 4,000,000 & 0.96 & 0.42 & 1.38 \\
   \midrule
-\multirow{4}{*}{\parbox{2.5cm}{2$\times$2 Colorset}} & Reference & 903 & -- & 903 \\
-& Null & & 1.99 & \\
-& Degenerate & & 2.29 & \\
-& \textit{i}\ac{MGXS} & & 1.96 & \\
+\multirow{4}{*}{\parbox{2.5cm}{2$\times$2 Colorset}} & Reference & 8,755,000 & 81.7 & & 81.7 \\
+& Null & 100,000 & 0.04 & 2.00 & 2.03 \\
+& Degenerate & 700,000,000 & 248 & 2.29 & 250 \\
+& \textit{i}\ac{MGXS} & 10,000,000 & 3.54 & 1.96 & 5.50 \\
   \midrule
-\multirow{4}{*}{\parbox{2.5cm}{2$\times$2 Colorset w/ Reflector}} & Reference & 895 & -- & 895 \\
-& Null & & & \\
-& Degenerate & & & \\
-& \textit{i}\ac{MGXS} & & 4.90 & \\
+\multirow{4}{*}{\parbox{2.5cm}{2$\times$2 Colorset w/ Reflector}} & Reference & & & & \\
+& Null & & & 5.07 & \\
+& Degenerate & & & 5.36 & \\
+& \textit{i}\ac{MGXS} & & & 4.90 & \\
   \midrule
-\multirow{4}{*}{\parbox{2.5cm}{BEAVRS Quarter Core}} & Reference & 11,493 & -- & 11,493 \\
-& Null & & & \\
-& Degenerate & & & \\
-& \textit{i}\ac{MGXS} & & & \\
+\multirow{4}{*}{\parbox{2.5cm}{BEAVRS Quarter Core}} & Reference & & & & \\
+& Null & & & 419 & \\
+& Degenerate & & & 426 & \\
+& \textit{i}\ac{MGXS} & & 423 & & \\
   \bottomrule
 \end{tabular}
 \end{table}

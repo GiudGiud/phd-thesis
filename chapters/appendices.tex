@@ -895,45 +895,75 @@ It is challenging to validate the OpenMOC reaction rates for the quarter core \a
 \chapter{Clustered Geometries with \textit{i}MGXS Spatial Homogenization}
 \label{sec:clustered-geometries}
 
+first paragraph: 
+-complements Sec.~\ref{sec:chap10-cluster-geometries}
+
+second paragraph: outline
+-Sec.~\ref{sec:clustering-without-features}
+-Sec.~\ref{sec:clustering-with-dimension-reduce}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Clustering without Features}
 \label{sec:clustering-without-features}
+
+first paragraph: objective
+-highlight the importance of using features
+  -rather than simply clustering the MGXS themselves
+  -in each case, only cluster MGXS and uncertainties
+  -without fractional reactivity, spectral indices, nuclide fractions
+-litmus-only feature selection
+  -apply litmus tests to determine which nuclides and reaction types to cluster
+-no dimensionality reduction
+-agglomerative clustering algorithm (Sec.~\ref{subsec:chap10-agglomerative})
+
+second paragraph: outline
+-Figs.~\Crefrange{fig:no-features-assm-16-geometries}{fig:no-features-reflector-geometries}
+  -individual fuel assemblies and 2$\times$2 colorsets
+-Figs.~\Crefrange{fig:no-features-full-core-geometries-8}{fig:no-features-full-core-geometries-64}
+  -quarter core models with 2 -- 8 and 16 -- 64 clusters (in powers of 2)
+
+third paragraph: insights
+-cluster models are ``noisier'' than those with features in Sec.~\ref{sec:chap10-cluster-geometries}
+-illustrates importance of using additional features which may be easier to cluster than the MGXS
+  -esp. energy-integrated and/or nuclide-summed
+
+REFERENCE section on clustering without features in Chap. 11
 
 \begin{figure}[h!]
 \centering
 \begin{subfigure}{0.48\textwidth}
   \centering
-  \includegraphics[width=0.9\linewidth]{figures/unsupervised/geometries/without-features/2-clusters/pinch/assm-16}
+  \includegraphics[width=0.85\linewidth]{figures/unsupervised/geometries/without-features/2-clusters/pinch/assm-16}
   \caption{}
   \label{fig:no-features-assm-16-pinch-2}
 \end{subfigure}%
 \begin{subfigure}{0.48\textwidth}
   \centering
-  \includegraphics[width=0.9\linewidth]{figures/unsupervised/geometries/without-features/2-clusters/combined/assm-16}
+  \includegraphics[width=0.85\linewidth]{figures/unsupervised/geometries/without-features/2-clusters/combined/assm-16}
   \caption{}
   \label{fig:no-features-assm-16-combined-2}
 \end{subfigure}
 \begin{subfigure}{0.48\textwidth}
   \centering
-  \includegraphics[width=0.9\linewidth]{figures/unsupervised/geometries/without-features/4-clusters/pinch/assm-16}
+  \includegraphics[width=0.85\linewidth]{figures/unsupervised/geometries/without-features/4-clusters/pinch/assm-16}
   \caption{}
   \label{fig:no-features-assm-16-pinch-4}
 \end{subfigure}%
 \begin{subfigure}{0.48\textwidth}
   \centering
-  \includegraphics[width=0.9\linewidth]{figures/unsupervised/geometries/without-features/4-clusters/combined/assm-16}
+  \includegraphics[width=0.85\linewidth]{figures/unsupervised/geometries/without-features/4-clusters/combined/assm-16}
   \caption{}
   \label{fig:no-features-assm-16-combined-4}
 \end{subfigure}
 \begin{subfigure}{0.48\textwidth}
   \centering
-  \includegraphics[width=0.9\linewidth]{figures/unsupervised/geometries/without-features/8-clusters/pinch/assm-16}
+  \includegraphics[width=0.85\linewidth]{figures/unsupervised/geometries/without-features/8-clusters/pinch/assm-16}
   \caption{}
   \label{fig:no-features-assm-16-pinch-8}
 \end{subfigure}%
 \begin{subfigure}{0.48\textwidth}
   \centering
-  \includegraphics[width=0.9\linewidth]{figures/unsupervised/geometries/without-features/8-clusters/combined/assm-16}
+  \includegraphics[width=0.85\linewidth]{figures/unsupervised/geometries/without-features/8-clusters/combined/assm-16}
   \caption{}
   \label{fig:no-features-assm-16-combined-8}
 \end{subfigure}
@@ -947,37 +977,37 @@ It is challenging to validate the OpenMOC reaction rates for the quarter core \a
 \centering
 \begin{subfigure}{0.48\textwidth}
   \centering
-  \includegraphics[width=0.9\linewidth]{figures/unsupervised/geometries/without-features/2-clusters/pinch/assm-31-20BPs}
+  \includegraphics[width=0.85\linewidth]{figures/unsupervised/geometries/without-features/2-clusters/pinch/assm-31-20BPs}
   \caption{}
   \label{fig:no-features-assm-31-20BPs-pinch-2}
 \end{subfigure}%
 \begin{subfigure}{0.48\textwidth}
   \centering
-  \includegraphics[width=0.9\linewidth]{figures/unsupervised/geometries/without-features/2-clusters/combined/assm-31-20BPs}
+  \includegraphics[width=0.85\linewidth]{figures/unsupervised/geometries/without-features/2-clusters/combined/assm-31-20BPs}
   \caption{}
   \label{fig:no-features-assm-31-20BPs-combined-2}
 \end{subfigure}
 \begin{subfigure}{0.48\textwidth}
   \centering
-  \includegraphics[width=0.9\linewidth]{figures/unsupervised/geometries/without-features/4-clusters/pinch/assm-31-20BPs}
+  \includegraphics[width=0.85\linewidth]{figures/unsupervised/geometries/without-features/4-clusters/pinch/assm-31-20BPs}
   \caption{}
   \label{fig:no-features-assm-31-20BPs-pinch-4}
 \end{subfigure}%
 \begin{subfigure}{0.48\textwidth}
   \centering
-  \includegraphics[width=0.9\linewidth]{figures/unsupervised/geometries/without-features/4-clusters/combined/assm-31-20BPs}
+  \includegraphics[width=0.85\linewidth]{figures/unsupervised/geometries/without-features/4-clusters/combined/assm-31-20BPs}
   \caption{}
   \label{fig:no-features-assm-31-20BPs-combined-4}
 \end{subfigure}
 \begin{subfigure}{0.48\textwidth}
   \centering
-  \includegraphics[width=0.9\linewidth]{figures/unsupervised/geometries/without-features/8-clusters/pinch/assm-31-20BPs}
+  \includegraphics[width=0.85\linewidth]{figures/unsupervised/geometries/without-features/8-clusters/pinch/assm-31-20BPs}
   \caption{}
   \label{fig:no-features-assm-31-20BPs-pinch-8}
 \end{subfigure}%
 \begin{subfigure}{0.48\textwidth}
   \centering
-  \includegraphics[width=0.9\linewidth]{figures/unsupervised/geometries/without-features/8-clusters/combined/assm-31-20BPs}
+  \includegraphics[width=0.85\linewidth]{figures/unsupervised/geometries/without-features/8-clusters/combined/assm-31-20BPs}
   \caption{}
   \label{fig:no-features-assm-31-20BPs-combined-8}
 \end{subfigure}
@@ -991,37 +1021,37 @@ It is challenging to validate the OpenMOC reaction rates for the quarter core \a
 \centering
 \begin{subfigure}{0.48\textwidth}
   \centering
-  \includegraphics[width=0.9\linewidth]{figures/unsupervised/geometries/without-features/2-clusters/pinch/2x2}
+  \includegraphics[width=0.85\linewidth]{figures/unsupervised/geometries/without-features/2-clusters/pinch/2x2}
   \caption{}
   \label{fig:no-features-2x2-pinch-2}
 \end{subfigure}%
 \begin{subfigure}{0.48\textwidth}
   \centering
-  \includegraphics[width=0.9\linewidth]{figures/unsupervised/geometries/without-features/2-clusters/combined/2x2}
+  \includegraphics[width=0.85\linewidth]{figures/unsupervised/geometries/without-features/2-clusters/combined/2x2}
   \caption{}
   \label{fig:no-features-2x2-combined-2}
 \end{subfigure}
 \begin{subfigure}{0.48\textwidth}
   \centering
-  \includegraphics[width=0.9\linewidth]{figures/unsupervised/geometries/without-features/4-clusters/pinch/2x2}
+  \includegraphics[width=0.85\linewidth]{figures/unsupervised/geometries/without-features/4-clusters/pinch/2x2}
   \caption{}
   \label{fig:no-features-2x2-pinch-4}
 \end{subfigure}%
 \begin{subfigure}{0.48\textwidth}
   \centering
-  \includegraphics[width=0.9\linewidth]{figures/unsupervised/geometries/without-features/4-clusters/combined/2x2}
+  \includegraphics[width=0.85\linewidth]{figures/unsupervised/geometries/without-features/4-clusters/combined/2x2}
   \caption{}
   \label{fig:no-features-assm-2x2-combined-4}
 \end{subfigure}
 \begin{subfigure}{0.48\textwidth}
   \centering
-  \includegraphics[width=0.9\linewidth]{figures/unsupervised/geometries/without-features/8-clusters/pinch/2x2}
+  \includegraphics[width=0.85\linewidth]{figures/unsupervised/geometries/without-features/8-clusters/pinch/2x2}
   \caption{}
   \label{fig:no-features-assm-2x2-pinch-8}
 \end{subfigure}%
 \begin{subfigure}{0.48\textwidth}
   \centering
-  \includegraphics[width=0.9\linewidth]{figures/unsupervised/geometries/without-features/8-clusters/combined/2x2}
+  \includegraphics[width=0.85\linewidth]{figures/unsupervised/geometries/without-features/8-clusters/combined/2x2}
   \caption{}
   \label{fig:no-features-assm-2x2-combined-8}
 \end{subfigure}
@@ -1035,37 +1065,37 @@ It is challenging to validate the OpenMOC reaction rates for the quarter core \a
 \centering
 \begin{subfigure}{0.48\textwidth}
   \centering
-  \includegraphics[width=0.9\linewidth]{figures/unsupervised/geometries/without-features/2-clusters/pinch/reflector}
+  \includegraphics[width=0.85\linewidth]{figures/unsupervised/geometries/without-features/2-clusters/pinch/reflector}
   \caption{}
   \label{fig:no-features-reflector-pinch-2}
 \end{subfigure}%
 \begin{subfigure}{0.48\textwidth}
   \centering
-  \includegraphics[width=0.9\linewidth]{figures/unsupervised/geometries/without-features/2-clusters/combined/reflector}
+  \includegraphics[width=0.85\linewidth]{figures/unsupervised/geometries/without-features/2-clusters/combined/reflector}
   \caption{}
   \label{fig:no-features-reflector-combined-2}
 \end{subfigure}
 \begin{subfigure}{0.48\textwidth}
   \centering
-  \includegraphics[width=0.9\linewidth]{figures/unsupervised/geometries/without-features/4-clusters/pinch/reflector}
+  \includegraphics[width=0.85\linewidth]{figures/unsupervised/geometries/without-features/4-clusters/pinch/reflector}
   \caption{}
   \label{fig:no-features-reflector-pinch-4}
 \end{subfigure}%
 \begin{subfigure}{0.48\textwidth}
   \centering
-  \includegraphics[width=0.9\linewidth]{figures/unsupervised/geometries/without-features/4-clusters/combined/reflector}
+  \includegraphics[width=0.85\linewidth]{figures/unsupervised/geometries/without-features/4-clusters/combined/reflector}
   \caption{}
   \label{fig:no-features-reflector-combined-4}
 \end{subfigure}
 \begin{subfigure}{0.48\textwidth}
   \centering
-  \includegraphics[width=0.9\linewidth]{figures/unsupervised/geometries/without-features/8-clusters/pinch/reflector}
+  \includegraphics[width=0.85\linewidth]{figures/unsupervised/geometries/without-features/8-clusters/pinch/reflector}
   \caption{}
   \label{fig:no-features-reflector-pinch-8}
 \end{subfigure}%
 \begin{subfigure}{0.48\textwidth}
   \centering
-  \includegraphics[width=0.9\linewidth]{figures/unsupervised/geometries/without-features/8-clusters/combined/reflector}
+  \includegraphics[width=0.85\linewidth]{figures/unsupervised/geometries/without-features/8-clusters/combined/reflector}
   \caption{}
   \label{fig:no-features-reflector-combined-8}
 \end{subfigure}
@@ -1079,37 +1109,37 @@ It is challenging to validate the OpenMOC reaction rates for the quarter core \a
 \centering
 \begin{subfigure}{0.48\textwidth}
   \centering
-  \includegraphics[width=0.9\linewidth]{figures/unsupervised/geometries/without-features/2-clusters/pinch/full-core}
+  \includegraphics[width=0.85\linewidth]{figures/unsupervised/geometries/without-features/2-clusters/pinch/full-core}
   \caption{}
   \label{fig:no-features-full-core-pinch-2}
 \end{subfigure}%
 \begin{subfigure}{0.48\textwidth}
   \centering
-  \includegraphics[width=0.9\linewidth]{figures/unsupervised/geometries/without-features/2-clusters/combined/full-core}
+  \includegraphics[width=0.85\linewidth]{figures/unsupervised/geometries/without-features/2-clusters/combined/full-core}
   \caption{}
   \label{fig:no-features-full-core-combined-2}
 \end{subfigure}
 \begin{subfigure}{0.48\textwidth}
   \centering
-  \includegraphics[width=0.9\linewidth]{figures/unsupervised/geometries/without-features/4-clusters/pinch/full-core}
+  \includegraphics[width=0.85\linewidth]{figures/unsupervised/geometries/without-features/4-clusters/pinch/full-core}
   \caption{}
   \label{fig:no-features-full-core-pinch-4}
 \end{subfigure}%
 \begin{subfigure}{0.48\textwidth}
   \centering
-  \includegraphics[width=0.9\linewidth]{figures/unsupervised/geometries/without-features/4-clusters/combined/full-core}
+  \includegraphics[width=0.85\linewidth]{figures/unsupervised/geometries/without-features/4-clusters/combined/full-core}
   \caption{}
   \label{fig:no-features-full-core-combined-4}
 \end{subfigure}
 \begin{subfigure}{0.48\textwidth}
   \centering
-  \includegraphics[width=0.9\linewidth]{figures/unsupervised/geometries/without-features/8-clusters/pinch/full-core}
+  \includegraphics[width=0.85\linewidth]{figures/unsupervised/geometries/without-features/8-clusters/pinch/full-core}
   \caption{}
   \label{fig:no-features-full-core-pinch-8}
 \end{subfigure}%
 \begin{subfigure}{0.48\textwidth}
   \centering
-  \includegraphics[width=0.9\linewidth]{figures/unsupervised/geometries/without-features/8-clusters/combined/full-core}
+  \includegraphics[width=0.85\linewidth]{figures/unsupervised/geometries/without-features/8-clusters/combined/full-core}
   \caption{}
   \label{fig:no-features-full-core-combined-8}
 \end{subfigure}
@@ -1123,37 +1153,37 @@ It is challenging to validate the OpenMOC reaction rates for the quarter core \a
 \centering
 \begin{subfigure}{0.48\textwidth}
   \centering
-  \includegraphics[width=0.9\linewidth]{figures/unsupervised/geometries/without-features/16-clusters/pinch/full-core}
+  \includegraphics[width=0.85\linewidth]{figures/unsupervised/geometries/without-features/16-clusters/pinch/full-core}
   \caption{}
   \label{fig:no-features-full-core-pinch-16}
 \end{subfigure}%
 \begin{subfigure}{0.48\textwidth}
   \centering
-  \includegraphics[width=0.9\linewidth]{figures/unsupervised/geometries/without-features/16-clusters/combined/full-core}
+  \includegraphics[width=0.85\linewidth]{figures/unsupervised/geometries/without-features/16-clusters/combined/full-core}
   \caption{}
   \label{fig:no-features-full-core-combined-16}
 \end{subfigure}
 \begin{subfigure}{0.48\textwidth}
   \centering
-  \includegraphics[width=0.9\linewidth]{figures/unsupervised/geometries/without-features/32-clusters/pinch/full-core}
+  \includegraphics[width=0.85\linewidth]{figures/unsupervised/geometries/without-features/32-clusters/pinch/full-core}
   \caption{}
   \label{fig:no-features-full-core-pinch-32}
 \end{subfigure}%
 \begin{subfigure}{0.48\textwidth}
   \centering
-  \includegraphics[width=0.9\linewidth]{figures/unsupervised/geometries/without-features/32-clusters/combined/full-core}
+  \includegraphics[width=0.85\linewidth]{figures/unsupervised/geometries/without-features/32-clusters/combined/full-core}
   \caption{}
   \label{fig:no-features-full-core-combined-32}
 \end{subfigure}
 \begin{subfigure}{0.48\textwidth}
   \centering
-  \includegraphics[width=0.9\linewidth]{figures/unsupervised/geometries/without-features/64-clusters/pinch/full-core}
+  \includegraphics[width=0.85\linewidth]{figures/unsupervised/geometries/without-features/64-clusters/pinch/full-core}
   \caption{}
   \label{fig:no-features-full-core-pinch-64}
 \end{subfigure}%
 \begin{subfigure}{0.48\textwidth}
   \centering
-  \includegraphics[width=0.9\linewidth]{figures/unsupervised/geometries/without-features/64-clusters/combined/full-core}
+  \includegraphics[width=0.85\linewidth]{figures/unsupervised/geometries/without-features/64-clusters/combined/full-core}
   \caption{}
   \label{fig:no-features-full-core-combined-64}
 \end{subfigure}
@@ -1164,13 +1194,41 @@ It is challenging to validate the OpenMOC reaction rates for the quarter core \a
 \clearpage
 
 
-REFERENCE section on clustering without features in Chap. 11
-REFERENCE section on clustering with dimensionality reduction in Chap. 11
-
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Clustering With Dimensionality Reduction}
 \label{sec:clustering-with-dimension-reduce}
+
+first paragraph: objective
+-highlight impact of using dimensionality reduction (Sec.~\ref{sec:chap10-dimension-reduce})
+  -PCA (Sec.~\ref{subsec:chap10-pca})
+  -ICA (Sec.~\ref{subsec:chap10-pca})
+  -FA (Sec.~\ref{subsec:chap10-factor-analysis})
+-litmus-only feature selection
+  -with all features, including fractional reactivities, spectral indices and nuclide fractions
+  -apply litmus tests to determine which nuclides and reaction types to cluster
+-dimensionality reduction
+  -PCA, ICA and FA used to reduce features down to just 2 linear combinations of original features
+  -applied clustering algorithm within this 2-dimensional space
+-agglomerative clustering algorithm (Sec.~\ref{subsec:chap10-agglomerative})
+  -with 4 clusters
+
+second paragraph: outline
+-Figs.~\Crefrange{fig:dimension-reduce-assm-16-geometries}{fig:dimension-reduce-refl-geometries}
+  -individual fuel assemblies and 2$\times$2 colorsets
+
+third paragraph: insights
+-different dimensionality reduction techniques lead to very different clustering models
+  -PCA is maxmizes variance - tries to find clusters that are as far apart as possible in feature space
+  -ICA and FA...who knows?
+-author's opinion that dimensionality reduction may be helpful to cluster ``noisy'' MGXS data
+-beyond the scope of this thesis to determine reason behind different cluster models
+  -future work should investigate this
+
+%-cluster models are ``noisier'' than those with features in Sec.~\ref{sec:chap10-cluster-geometries}
+%-illustrates importance of using additional features which may be easier to cluster than the MGXS
+%  -esp. energy-integrated and/or nuclide-summed
+
+REFERENCE section on clustering with dimensionality reduction in Chap. 11
 
 \begin{figure}[h!]
 \centering
