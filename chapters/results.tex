@@ -113,10 +113,10 @@ second paragraph: outline and analysis
 & \ac{GMM} & -188 & -189 & -188 & -189 & -189 \\
 & $k$-means & -188 & -189 & -188 & -189 & -189 \\
   \midrule
-\multirow{4}{*}{\parbox{2.5cm}{2$\times$2 Colorset w/ Reflector}} & $k$-Means & & & & & \\
-& Agglomerative & & & & & \\
-& BIRCH & & & & & \\
-& GMM & & & & & \\
+\multirow{4}{*}{\parbox{2.5cm}{2$\times$2 Colorset w/ Reflector}} & Agglomerative & -136 & -136 & -134 & -129 & -133 \\
+& BIRCH & -138 & -137 & -136 & -133 & -133 \\
+& \ac{GMM} & -136 & -136 & -137 & -133 & -133 \\
+& $k$-means & -136 & -136 & -134 & -132 & -132 \\
   \midrule
 \multirow{4}{*}{\parbox{2.5cm}{BEAVRS Quarter Core}} & $k$-Means & & & & & \\
 & Agglomerative & & & & & \\
@@ -232,7 +232,25 @@ third paragraph: analysis
 \label{fig:chap11-capt-err-by-cluster-assm-2x2}
 \end{figure}
 
--plots for reflector and full core
+\begin{figure}[h!]
+\centering
+\begin{subfigure}{0.9\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{figures/results/err-by-cluster/reflector/max-rel-err}
+  \caption{}
+  \label{fig:chap11-max-capt-err-by-cluster-assm-refl}
+\end{subfigure}
+\begin{subfigure}{0.9\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{figures/results/err-by-cluster/reflector/mean-rel-err}
+  \caption{}
+  \label{fig:chap11-mean-capt-err-by-cluster-assm-refl}
+\end{subfigure}
+\caption[U-238 capture rate errors for the 2$\times$2 colorset with reflector]{The max (a) and mean (b) U-238 capture rate error for the 2$\times$2 colorset with water reflector with \textit{i}\ac{MGXS} spatial homogenization with litmus-only feature selection.}
+\label{fig:chap11-capt-err-by-cluster-assm-refl}
+\end{figure}
+
+-plots for full core
 
 SUMMARY BOX
 
@@ -284,10 +302,10 @@ SUMMARY BOX
 & \ac{GMM} & -1.137 & 0.931 & 0.932 & 0.771 & 0.720 \\
 & $k$-means & -1.070 & -0.916 & 0.924 & -0.829 & 0.726 \\
   \midrule
-\multirow{4}{*}{\parbox{2.5cm}{2$\times$2 Colorset w/ Reflector}} & $k$-Means & & & & & \\
-& Agglomerative & & & & & \\
-& BIRCH & & & & & \\
-& GMM & & & & & \\
+\multirow{4}{*}{\parbox{2.5cm}{2$\times$2 Colorset w/ Reflector}} & Agglomerative & -1.757 & -1.782 & -1.423 & -1.423 & -1.276 \\
+& BIRCH & -1.749 & -1.763 & -1.399 & -1.374 & 1.270 \\
+& \ac{GMM} & -2.005 & -1.766 & -1.525 & 1.497 & -1.335 \\
+& $k$-means & -1.817 & -1.688 & -1.425 & 1.348 & -1.277 \\
   \midrule
 \multirow{4}{*}{\parbox{2.5cm}{BEAVRS Quarter Core}} & $k$-Means & & & & & \\
 & Agglomerative & & & & & \\
@@ -337,10 +355,10 @@ SUMMARY BOX
 & \ac{GMM} & 0.311 & 0.240 & 0.192 & 0.151 & 0.158 \\
 & $k$-means & 0.296 & 0.212 & 0.169 & 0.165 & 0.158 \\
   \midrule
-\multirow{4}{*}{\parbox{2.5cm}{2$\times$2 Colorset w/ Reflector}} & $k$-Means & & & & & \\
-& Agglomerative & & & & & \\
-& BIRCH & & & & & \\
-& GMM & & & & & \\
+\multirow{4}{*}{\parbox{2.5cm}{2$\times$2 Colorset w/ Reflector}} & Agglomerative & 0.434 & 0.386 & 0.354 & 0.289 & 0.253 \\
+& BIRCH & 0.474 & 0.394 & 0.368 & 0.338 & 0.329 \\
+& \ac{GMM} & 0.479 & 0.375 & 0.336 & 0.288 & 0.291 \\
+& $k$-means & 0.469 & 0.373 & 0.321 & 0.267 & 0.262 \\
   \midrule
 \multirow{4}{*}{\parbox{2.5cm}{BEAVRS Quarter Core}} & $k$-Means & & & & & \\
 & Agglomerative & & & & & \\
@@ -399,7 +417,17 @@ SUMMARY BOX
 
 \clearpage
 
--plots for reflector and full core
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.9\linewidth]{figures/results/spatial/reflector/capt-err}
+\vspace{2mm}
+\caption[U-238 capture rate errors for a 2$\times$2 colorset with reflector]{U-238 capture rate error spatial distributions for a 2$\times$2 colorset with a water reflector with null, degenerate, \ac{LNS} and \textit{i}\ac{MGXS} spatial homogenization with 2, 6 and 10 clusters.}
+\label{fig:chap11-refl-capt-rates}
+\end{figure}
+
+\clearpage
+
+-plots for full core
 
 SUMMARY BOX
 
@@ -434,7 +462,7 @@ SUMMARY BOX
 \caption[U-238 capture rate comparison for a 3.1\% enriched assembly with 20 BPs]{A comparison of U-238 capture rate spatial distributions for \textit{i}\ac{MGXS} and null spatial homogenization schemes for a 3.1\% enriched assembly with 20 \acp{BP}.}
 \label{fig:chap11-assm-31-20BPs-capt-rates}
 \end{figure}
-
+	
 \clearpage
 
 \begin{figure}[h!]
@@ -447,7 +475,17 @@ SUMMARY BOX
 
 \clearpage
 
--plots for reflector and full core
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.9\linewidth]{figures/results/compare/reflector/compare-capt}
+\vspace{2mm}
+\caption[U-238 capture rate comparison for a 2$\times$2 colorset with reflector]{A comparison of U-238 capture rate spatial distributions for \textit{i}\ac{MGXS} and null spatial homogenization schemes for a 2$\times$2 colorset with a water reflector.}
+\label{fig:chap11-assm-refl-capt-rates}
+\end{figure}
+
+\clearpage
+
+-plots for full core
 
 SUMMARY BOX
 
@@ -510,7 +548,17 @@ OpenMC batchwise
 
 \clearpage
 
--plots for reflector and full core
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.87\linewidth]{figures/results/convergence/reflector/keff-bias-evo}
+\vspace{2mm}
+\caption[Eigenvalue bias covergence for a 2$\times$2 colorset with reflector]{Convergence of the eigenvalue bias $\Delta\rho$ for a 2$\times$2 colorset with a water reflector.}
+\label{fig:chap11-refl-eigenvalue-converge}
+\end{figure}
+
+\clearpage
+
+-plots for full core
 
 SUMMARY BOX
 
@@ -608,7 +656,28 @@ SUMMARY BOX
 
 \clearpage
 
--reflector and full core plots
+\begin{figure}[h!]
+\centering
+\begin{subfigure}{\textwidth}
+  \centering
+  \includegraphics[width=0.9\linewidth]{figures/results/convergence/reflector/max-capt-err-evo}
+  \caption{}
+  \label{fig:chap11-refl-capture-converge-max}
+\end{subfigure}
+\begin{subfigure}{\textwidth}
+  \centering
+  \includegraphics[width=0.9\linewidth]{figures/results/convergence/reflector/mean-capt-err-evo}
+  \caption{}
+  \label{fig:chap11-refl-capture-converge-mean}
+\end{subfigure}
+\vspace{2mm}
+\caption[Fission rate covergence for a 2$\times$2 colorset with reflector]{Convergence of the max (a) and mean (b) absolute U-238 capture rate percent relative errors for a 2$\times$2 colorset with a water reflector.}
+\label{fig:chap11-refl-capture-converge}
+\end{figure}
+
+\clearpage
+
+-full core plots
 
 SUMMARY BOX
 
@@ -621,25 +690,11 @@ first paragraph: objective
 -
 
 second paragraph: outline
--Sec.~\ref{subsec:chap11-db-dunn-ch-indices} - DB, Dunn and CH indices
--Sec.~\ref{subsec:chap11-db-dunn-ch-indices} - silhouette coefficients
--Sec.~\ref{subsec:chap11-db-dunn-ch-indices} - BIC
-
+-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Davies-Bouldin Index}
 \label{subsec:chap11-db-index}
-
-first paragraph:
--
-
--plot the coefficients for:
-  -the four clustering algorithms
-  -for 1.6\% enr. assembly, 2x2 colorset, reflector and full core
-  -for litmus-only
-  -total of 4 plots
-
-\clearpage
 
 \begin{figure}[h!]
 \centering
@@ -667,22 +722,20 @@ first paragraph:
 \label{fig:chap11-2x2-db-index}
 \end{figure}
 
-\clearpage
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.87\linewidth]{figures/results/model-select/reflector/db-combined-U238-nu-fission-1}
+\vspace{2mm}
+\caption[Davies-Bouldin indices for the 2$\times$2 colorset with reflector]{Davies-Bouldin indices for the 2$\times$2 colorset with a water reflector.}
+\label{fig:chap11-refl-db-index}
+\end{figure}
 
--plot for reflector
+\clearpage
 
 
 %%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Dunn Index}
 \label{subsec:chap11-dunn-index}
-
--plot the coefficients for:
-  -the four clustering algorithms
-  -for 1.6\% enr. assembly, 2x2 colorset, reflector and full core
-  -for litmus-only
-  -total of 4 plots
-
-\clearpage
 
 \begin{figure}[h!]
 \centering
@@ -710,21 +763,19 @@ first paragraph:
 \label{fig:chap11-2x2-dunn-index}
 \end{figure}
 
-\clearpage
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.87\linewidth]{figures/results/model-select/reflector/dunn-combined-U238-nu-fission-1}
+\vspace{2mm}
+\caption[Dunn indices for the 2$\times$2 colorset with reflector]{Dunn indices for the 2$\times$2 colorset with a water reflector.}
+\label{fig:chap11-refl-dunn-index}
+\end{figure}
 
--plot for reflector
+\clearpage
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Calinski-Harabaz Index}
 \label{subsec:chap11-ch-index}
-
--plot the coefficients for:
-  -the four clustering algorithms
-  -for 1.6\% enr. assembly, 2x2 colorset, reflector and full core
-  -for litmus-only
-  -total of 4 plots
-
-\clearpage
 
 \begin{figure}[h!]
 \centering
@@ -752,21 +803,19 @@ first paragraph:
 \label{fig:chap11-2x2-ch-index}
 \end{figure}
 
-\clearpage
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.87\linewidth]{figures/results/model-select/reflector/ch-combined-U238-nu-fission-1}
+\vspace{2mm}
+\caption[Calinski-Harabaz indices for the 2$\times$2 colorset with reflector]{Calinski-Harabaz indices for the 2$\times$2 colorset with a water reflector.}
+\label{fig:chap11-refl-ch-index}
+\end{figure}
 
--plot for reflector
+\clearpage
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Silhouette Coefficient}
 \label{subsec:chap11-silhouette-coeff}
-
--plot the coefficients for:
-  -the four clustering algorithms
-  -for 1.6\% enr. assembly, 2x2 colorset, reflector and full core
-  -for litmus-only
-  -total of 4 plots
-
-\clearpage
 
 \begin{figure}[h!]
 \centering
@@ -794,21 +843,19 @@ first paragraph:
 \label{fig:chap11-2x2-silhouette-coeff}
 \end{figure}
 
-\clearpage
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.87\linewidth]{figures/results/model-select/reflector/silhouette-combined-U238-nu-fission-1}
+\vspace{2mm}
+\caption[Silhouette coefficients for the 2$\times$2 colorset with reflector]{Silhouette coefficients for the 2$\times$2 colorset with a water reflector.}
+\label{fig:chap11-refl-silhouette-coeff}
+\end{figure}
 
--plot for reflector
+\clearpage
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Bayesian Information Criterion}
 \label{subsec:chap11-bic}
-
--plot the BIC for:
-  -the four clustering algorithms
-  -for each of the six benchmarks
-  -for combined vs. pinch
-  -total of 12 plots (2 per benchmark)
-
-\clearpage
 
 \begin{figure}[h!]
 \centering
@@ -836,9 +883,15 @@ first paragraph:
 \label{fig:chap11-2x2-bic}
 \end{figure}
 
-\clearpage
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.87\linewidth]{figures/results/model-select/reflector/bic-combined-U238-nu-fission-1}
+\vspace{2mm}
+\caption[BIC for the 2$\times$2 colorset with reflector]{Bayesian Information Criteria (BIC) for the 2$\times$2 colorset with a water reflector.}
+\label{fig:chap11-refl-bic}
+\end{figure}
 
--plot for reflector
+\clearpage
 
 SUMMARY BOX!!!
 
@@ -852,6 +905,8 @@ SUMMARY BOX!!!
   -table of runtimes
 
 -plot of model complexity with generalization error by batch
+
+-OpenMOC runtimes for litmus-only feature selection with GMMs with 10 clusters
 
 \begin{table}[ht!]
   \centering
@@ -869,32 +924,32 @@ SUMMARY BOX!!!
   \multicolumn{1}{c}{\cellcolor{lightgray} \bf OpenMC} &
   \multicolumn{1}{c}{\cellcolor{lightgray} \bf Total} \\
   \midrule
-\multirow{4}{*}{\parbox{2.5cm}{1.6\% Assm}} & Reference & & -- & \\
+\multirow{4}{*}{\parbox{2.5cm}{1.6\% Assm}} & Reference & 1005 & -- & 1005 \\
+& Null & & 0.364 & \\
+& Degenerate & & 0.402 & \\
+& \textit{i}\ac{MGXS} & & 0.382 & \\
+  \midrule
+\multirow{4}{*}{\parbox{2.5cm}{3.1\% Assm}} & Reference & 891 & -- & 891 \\
+& Null & & 0.398 & \\
+& Degenerate & & 0.397 & \\
+& \textit{i}\ac{MGXS} & & 0.372 & \\
+  \midrule
+\multirow{4}{*}{\parbox{2.5cm}{3.1\% Assm w/ 20 \acp{BP}}} & Reference & 879 & -- & 879 \\
+& Null & & 0.406 & \\
+& Degenerate & & 0.410 & \\
+& \textit{i}\ac{MGXS} & & 0.416 & \\
+  \midrule
+\multirow{4}{*}{\parbox{2.5cm}{2$\times$2 Colorset}} & Reference & 903 & -- & 903 \\
+& Null & & 1.99 & \\
+& Degenerate & & 2.29 & \\
+& \textit{i}\ac{MGXS} & & 1.96 & \\
+  \midrule
+\multirow{4}{*}{\parbox{2.5cm}{2$\times$2 Colorset w/ Reflector}} & Reference & 895 & -- & 895 \\
 & Null & & & \\
 & Degenerate & & & \\
-& \textit{i}\ac{MGXS} & & & \\
+& \textit{i}\ac{MGXS} & & 4.90 & \\
   \midrule
-\multirow{4}{*}{\parbox{2.5cm}{3.1\% Assm}} & Reference & & -- & \\
-& Null & & & \\
-& Degenerate & & & \\
-& \textit{i}\ac{MGXS} & & & \\
-  \midrule
-\multirow{4}{*}{\parbox{2.5cm}{3.1\% Assm w/ 20 \acp{BP}}} & Reference & & -- & \\
-& Null & & & \\
-& Degenerate & & & \\
-& \textit{i}\ac{MGXS} & & & \\
-  \midrule
-\multirow{4}{*}{\parbox{2.5cm}{2$\times$2 Colorset}} & Reference & & -- & \\
-& Null & & & \\
-& Degenerate & & & \\
-& \textit{i}\ac{MGXS} & & & \\
-  \midrule
-\multirow{4}{*}{\parbox{2.5cm}{2$\times$2 Colorset w/ Reflector}} & Reference & & -- & \\
-& Null & & & \\
-& Degenerate & & & \\
-& \textit{i}\ac{MGXS} & & & \\
-  \midrule
-\multirow{4}{*}{\parbox{2.5cm}{BEAVRS Quarter Core}} & Reference & & -- & \\
+\multirow{4}{*}{\parbox{2.5cm}{BEAVRS Quarter Core}} & Reference & 11,493 & -- & 11,493 \\
 & Null & & & \\
 & Degenerate & & & \\
 & \textit{i}\ac{MGXS} & & & \\
