@@ -895,39 +895,18 @@ It is challenging to validate the OpenMOC reaction rates for the quarter core \a
 \chapter{Clustered Geometries with \textit{i}MGXS Spatial Homogenization}
 \label{sec:clustered-geometries}
 
-first paragraph: 
--complements Sec.~\ref{sec:chap10-cluster-geometries}
+The \textit{i}\ac{MGXS} spatial homogenization scheme is presented in Chap.~\ref{chap:unsupervised}, and a number of example ``clustered geometries'' generated with the scheme are highlighted in Sec.~\ref{sec:chap10-cluster-geometries}. The \textit{i}\ac{MGXS} scheme is highly configurable, and various methods may be employed for feature extraction, feature selection and dimensionality reduction which greatly impact the resultant materials configuration found by a clustering algorithm. The geometries in Sec.~\ref{sec:chap10-cluster-geometries} were generated using the agglomerative clustering algorithm (Sec.~\ref{subsec:chap10-agglomerative}) with datasets filtered by pinch and litmus-only feature selection (Secs.~\ref{subsec:chap10-pinch-selection} and~\ref{sec:chap10-cluster-geometries}). The importance of using non-\ac{MGXS} features is illustrated in Sec.~\ref{sec:clustering-without-features}, while Sec.~\ref{sec:clustering-with-dimension-reduce} demonstrates the impact of using dimensionality reduction techniques.
 
-second paragraph: outline
--Sec.~\ref{sec:clustering-without-features}
--Sec.~\ref{sec:clustering-with-dimension-reduce}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Clustering without Features}
 \label{sec:clustering-without-features}
 
-first paragraph: objective
--highlight the importance of using features
-  -rather than simply clustering the MGXS themselves
-  -in each case, only cluster MGXS and uncertainties
-  -without fractional reactivity, spectral indices, nuclide fractions
--litmus-only feature selection
-  -apply litmus tests to determine which nuclides and reaction types to cluster
--no dimensionality reduction
--agglomerative clustering algorithm (Sec.~\ref{subsec:chap10-agglomerative})
+The different types of features considered in this thesis are presented in Sec.~\ref{sec:chap10-feature-extract}. Since the objective of using unsupervised clustering algorithms in the \textit{i}\ac{MGXS} scheme is to identify the clustering of pin-wise \ac{MGXS} -- and to apply this information in the spatial homogenization process -- it may be useful to consider whether the non-\ac{MGXS} features\footnote{The fractional reactivities (Sec.~\ref{subsec:chap10-frac-reactivity}), spectral indices (Sec.~\ref{subsec:chap10-spec-index}) and nuclide fractions (Sec.~\ref{subsec:chap10-nuclide-frac})} are necessary or whether the \ac{MGXS} can simply be clustered by themselves. The clustered geometries presented in Sec.~\ref{sec:chap10-cluster-geometries} were found by clustering both \ac{MGXS} and non-\ac{MGXS} features. This section illustrates the geometries that are found when only the pin-wise \ac{MGXS} means and uncertainties are considered by the \textit{i}\ac{MGXS} data processing pipeline.
 
-second paragraph: outline
--Figs.~\Crefrange{fig:no-features-assm-16-geometries}{fig:no-features-reflector-geometries}
-  -individual fuel assemblies and 2$\times$2 colorsets
--Figs.~\Crefrange{fig:no-features-full-core-geometries-8}{fig:no-features-full-core-geometries-64}
-  -quarter core models with 2 -- 8 and 16 -- 64 clusters (in powers of 2)
+The clustered geometries for the individual fuel assembly and 2$\times$2 colorset benchmarks are shown in Figs.~\Crefrange{fig:no-features-assm-16-geometries}{fig:no-features-reflector-geometries}. Likewise, Figs.~\Crefrange{fig:no-features-full-core-geometries-8}{fig:no-features-full-core-geometries-64} highlight the clustered geometries for the quarter core \ac{BEAVRS} model. Similar to the analysis in Sec.~\ref{sec:chap10-cluster-geometries}, the agglomerative clustering algorithm (Sec.~\ref{subsec:chap10-agglomerative}) is employed with the same 2-group \ac{MC} tally datasets used in Sec.~\ref{sec:chap10-cluster-geometries}. Both pinch and litmus-only feature selection techniques were used to select the ``best'' reaction type for each pair of nuclides and energy groups, for each nuclide in the fuel and both energy groups. No dimensionality reduction techniques (Sec.~\ref{sec:chap10-dimension-reduce}) were applied to the selected features.
 
-third paragraph: insights
--cluster models are ``noisier'' than those with features in Sec.~\ref{sec:chap10-cluster-geometries}
--illustrates importance of using additional features which may be easier to cluster than the MGXS
-  -esp. energy-integrated and/or nuclide-summed
-
-REFERENCE section on clustering without features in Chap. 11
+The most important insight that can be drawn from the figures is that the clustering models are much ``noisier'' than those found when the non-\ac{MGXS} features are considered in Sec.~\ref{sec:chap10-cluster-geometries}. This illustrates the importance of using some features which may better reveal the effects of clustering in \ac{MC} tally data due to spatial self-shielding effects than the pin-wise \ac{MGXS} themselves. In addition, some of the non-\ac{MGXS} features are energy-integrated and/or summed across nuclides (\textit{e.g.}, fractional reactivities) and will necessarily be more converged tally estimators than microscopic \ac{MGXS}\footnote{Although this is true in general, it should not make a difference here since the \ac{MC} tally data used in this analysis was very highly converged.}.
 
 \begin{figure}[h!]
 \centering
@@ -1198,37 +1177,11 @@ REFERENCE section on clustering without features in Chap. 11
 \section{Clustering With Dimensionality Reduction}
 \label{sec:clustering-with-dimension-reduce}
 
-first paragraph: objective
--highlight impact of using dimensionality reduction (Sec.~\ref{sec:chap10-dimension-reduce})
-  -PCA (Sec.~\ref{subsec:chap10-pca})
-  -ICA (Sec.~\ref{subsec:chap10-pca})
-  -FA (Sec.~\ref{subsec:chap10-factor-analysis})
--litmus-only feature selection
-  -with all features, including fractional reactivities, spectral indices and nuclide fractions
-  -apply litmus tests to determine which nuclides and reaction types to cluster
--dimensionality reduction
-  -PCA, ICA and FA used to reduce features down to just 2 linear combinations of original features
-  -applied clustering algorithm within this 2-dimensional space
--agglomerative clustering algorithm (Sec.~\ref{subsec:chap10-agglomerative})
-  -with 4 clusters
+A variety of dimensionality reduction techniques such as Principal Component Analysis (PCA, Sec.~\ref{subsec:chap10-pca}), Independent Component Analysis (ICA, Sec.~\ref{subsec:chap10-pca}) and Factor Analysis (FA, Sec.~\ref{subsec:chap10-factor-analysis}) may be used by the \textit{i}\ac{MGXS} data processing pipeline. Dimensionality reduction extracts information from features into a low-dimensional vector space to reduce data storage and predictor training time, and to control model complexity. The clustered geometries presented in Sec.~\ref{sec:chap10-cluster-geometries} were found by clustering features which were \textit{not} subjected to dimensionality reduction. This section illustrates the geometries that are found when PCA, ICA or FA are employed.
 
-second paragraph: outline
--Figs.~\Crefrange{fig:dimension-reduce-assm-16-geometries}{fig:dimension-reduce-refl-geometries}
-  -individual fuel assemblies and 2$\times$2 colorsets
+The clustered geometries for the individual fuel assembly and 2$\times$2 colorset benchmarks are shown in Figs.~\Crefrange{fig:dimension-reduce-assm-16-geometries}{fig:dimension-reduce-refl-geometries}. Similar to the analysis in Sec.~\ref{sec:chap10-cluster-geometries}, the agglomerative clustering algorithm (Sec.~\ref{subsec:chap10-agglomerative}) is applied to find four clusters from the same 2-group \ac{MC} tally datasets used in Sec.~\ref{sec:chap10-cluster-geometries}. The litmus-only feature selection technique was used to select the ``best'' reaction type for each pair of nuclides and energy groups, for each nuclide in the fuel and both energy groups. In each case, PCA, ICA and FA are considered along with the base case of no dimensionality reduction. The PCA, ICA and FA methods were each used to identify two new features as linear combinations of the original features. The two new features were then used in place of the original features in the predictor training phase of the \textit{i}\ac{MGXS} data processing pipeline.
 
-third paragraph: insights
--different dimensionality reduction techniques lead to very different clustering models
-  -PCA is maxmizes variance - tries to find clusters that are as far apart as possible in feature space
-  -ICA and FA...who knows?
--author's opinion that dimensionality reduction may be helpful to cluster ``noisy'' MGXS data
--beyond the scope of this thesis to determine reason behind different cluster models
-  -future work should investigate this
-
-%-cluster models are ``noisier'' than those with features in Sec.~\ref{sec:chap10-cluster-geometries}
-%-illustrates importance of using additional features which may be easier to cluster than the MGXS
-%  -esp. energy-integrated and/or nuclide-summed
-
-REFERENCE section on clustering with dimensionality reduction in Chap. 11
+The most important insight that can be drawn from the figures is that dimensionality reduction techniques have a dramatic impact on the resultant cluster models. It is beyond the scope of this thesis to determine the fundamental reason(s) why each dimensionality reduction technique leads to unique cluster models. Nevertheless, it is clear that each technique's construction of a linear basis set to optimize different metrics (\textit{i.e.}, sample variance and mutual independence for PCA and ICA, respectively) separates the samples in highly distinct structures from those observed in the original feature space. Although this thesis does not further consider the impact of dimensionality reduction on the efficacy of the \textit{i}\ac{MGXS} scheme, it is the author's opinion that it may be especially helpful to cluster ``noisy'' MGXS data, and may be a promising avenue for future research.
 
 \begin{figure}[h!]
 \centering
@@ -1256,7 +1209,7 @@ REFERENCE section on clustering with dimensionality reduction in Chap. 11
   \caption{}
   \label{fig:assm-16-combined-factor-analysis-2}
 \end{subfigure}
-\caption[Materials for the 1.6\% assembly with dimensionality reduction]{Materials for the 1.6\% enriched fuel assembly with \textit{i}\ac{MGXS} homogenization with dimensionality reduction. The materials without dimensionality reduction (a) are compared to those identified when PCA (b), ICA (c) and factor analyis (d) are applied, respectively.}
+\caption[Materials for the 1.6\% assembly with dimensionality reduction]{Materials for the 1.6\% enriched fuel assembly with \textit{i}\ac{MGXS} homogenization. The materials without dimensionality reduction (a) are compared to those identified when PCA (b), ICA (c) and factor analyis (d) are applied, respectively.}
 \label{fig:dimension-reduce-assm-16-geometries}
 \end{figure}
 
@@ -1288,7 +1241,7 @@ REFERENCE section on clustering with dimensionality reduction in Chap. 11
   \caption{}
   \label{fig:assm-31-20BPs-combined-factor-analysis-2}
 \end{subfigure}
-\caption[Materials for the 3.1\% assembly with 20 BPs with dimensionality reduction]{Materials for the 3.1\% enriched fuel assembly with 20 \acp{BP} with \textit{i}\ac{MGXS} homogenization with dimensionality reduction. The materials without dimensionality reduction (a) are compared to those identified when PCA (b), ICA (c) and factor analyis (d) are applied, respectively.}
+\caption[Materials for the 3.1\% assembly with 20 BPs with dimensionality reduction]{Materials for the 3.1\% enriched fuel assembly with 20 \acp{BP} with \textit{i}\ac{MGXS} homogenization. The materials without dimensionality reduction (a) are compared to those identified when PCA (b), ICA (c) and factor analyis (d) are applied, respectively.}
 \label{fig:dimension-reduce-assm-31-20BPs-geometries}
 \end{figure}
 
@@ -1320,7 +1273,7 @@ REFERENCE section on clustering with dimensionality reduction in Chap. 11
   \caption{}
   \label{fig:2x2-combined-factor-analysis-2}
 \end{subfigure}
-\caption[Materials for the 2$\times$2 colorset with dimensionality reduction]{Materials for the 2$\times$2 colorset with \textit{i}\ac{MGXS} homogenization with dimensionality reduction. The materials without dimensionality reduction (a) are compared to those identified when PCA (b), ICA (c) and factor analyis (d) are applied, respectively.}
+\caption[Materials for the 2$\times$2 colorset with dimensionality reduction]{Materials for the 2$\times$2 colorset with \textit{i}\ac{MGXS} homogenization. The materials without dimensionality reduction (a) are compared to those identified when PCA (b), ICA (c) and factor analyis (d) are applied, respectively.}
 \label{fig:dimension-reduce-2x2-geometries}
 \end{figure}
 
@@ -1352,7 +1305,7 @@ REFERENCE section on clustering with dimensionality reduction in Chap. 11
   \caption{}
   \label{fig:refl-combined-factor-analysis-2}
 \end{subfigure}
-\caption[Materials for the 2$\times$2 colorset with reflector with dimensionality reduction]{Materials for the 2$\times$2 colorset with a water reflector with \textit{i}\ac{MGXS} homogenization with dimensionality reduction. The materials without dimensionality reduction (a) are compared to those identified when PCA (b), ICA (c) and factor analyis (d) are applied, respectively.}
+\caption[Materials for the 2$\times$2 colorset with reflector with dimensionality reduction]{Materials for the 2$\times$2 colorset with a water reflector with \textit{i}\ac{MGXS} homogenization. The materials without dimensionality reduction (a) are compared to those identified when PCA (b), ICA (c) and factor analyis (d) are applied, respectively.}
 \label{fig:dimension-reduce-refl-geometries}
 \end{figure}
 
