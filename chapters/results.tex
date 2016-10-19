@@ -24,6 +24,49 @@ first paragraph: objective
   4) Evaluate model selection criteria
 
 
+\begin{figure}[h!]
+\centering
+\begin{tikzpicture}
+\begin{axis}[xmin=0,xmax=51,ymin=0,ymax=1.1,xlabel={\# Clusters},ylabel={Error},xticklabels={},yticklabels={},xtick={},ytick={},ticks=none,legend style={at={(1.5,0.7)},anchor=east,legend columns=1}]
+\addplot[smooth,red,very thick] coordinates {
+(1,1)
+(8,0.6)
+(25,0.7)
+(50,1)
+};
+\addplot[smooth,blue,very thick] coordinates {
+(1,1)
+(10,0.5)
+(30,0.515)
+(50,0.6)
+};
+\addplot[smooth,green,very thick] coordinates {
+(1,1)
+(14,0.3)
+%(30,0.45)
+(50,0.25)
+};
+\addplot[smooth,very thick] coordinates {
+(1,1)
+(8,0.4)
+(16,0.15)
+(50,0.1)
+};
+\addplot[smooth,dashed] coordinates {
+(0,0.1)
+(51,0.1)
+};
+\addlegendentry{$\;\;X$ Histories}
+\addlegendentry{$4X$ Histories}
+\addlegendentry{$8X$ Histories}
+\addlegendentry{$\infty$ Histories}
+\addlegendentry{Degenerate}
+\end{axis}
+\end{tikzpicture}
+\caption[Convergence of\textit{i}MGXS to degenerate homogenization]{Convergence of \textit{i}\ac{MGXS} to degenerate homogenization in the limit of infinite particle histories.}
+\label{fig:chap11-coverge-complexity}
+\end{figure}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{MOC Runtime Parameters}
 \label{sec:chap11-moc-params}
@@ -250,7 +293,23 @@ third paragraph: analysis
 \label{fig:chap11-capt-err-by-cluster-assm-refl}
 \end{figure}
 
--plots for full core
+\begin{figure}[h!]
+\centering
+\begin{subfigure}{0.9\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{figures/results/err-by-cluster/full-core/max-rel-err}
+  \caption{}
+  \label{fig:max-capt-err-by-cluster-assm-full-core}
+\end{subfigure}
+\begin{subfigure}{0.9\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{figures/results/err-by-cluster/full-core/mean-rel-err}
+  \caption{}
+  \label{fig:mean-capt-err-by-cluster-assm-full-core}
+\end{subfigure}
+\caption[U-238 capture rate errors for quarter core BEAVRS model]{The max (a) and mean (b) U-238 capture rate error for the quarter core \ac{BEAVRS} model with \textit{i}\ac{MGXS} spatial homogenization with litmus-only feature selection.}
+\label{fig:capt-err-by-cluster-assm-full-core}
+\end{figure}
 
 SUMMARY BOX
 
@@ -381,8 +440,8 @@ SUMMARY BOX
 \centering
 \includegraphics[width=0.9\linewidth]{figures/results/spatial/assm-16/capt-err}
 \vspace{2mm}
-\caption[U-238 capture rate errors for a 1.6\% enriched assembly]{U-238 capture rate error spatial distributions for a 1.6\% enriched assembly with null, degenerate, \ac{LNS} and \textit{i}\ac{MGXS} spatial homogenization with 2, 6 and 10 clusters.}
-\label{fig:chap11-assm-1.6-capt-rates}
+\caption[U-238 capture errors for the 1.6\% enriched assembly]{U-238 capture error spatial distributions for the 1.6\% enriched assembly with null, degenerate, \ac{LNS} and \textit{i}\ac{MGXS} spatial homogenization with 2, 6 and 10 clusters.}
+\label{fig:chap11-assm-1.6-capt-err}
 \end{figure}
 
 \clearpage
@@ -391,8 +450,8 @@ SUMMARY BOX
 \centering
 \includegraphics[width=0.9\linewidth]{figures/results/spatial/assm-31/capt-err}
 \vspace{2mm}
-\caption[U-238 capture rate errors for a 3.1\% enriched assembly]{U-238 capture rate error spatial distributions for a 3.1\% enriched assembly with null, degenerate, \ac{LNS} and \textit{i}\ac{MGXS} spatial homogenization with 2, 6 and 10 clusters.}
-\label{fig:chap11-assm-3.1-capt-rates}
+\caption[U-238 capture errors for the 3.1\% enriched assembly]{U-238 capture error spatial distributions for the 3.1\% enriched assembly with null, degenerate, \ac{LNS} and \textit{i}\ac{MGXS} spatial homogenization with 2, 6 and 10 clusters.}
+\label{fig:chap11-assm-3.1-capt-err}
 \end{figure}
 
 \clearpage
@@ -401,8 +460,8 @@ SUMMARY BOX
 \centering
 \includegraphics[width=0.9\linewidth]{figures/results/spatial/assm-31-20BPs/capt-err}
 \vspace{2mm}
-\caption[U-238 capture rate errors for a 3.1\% enriched assembly with 20 BPs]{U-238 capture rate error spatial distributions for a 3.1\% enriched assembly with 20 \acp{BP} with null, degenerate, \ac{LNS} and \textit{i}\ac{MGXS} spatial homogenization with 2, 6 and 10 clusters.}
-\label{fig:chap11-assm-3.1-20BPs-capt-rates}
+\caption[U-238 capture errors for the 3.1\% enriched assembly with 20 BPs]{U-238 capture error spatial distributions for the 3.1\% enriched assembly with 20 \acp{BP} with null, degenerate, \ac{LNS} and \textit{i}\ac{MGXS} spatial homogenization with 2, 6 and 10 clusters.}
+\label{fig:chap11-assm-3.1-20BPs-capt-err}
 \end{figure}
 
 \clearpage
@@ -411,8 +470,8 @@ SUMMARY BOX
 \centering
 \includegraphics[width=0.9\linewidth]{figures/results/spatial/2x2/capt-err}
 \vspace{2mm}
-\caption[U-238 capture rate errors for a 2$\times$2 colorset]{U-238 capture rate error spatial distributions for a 2$\times$2 colorset with null, degenerate, \ac{LNS} and \textit{i}\ac{MGXS} spatial homogenization with 2, 6 and 10 clusters.}
-\label{fig:chap11-2x2-capt-rates}
+\caption[U-238 capture errors for the 2$\times$2 colorset]{U-238 capture error spatial distributions for the 2$\times$2 colorset with null, degenerate, \ac{LNS} and \textit{i}\ac{MGXS} spatial homogenization with 2, 6 and 10 clusters.}
+\label{fig:chap11-2x2-capt-err}
 \end{figure}
 
 \clearpage
@@ -421,13 +480,51 @@ SUMMARY BOX
 \centering
 \includegraphics[width=0.9\linewidth]{figures/results/spatial/reflector/capt-err}
 \vspace{2mm}
-\caption[U-238 capture rate errors for a 2$\times$2 colorset with reflector]{U-238 capture rate error spatial distributions for a 2$\times$2 colorset with a water reflector with null, degenerate, \ac{LNS} and \textit{i}\ac{MGXS} spatial homogenization with 2, 6 and 10 clusters.}
-\label{fig:chap11-refl-capt-rates}
+\caption[U-238 capture errors for the 2$\times$2 colorset with reflector]{U-238 capture error spatial distributions for the 2$\times$2 colorset with a water reflector with null, degenerate, \ac{LNS} and \textit{i}\ac{MGXS} spatial homogenization with 2, 6 and 10 clusters.}
+\label{fig:chap11-refl-capt-err}
 \end{figure}
 
 \clearpage
 
--plots for full core
+\begin{figure}[h!]
+\centering
+\begin{subfigure}{0.9\textwidth}
+  \centering
+  \includegraphics[width=0.65\linewidth]{figures/results/spatial/full-core/capt-err-null}
+  \caption{}
+  \label{fig:chap11-full-core-capt-err-null}
+\end{subfigure}
+\begin{subfigure}{0.9\textwidth}
+  \centering
+\includegraphics[width=0.65\linewidth]{figures/results/spatial/full-core/capt-err-degenerate}
+  \caption{}
+  \label{fig:chap11-full-core-capt-err-degenerate}
+\end{subfigure}
+\caption[U-238 capture rate errors for \ac{BEAVRS}]{U-238 capture error spatial distributions for the quarter core \ac{BEAVRS} model with null (a) and degenerate (b) spatial homogenization.}
+\label{fig:chap11-full-core-capt-err-a}
+\end{figure}
+
+\clearpage
+
+\begin{figure}[h!]
+\centering
+\begin{subfigure}{0.9\textwidth}
+  \centering
+  \includegraphics[width=0.65\linewidth]{figures/results/spatial/full-core/capt-err-birch-4}
+  \caption{}
+  \label{fig:chap11-full-core-capt-err-birch-4}
+\end{subfigure}
+\begin{subfigure}{0.9\textwidth}
+  \centering
+\includegraphics[width=0.65\linewidth]{figures/results/spatial/full-core/capt-err-birch-16}
+  \caption{}
+  \label{fig:chap11-full-core-capt-err-birch-16}
+\end{subfigure}
+\caption[U-238 capture rate errors for \ac{BEAVRS}]{U-238 capture percent relative errors for the quarter core \ac{BEAVRS} model with \textit{i}\ac{MGXS} spatial homogenization with BIRCH clustering of 4 (a) and 16 (b) clusters.}
+\label{fig:chap11-full-core-capt-err-b}
+\end{figure}
+
+\clearpage
 
 SUMMARY BOX
 
@@ -460,7 +557,7 @@ SUMMARY BOX
 \includegraphics[width=0.9\linewidth]{figures/results/compare/assm-31-20BPs/compare-capt}
 \vspace{2mm}
 \caption[U-238 capture rate comparison for a 3.1\% enriched assembly with 20 BPs]{A comparison of U-238 capture rate spatial distributions for \textit{i}\ac{MGXS} and null spatial homogenization schemes for a 3.1\% enriched assembly with 20 \acp{BP}.}
-\label{fig:chap11-assm-31-20BPs-capt-rates}
+\label{fig:chap11-assm-31-20BPs-capt-rates-comp}
 \end{figure}
 	
 \clearpage
@@ -470,7 +567,7 @@ SUMMARY BOX
 \includegraphics[width=0.9\linewidth]{figures/results/compare/2x2/compare-capt}
 \vspace{2mm}
 \caption[U-238 capture rate comparison for a 2$\times$2 colorset]{A comparison of U-238 capture rate spatial distributions for \textit{i}\ac{MGXS} and null spatial homogenization schemes for a 2$\times$2 colorset.}
-\label{fig:chap11-assm-2x2-capt-rates}
+\label{fig:chap11-assm-2x2-capt-rates-comp}
 \end{figure}
 
 \clearpage
@@ -480,12 +577,40 @@ SUMMARY BOX
 \includegraphics[width=0.9\linewidth]{figures/results/compare/reflector/compare-capt}
 \vspace{2mm}
 \caption[U-238 capture rate comparison for a 2$\times$2 colorset with reflector]{A comparison of U-238 capture rate spatial distributions for \textit{i}\ac{MGXS} and null spatial homogenization schemes for a 2$\times$2 colorset with a water reflector.}
-\label{fig:chap11-assm-refl-capt-rates}
+\label{fig:chap11-assm-refl-capt-rates-comp}
 \end{figure}
 
 \clearpage
 
--plots for full core
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.9\linewidth]{figures/results/compare/full-core/compare-capt-kmeans}
+\vspace{2mm}
+\caption[U-238 capture rate comparison for the quarter core BEAVRS model]{A comparison of U-238 capture rate spatial distributions for \textit{i}\ac{MGXS} (\textit{with $k$-means clustering}) and null spatial homogenization schemes for the quarter core BEAVRS model.}
+\label{fig:chap11-assm-full-core-capt-rates-kmeans-comp}
+\end{figure}
+
+\clearpage
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.9\linewidth]{figures/results/compare/full-core/compare-capt-gmm}
+\vspace{2mm}
+\caption[U-238 capture rate comparison for the quarter core BEAVRS model]{A comparison of U-238 capture rate spatial distributions for \textit{i}\ac{MGXS} (\textit{with \ac{GMM} clustering}) and null spatial homogenization schemes for the quarter core BEAVRS model.}
+\label{fig:chap11-assm-full-core-capt-rates-gmm-comp}
+\end{figure}
+
+\clearpage
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.9\linewidth]{figures/results/compare/full-core/compare-capt-birch}
+\vspace{2mm}
+\caption[U-238 capture rate comparison for the quarter core BEAVRS model]{A comparison of U-238 capture rate spatial distributions for \textit{i}\ac{MGXS} (\textit{with BIRCH clustering}) and null spatial homogenization schemes for the quarter core BEAVRS model.}
+\label{fig:chap11-assm-full-core-capt-rates-birch-comp}
+\end{figure}
+
+\clearpage
 
 SUMMARY BOX
 
@@ -969,7 +1094,7 @@ quarter core      2361.5          622.2
 \multirow{4}{*}{\parbox{2.5cm}{BEAVRS Quarter Core}} & Reference & & & & \\
 & Null & & & 419 & \\
 & Degenerate & & & 426 & \\
-& \textit{i}\ac{MGXS} & & 423 & & \\
+& \textit{i}\ac{MGXS} & & & 423 & \\
   \bottomrule
 \end{tabular}
 \end{table}

@@ -15,7 +15,7 @@
 \usepackage{listings}                      % Source code listings
 \usepackage{caption}
 \usepackage{subcaption}
-\usepackage[rgb]{xcolor}
+\usepackage[rgb,table]{xcolor}
 \usepackage{url}
 \usepackage{soul}
 \usepackage{array}
@@ -26,6 +26,14 @@
 \usepackage{tikz}
 \usetikzlibrary{calc,shapes,decorations.pathreplacing,positioning}
 \usepackage{pgfplots}
+\usepackage{siunitx}
+\usepackage{multirow}
+
+% Specialties for tables
+\usepackage{array}
+\newcolumntype{L}[1]{>{\raggedright\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
+\newcolumntype{C}[1]{>{\centering\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
+\newcolumntype{R}[1]{>{\raggedleft\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
 
 \usepackage[breaklinks=true]{hyperref}
 \hypersetup{colorlinks=true, linkcolor=black, citecolor=black, urlcolor=black,
@@ -138,319 +146,297 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection*{Background and Motivation}
 
-We desire higher-fidelity simulations of full nuclear reactor systems to
-help us better understand the current fleet of aging reactors, as well as better
-evaluate new designs. One option for solving for neutron distributions is with
-\textbf{Monte Carlo} (MC) methods.
+\begin{figure}
+\centering
+\includegraphics[width=0.8\linewidth]{figures/intro/u235-ce-mg-xs}
+\caption[U-235 continuous energy and multi-group fission cross section]{U-235 continuous energy and 16-group fission cross section.}
+\label{fig:chap1-u235-sigf}
+\end{figure}
 
-\begin{itemize}
-  \item MC methods provide the highest-quality solutions by sampling directly from
-  evaluated nuclear data to carry out random walks for individual particles
-  through an arbitrarily complex geometry with minimal approximations.
-  \item MC particle histories are independent within a fission generation, making
-  the method ``embarrassingly parallel.''
-  \item Immense computational effort is needed to achieve good statistical
-  convergence for reactor problems.
-\end{itemize}
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.9\linewidth]{figures/mgxs/mgxs-overlay}
+\caption[Energy and spatial variation in \ac{MGXS}]{The calculation of multi-group cross sections requires knowledge of the spatial and energy variation of the continuous energy cross section and flux. The color-coded position $\mathbf{r}$ and energy $E$ variables correspond to the figures with the matching colored outlines. The microscopic cross section $\sigma_{x,i}$ depends on reactor configuration (a) and neutron energy (b). The flux $\phi$ varies with position (c) and energy (d).}
+\label{fig:mgxs-overlay}
+\end{figure}
 
-Such methods have typically only been thought viable for either small reactors
-and experiments or for selective verification of coarse-grid deterministic
-methods, which are used for routine design and analysis.
+\begin{figure}[h!]
+\centering
+\includegraphics[width=\linewidth]{figures/sph/pin-cell/rel-err-inner-outer}
+\caption[Flux relative error by energy group with SPH]{The energy-dependent relative error of the 70-group OpenMOC scalar flux with respect to the reference OpenMC flux in a 1D slab (a) and 2D fuel pin (b) for the innermost, outermost and all \ac{FSR}s.}
+\label{fig:chap6-rel-err-energy}
+\end{figure}
 
-To achieve the increased level of fidelity desired it is clear that
-deterministic methods require considerable refinement of the phase space discretization.
-For instance, Smith's recently-updated challenge and the accompanying BEAVRS benchmark
-call for over 50M regions at a minimum, each of which contain a material with
-over 300 isotopes that must be depleted independently. In this case, it is clear
-that high performance computing (HPC) systems will be required, and methods must
-be able to scale to many tens of thousands or millions of processors.
+\begin{figure}[h]
+\begin{subfigure}{.5\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{figures/sph/batman-1}
+  \caption{}
+  \label{fig:chap6-batman-plots-a}
+\end{subfigure}
+\begin{subfigure}{.5\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{figures/sph/batman-2}
+  \caption{}
+  \label{fig:chap6-batman-plots-b}
+\end{subfigure}
+\caption[Angular-dependent capture MGXS]{Angular-dependent capture \ac{MGXS} for the 6.67 eV resonance group as a function of azimuthal angle for two different \ac{FSR}s. The radial axis is given in units of barns and the azimuthal axis in units of degrees. \textit{Image courtesy of N. Gibson~\cite{gibson2016thesis}.}}
+\label{fig:batman-plots}
+\end{figure}
 
-In practice this can be quite difficult for existing methods, especially since
-the amount of memory available per process is continuing to shrink in modern
-computing systems. In fact, we have come to a cross-over point where the
-amount of computational effort required to solve reactor systems
-deterministically is similar to that required for a Monte Carlo simulation to
-converge to a comparable level of accuracy. This, along with inherent
-parallelism, makes Monte Carlo a particularly attractive choice
-for ultra-high fidelity reactor core neutronics simulations.
+\begin{algorithm}[h]
+\caption{SPH Factor Algorithm}
+\label{alg:sph}
+\begin{algorithmic}[1]
+  \State Initialize \ac{MGXS} from MC tallies
+  \State Compute neutron source from MC flux and \ac{MGXS}
+  \State Initialize \ac{SPH} factors to unity
+  \While{SPH factor residuals are not converged}
+    \State Update \ac{MGXS} with \ac{SPH} factors
+    \State Solve fixed source transport problem
+    \State Compute new \ac{SPH} factors
+    \State Compute \ac{SPH} factor residuals
+  \EndWhile
+  \State Compute final \ac{MGXS} with \ac{SPH} factors
+\end{algorithmic}
+\end{algorithm}
+
+\begin{table}[h!]
+  \centering
+  \caption[Eigenvalues with SPH factors for a 1D slab]{The impact of SPH factors on the eigenvalue bias $\Delta\rho$ with varying energy group structures and \ac{FSR} spatial discretizations for a 1D slab.}  
+  \label{table:chap6-sph-slab-energy}
+  \vspace{6pt}
+  \begin{tabular}{c S[table-format=6.1] S[table-format=6.1]}
+  \toprule
+  & \multicolumn{2}{c}{{\bf $\Delta\rho$}} \\
+  \cline{2-3}
+  \multirow{-2}{*}{{\bf \# Groups}} &
+  \multicolumn{1}{c}{{Without SPH}} &
+  \multicolumn{1}{c}{{With SPH}} \\
+  \midrule
+1 & 66 & -14 \\
+2 & 34 & -6\\
+4 & -57 & 1 \\
+8 & -102 & 2 \\
+16 & -111 & 4 \\
+25 & -182 & -1 \\
+40 & -202 & 2 \\
+70 & -211 & -3 \\
+  \bottomrule
+\end{tabular}
+\end{table}
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newpage
 \subsection*{Summary of Issues}
 
-There are several challenges to overcome before Monte Carlo can be used for
-high-fidelity simulations, which generally fall into the following categories:
-
-\begin{enumerate}
-  \item Time to solution
-  \begin{itemize}
-    \item[a] High dominance ratios make the fission source site distribution
-        difficult to converge with power iteration.
-    \item[b] Many histories are required for tally statistics to converge to a
-        reasonable accuracy.
-  \end{itemize}
-  \item Memory
-  \begin{itemize}
-    \item[a] Hundreds of gigabytes are needed for cross section data for temperature treatment.
-    \item[b] Several terabytes are needed for reaction rate tallies and material
-        composition data for depletion.
-  \end{itemize}
-\end{enumerate}
-
-The first issue has long been recognized as major disadvantage of using Monte
-Carlo for reactor problems, where the vast number of particles that must be
-tracked would require an excessive amount of computation time. Both facets of
-this issue have received considerable attention in the literature, and can be
-addressed with various variance reduction techniques as well as hybrid
-source-convergence acceleration scheme. Regardless, billions or trillions are
-particles are still required for fine tally meshes.
-
-This thesis is primarily concerned with adapting the Monte Carlo algorithm
-for high-fidelity runs on HPC architectures, which if done correctly can help
-alleviate most of this issue given the inherent parallelism of particle history
-tracking. Thus, it is not specifically explored in detail in this work.
-
-Likewise, the cross section memory problem has also seen excellent recent
-progress in the literature. For instance, rather than using many
-Doppler-broadened libraries on the order of gigabytes in size for interpolation
-between temperature points, it is likely that techniques such as on-the-fly
-broadening or explicit treatment of thermal motioncan drastically reduce this
-memory burden.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection*{Tally and Material Memory}
 
-This thesis is primarily concerned with the practical difficulties of
-accommodating the discretization needed to accomplish multi-physics coupling to
-depletion, thermal-hydraulics, and fuel performance routines. This issue
-primarily manifests in enormous memory requirements for tallies and materials,
-on the order of terabytes for realistic problems such as BEAVRS.
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.9\linewidth]{figures/unsupervised/features/engineering/flow-chart}
+\vspace{2mm}
+\caption[\textit{i}MGXS flow chart]{The detailed \textit{i}ac{MGXS} data processing pipeline.}
+\label{fig:imgxs-flow-chart}
+\end{figure}
 
-While this is not a large amount of aggregate memory on HPC machines, the
-traditional parallel model for Monte Carlo requires that all data be replicated
-on each distributed compute node - a clearly untenable situation given the
-ever-shrinking amount of memory available per compute core.
+\begin{figure}[h!]
+\centering
+\begin{subfigure}{0.45\textwidth}
+  \centering
+  \includegraphics[width=0.9\linewidth]{figures/unsupervised/features/assm-16/geometry}
+  \caption{}
+  \label{fig:capt-mean-std-geom}
+\end{subfigure}%
+\begin{subfigure}{0.45\textwidth}
+  \centering
+  \includegraphics[width=0.9\linewidth]{figures/unsupervised/features/assm-16/u238-capt/mean-std/mgxs}
+  \caption{}
+  \label{fig:capt-mean-std-mgxs}
+\end{subfigure}
+\begin{subfigure}{0.45\textwidth}
+  \centering
+  \includegraphics[width=0.9\linewidth]{figures/unsupervised/features/assm-16/u238-capt/mean-std/geometry-2}
+  \caption{}
+  \label{fig:capt-mean-std-geom-2}
+\end{subfigure}%
+\begin{subfigure}{0.45\textwidth}
+  \centering
+  \includegraphics[width=0.9\linewidth]{figures/unsupervised/features/assm-16/u238-capt/mean-std/mgxs-2}
+  \caption{}
+  \label{fig:capt-mean-std-mgxs-2}
+\end{subfigure}
+\begin{subfigure}{0.45\textwidth}
+  \centering
+  \includegraphics[width=0.9\linewidth]{figures/unsupervised/features/assm-16/u238-capt/mean-std/geometry-3}
+  \caption{}
+  \label{fig:capt-mean-std-geom-3}
+\end{subfigure}%
+\begin{subfigure}{0.45\textwidth}
+  \centering
+  \includegraphics[width=0.9\linewidth]{figures/unsupervised/features/assm-16/u238-capt/mean-std/mgxs-3}
+  \caption{}
+  \label{fig:capt-mean-std-mgxs-3}
+\end{subfigure}
+\caption[Clustering of U-238 capture MGXS standard deviations]{Scatter plots of the pin-wise U-238 capture (group 1 of 2) \ac{MGXS} means ($x$) and standard deviations ($y$) for a 1.6\% enriched fuel assembly.}
+\label{fig:capt-mean-std}
+\end{figure}
 
-The problem can be easily quantified with an example. For instance, if the
-50,952 fuel pins in the BEAVRS geometry are treated with 10 radial rings and 100
-axial sections as prescribed by Smith and Forget, the
-model will have almost 51 million fuel regions, each of which contain a
-material with roughly 300 nuclides. Since each region is to be depleted
-separately, requiring up to 6 reaction rate tallies per nuclide, we see that:
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=0.63\linewidth]{figures/benchmarks/reflector}
+\vspace{2mm}
+\caption[A reflected 2$\times$2 colorset of BEAVRS assemblies]{A 2$\times$2 colorset of BEAVRS assemblies surrounded by a water reflector. Reflective \acp{BC} were applied on the left/top, with vacuum \acp{BC} on the right/bottom.}
+\label{fig:reflector}
+\end{figure}
 
-\begin{itemize}
-  \item Material isotope atom densities: (51M regions) $\times$ (300 nuclides)
-  $\times$ (8 bytes per density) = 122,284,800,000 bytes = or \textbf{114
-  gigabytes}
-  \item Depletion tallies: (51M regions) $\times$ (300 nuclides) $\times$ (6
-  tallies) $\times$ (24 bytes per tally\footnote{Three real numbers are required per tally for MC methods that use batch statistics: a batch accumulator, and accumulators for the mean and variance.}) = 2,201,126,400,000 bytes = \textbf{2
-  terabytes}
-\end{itemize}
+\begin{figure}[h!]
+\centering
+\begin{subfigure}{0.47\textwidth}
+  \centering
+  \includegraphics[width=0.9\linewidth]{figures/unsupervised/geometries/with-features/2-clusters/pinch/reflector}
+  \caption{}
+  \label{fig:reflector-pinch-2}
+\end{subfigure}%
+\begin{subfigure}{0.47\textwidth}
+  \centering
+  \includegraphics[width=0.9\linewidth]{figures/unsupervised/geometries/with-features/2-clusters/combined/reflector}
+  \caption{}
+  \label{fig:reflector-combined-2}
+\end{subfigure}
+\begin{subfigure}{0.47\textwidth}
+  \centering
+  \includegraphics[width=0.9\linewidth]{figures/unsupervised/geometries/with-features/4-clusters/pinch/reflector}
+  \caption{}
+  \label{fig:reflector-pinch-4}
+\end{subfigure}%
+\begin{subfigure}{0.47\textwidth}
+  \centering
+  \includegraphics[width=0.9\linewidth]{figures/unsupervised/geometries/with-features/4-clusters/combined/reflector}
+  \caption{}
+  \label{fig:reflector-combined-4}
+\end{subfigure}
+\begin{subfigure}{0.47\textwidth}
+  \centering
+  \includegraphics[width=0.9\linewidth]{figures/unsupervised/geometries/with-features/8-clusters/pinch/reflector}
+  \caption{}
+  \label{fig:reflector-pinch-8}
+\end{subfigure}%
+\begin{subfigure}{0.47\textwidth}
+  \centering
+  \includegraphics[width=0.9\linewidth]{figures/unsupervised/geometries/with-features/8-clusters/combined/reflector}
+  \caption{}
+  \label{fig:reflector-combined-8}
+\end{subfigure}
+\caption[Materials for the 2$\times$2 colorset with reflector with \textit{i}\ac{MGXS} homogenization]{Materials for the 2$\times$2 colorset with water reflector with \textit{i}\ac{MGXS} spatial homogenization. The materials for 2, 4, and 8 clusters are illustrated in (a), (c) and (e) for pinch and in (b), (d) and (f) for litmus-only feature selection, respectively.}
+\label{fig:reflector-geometries}
+\end{figure}
 
-These requirements are expected to grow higher with further refinements in
- depletion mesh and increased availability of nuclear data libraries for the
-hundreds of other nuclides in the fuel. If this burden is to be accommodated,
-clearly the data must be spread across a distributed set compute nodes. This can
-be done either with \emph{data decomposition} or \emph{domain decomposition}.
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.9\linewidth]{figures/results/spatial/reflector/capt-err}
+\vspace{2mm}
+\caption[U-238 capture rate errors for a 2$\times$2 colorset with reflector]{U-238 capture rate error spatial distributions for a 2$\times$2 colorset with a water reflector with null, degenerate, \ac{LNS} and \textit{i}\ac{MGXS} spatial homogenization with 2, 6 and 10 clusters.}
+\label{fig:refl-capt-rates}
+\end{figure}
 
-With data decomposition, a number of nodes are dedicated as ``memory servers''
-for particle tracking nodes to access quantities over the network as needed.
-This has been explored by Romano for tally data nd by Walsh
-\cite{walsh_ms_thesis} for cross section data, with performance models and
-simple demonstrations predicting that full-scale implementations could solve
-this issue without prohibitive overhead. These approaches add significant
-complexity to the algorithm and still need to be demonstrated at full-scale, but
-they do show promise.
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.9\linewidth]{figures/results/compare/reflector/compare-capt}
+\vspace{2mm}
+\caption[U-238 capture rate comparison for a 2$\times$2 colorset with reflector]{A comparison of U-238 capture rate spatial distributions for \textit{i}\ac{MGXS} and null spatial homogenization schemes for a 2$\times$2 colorset with a water reflector.}
+\label{fig:assm-refl-capt-rates}
+\end{figure}
 
-Alternatively, domain decomposition holds the potential to solve both the
-material and tally memory problems by dividing the spatial domain among particle
-tracking nodes. In this approach, nodes would only allocate
-memory for tallies and materials that are relevant to the domain they are
-assigned to, and then communicate particles to one another if sampled
-trajectories would take them out of the domain in which they are being tracked.
+\begin{figure}[h!]
+\centering
+\begin{subfigure}{\textwidth}
+  \centering
+  \includegraphics[width=0.87\linewidth]{figures/results/convergence/reflector/keff-bias-evo}
+  \caption{}
+  \label{fig:refl-eigenvalue-converge}
+\end{subfigure}
+\begin{subfigure}{\textwidth}
+  \centering
+  \includegraphics[width=0.9\linewidth]{figures/results/convergence/reflector/mean-capt-err-evo}
+  \caption{}
+  \label{fig:refl-capture-converge-mean}
+\end{subfigure}
+\vspace{2mm}
+\caption[Fission rate covergence for a 2$\times$2 colorset with reflector]{Convergence of the eigenvalue bias (a) and mean absolute U-238 capture rate percent relative errors (b) for a 2$\times$2 colorset with a water reflector.}
+\label{fig:refl-capture-converge}
+\end{figure}
 
-Considerably more effort has been expended exploring domain decomposition for
-Monte Carlo than for data decomposition, but to-date, the full scope
-problem has not been attempted due to challenges
-inherent in implementation. This thesis focuses on overcoming these
-difficulties.
+\begin{table}[ht!]
+  \centering
+  \caption[Runtimes]{Runtimes.}
+  \small
+  \label{table:imgxs-runtimes}
+  \vspace{6pt}
+  \begin{tabular}{l l R{2.5cm} S[table-format=3.2] S[table-format=3.2] S[table-format=3.2]}
+  \toprule
+  & & & \multicolumn{3}{c}{\bf Runtime [core-hours]} \\
+  \cline{4-6}
+  \multirow{-2}{*}{\bf Benchmark} &
+  \multirow{-2}{*}{\bf Scheme} &
+  \multirow{-2}{*}{\bf \# Particles} &
+  \multicolumn{1}{c}{\bf OpenMC} &
+  \multicolumn{1}{c}{\bf OpenMOC} &
+  \multicolumn{1}{c}{\bf Total} \\
+  \midrule
+\multirow{4}{*}{\parbox{2.5cm}{1.6\% Assm}} & Reference & 550,000,000 & 57.2 & & 57.2 \\
+& Null & 100,000 & 0.02 & 0.36 & 0.38 \\
+& Degenerate & 115,000,000 & 27.7 & 0.40 & 28.1 \\
+& \textit{i}\ac{MGXS} & 4,000,000 & 0.96 & 0.38 & 1.34 \\
+  \midrule
+\multirow{4}{*}{\parbox{2.5cm}{3.1\% Assm}} & Reference & 550,000,000 & 50.7 & & 50.7 \\
+& Null & 100,000 & 0.02 & 0.40 & 0.42 \\
+& Degenerate & 115,000,000 & 25.3 & 0.40 & 25.7 \\
+& \textit{i}\ac{MGXS} & 4,000,000 & 0.88 & 0.37 & 1.25 \\
+  \midrule
+\multirow{4}{*}{\parbox{2.5cm}{3.1\% Assm w/ 20 \acp{BP}}} & Reference & 550,000,000 & 50.1 & & 50.1 \\
+& Null & 100,000 & 0.02 & 0.41 & 0.43 \\
+& Degenerate & 115,000,000 & 27.7 & 0.41 & 28.1 \\
+& \textit{i}\ac{MGXS} & 4,000,000 & 0.96 & 0.42 & 1.38 \\
+  \midrule
+\multirow{4}{*}{\parbox{2.5cm}{2$\times$2 Colorset}} & Reference & 8,755,000 & 81.7 & & 81.7 \\
+& Null & 100,000 & 0.04 & 2.00 & 2.03 \\
+& Degenerate & 700,000,000 & 248 & 2.29 & 250 \\
+& \textit{i}\ac{MGXS} & 10,000,000 & 3.54 & 1.96 & 5.50 \\
+  \midrule
+\multirow{4}{*}{\parbox{2.5cm}{2$\times$2 Colorset w/ Reflector}} & Reference & & & & \\
+& Null & & & 5.07 & \\
+& Degenerate & & & 5.36 & \\
+& \textit{i}\ac{MGXS} & & & 4.90 & \\
+  \midrule
+\multirow{4}{*}{\parbox{2.5cm}{BEAVRS Quarter Core}} & Reference & & & & \\
+& Null & & & 419 & \\
+& Degenerate & & & 426 & \\
+& \textit{i}\ac{MGXS} & & & 423 & \\
+  \bottomrule
+\end{tabular}
+\end{table}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection*{Domain Decomposition}
 
-\underline{Particle communication costs} have been cited as a prohibitive
-drawback of using domain decomposition for Monte Carlo particle transport as far
-back as the first time it was described by Alme et al. \cite{js-alme-2001} in
-2001. This is echoed throughout the literature, for example in two prominent
-review papers by Brown in 2011 \cite{forrest_mc_prospects} and Martin in 2012
-\cite{martin_chall}. By the conventional wisdom, the extremely large number of
-histories that need to be tracked will create intolerable network logjams
-between distributed compute nodes.
-
-This was challenged by Siegel et al. in 2012 \cite{Siegel1} with the
-development of a performance model that uses network parameters of current
-HPC machines. They demonstrated the validity of the model with a simple toy
-code, which indicated that network performance is likely not a limiting factor.
-
-Another oft-cited drawback of domain decomposition is the potential for
-\ul{load imbalances} and the parallel inefficiencies it would cause.
-This was also explored by Siegel et al. in 2013 \cite{Siegel2} with another
-performance model, which related network properties, processor speeds, and
-domain leakage rates to predict an upper bound on such inefficiencies. Using
-data from an approximated PWR benchmark they concluded that the load imbalance
-problem should not be as bad as previously-thought, but still predicted that
-significant overhead would be observed for finer domain meshes.
-
-Finally, another perhaps more mundane challenge with a true implementation of
-domain decomposition stems from the \underline{data management} that must take
-place. For example, for arbitrary domain meshes and arbitrary constructive solid geometries (CSG) it
-is not immediately straightforward to determine, or computationally cheap, to
-calculate which tally regions should be tracked by which processors. In
-addition, a significant amount of bookkeeping is required to keep track of which
-tally bins are allocated where, since domains will not necessarily cut tally
-arrays into contiguous chunks. This also complicates tally reduction algorithms,
-which must determine which processors and which sections of memory to accumulate
-scores with. Furthermore, check-pointing (\emph{i.e.}, saving the entire simulation
-state for future restarts) and finalization I/O is no longer an
-insignificant task at the scale of terabytes. All of these things must be done
-efficiently in order for a large-scale run to be achievable with domain
-decomposition.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection*{Objectives}
 
-The over-arching objective of this thesis is to advance Monte Carlo neutron
-transport methods towards carrying out high-fidelity nuclear reactor
-analyses with the full complement of tallies needed for multi-physics coupling
-and depletion. With memory constraints identified as one of the key limiting
-factors, a more detailed exploration into domain decomposition has been pursued. The 
-major objectives of this thesis are:
-
-\begin{enumerate}
-  \item Implement a robust domain decomposition scheme into the full-physics code:
-  OpenMC
-  \item Explore and confirm network communication burdens and load imbalance
-  penalty predictions for full scale problems
-  \item Explore load balancing techniques to mitigate parallel inefficiencies
-  \item Explore optimizations in internal handling of data structures and data
-  management required for efficiency and scalability during simulation and I/O
-  \item Demonstrate the viability of carrying out simulations using the full
-  tally memory requirements
-\end{enumerate}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section*{Domain Decomposition Implementation}
 
-Chapter 2 of this thesis details the domain decomposition implementation added
-to OpenMC, as well as several modifications to support the large-scale memory
-burden of full-core PWR simulations. \ul{Key features} included:
-
-\begin{itemize}
-  \item Domains are defined with an arbitrary mesh of rectangular cuboids, overlaid on an
-  arbitrary geometry.
-  \item Material and tally regions can be defined without specifying which domains they should be loaded on.
-  \item Simple universe-based problem descriptions can be used without
-  duplicating data structures for millions of regions.
-  \item Additional compute resources can be distributed across domains according
-  to the work distribution in order to address load imbalances.
-  \item Random number reproducibility is maintained regardless of the number of
-  domains and/or processes that are used.
-\end {itemize}
-
-This implementation also has several \ul{key limitations}:
-
-\begin{itemize}
-  \item Tally cells must reside in one domain each (\emph{i.e.}, cells may not
-  be cut by domain boundaries if tallies are applied to them).
-  \item Efficient material and tally handling relies on the use of a new
-  distributed cell mechanism that complicates post-processing.
-  \item Effective load balancing requires knowledge of particle work
-  distributions.
-  \item Each processor can only track particles on one domain.
-\end {itemize}
-
-Subsequent chapters explore the performance of this implementation, both from a
-communication and load balancing perspective as well as overall ability to
-tackle the full-scale problem of interest.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section*{Performance Model}
 
-Chapter 3 of this thesis explores the inter-domain particle communication and
-load imbalance costs that arise when using domain decomposition. The theoretical
-framework established by Romano and Siegel et al. for understanding these is
-relevant to implementation pursued in this thesis \cite{Siegel1,
-Siegel2, romano_thesis}. However, the previous predictions can be improved upon if some of the
-simplifications to the model are relaxed. Importantly, the upper-bound load
-imbalance penalty predictions of \cite{Siegel2} are most-likely severely
-over-estimated.
-
-In this work the performance model is re-derived to a different form, where
-parameters in the final equations are arranged in a way that is more amenable to
-making direct predictions of load imbalance penalties from tallied domain
-leakage data without resorting to an upper-bound only. The updated model is
-verified with tallied particle movement data and compared with run times using
-the new DD implementation.
-
-As described in \cite{Siegel2}, the time $\tau$ needed to complete a perfectly
-load-balanced domain-decomposed Monte Carlo run using this simple scheme can be
-modeled as a combination of latency, bandwidth, and particle tracking
-components:
-
-\begin{equation}
-    \tau = \tau_{latency} + \tau_{bandwidth} + \tau_{tracking}
-    \label{eqn:baltime_high-level}
-\end{equation}
-
-It is straightforward to write this in terms of the number of synchronization
-stages $M$, the average number of particles $\bar P_i$ run in each domain at
-stage $i$, and the average fraction $\bar \lambda_i$ of particles that leak out
-of each domain at stage $i$:
-
-\begin{equation}
-    \tau = 6\alpha M + \beta \sum_{i=0}^{M-1} \bar\lambda_i \bar{P}_i + \mu \sum_{i=0}^{M-1} \bar{P}_i
-    \label{eqn:baltime}
-\end{equation}
-
-\noindent where $\alpha$, $\beta$, and $\mu$ are the latency, inverse bandwidth,
-and inverse particle tracking rate coefficients of the system, with units of
-seconds per connection, seconds per particle transferred, and seconds per
-particle simulated, respectively. This applies to a rectilinear decomposition
-where each domain has six Cartesian neighbors.
-
-For real problems with load imbalances, all processes must wait at the
-synchronization points between stages, meaning the time in this case is 
-determined by the maximum load, rather than the average.  Thus, $\tau'$
-for the load-imbalanced problem can be written as:
-
-\begin{equation}
-    \begin{aligned}
-    \tau' &= 6 \alpha M + 
-      \beta \sum_{i=0}^{M-1} \left(\lambda_i p_i\right)^{max} +
-      \mu \sum_{i=0}^{M-1} p_i^{max}
-    \end{aligned}
-    \label{eqn:imbaltime}
-\end{equation}
-
-\noindent where $p_i^{max}$ and $\left(\lambda_i p_i\right)^{max}$ denote the
-load and leakage for the domains at stage $i$ that take the longest to finish
-tracking and transmitting particles, respectively (these could be from the same
-domain, but not necessarily). We can then quantify the magnitude of the
-\emph{load imbalance penalty} $\Delta$ caused by the blocking synchronization
-points between stages as
-
-\begin{equation}
-    \Delta \equiv \frac{\tau' - \tau}{\tau}.
-    \label{eqn:penalty}
-\end{equation}
-
-In \cite{Siegel2} the authors took this a step further, expanding the sums in
-Equations \ref{eqn:baltime} and \ref{eqn:imbaltime} to write them in terms of
-the load imbalance distribution at the initial particle tracking stage. However,
-in this thesis these equations are used directly to arrive at more accurate
-predictions.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
