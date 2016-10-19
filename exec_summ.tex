@@ -47,6 +47,14 @@
 %\floatsetup[table]{style=plaintop}
 %\floatsetup[widefigure]{margins=hangleft}
 
+% Highlights and emphasis boxes from Bryans thesis
+\usepackage[framemethod=tikz]{mdframed}
+\definecolor{mitred}{rgb}{0.698,0.0314,0.216}
+\definecolor{mitgray}{rgb}{0.690,0.694,0.710}
+\definecolor{canyellow}{rgb}{0.933, 0.965, 0.424}
+\newmdenv[nobreak=false, skipabove=2ex, skipbelow=2ex, innerlinewidth=3pt, innerlinecolor=black, backgroundcolor=mitgray!75, roundcorner=10pt, frametitlerule=true, frametitlerulewidth=2.5pt, frametitlefont=\color{white}\Large\bfseries, frametitlealignment=\centering, frametitlebackgroundcolor=mitred, frametitleaboveskip=2ex, frametitlebelowskip=2ex, innertopmargin=3ex, innerbottommargin=2ex]{highlightsbox}
+\newmdenv[nobreak=false, skipabove=2ex, skipbelow=2ex, innerlinewidth=2pt, innerlinecolor=black, backgroundcolor=white, roundcorner=10pt]{emphbox}
+
 % Appendix
 \usepackage[toc,page]{appendix}
 
@@ -141,17 +149,24 @@
 \singlespacing 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section*{Introduction}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection*{Background and Motivation}
 
-\begin{figure}
+-brief literature review\\
+  -use MC to generate coarse mesh constants (Serpent)~\cite{serpent2013manual} \\
+  -relatively little work to use MC for fine mesh transport~\cite{redmond1997multigroup,cai2014condensation,nelson2014improved} \\
+
+\begin{emphbox}
+\textbf{This thesis is motivated by the desire to obtain Monte Carlo-quality solutions with computationally efficient deterministic neutron transport methods.}
+\end{emphbox}
+
+\begin{figure}[h!]
 \centering
 \includegraphics[width=0.6\linewidth]{figures/intro/u235-ce-mg-xs}
 \caption[U-235 continuous energy and multi-group fission cross section]{U-235 continuous energy and 16-group fission cross section.}
-\label{fig:chap1-u235-sigf}
+\label{fig:u235-sigf}
 \end{figure}
 
 \begin{figure}[h!]
@@ -163,27 +178,102 @@
 
 \begin{figure}[h!]
 \centering
-\includegraphics[width=\linewidth]{figures/sph/pin-cell/rel-err-inner-outer}
-\caption[Flux relative error by energy group with SPH]{The energy-dependent relative error of the 70-group OpenMOC scalar flux with respect to the reference OpenMC flux in a 1D slab (a) and 2D fuel pin (b) for the innermost, outermost and all FSRs.}
-\label{fig:chap6-rel-err-energy}
+\includegraphics[width=0.9\linewidth]{figures/intro/multi-step-flow-chart}
+\caption[Multi-level approach to reactor analysis]{Current multi-level framework for reactor analysis.}
+\label{fig:multi-level-flow-chart}
 \end{figure}
+
+\begin{emphbox}
+\textbf{This thesis develops and evaluates MC-based methods to generate MGXS for fine mesh deterministic neutron transport codes.}
+\end{emphbox}
+
+\begin{emphbox}
+\textbf{This thesis uses statistical clustering algorithms to accelerate whole-core MC calculations
+which simultaneously model all energy and spatial self-shielding effects for fine mesh MGXS generation in a single step.}
+\end{emphbox}
+
+\clearpage
+
+%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection*{Objectives}
+
+The subject matter of this thesis is organized along two main themes:
+
+\begin{itemize}
+\item \textbf{\textit{Approximation Error}} -- Quantify and diagnose approximation error in MGXS generated from MC methods for simple heterogeneous benchmark problems.
+\item \textbf{\textit{Statistical Clustering}} -- Develop statistical clustering methods to accelerate the convergence of MGXS on heterogeneous MC tally meshes.
+\end{itemize}
+
+\clearpage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section*{Software Infrastructure: A Simulation Triad}
+
+-OpenMC~\cite{romano2013openmc} generates MGXS \\
+-OpenMOC~\cite{boyd2014openmoc} uses MGXS in deterministic multi-group transport calculations \\
+-OpenCG~\cite{boyd2015opencg} enables processing and transfer of tally data  \\
+
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=\linewidth]{figures/workflow/triad/simulation-triad}
+\caption[A simulation triad of OpenMC, OpenMOC and OpenCG]{A simulation triad consisting of the OpenMC, OpenMOC and OpenCG codes ``glued'' together with Python formed the foundation for this thesis research.}
+\label{fig:simulation-triad}
+\end{figure}
+
+\clearpage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section*{Angular-Dependent MGXS and SPH Factors}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection*{Flux Separability Approximation}
+
+\begin{dmath}
+\label{eqn:sigt-flux-separable}
+\Sigma_{t,g}(\mathbf{r}) = \frac{\int\displaylimits_{E_{g}}^{E_{g-1}} \Sigma_{t}(\mathbf{r},E)\psi(\mathbf{r},\mathbf{\Omega},\mathrm{d}E)}{\psi_{g}(\mathbf{r},\mathbf{\Omega})} \approx \frac{\int\displaylimits_{E_{g}}^{E_{g-1}} \Sigma_{t}(\mathbf{r},E)\phi(\mathbf{r},E)}{\phi_{g}(\mathbf{r})}
+\end{dmath}
+
+\clearpage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection*{Energy-Dependent Flux Errors}
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=\linewidth]{figures/sph/pin-cell/rel-err-inner-outer}
+\caption[Flux relative error by energy group with SPH]{The energy-dependent relative error of the 70-group OpenMOC scalar flux with respect to the OpenMC flux in a fuel pin for the innermost, outermost and all FSRs.}
+\label{fig:rel-err-energy}
+\end{figure}
+
+\clearpage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection*{Angular-Dependent MGXS}
 
 \begin{figure}[h]
 \begin{subfigure}{.5\textwidth}
   \centering
   \includegraphics[width=\linewidth]{figures/sph/batman-1}
   \caption{}
-  \label{fig:chap6-batman-plots-a}
+  \label{fig:batman-plots-a}
 \end{subfigure}
 \begin{subfigure}{.5\textwidth}
   \centering
   \includegraphics[width=\linewidth]{figures/sph/batman-2}
   \caption{}
-  \label{fig:chap6-batman-plots-b}
+  \label{fig:batman-plots-b}
 \end{subfigure}
 \caption[Angular-dependent capture MGXS]{Angular-dependent capture MGXS for the 6.67 eV resonance group as a function of azimuthal angle for two different FSRs. The radial axis is given in units of barns and the azimuthal axis in units of degrees. \textit{Image courtesy of N. Gibson~\cite{gibson2016thesis}.}}
 \label{fig:batman-plots}
 \end{figure}
+
+\clearpage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection*{SuPerHomog\'{e}n\'{e}isation Factors}
+
+-SPH factors were first proposed by H\'{e}bert~\cite{hebert1993consistent} to preserve reaction rates during energy condensation and spatial homogenization \\
+-SPH factor algorithm requires knowledge of a reference source that is used in a multi-group fixed source solver to derive multiplicative factors that adjust the total MGXS to force neutron balance \\
 
 \begin{dmath}
 \label{eqn:sph-transport-eqn-iterate}
@@ -191,7 +281,7 @@
 \end{dmath}
 
 \begin{dmath}
-\label{eqn:chap6-sph-update-sigt}
+\label{eqn:sph-update-sigt}
 \Sigma_{t,k,g}^{(n)} = \mu_{k,g}^{(n-1)}\Sigma_{t,k,g}^{(0)}
 \end{dmath}
 
@@ -199,31 +289,30 @@
 \caption{SPH Factor Algorithm}
 \label{alg:sph}
 \begin{algorithmic}[1]
-  \State Initialize MGXS from MC tallies
-  \State Compute neutron source from MC flux and MGXS
+%  \State Initialize MGXS from MC tallies
+%  \State Compute neutron source from MC flux and MGXS
   \State Initialize SPH factors to unity
-  \While{SPH factor residuals are not converged}
-    \State Update MGXS with SPH factors
-    \State Solve fixed source transport problem
+  \While{SPH factors are not converged}
+    \State Update MGXS with SPH factors \Comment{Eqn.~\ref{eqn:sph-update-sigt}}
+    \State Solve fixed source transport problem \Comment{Eqn.~\ref{eqn:sph-transport-eqn-iterate}}
     \State Compute new SPH factors
-    \State Compute SPH factor residuals
   \EndWhile
-  \State Compute final MGXS with SPH factors
+  \State Compute final MGXS with SPH factors \Comment{Eqn.~\ref{eqn:sph-update-sigt}}
 \end{algorithmic}
 \end{algorithm}
 
 \begin{table}[h!]
   \centering
-  \caption[Eigenvalues with SPH factors for a 1D slab]{The impact of SPH factors on the eigenvalue bias $\Delta\rho$ with varying energy group structures and FSR spatial discretizations for a 1D slab.}  
-  \label{table:chap6-sph-slab-energy}
+  \caption[Eigenvalues with and without SPH factors for a fuel pin]{The impact of SPH factors on the eigenvalue bias $\Delta\rho$ with varying energy group structures for a fuel pin.}  
+  \label{table:sph-keff}
   \vspace{6pt}
   \begin{tabular}{c S[table-format=6.1] S[table-format=6.1]}
   \toprule
-  & \multicolumn{2}{c}{{\bf $\Delta\rho$}} \\
+  & \multicolumn{2}{c}{{\bf $\boldsymbol{\Delta\rho}$ [pcm]}} \\
   \cline{2-3}
   \multirow{-2}{*}{{\bf \# Groups}} &
-  \multicolumn{1}{c}{{Without SPH}} &
-  \multicolumn{1}{c}{{With SPH}} \\
+  \multicolumn{1}{c}{{\bf Without SPH}} &
+  \multicolumn{1}{c}{{\bf With SPH}} \\
   \midrule
 1 & 66 & -14 \\
 2 & 34 & -6\\
@@ -237,20 +326,43 @@
 \end{tabular}
 \end{table}
 
+\clearpage
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\newpage
-\subsection*{Summary of Issues}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section*{Spatial Homogenization Schemes}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection*{Track Density-Weighted Homogenization}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsubsection*{Tally and Material Memory}
+\begin{equation}
+\label{eqn:imgxs-set}
+\mathbb{S}_{m} = \left\{1 \le k \le K: S(k) = m\right\}
+\end{equation}
+
+LNS homogenization computes a single set of MGXS for the fuel pin instances in each set $k \in \mathbb{S}_{m}$ classified by the LNS algorithm. This is equivalent to a specialization of Eqn.~\ref{eqn:imgxs-micro} with track density-weighted averages of the reaction rates and flux tallies in each pin instance:
+
+\begin{equation}
+\label{eqn:imgxs-micro}
+\hat{\sigma}_{x,i,m,g} = \frac{\displaystyle\sum\limits_{k=1}^{K}\mathbb{1}_{\mathbb{S}_{m}}(k) \langle \sigma_{x,i}, \psi \rangle_{k,g}^{t\ell}}{\displaystyle\sum\limits_{k=1}^{K}\mathbb{1}_{\mathbb{S}_{m}}(k) \langle \psi \rangle_{k,g}^{t\ell}}
+\end{equation}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection*{Null Homogenization}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection*{Degenerate Homogenization}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection*{LNS Homogenization}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection*{\textit{i}MGXS Homogenization}
 
 \begin{figure}[h!]
 \centering
 \includegraphics[width=0.9\linewidth]{figures/unsupervised/features/engineering/flow-chart}
 \vspace{2mm}
-\caption[\textit{i}MGXS flow chart]{The detailed \textit{i}ac{MGXS} data processing pipeline.}
+\caption[\textit{i}MGXS flow chart]{The \textit{i}MGXS data processing pipeline.}
 \label{fig:imgxs-flow-chart}
 \end{figure}
 
@@ -270,18 +382,6 @@
 \end{subfigure}
 \begin{subfigure}{0.45\textwidth}
   \centering
-  \includegraphics[width=0.9\linewidth]{figures/unsupervised/features/assm-16/u238-capt/mean-std/geometry-2}
-  \caption{}
-  \label{fig:capt-mean-std-geom-2}
-\end{subfigure}%
-\begin{subfigure}{0.45\textwidth}
-  \centering
-  \includegraphics[width=0.9\linewidth]{figures/unsupervised/features/assm-16/u238-capt/mean-std/mgxs-2}
-  \caption{}
-  \label{fig:capt-mean-std-mgxs-2}
-\end{subfigure}
-\begin{subfigure}{0.45\textwidth}
-  \centering
   \includegraphics[width=0.9\linewidth]{figures/unsupervised/features/assm-16/u238-capt/mean-std/geometry-3}
   \caption{}
   \label{fig:capt-mean-std-geom-3}
@@ -296,17 +396,15 @@
 \label{fig:capt-mean-std}
 \end{figure}
 
-\begin{equation}
-\label{eqn:imgxs-set}
-\mathbb{S}_{m} = \left\{1 \le k \le K: S(k) = m\right\}
-\end{equation}
+\clearpage
 
-LNS homogenization computes a single set of MGXS for the fuel pin instances in each set $k \in \mathbb{S}_{m}$ classified by the LNS algorithm. This is equivalent to a specialization of Eqn.~\ref{eqn:chap9-general-micro} with track density-weighted averages of the reaction rates and flux tallies in each pin instance:
+%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section*{Model Validation}
 
-\begin{equation}
-\label{eqn:imgxs-micro}
-\hat{\sigma}_{x,i,m,g} = \frac{\displaystyle\sum\limits_{k=1}^{K}\mathbb{1}_{\mathbb{S}_{m}}(k) \langle \sigma_{x,i}, \psi \rangle_{k,g}^{t\ell}}{\displaystyle\sum\limits_{k=1}^{K}\mathbb{1}_{\mathbb{S}_{m}}(k) \langle \psi \rangle_{k,g}^{t\ell}}
-\end{equation}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection*{Heterogeneous PWR Benchmarks}
+
+-construction of six heterogeneous benchmarks from BEAVRS~\cite{horelik2013beavrs} \\
 
 \begin{figure}[h!]
 \centering
@@ -326,68 +424,94 @@ LNS homogenization computes a single set of MGXS for the fuel pin instances in e
 \label{fig:benchmark-geometries}
 \end{figure}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection*{Validation Metrics}
+
+-eigenvalues \\
+-fission rates \\
+-U-238 capture rates \\
+-only present U-238 capture rates here \\
+
+\clearpage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section*{Results}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection*{\textit{i}MGXS Clustered Geometries}
+
 \begin{figure}[h!]
 \centering
 \begin{subfigure}{0.47\textwidth}
   \centering
-  \includegraphics[width=0.9\linewidth]{figures/unsupervised/geometries/with-features/2-clusters/combined/2x2}
+  \includegraphics[width=0.7\linewidth]{figures/quantification/homogenization/2x2-degenerate-materials}
   \caption{}
-  \label{fig:2x2-2-clusters}
+  \label{fig:2x2-degenerate}
 \end{subfigure}%
 \begin{subfigure}{0.47\textwidth}
   \centering
-  \includegraphics[width=0.85\linewidth]{figures/unsupervised/geometries/with-features/2-clusters/combined/reflector}
+  \includegraphics[width=0.7\linewidth]{figures/quantification/homogenization/2x2-degenerate-materials}
   \caption{}
-  \label{fig:reflector-2-clusters}
+  \label{fig:reflector-degenerate}
 \end{subfigure}
 \begin{subfigure}{0.47\textwidth}
   \centering
-  \includegraphics[width=0.85\linewidth]{figures/unsupervised/geometries/with-features/4-clusters/combined/2x2}
+  \includegraphics[width=0.7\linewidth]{figures/patterns/lns/2x2/materials}
   \caption{}
-  \label{fig:2x2-4-clusters}
+  \label{fig:2x2-lns}
 \end{subfigure}%
 \begin{subfigure}{0.47\textwidth}
   \centering
-  \includegraphics[width=0.85\linewidth]{figures/unsupervised/geometries/with-features/4-clusters/combined/reflector}
+  \includegraphics[width=0.7\linewidth]{figures/patterns/lns/reflector/materials}
   \caption{}
-  \label{fig:reflector-4-clusters}
+  \label{fig:reflector-lns}
 \end{subfigure}
 \begin{subfigure}{0.47\textwidth}
   \centering
-  \includegraphics[width=0.85\linewidth]{figures/unsupervised/geometries/with-features/8-clusters/combined/2x2}
+  \includegraphics[width=0.7\linewidth]{figures/unsupervised/geometries/with-features/8-clusters/combined/2x2}
   \caption{}
   \label{fig:2x2-8-clusters}
 \end{subfigure}%
 \begin{subfigure}{0.47\textwidth}
   \centering
-  \includegraphics[width=0.85\linewidth]{figures/unsupervised/geometries/with-features/8-clusters/combined/reflector}
+  \includegraphics[width=0.7\linewidth]{figures/unsupervised/geometries/with-features/8-clusters/combined/reflector}
   \caption{}
   \label{fig:reflector-8-clusters}
 \end{subfigure}
-\caption[Materials for the 2$\times$2 colorsets with \textit{i}MGXS homogenization]{Materials for the 2$\times$2 colorsets with water reflector with \textit{i}MGXS spatial homogenization. The materials for the periodic colorset with 2, 4, and 8 GMM clusters are illustrated in (a), (c) and (e), while those for the colorset with a water reflector are depicted in (b), (d) and (f).}
+\caption[Materials for the 2$\times$2 colorsets]{The materials for the periodic 2$\times$2 colorset with degenerate, LNS \textit{i}MGXS spatial homogenization are illustrated in (a), (c) and (e), while those for the colorset with a water reflector are depicted in (b), (d) and (f). The materials for the \textit{i}MGXS scheme represent 8 GMM clusters.}
 \label{fig:colorset-geometries}
 \end{figure}
 
+\clearpage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection*{Pin-Wise U-238 Capture Rate Errors}
+
 \begin{figure}[h!]
 \centering
-\includegraphics[width=0.9\linewidth]{figures/results/spatial/reflector/capt-err}
+\includegraphics[width=0.8\linewidth]{figures/results/spatial/reflector/capt-err}
 \vspace{2mm}
 \caption[U-238 capture rate errors for the 2$\times$2 colorset with reflector]{U-238 capture rate percentage relative errors for the 2$\times$2 colorset with a water reflector with null, degenerate, LNS and \textit{i}MGXS spatial homogenization with 2, 8 and 16 GMM clusters.}
 \label{fig:refl-capt-err}
 \end{figure}
 
+\clearpage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection*{Comparing Pin-Wise U-238 Capture Rates}
+
 \begin{figure}[h!]
 \centering
 \begin{subfigure}{0.9\textwidth}
   \centering
-\includegraphics[width=0.6\linewidth]{figures/results/compare/2x2/compare-capt}
+\includegraphics[width=0.55\linewidth]{figures/results/compare/2x2/compare-capt}
   \caption{}
   \label{fig:refl-capt-rates-comp-refl}
 \end{subfigure}
 \par\bigskip
 \begin{subfigure}{0.9\textwidth}
   \centering
-\includegraphics[width=0.6\linewidth]{figures/results/compare/reflector/compare-capt}
+\includegraphics[width=0.55\linewidth]{figures/results/compare/reflector/compare-capt}
   \caption{}
   \label{fig:refl-capt-rates-comp-2x2}
 \end{subfigure}
@@ -395,17 +519,22 @@ LNS homogenization computes a single set of MGXS for the fuel pin instances in e
 \label{fig:refl-capt-rates-comp}
 \end{figure}
 
+\clearpage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection*{Convergence Rates of MOC Solutions}
+
 \begin{figure}[h!]
 \centering
 \begin{subfigure}{\textwidth}
   \centering
-  \includegraphics[width=0.87\linewidth]{figures/results/convergence/2x2/keff-bias-evo}
+  \includegraphics[width=0.8\linewidth]{figures/results/convergence/2x2/keff-bias-evo}
   \caption{}
   \label{fig:2x2-eigenvalue-converge}
 \end{subfigure}
 \begin{subfigure}{\textwidth}
   \centering
-  \includegraphics[width=0.9\linewidth]{figures/results/convergence/2x2/mean-capt-err-evo}
+  \includegraphics[width=0.8\linewidth]{figures/results/convergence/2x2/mean-capt-err-evo}
   \caption{}
   \label{fig:2x2-capture-converge-mean}
 \end{subfigure}
@@ -413,6 +542,11 @@ LNS homogenization computes a single set of MGXS for the fuel pin instances in e
 \caption[Fission rate covergence for the periodic 2$\times$2 colorset]{Convergence of the eigenvalue bias (a) and mean absolute U-238 capture rate percent relative errors (b) for the periodic 2$\times$2 colorset.}
 \label{fig:2x2-capture-converge}
 \end{figure}
+
+\clearpage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection*{Runtimes for Spatial Homogenization Schemes}
 
 \begin{table}[ht!]
   \centering
@@ -464,23 +598,42 @@ LNS homogenization computes a single set of MGXS for the fuel pin instances in e
 \end{tabular}
 \end{table}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsubsection*{Domain Decomposition}
-
+\clearpage
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection*{Objectives}
+\section*{Conclusions}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection*{Contributions to the Field}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section*{Domain Decomposition Implementation}
+-tightly coupled framework for MC and MOC for MGXS \\
+-useful for both MGXS generation as well as validation of MOC \\
+-identified fundamental issue with flux separability approx. and 
 
+%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection*{Future Work}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section*{Performance Model}
+-speed up OpenMOC full core: \\
+  -find a way use quarter assembly CMFD mesh \\
+  -linear source to reduce number of spatial zones \\
+  -vectorize transport solver over energy groups \\
 
+\break
+
+evaluate \textit{i}MGXS scheme:
+-add anisotropic scattering to OpenMOC to enable solution of the ``correct'' problem
+-systematic study of featues -- ones actually matter? \\
+-systematic study to understand impact of dimensionality reduction \\
+-systematic study to understand impact of clustering algorithms \\
+-more research into model selection schemes -- none of them robustly works for my case studies! \\
+-evaluate \textit{i}MGXS with clustering ``on-the-fly'' with noisy MC tally data \\
+-can \textit{i}MGXS reduce the number of necessary energy groups?? \\
+
+\break
+
+reach goals:\\
+-multi-physics applications: moderator density, fuel temperature, burnup, etc. as features \\
+-machine learning to optimize energy group structures \\
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
