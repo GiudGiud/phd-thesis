@@ -28,6 +28,7 @@
 \usepackage{pgfplots}
 \usepackage{siunitx}
 \usepackage{multirow}
+\usepackage{breqn}
 
 % Specialties for tables
 \usepackage{array}
@@ -121,7 +122,7 @@
 \degree{Doctor of Philosophy in Nuclear Science and Engineering}
 
 \degreemonth{February}
-\degreeyear{2016}
+\degreeyear{2017}
 \thesisdate{November 4, 2016}
 
 \supervisor{Benoit Forget}{Associate Professor of Nuclear Science and Engineering}
@@ -148,7 +149,7 @@
 
 \begin{figure}
 \centering
-\includegraphics[width=0.8\linewidth]{figures/intro/u235-ce-mg-xs}
+\includegraphics[width=0.6\linewidth]{figures/intro/u235-ce-mg-xs}
 \caption[U-235 continuous energy and multi-group fission cross section]{U-235 continuous energy and 16-group fission cross section.}
 \label{fig:chap1-u235-sigf}
 \end{figure}
@@ -156,14 +157,14 @@
 \begin{figure}[h!]
 \centering
 \includegraphics[width=0.9\linewidth]{figures/mgxs/mgxs-overlay}
-\caption[Energy and spatial variation in \ac{MGXS}]{The calculation of multi-group cross sections requires knowledge of the spatial and energy variation of the continuous energy cross section and flux. The color-coded position $\mathbf{r}$ and energy $E$ variables correspond to the figures with the matching colored outlines. The microscopic cross section $\sigma_{x,i}$ depends on reactor configuration (a) and neutron energy (b). The flux $\phi$ varies with position (c) and energy (d).}
+\caption[Energy and spatial variation in MGXS]{The calculation of multi-group cross sections requires knowledge of the spatial and energy variation of the continuous energy cross section and flux. The color-coded position $\mathbf{r}$ and energy $E$ variables correspond to the figures with the matching colored outlines. The microscopic cross section $\sigma_{x,i}$ depends on reactor configuration (a) and neutron energy (b). The flux $\phi$ varies with position (c) and energy (d).}
 \label{fig:mgxs-overlay}
 \end{figure}
 
 \begin{figure}[h!]
 \centering
 \includegraphics[width=\linewidth]{figures/sph/pin-cell/rel-err-inner-outer}
-\caption[Flux relative error by energy group with SPH]{The energy-dependent relative error of the 70-group OpenMOC scalar flux with respect to the reference OpenMC flux in a 1D slab (a) and 2D fuel pin (b) for the innermost, outermost and all \ac{FSR}s.}
+\caption[Flux relative error by energy group with SPH]{The energy-dependent relative error of the 70-group OpenMOC scalar flux with respect to the reference OpenMC flux in a 1D slab (a) and 2D fuel pin (b) for the innermost, outermost and all FSRs.}
 \label{fig:chap6-rel-err-energy}
 \end{figure}
 
@@ -180,30 +181,40 @@
   \caption{}
   \label{fig:chap6-batman-plots-b}
 \end{subfigure}
-\caption[Angular-dependent capture MGXS]{Angular-dependent capture \ac{MGXS} for the 6.67 eV resonance group as a function of azimuthal angle for two different \ac{FSR}s. The radial axis is given in units of barns and the azimuthal axis in units of degrees. \textit{Image courtesy of N. Gibson~\cite{gibson2016thesis}.}}
+\caption[Angular-dependent capture MGXS]{Angular-dependent capture MGXS for the 6.67 eV resonance group as a function of azimuthal angle for two different FSRs. The radial axis is given in units of barns and the azimuthal axis in units of degrees. \textit{Image courtesy of N. Gibson~\cite{gibson2016thesis}.}}
 \label{fig:batman-plots}
 \end{figure}
+
+\begin{dmath}
+\label{eqn:sph-transport-eqn-iterate}
+\mathbf{\Omega} \cdot \nabla \psi_{g}^{(n)}(\mathbf{r},\mathbf{\Omega}) + \mu_{k,g}^{(n-1)}\Sigma_{t,k,g}\psi_{g}^{(n)}(\mathbf{r},\mathbf{\Omega}) = Q_{k,g}(\mathbf{\Omega})
+\end{dmath}
+
+\begin{dmath}
+\label{eqn:chap6-sph-update-sigt}
+\Sigma_{t,k,g}^{(n)} = \mu_{k,g}^{(n-1)}\Sigma_{t,k,g}^{(0)}
+\end{dmath}
 
 \begin{algorithm}[h]
 \caption{SPH Factor Algorithm}
 \label{alg:sph}
 \begin{algorithmic}[1]
-  \State Initialize \ac{MGXS} from MC tallies
-  \State Compute neutron source from MC flux and \ac{MGXS}
-  \State Initialize \ac{SPH} factors to unity
+  \State Initialize MGXS from MC tallies
+  \State Compute neutron source from MC flux and MGXS
+  \State Initialize SPH factors to unity
   \While{SPH factor residuals are not converged}
-    \State Update \ac{MGXS} with \ac{SPH} factors
+    \State Update MGXS with SPH factors
     \State Solve fixed source transport problem
-    \State Compute new \ac{SPH} factors
-    \State Compute \ac{SPH} factor residuals
+    \State Compute new SPH factors
+    \State Compute SPH factor residuals
   \EndWhile
-  \State Compute final \ac{MGXS} with \ac{SPH} factors
+  \State Compute final MGXS with SPH factors
 \end{algorithmic}
 \end{algorithm}
 
 \begin{table}[h!]
   \centering
-  \caption[Eigenvalues with SPH factors for a 1D slab]{The impact of SPH factors on the eigenvalue bias $\Delta\rho$ with varying energy group structures and \ac{FSR} spatial discretizations for a 1D slab.}  
+  \caption[Eigenvalues with SPH factors for a 1D slab]{The impact of SPH factors on the eigenvalue bias $\Delta\rho$ with varying energy group structures and FSR spatial discretizations for a 1D slab.}  
   \label{table:chap6-sph-slab-energy}
   \vspace{6pt}
   \begin{tabular}{c S[table-format=6.1] S[table-format=6.1]}
@@ -281,93 +292,126 @@
   \caption{}
   \label{fig:capt-mean-std-mgxs-3}
 \end{subfigure}
-\caption[Clustering of U-238 capture MGXS standard deviations]{Scatter plots of the pin-wise U-238 capture (group 1 of 2) \ac{MGXS} means ($x$) and standard deviations ($y$) for a 1.6\% enriched fuel assembly.}
+\caption[Clustering of U-238 capture MGXS standard deviations]{Scatter plots of the pin-wise U-238 capture (group 1 of 2) MGXS means ($x$) and standard deviations ($y$) for a 1.6\% enriched fuel assembly.}
 \label{fig:capt-mean-std}
 \end{figure}
 
+\begin{equation}
+\label{eqn:imgxs-set}
+\mathbb{S}_{m} = \left\{1 \le k \le K: S(k) = m\right\}
+\end{equation}
+
+LNS homogenization computes a single set of MGXS for the fuel pin instances in each set $k \in \mathbb{S}_{m}$ classified by the LNS algorithm. This is equivalent to a specialization of Eqn.~\ref{eqn:chap9-general-micro} with track density-weighted averages of the reaction rates and flux tallies in each pin instance:
+
+\begin{equation}
+\label{eqn:imgxs-micro}
+\hat{\sigma}_{x,i,m,g} = \frac{\displaystyle\sum\limits_{k=1}^{K}\mathbb{1}_{\mathbb{S}_{m}}(k) \langle \sigma_{x,i}, \psi \rangle_{k,g}^{t\ell}}{\displaystyle\sum\limits_{k=1}^{K}\mathbb{1}_{\mathbb{S}_{m}}(k) \langle \psi \rangle_{k,g}^{t\ell}}
+\end{equation}
+
 \begin{figure}[h!]
+\centering
+\begin{subfigure}{0.47\textwidth}
   \centering
-  \includegraphics[width=0.63\linewidth]{figures/benchmarks/reflector}
-\vspace{2mm}
-\caption[A reflected 2$\times$2 colorset of BEAVRS assemblies]{A 2$\times$2 colorset of BEAVRS assemblies surrounded by a water reflector. Reflective \acp{BC} were applied on the left/top, with vacuum \acp{BC} on the right/bottom.}
-\label{fig:reflector}
+  \includegraphics[width=0.9\linewidth]{figures/benchmarks/2x2}
+  \caption{}
+  \label{fig:2x2}
+\end{subfigure}%
+\begin{subfigure}{0.47\textwidth}
+  \centering
+  \includegraphics[width=0.9\linewidth]{figures/benchmarks/reflector}
+  \caption{}
+  \label{fig:reflector}
+\end{subfigure}
+\caption[A reflected 2$\times$2 colorset]{A 2$\times$2 colorset of BEAVRS assemblies with periodic boundary conditions (a), and the same colorset surrounded by a water reflector with reflective (left and top) and vacuum (right and bottom) boundary conditions (b).}
+\label{fig:benchmark-geometries}
 \end{figure}
 
 \begin{figure}[h!]
 \centering
 \begin{subfigure}{0.47\textwidth}
   \centering
-  \includegraphics[width=0.9\linewidth]{figures/unsupervised/geometries/with-features/2-clusters/pinch/reflector}
+  \includegraphics[width=0.9\linewidth]{figures/unsupervised/geometries/with-features/2-clusters/combined/2x2}
   \caption{}
-  \label{fig:reflector-pinch-2}
+  \label{fig:2x2-2-clusters}
 \end{subfigure}%
 \begin{subfigure}{0.47\textwidth}
   \centering
-  \includegraphics[width=0.9\linewidth]{figures/unsupervised/geometries/with-features/2-clusters/combined/reflector}
+  \includegraphics[width=0.85\linewidth]{figures/unsupervised/geometries/with-features/2-clusters/combined/reflector}
   \caption{}
-  \label{fig:reflector-combined-2}
+  \label{fig:reflector-2-clusters}
 \end{subfigure}
 \begin{subfigure}{0.47\textwidth}
   \centering
-  \includegraphics[width=0.9\linewidth]{figures/unsupervised/geometries/with-features/4-clusters/pinch/reflector}
+  \includegraphics[width=0.85\linewidth]{figures/unsupervised/geometries/with-features/4-clusters/combined/2x2}
   \caption{}
-  \label{fig:reflector-pinch-4}
+  \label{fig:2x2-4-clusters}
 \end{subfigure}%
 \begin{subfigure}{0.47\textwidth}
   \centering
-  \includegraphics[width=0.9\linewidth]{figures/unsupervised/geometries/with-features/4-clusters/combined/reflector}
+  \includegraphics[width=0.85\linewidth]{figures/unsupervised/geometries/with-features/4-clusters/combined/reflector}
   \caption{}
-  \label{fig:reflector-combined-4}
+  \label{fig:reflector-4-clusters}
 \end{subfigure}
 \begin{subfigure}{0.47\textwidth}
   \centering
-  \includegraphics[width=0.9\linewidth]{figures/unsupervised/geometries/with-features/8-clusters/pinch/reflector}
+  \includegraphics[width=0.85\linewidth]{figures/unsupervised/geometries/with-features/8-clusters/combined/2x2}
   \caption{}
-  \label{fig:reflector-pinch-8}
+  \label{fig:2x2-8-clusters}
 \end{subfigure}%
 \begin{subfigure}{0.47\textwidth}
   \centering
-  \includegraphics[width=0.9\linewidth]{figures/unsupervised/geometries/with-features/8-clusters/combined/reflector}
+  \includegraphics[width=0.85\linewidth]{figures/unsupervised/geometries/with-features/8-clusters/combined/reflector}
   \caption{}
-  \label{fig:reflector-combined-8}
+  \label{fig:reflector-8-clusters}
 \end{subfigure}
-\caption[Materials for the 2$\times$2 colorset with reflector with \textit{i}\ac{MGXS} homogenization]{Materials for the 2$\times$2 colorset with water reflector with \textit{i}\ac{MGXS} spatial homogenization. The materials for 2, 4, and 8 clusters are illustrated in (a), (c) and (e) for pinch and in (b), (d) and (f) for litmus-only feature selection, respectively.}
-\label{fig:reflector-geometries}
+\caption[Materials for the 2$\times$2 colorsets with \textit{i}MGXS homogenization]{Materials for the 2$\times$2 colorsets with water reflector with \textit{i}MGXS spatial homogenization. The materials for the periodic colorset with 2, 4, and 8 GMM clusters are illustrated in (a), (c) and (e), while those for the colorset with a water reflector are depicted in (b), (d) and (f).}
+\label{fig:colorset-geometries}
 \end{figure}
 
 \begin{figure}[h!]
 \centering
 \includegraphics[width=0.9\linewidth]{figures/results/spatial/reflector/capt-err}
 \vspace{2mm}
-\caption[U-238 capture rate errors for a 2$\times$2 colorset with reflector]{U-238 capture rate error spatial distributions for a 2$\times$2 colorset with a water reflector with null, degenerate, \ac{LNS} and \textit{i}\ac{MGXS} spatial homogenization with 2, 6 and 10 clusters.}
-\label{fig:refl-capt-rates}
+\caption[U-238 capture rate errors for the 2$\times$2 colorset with reflector]{U-238 capture rate percentage relative errors for the 2$\times$2 colorset with a water reflector with null, degenerate, LNS and \textit{i}MGXS spatial homogenization with 2, 8 and 16 GMM clusters.}
+\label{fig:refl-capt-err}
 \end{figure}
 
 \begin{figure}[h!]
 \centering
-\includegraphics[width=0.9\linewidth]{figures/results/compare/reflector/compare-capt}
-\vspace{2mm}
-\caption[U-238 capture rate comparison for a 2$\times$2 colorset with reflector]{A comparison of U-238 capture rate spatial distributions for \textit{i}\ac{MGXS} and null spatial homogenization schemes for a 2$\times$2 colorset with a water reflector.}
-\label{fig:assm-refl-capt-rates}
+\begin{subfigure}{0.9\textwidth}
+  \centering
+\includegraphics[width=0.6\linewidth]{figures/results/compare/2x2/compare-capt}
+  \caption{}
+  \label{fig:refl-capt-rates-comp-refl}
+\end{subfigure}
+\par\bigskip
+\begin{subfigure}{0.9\textwidth}
+  \centering
+\includegraphics[width=0.6\linewidth]{figures/results/compare/reflector/compare-capt}
+  \caption{}
+  \label{fig:refl-capt-rates-comp-2x2}
+\end{subfigure}
+\caption[U-238 capture rate comparison for the colorset]{A comparison of U-238 capture rate spatial distributions for \textit{i}MGXS with GMM clustering and null spatial homogenization schemes for the periodic 2$\times$2 colorset (a) and colorset with a water reflector (b).}
+\label{fig:refl-capt-rates-comp}
 \end{figure}
 
 \begin{figure}[h!]
 \centering
 \begin{subfigure}{\textwidth}
   \centering
-  \includegraphics[width=0.87\linewidth]{figures/results/convergence/reflector/keff-bias-evo}
+  \includegraphics[width=0.87\linewidth]{figures/results/convergence/2x2/keff-bias-evo}
   \caption{}
-  \label{fig:refl-eigenvalue-converge}
+  \label{fig:2x2-eigenvalue-converge}
 \end{subfigure}
 \begin{subfigure}{\textwidth}
   \centering
-  \includegraphics[width=0.9\linewidth]{figures/results/convergence/reflector/mean-capt-err-evo}
+  \includegraphics[width=0.9\linewidth]{figures/results/convergence/2x2/mean-capt-err-evo}
   \caption{}
-  \label{fig:refl-capture-converge-mean}
+  \label{fig:2x2-capture-converge-mean}
 \end{subfigure}
 \vspace{2mm}
-\caption[Fission rate covergence for a 2$\times$2 colorset with reflector]{Convergence of the eigenvalue bias (a) and mean absolute U-238 capture rate percent relative errors (b) for a 2$\times$2 colorset with a water reflector.}
-\label{fig:refl-capture-converge}
+\caption[Fission rate covergence for the periodic 2$\times$2 colorset]{Convergence of the eigenvalue bias (a) and mean absolute U-238 capture rate percent relative errors (b) for the periodic 2$\times$2 colorset.}
+\label{fig:2x2-capture-converge}
 \end{figure}
 
 \begin{table}[ht!]
@@ -390,32 +434,32 @@
 \multirow{4}{*}{\parbox{2.5cm}{1.6\% Assm}} & Reference & 550,000,000 & 57.2 & & 57.2 \\
 & Null & 100,000 & 0.02 & 0.36 & 0.38 \\
 & Degenerate & 115,000,000 & 27.7 & 0.40 & 28.1 \\
-& \textit{i}\ac{MGXS} & 4,000,000 & 0.96 & 0.38 & 1.34 \\
+& \textit{i}MGXS & 4,000,000 & 0.96 & 0.38 & 1.34 \\
   \midrule
 \multirow{4}{*}{\parbox{2.5cm}{3.1\% Assm}} & Reference & 550,000,000 & 50.7 & & 50.7 \\
 & Null & 100,000 & 0.02 & 0.40 & 0.42 \\
 & Degenerate & 115,000,000 & 25.3 & 0.40 & 25.7 \\
-& \textit{i}\ac{MGXS} & 4,000,000 & 0.88 & 0.37 & 1.25 \\
+& \textit{i}MGXS & 4,000,000 & 0.88 & 0.37 & 1.25 \\
   \midrule
-\multirow{4}{*}{\parbox{2.5cm}{3.1\% Assm w/ 20 \acp{BP}}} & Reference & 550,000,000 & 50.1 & & 50.1 \\
+\multirow{4}{*}{\parbox{2.5cm}{3.1\% Assm w/ 20 BPs}} & Reference & 550,000,000 & 50.1 & & 50.1 \\
 & Null & 100,000 & 0.02 & 0.41 & 0.43 \\
 & Degenerate & 115,000,000 & 27.7 & 0.41 & 28.1 \\
-& \textit{i}\ac{MGXS} & 4,000,000 & 0.96 & 0.42 & 1.38 \\
+& \textit{i}MGXS & 4,000,000 & 0.96 & 0.42 & 1.38 \\
   \midrule
 \multirow{4}{*}{\parbox{2.5cm}{2$\times$2 Colorset}} & Reference & 8,755,000 & 81.7 & & 81.7 \\
 & Null & 100,000 & 0.04 & 2.00 & 2.03 \\
 & Degenerate & 700,000,000 & 248 & 2.29 & 250 \\
-& \textit{i}\ac{MGXS} & 10,000,000 & 3.54 & 1.96 & 5.50 \\
+& \textit{i}MGXS & 10,000,000 & 3.54 & 1.96 & 5.50 \\
   \midrule
 \multirow{4}{*}{\parbox{2.5cm}{2$\times$2 Colorset w/ Reflector}} & Reference & & & & \\
 & Null & & & 5.07 & \\
 & Degenerate & & & 5.36 & \\
-& \textit{i}\ac{MGXS} & & & 4.90 & \\
+& \textit{i}MGXS & & & 4.90 & \\
   \midrule
 \multirow{4}{*}{\parbox{2.5cm}{BEAVRS Quarter Core}} & Reference & & & & \\
 & Null & & & 419 & \\
 & Degenerate & & & 426 & \\
-& \textit{i}\ac{MGXS} & & & 423 & \\
+& \textit{i}MGXS & & & 423 & \\
   \bottomrule
 \end{tabular}
 \end{table}
