@@ -222,111 +222,111 @@ The subject matter of this thesis is organized along two main themes:
 
 \clearpage
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section*{Angular-Dependent MGXS and SPH Factors}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\section*{Angular-Dependent MGXS and SPH Factors}
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\subsection*{Flux Separability Approximation}
+%
+%\begin{dmath}
+%\label{eqn:sigt-flux-separable}
+%\Sigma_{t,g}(\mathbf{r}) = \frac{\int\displaylimits_{E_{g}}^{E_{g-1}} \Sigma_{t}(\mathbf{r},E)\psi(\mathbf{r},\mathbf{\Omega},\mathrm{d}E)}{\psi_{g}(\mathbf{r},\mathbf{\Omega})} \approx \frac{\int\displaylimits_{E_{g}}^{E_{g-1}} \Sigma_{t}(\mathbf{r},E)\phi(\mathbf{r},E)}{\phi_{g}(\mathbf{r})}
+%\end{dmath}
+%
+%\clearpage
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\subsection*{Energy-Dependent Flux Errors}
+%
+%\begin{figure}[h!]
+%\centering
+%\includegraphics[width=\linewidth]{figures/sph/pin-cell/rel-err-inner-outer}
+%\caption[Flux relative error by energy group with SPH]{The energy-dependent relative error of the 70-group OpenMOC scalar flux with respect to the OpenMC flux in a fuel pin for the innermost, outermost and all FSRs.}
+%\label{fig:rel-err-energy}
+%\end{figure}
+%
+%\clearpage
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection*{Flux Separability Approximation}
-
-\begin{dmath}
-\label{eqn:sigt-flux-separable}
-\Sigma_{t,g}(\mathbf{r}) = \frac{\int\displaylimits_{E_{g}}^{E_{g-1}} \Sigma_{t}(\mathbf{r},E)\psi(\mathbf{r},\mathbf{\Omega},\mathrm{d}E)}{\psi_{g}(\mathbf{r},\mathbf{\Omega})} \approx \frac{\int\displaylimits_{E_{g}}^{E_{g-1}} \Sigma_{t}(\mathbf{r},E)\phi(\mathbf{r},E)}{\phi_{g}(\mathbf{r})}
-\end{dmath}
-
-\clearpage
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection*{Energy-Dependent Flux Errors}
-
-\begin{figure}[h!]
-\centering
-\includegraphics[width=\linewidth]{figures/sph/pin-cell/rel-err-inner-outer}
-\caption[Flux relative error by energy group with SPH]{The energy-dependent relative error of the 70-group OpenMOC scalar flux with respect to the OpenMC flux in a fuel pin for the innermost, outermost and all FSRs.}
-\label{fig:rel-err-energy}
-\end{figure}
-
-\clearpage
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection*{Angular-Dependent MGXS}
-
-\begin{figure}[h]
-\begin{subfigure}{.5\textwidth}
-  \centering
-  \includegraphics[width=\linewidth]{figures/sph/batman-1}
-  \caption{}
-  \label{fig:batman-plots-a}
-\end{subfigure}
-\begin{subfigure}{.5\textwidth}
-  \centering
-  \includegraphics[width=\linewidth]{figures/sph/batman-2}
-  \caption{}
-  \label{fig:batman-plots-b}
-\end{subfigure}
-\caption[Angular-dependent capture MGXS]{Angular-dependent capture MGXS for the 6.67 eV resonance group as a function of azimuthal angle for two different FSRs. The radial axis is given in units of barns and the azimuthal axis in units of degrees. \textit{Image courtesy of N. Gibson~\cite{gibson2016thesis}.}}
-\label{fig:batman-plots}
-\end{figure}
-
-\clearpage
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection*{SuPerHomog\'{e}n\'{e}isation Factors}
-
--SPH factors were first proposed by H\'{e}bert~\cite{hebert1993consistent} to preserve reaction rates during energy condensation and spatial homogenization \\
--SPH factor algorithm requires knowledge of a reference source that is used in a multi-group fixed source solver to derive multiplicative factors that adjust the total MGXS to force neutron balance \\
-
-\begin{dmath}
-\label{eqn:sph-transport-eqn-iterate}
-\mathbf{\Omega} \cdot \nabla \psi_{g}^{(n)}(\mathbf{r},\mathbf{\Omega}) + \mu_{k,g}^{(n-1)}\Sigma_{t,k,g}\psi_{g}^{(n)}(\mathbf{r},\mathbf{\Omega}) = Q_{k,g}(\mathbf{\Omega})
-\end{dmath}
-
-\begin{dmath}
-\label{eqn:sph-update-sigt}
-\Sigma_{t,k,g}^{(n)} = \mu_{k,g}^{(n-1)}\Sigma_{t,k,g}^{(0)}
-\end{dmath}
-
-\begin{algorithm}[h]
-\caption{SPH Factor Algorithm}
-\label{alg:sph}
-\begin{algorithmic}[1]
-%  \State Initialize MGXS from MC tallies
-%  \State Compute neutron source from MC flux and MGXS
-  \State Initialize SPH factors to unity
-  \While{SPH factors are not converged}
-    \State Update MGXS with SPH factors \Comment{Eqn.~\ref{eqn:sph-update-sigt}}
-    \State Solve fixed source transport problem \Comment{Eqn.~\ref{eqn:sph-transport-eqn-iterate}}
-    \State Compute new SPH factors
-  \EndWhile
-  \State Compute final MGXS with SPH factors \Comment{Eqn.~\ref{eqn:sph-update-sigt}}
-\end{algorithmic}
-\end{algorithm}
-
-\begin{table}[h!]
-  \centering
-  \caption[Eigenvalues with and without SPH factors for a fuel pin]{The impact of SPH factors on the eigenvalue bias $\Delta\rho$ with varying energy group structures for a fuel pin.}  
-  \label{table:sph-keff}
-  \vspace{6pt}
-  \begin{tabular}{c S[table-format=6.1] S[table-format=6.1]}
-  \toprule
-  & \multicolumn{2}{c}{{\bf $\boldsymbol{\Delta\rho}$ [pcm]}} \\
-  \cline{2-3}
-  \multirow{-2}{*}{{\bf \# Groups}} &
-  \multicolumn{1}{c}{{\bf Without SPH}} &
-  \multicolumn{1}{c}{{\bf With SPH}} \\
-  \midrule
-1 & 66 & -14 \\
-2 & 34 & -6\\
-4 & -57 & 1 \\
-8 & -102 & 2 \\
-16 & -111 & 4 \\
-25 & -182 & -1 \\
-40 & -202 & 2 \\
-70 & -211 & -3 \\
-  \bottomrule
-\end{tabular}
-\end{table}
-
-\clearpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\subsection*{Angular-Dependent MGXS}
+%
+%\begin{figure}[h]
+%\begin{subfigure}{.5\textwidth}
+%  \centering
+%  \includegraphics[width=\linewidth]{figures/sph/batman-1}
+%  \caption{}
+%  \label{fig:batman-plots-a}
+%\end{subfigure}
+%\begin{subfigure}{.5\textwidth}
+%  \centering
+%  \includegraphics[width=\linewidth]{figures/sph/batman-2}
+%  \caption{}
+%  \label{fig:batman-plots-b}
+%\end{subfigure}
+%\caption[Angular-dependent capture MGXS]{Angular-dependent capture MGXS for the 6.67 eV resonance group as a function of azimuthal angle for two different FSRs. The radial axis is given in units of barns and the azimuthal axis in units of degrees. \textit{Image courtesy of N. Gibson~\cite{gibson2016thesis}.}}
+%\label{fig:batman-plots}
+%\end{figure}
+%
+%\clearpage
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\subsection*{SuPerHomog\'{e}n\'{e}isation Factors}
+%
+%-SPH factors were first proposed by H\'{e}bert~\cite{hebert1993consistent} to preserve reaction rates during energy condensation and spatial homogenization \\
+%-SPH factor algorithm requires knowledge of a reference source that is used in a multi-group fixed source solver to derive multiplicative factors that adjust the total MGXS to force neutron balance \\
+%
+%\begin{dmath}
+%\label{eqn:sph-transport-eqn-iterate}
+%\mathbf{\Omega} \cdot \nabla \psi_{g}^{(n)}(\mathbf{r},\mathbf{\Omega}) + \mu_{k,g}^{(n-1)}\Sigma_{t,k,g}\psi_{g}^{(n)}(\mathbf{r},\mathbf{\Omega}) = Q_{k,g}(\mathbf{\Omega})
+%\end{dmath}
+%
+%\begin{dmath}
+%\label{eqn:sph-update-sigt}
+%\Sigma_{t,k,g}^{(n)} = \mu_{k,g}^{(n-1)}\Sigma_{t,k,g}^{(0)}
+%\end{dmath}
+%
+%\begin{algorithm}[h]
+%\caption{SPH Factor Algorithm}
+%\label{alg:sph}
+%\begin{algorithmic}[1]
+%%  \State Initialize MGXS from MC tallies
+%%  \State Compute neutron source from MC flux and MGXS
+%  \State Initialize SPH factors to unity
+%  \While{SPH factors are not converged}
+%    \State Update MGXS with SPH factors \Comment{Eqn.~\ref{eqn:sph-update-sigt}}
+%    \State Solve fixed source transport problem \Comment{Eqn.~\ref{eqn:sph-transport-eqn-iterate}}
+%    \State Compute new SPH factors
+%  \EndWhile
+%  \State Compute final MGXS with SPH factors \Comment{Eqn.~\ref{eqn:sph-update-sigt}}
+%\end{algorithmic}
+%\end{algorithm}
+%
+%\begin{table}[h!]
+%  \centering
+%  \caption[Eigenvalues with and without SPH factors for a fuel pin]{The impact of SPH factors on the eigenvalue bias $\Delta\rho$ with varying energy group structures for a fuel pin.}  
+%  \label{table:sph-keff}
+%  \vspace{6pt}
+%  \begin{tabular}{c S[table-format=6.1] S[table-format=6.1]}
+%  \toprule
+%  & \multicolumn{2}{c}{{\bf $\boldsymbol{\Delta\rho}$ [pcm]}} \\
+%  \cline{2-3}
+%  \multirow{-2}{*}{{\bf \# Groups}} &
+%  \multicolumn{1}{c}{{\bf Without SPH}} &
+%  \multicolumn{1}{c}{{\bf With SPH}} \\
+%  \midrule
+%1 & 66 & -14 \\
+%2 & 34 & -6\\
+%4 & -57 & 1 \\
+%8 & -102 & 2 \\
+%16 & -111 & 4 \\
+%25 & -182 & -1 \\
+%40 & -202 & 2 \\
+%70 & -211 & -3 \\
+%  \bottomrule
+%\end{tabular}
+%\end{table}
+%
+%\clearpage
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section*{Spatial Homogenization Schemes}
@@ -346,18 +346,6 @@ LNS homogenization computes a single set of MGXS for the fuel pin instances in e
 \hat{\sigma}_{x,i,m,g} = \frac{\displaystyle\sum\limits_{k=1}^{K}\mathbb{1}_{\mathbb{S}_{m}}(k) \langle \sigma_{x,i}, \psi \rangle_{k,g}^{t\ell}}{\displaystyle\sum\limits_{k=1}^{K}\mathbb{1}_{\mathbb{S}_{m}}(k) \langle \psi \rangle_{k,g}^{t\ell}}
 \end{equation}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection*{Null Homogenization}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection*{Degenerate Homogenization}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection*{LNS Homogenization}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection*{\textit{i}MGXS Homogenization}
-
 \begin{figure}[h!]
 \centering
 \includegraphics[width=0.9\linewidth]{figures/unsupervised/features/engineering/flow-chart}
@@ -370,29 +358,29 @@ LNS homogenization computes a single set of MGXS for the fuel pin instances in e
 \centering
 \begin{subfigure}{0.45\textwidth}
   \centering
-  \includegraphics[width=0.9\linewidth]{figures/unsupervised/features/assm-16/geometry}
+  \includegraphics[width=0.9\linewidth]{figures/unsupervised/features/assm-16/u238-capt/mean-pcm/geometry-2}
   \caption{}
-  \label{fig:capt-mean-std-geom}
+  \label{fig:chap10-capt-mean-pcm-geom-2}
 \end{subfigure}%
 \begin{subfigure}{0.45\textwidth}
   \centering
-  \includegraphics[width=0.9\linewidth]{figures/unsupervised/features/assm-16/u238-capt/mean-std/mgxs}
+  \includegraphics[width=0.9\linewidth]{figures/unsupervised/features/assm-16/u238-capt/mean-pcm/mgxs-2}
   \caption{}
-  \label{fig:capt-mean-std-mgxs}
+  \label{fig:chap10-capt-mean-pcm-mgxs-2}
 \end{subfigure}
 \begin{subfigure}{0.45\textwidth}
   \centering
-  \includegraphics[width=0.9\linewidth]{figures/unsupervised/features/assm-16/u238-capt/mean-std/geometry-3}
+  \includegraphics[width=0.9\linewidth]{figures/unsupervised/features/assm-16/u238-capt/mean-pcm/geometry-3}
   \caption{}
-  \label{fig:capt-mean-std-geom-3}
+  \label{fig:chap10-capt-mean-pcm-geom-3}
 \end{subfigure}%
 \begin{subfigure}{0.45\textwidth}
   \centering
-  \includegraphics[width=0.9\linewidth]{figures/unsupervised/features/assm-16/u238-capt/mean-std/mgxs-3}
+  \includegraphics[width=0.9\linewidth]{figures/unsupervised/features/assm-16/u238-capt/mean-pcm/mgxs-3}
   \caption{}
-  \label{fig:capt-mean-std-mgxs-3}
+  \label{fig:chap10-capt-mean-pcm-mgxs-3}
 \end{subfigure}
-\caption[Clustering of U-238 capture MGXS standard deviations]{Scatter plots of the pin-wise U-238 capture (group 1 of 2) MGXS means ($x$) and standard deviations ($y$) for a 1.6\% enriched fuel assembly.}
+\caption[Clustering of U-238 capture MGXS fractional reactivities]{Scatter plots of the pin-wise U-238 capture MGXS means ($x$) and fractional reactivities ($y$) for a 1.6\% enriched fuel assembly.}
 \label{fig:capt-mean-std}
 \end{figure}
 
@@ -565,21 +553,6 @@ LNS homogenization computes a single set of MGXS for the fuel pin instances in e
   \multicolumn{1}{c}{\bf OpenMOC} &
   \multicolumn{1}{c}{\bf Total} \\
   \midrule
-\multirow{4}{*}{\parbox{2.5cm}{1.6\% Assm}} & Reference & 550,000,000 & 57.2 & & 57.2 \\
-& Null & 100,000 & 0.02 & 0.36 & 0.38 \\
-& Degenerate & 115,000,000 & 27.7 & 0.40 & 28.1 \\
-& \textit{i}MGXS & 4,000,000 & 0.96 & 0.38 & 1.34 \\
-  \midrule
-\multirow{4}{*}{\parbox{2.5cm}{3.1\% Assm}} & Reference & 550,000,000 & 50.7 & & 50.7 \\
-& Null & 100,000 & 0.02 & 0.40 & 0.42 \\
-& Degenerate & 115,000,000 & 25.3 & 0.40 & 25.7 \\
-& \textit{i}MGXS & 4,000,000 & 0.88 & 0.37 & 1.25 \\
-  \midrule
-\multirow{4}{*}{\parbox{2.5cm}{3.1\% Assm w/ 20 BPs}} & Reference & 550,000,000 & 50.1 & & 50.1 \\
-& Null & 100,000 & 0.02 & 0.41 & 0.43 \\
-& Degenerate & 115,000,000 & 27.7 & 0.41 & 28.1 \\
-& \textit{i}MGXS & 4,000,000 & 0.96 & 0.42 & 1.38 \\
-  \midrule
 \multirow{4}{*}{\parbox{2.5cm}{2$\times$2 Colorset}} & Reference & 8,755,000 & 81.7 & & 81.7 \\
 & Null & 100,000 & 0.04 & 2.00 & 2.03 \\
 & Degenerate & 700,000,000 & 248 & 2.29 & 250 \\
@@ -589,11 +562,6 @@ LNS homogenization computes a single set of MGXS for the fuel pin instances in e
 & Null & & & 5.07 & \\
 & Degenerate & & & 5.36 & \\
 & \textit{i}MGXS & & & 4.90 & \\
-  \midrule
-\multirow{4}{*}{\parbox{2.5cm}{BEAVRS Quarter Core}} & Reference & & & & \\
-& Null & & & 419 & \\
-& Degenerate & & & 426 & \\
-& \textit{i}MGXS & & & 423 & \\
   \bottomrule
 \end{tabular}
 \end{table}
