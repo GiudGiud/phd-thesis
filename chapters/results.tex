@@ -392,7 +392,7 @@ A couple of key conclusions can be drawn from these results. First, the results 
 
 Unlike the \ac{LNS} scheme, the \textit{i}\ac{MGXS} scheme excels at discriminating pins along assembly-assembly and assembly-reflector interfaces as shown in Figs.~\Crefrange{fig:chap11-2x2-capt-err}{fig:chap11-refl-capt-err}\footnote{However, even with 16 clusters, there are some lingering residual errors for pins along the interfaces between the bottom right assembly and its neighbors.}. This is most obvious for the pins along the assembly-reflector interface which exhibit nearly the same error for both null and \ac{LNS} homogenization. The \textit{i}\ac{MGXS} scheme discriminates these pins into unique clusters such that little if any residual bias is observed with 16 clusters. Indeed, the \textit{i}\ac{MGXS} scheme dedicates unique clusters to those pins along the interfaces \textit{before} discriminating interior pins adjacent to \acp{CRGT} and \acp{BP} into clusters. For this reason, \textit{i}\ac{MGXS} may necessarily need to model more unique materials than \ac{LNS} to achieve the same reduction in the maximum pin-wise error.
 
-Finally, it should be noted that the observations made here are specific to the configuration of the \textit{i}\ac{MGXS} data processing pipeline used here. In particular, each of the figures for \textit{i}\ac{MGXS} spatial homogenization corresponds to a prediction by the BIRCH clustering algorithm with litmus-only feature selection. As noted in Sec.~\ref{sec:chap10-cluster-geometries}, the choice of features and clustering algorithm has a large impact on the clustering model and the resultant spatial distribution of U-238 capture rate errors. In addition, dimensionality reduction adds another degree of freedom to the types of clustered geometries that may be found with the \textit{i}\ac{MGXS} scheme. Future work should systematically examine the spatial error distributions for different configurations of the \textit{i}\ac{MGXS} data processing pipeline to quantify the ability of each minimize error with as few clusters as possible.
+Finally, it should be noted that the observations made here are specific to the configuration of the \textit{i}\ac{MGXS} data processing pipeline. In particular, each of the figures for \textit{i}\ac{MGXS} spatial homogenization corresponds to a prediction by the BIRCH clustering algorithm with litmus-only feature selection. As noted in Sec.~\ref{sec:chap10-cluster-geometries}, the choice of features and clustering algorithm has a large impact on the clustering model and the resultant spatial distribution of U-238 capture rate errors. In addition, dimensionality reduction adds another degree of freedom to the types of clustered geometries that may be found with the \textit{i}\ac{MGXS} scheme. Future work should systematically examine the spatial error distributions for different configurations of the \textit{i}\ac{MGXS} data processing pipeline to quantify the ability of each minimize error with as few clusters as possible.
 
 \begin{emphbox}
 \textbf{The \textit{i}\ac{MGXS} scheme does a better job discriminating fuel pins along assembly-assembly and assembly-reflector interfaces than \ac{LNS}, but requires more unique materials to achieve the same reduction in U-238 capture rate errors.}
@@ -490,47 +490,36 @@ Finally, it should be noted that the observations made here are specific to the 
 
 \clearpage
 
-SUMMARY BOX
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Comparing OpenMOC Solutions}
 \label{subsec:chap11-imgxs-capt-rates-compare}
 
-first paragraph: outline
--Fig.~\Crefrange{fig:chap11-assm-1.6-capt-rates-comp}{fig:chap11-assm-refl-capt-rates-comp}
-  -individual assemblies and colorsets
-  -use the BIRCH clustering scheme for \textit{i}\ac{MGXS} with 2, 4 and 16 clusters
--Fig.~\Crefrange{fig:chap11-assm-full-core-capt-rates-kmeans-comp}{fig:chap11-assm-full-core-capt-rates-birch-comp}
-  -full core with $k$-means, \ac{GMM} and BIRCH clustering
--compare errors with null: need equation for what i am displaying here
+This section directly compares the reaction rates from two different OpenMOC simulations with null and \textit{i}\ac{MGXS} homogenization to better understand the impact of \ac{MGXS} clustering on the spatial distribution of U-238 capture rate errors. In particular, the percent relative deviation $\Delta_{k}^{\mathrm{\textit{i}MGXS}}$ of the OpenMOC U-238 capture rate distributions between the null and \textit{i}\ac{MGXS} schemes is computed as follows:
 
 \begin{equation}
 \label{eqn:chap11-compare-openmoc}
 \Delta_{k}^{\mathrm{\textit{i}MGXS}} \;\; [\%] \;\; = \;\; \frac{\displaystyle\sum\limits_{g=1}^{G} \hat{\Sigma}^{238}_{\gamma,k,g}\phi_{k,g}^{\mathrm{\textit{i}MGXS}} - \displaystyle\sum\limits_{g=1}^{G} \hat{\Sigma}^{238}_{\gamma,k,g}\phi_{k,g}^{\mathrm{Null}}}{\displaystyle\sum\limits_{g=1}^{G} \hat{\Sigma}^{238}_{\gamma,k,g}\phi_{k,g}^{\mathrm{Null}}} \times 100
 \end{equation}
 
-second paragraph: analysis
--can see impact of adding clusters
--2 clusters for a single assm - one cluster for pins adjacent to a \ac{CRGT}
--each new cluster further discriminates local spatial self-shielding effects
-  -note 3.1\% assm: 8--16 clusters 
-    -discriminates pins both facially and diagonally adjacent to \acp{CRGT}
-    -the U-238 capture rates in these pins is largest due to differential moderation from both \acp{CRGT}
--note a few outlier pins in the periodic colorset which break the symmetry
--note the very different clustering for the reflected coloreset
-  -first few clusters (2--4) are especially catered to the reflector-assembly and assembly-assembly interfaces
-  -later clusters (8--16) are increasingly customized to the more local effects within each assm due to \acp{CRGT} and \acp{BP}
-  -illustrates the hierarchical nature of \ac{MGXS} clustering
+\noindent Unlike the U-238 capture rate error distributions, the relative deviations are not sensitive to the statistical uncertainties of the OpenMC reference solutions. As a result, it is easier to easier to visualize the impact of clusters on the U-238 capture rate predictions. Figs.~\Crefrange{fig:chap11-assm-1.6-capt-rates-comp}{fig:chap11-refl-capt-rates-comp} present the percent relative deviations for the individual assembly and 2$\times$2 colorset benchmarks for BIRCH clustering of 2, 4, 8 and 16 clusters. Likewise, Figs.~\Crefrange{fig:chap11-full-core-capt-rates-kmeans-comp}{fig:chap11-full-core-capt-rates-birch-comp} illustrate the deviations for the quarter core \ac{BEAVRS} model with $k$-means, \ac{GMM} and BIRCH clustering of 4, 8, 16 and 20 clusters, respectively.
 
-% note that these plots look different for:
-  % 1) each clustering algorithm
-  % 2) when dimensionality reduction is used
+The figures illustrate the hierarchical nature of \ac{MGXS} clustering by discriminating fuel pins with different spatial self-shielding effects that occur in different regimes. For example, the first 2 clusters used for the individual assemblies distinguishes fuel pins which are adjacent (or nearly adjacent) to \acp{CRGT}, \acp{BP} or instrument tubes from those which are only surrounded by other fuel pins. The introduction of more clusters further refines these clusters to identify fuel pins with neighbors which induce similar spatial self-shielding effects. Of particular note, as the \textit{i}\ac{MGXS} scheme transitions between 8 -- 16 clusters for the 3.1\% enriched fuel assembly with 20 \acp{BP} (Fig.~\ref{fig:chap11-assm-31-20BPs-capt-rates-comp}), the fuel pins that are facially and diagonally adjacent to two \acp{CRGT} are separated into their own cluster. As a result, these eight fuel pins have the largest relative deviation from null homogenization since they experience the largest amount of differential moderation from the two \acp{CRGT}. Similarly, the first 2 -- 4 clusters in the colorset with a reflector (Fig.~\ref{fig:chap11-refl-capt-rates-comp}) discriminate pins along the assembly-assembly and assembly-reflector interfaces. As more clusters are introduced, they are increasingly customized to model the more local spatial self-shielding effects affecting the pins within the interior of each assembly due to the presence of \acp{CRGT} and \acp{BP}.
+
+As was noted in Sec.~\ref{subsec:chap11-imgxs-capt-rates-space-distrib}, the observations made here are specific to the configuration of the \textit{i}\ac{MGXS} data processing pipeline. The choice of features, dimensionality reduction technique(s) and clustering algorithm has a large impact on the clustering model and the resultant spatial distribution of U-238 capture rate errors, and should be further investigated in the future.
+
+\begin{emphbox}
+\textbf{The percent relative deviations between OpenMOC solutions with null and \textit{i}\ac{MGXS} homogenization makes it easy to discern the hierarchical nature of \ac{MGXS} clustering and its impact on U-238 capture rate predictions.}
+\end{emphbox}
+
+% than is possible with spatial distributions of errors with respect to a ``noisy'' Monte Carlo reference solution.
+
+%-note a few outlier pins in the periodic colorset which break the symmetry
 
 \begin{figure}[h!]
 \centering
 \includegraphics[width=0.9\linewidth]{figures/results/compare/assm-16/compare-capt}
 \vspace{2mm}
-\caption[U-238 capture rate comparison for a 1.6\% enriched assembly]{A comparison of U-238 capture rate spatial distributions for \textit{i}\ac{MGXS} and null spatial homogenization for a 1.6\% enriched assembly.}
+\caption[U-238 capture rate comparison for a 1.6\% enriched assembly]{The percent relative deviation of U-238 capture rate spatial distributions for \textit{i}\ac{MGXS} and null homogenization for a 1.6\% enriched assembly.}
 \label{fig:chap11-assm-1.6-capt-rates-comp}
 \end{figure}
 
@@ -540,7 +529,7 @@ second paragraph: analysis
 \centering
 \includegraphics[width=0.9\linewidth]{figures/results/compare/assm-31/compare-capt}
 \vspace{2mm}
-\caption[U-238 capture rate comparison for a 3.1\% enriched assembly]{A comparison of U-238 capture rate spatial distributions for \textit{i}\ac{MGXS} and null spatial homogenization for a 3.1\% enriched assembly.}
+\caption[U-238 capture rate comparison for a 3.1\% enriched assembly]{The percent relative deviation of U-238 capture rate spatial distributions for \textit{i}\ac{MGXS} and null homogenization for a 3.1\% enriched assembly.}
 \label{fig:chap11-assm-3.1-capt-rates-comp}
 \end{figure}
 
@@ -550,7 +539,7 @@ second paragraph: analysis
 \centering
 \includegraphics[width=0.9\linewidth]{figures/results/compare/assm-31-20BPs/compare-capt}
 \vspace{2mm}
-\caption[U-238 capture rate comparison for a 3.1\% enriched assembly with 20 BPs]{A comparison of U-238 capture rate spatial distributions for \textit{i}\ac{MGXS} and null spatial homogenization for a 3.1\% enriched assembly with 20 \acp{BP}.}
+\caption[U-238 capture rate comparison for a 3.1\% enriched assembly with 20 BPs]{The percent relative deviation of U-238 capture rate spatial distributions for \textit{i}\ac{MGXS} and null homogenization for a 3.1\% enriched assembly with 20 \acp{BP}.}
 \label{fig:chap11-assm-31-20BPs-capt-rates-comp}
 \end{figure}
 	
@@ -560,8 +549,8 @@ second paragraph: analysis
 \centering
 \includegraphics[width=0.9\linewidth]{figures/results/compare/2x2/compare-capt}
 \vspace{2mm}
-\caption[U-238 capture rate comparison for a 2$\times$2 colorset]{A comparison of U-238 capture rate spatial distributions for \textit{i}\ac{MGXS} and null spatial homogenization for a 2$\times$2 colorset.}
-\label{fig:chap11-assm-2x2-capt-rates-comp}
+\caption[U-238 capture rate comparison for a 2$\times$2 colorset]{The percent relative deviation of U-238 capture rate spatial distributions for \textit{i}\ac{MGXS} and null homogenization for a 2$\times$2 colorset.}
+\label{fig:chap11-2x2-capt-rates-comp}
 \end{figure}
 
 \clearpage
@@ -570,8 +559,8 @@ second paragraph: analysis
 \centering
 \includegraphics[width=0.9\linewidth]{figures/results/compare/reflector/compare-capt}
 \vspace{2mm}
-\caption[U-238 capture rate comparison for a 2$\times$2 colorset with reflector]{A comparison of U-238 capture rate spatial distributions for \textit{i}\ac{MGXS} and null spatial homogenization for a 2$\times$2 colorset with a water reflector.}
-\label{fig:chap11-assm-refl-capt-rates-comp}
+\caption[U-238 capture rate comparison for a 2$\times$2 colorset with reflector]{The percent relative deviation of U-238 capture rate spatial distributions for \textit{i}\ac{MGXS} and null homogenization for a 2$\times$2 colorset with a water reflector.}
+\label{fig:chap11-refl-capt-rates-comp}
 \end{figure}
 
 \clearpage
@@ -580,8 +569,8 @@ second paragraph: analysis
 \centering
 \includegraphics[width=0.9\linewidth]{figures/results/compare/full-core/compare-capt-kmeans}
 \vspace{2mm}
-\caption[U-238 capture rate comparison for the quarter core BEAVRS model]{A comparison of U-238 capture rate spatial distributions for \textit{i}\ac{MGXS} (\textit{with $k$-means}) and null spatial homogenization for the quarter core BEAVRS model.}
-\label{fig:chap11-assm-full-core-capt-rates-kmeans-comp}
+\caption[U-238 capture rate comparison for the quarter core BEAVRS model]{The percent relative deviation of U-238 capture rate spatial distributions for \textit{i}\ac{MGXS} (\textit{with $k$-means}) and null homogenization for the quarter core BEAVRS model.}
+\label{fig:chap11-full-core-capt-rates-kmeans-comp}
 \end{figure}
 
 \clearpage
@@ -590,8 +579,8 @@ second paragraph: analysis
 \centering
 \includegraphics[width=0.9\linewidth]{figures/results/compare/full-core/compare-capt-gmm}
 \vspace{2mm}
-\caption[U-238 capture rate comparison for the quarter core BEAVRS model]{A comparison of U-238 capture rate spatial distributions for \textit{i}\ac{MGXS} (\textit{with \ac{GMM}}) and null spatial homogenization for the quarter core BEAVRS model.}
-\label{fig:chap11-assm-full-core-capt-rates-gmm-comp}
+\caption[U-238 capture rate comparison for the quarter core BEAVRS model]{The percent relative deviation of U-238 capture rate spatial distributions for \textit{i}\ac{MGXS} (\textit{with \ac{GMM}}) and null homogenization for the quarter core BEAVRS model.}
+\label{fig:chap11-full-core-capt-rates-gmm-comp}
 \end{figure}
 
 \clearpage
@@ -600,8 +589,8 @@ second paragraph: analysis
 \centering
 \includegraphics[width=0.9\linewidth]{figures/results/compare/full-core/compare-capt-birch}
 \vspace{2mm}
-\caption[U-238 capture rate comparison for the quarter core BEAVRS model]{A comparison of U-238 capture rate spatial distributions for \textit{i}\ac{MGXS} (\textit{with BIRCH}) and null spatial homogenization for the quarter core BEAVRS model.}
-\label{fig:chap11-assm-full-core-capt-rates-birch-comp}
+\caption[U-238 capture rate comparison for the quarter core BEAVRS model]{The percent relative deviation of U-238 capture rate spatial distributions for \textit{i}\ac{MGXS} (\textit{with BIRCH}) and null homogenization for the quarter core BEAVRS model.}
+\label{fig:chap11-full-core-capt-rates-birch-comp}
 \end{figure}
 
 \clearpage
