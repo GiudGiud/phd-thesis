@@ -386,32 +386,23 @@ Since the tables simply represent a snapshot of the data illustrated in Figs.~\C
 \subsubsection{Spatial Distributions of U-238 Capture Rate Errors}
 \label{subsec:chap11-imgxs-capt-rates-space-distrib}
 
-first paragraph: outline
--Fig.~\Crefrange{fig:chap11-assm-1.6-capt-err}{fig:chap11-reflector-capt-err}
-  -individual assemblies and colorsets
--Fig.~\Crefrange{fig:chap11-full-core-capt-err-a}{fig:chap11-full-core-capt-err-b}
-  -full core
--compare errors with null, degenerate and \ac{LNS} spatial homogenization
--use the BIRCH clustering scheme for \textit{i}\ac{MGXS} with 2, 4 and 16 clusters
+The spatial distributions of capture rate errors are plotted as heatmaps for the assembly and colorset benchmarks in Figs.~\Crefrange{fig:chap11-assm-1.6-capt-err}{fig:chap11-refl-capt-err} with null, degenerate, \ac{LNS} and \textit{i}\ac{MGXS} homogenization with BIRCH clustering of 2, 4 and 16 clusters. The capture rate errors for the full core are illustrated in Fig.~\ref{fig:chap11-full-core-capt-err-a} for null and degenerate homogenization, and in Fig.~\ref{fig:chap11-full-core-capt-err-b} for \textit{i}\ac{MGXS} homogenization with BIRCH clustering of 4 and 16 clusters.
 
-second paragraph: analysis
--need more clusters than \ac{LNS} for individual assemblies and periodic colorset
--even with 16 clusters do not quite approach degenerate's accuracy
--note that \ac{LNS} did better than degenerate for each benchmark except for reflected colorset
--periodic colorset:
-  -even with 16 clusters, pins adjacent to two \acp{CRGT} (facial and diagonal) are not discriminated
-  -\ac{LNS} discriminates these pins
-  -\textit{i}\ac{MGXS} is expending clusters to discriminate pins along different assembly interfaces instead of discriminating the pins near \acp{CRGT}
-    -this behavior is wholly dependent on the features used
--reflected colorset:
-  -Fig.~\ref{fig:chap11-reflector-capt-err}
-  -\textit{i}\ac{MGXS} does a better job along the assembly-reflector interface
--some lingering residual errors along assembly-assembly interfaces for reflected colorset
-  -less so than \ac{LNS}
+A couple of key conclusions can be drawn from these results. First, the results from Sec.~\ref{subsec:chap11-imgxs-capt-rates-benchmark} indicated that the errors with \textit{i}\ac{MGXS} homogenization with 16 clusters exceed those for degenerate homogenization for both the 3.1\% enriched fuel assembly with 20 \acp{BP} and the periodic 2$\times$2 colorset. This is revealed in the Figs.~\Crefrange{fig:chap11-assm-3.1-20BPs-capt-err}{fig:chap11-2x2-capt-err} which illustrate a systematic bias which differs from that of the degenerate case. In particular, those pins which are facially and diagonally adjacent to the central instrument tube exhibit the smallest and largest errors in the assembly with 20 \acp{BP}, respectively. Likewise, the pins between the two rings of \acp{BP} in the 3.1\% enriched fuel assembly exhibit the largest errors for the periodic colorset. These observations are particularly interesting since the \ac{LNS} scheme outperforms \textit{i}\ac{MGXS} for these benchmarks while using substantially fewer materials (9 -- 10 \ac{LNS} materials as compared to 16 \textit{i}\ac{MGXS} materials per assembly). Although \ac{LNS} necessarily discriminates those pins adjacent to the instrument tube and \acp{BP} into unique clusters, the \textit{i}\ac{MGXS} scheme only does so if the feature vectors for those fuel pins are well-separated from those for other fuel pins in feature space.
+
+Unlike the \ac{LNS} scheme, the \textit{i}\ac{MGXS} scheme excels at discriminating pins along assembly-assembly and assembly-reflector interfaces as shown in Figs.~\Crefrange{fig:chap11-2x2-capt-err}{fig:chap11-refl-capt-err}\footnote{However, even with 16 clusters, there are some lingering residual errors for pins along the interfaces between the bottom right assembly and its neighbors.}. This is most obvious for the pins along the assembly-reflector interface which exhibit nearly the same error for both null and \ac{LNS} homogenization. The \textit{i}\ac{MGXS} scheme discriminates these pins into unique clusters such that little if any residual bias is observed with 16 clusters. Indeed, the \textit{i}\ac{MGXS} scheme dedicates unique clusters to those pins along the interfaces \textit{before} discriminating interior pins adjacent to \acp{CRGT} and \acp{BP} into clusters. For this reason, \textit{i}\ac{MGXS} may necessarily need to model more unique materials than \ac{LNS} to achieve the same reduction in the maximum pin-wise error.
+
+Finally, it should be noted that the observations made here are specific to the configuration of the \textit{i}\ac{MGXS} data processing pipeline used here. In particular, each of the figures for \textit{i}\ac{MGXS} spatial homogenization corresponds to a prediction by the BIRCH clustering algorithm with litmus-only feature selection. As noted in Sec.~\ref{sec:chap10-cluster-geometries}, the choice of features and clustering algorithm has a large impact on the clustering model and the resultant spatial distribution of U-238 capture rate errors. In addition, dimensionality reduction adds another degree of freedom to the types of clustered geometries that may be found with the \textit{i}\ac{MGXS} scheme. Future work should systematically examine the spatial error distributions for different configurations of the \textit{i}\ac{MGXS} data processing pipeline to quantify the ability of each minimize error with as few clusters as possible.
+
+\begin{emphbox}
+\textbf{The \textit{i}\ac{MGXS} scheme does a better job discriminating fuel pins along assembly-assembly and assembly-reflector interfaces than \ac{LNS}, but requires more unique materials to achieve the same reduction in U-238 capture rate errors.}
+\end{emphbox}
+
+%-note that \ac{LNS} did better than degenerate for each benchmark except for reflected colorset
 
 \begin{figure}[h!]
 \centering
-\includegraphics[width=0.9\linewidth]{figures/results/spatial/assm-16/capt-err}
+\includegraphics[width=0.87\linewidth]{figures/results/spatial/assm-16/capt-err}
 \vspace{2mm}
 \caption[U-238 capture errors for the 1.6\% enriched assembly]{U-238 capture percent relative errors for the 1.6\% enriched assembly with null, degenerate, \ac{LNS} and \textit{i}\ac{MGXS} spatial homogenization.}
 \label{fig:chap11-assm-1.6-capt-err}
@@ -421,7 +412,7 @@ second paragraph: analysis
 
 \begin{figure}[h!]
 \centering
-\includegraphics[width=0.9\linewidth]{figures/results/spatial/assm-31/capt-err}
+\includegraphics[width=0.87\linewidth]{figures/results/spatial/assm-31/capt-err}
 \vspace{2mm}
 \caption[U-238 capture errors for the 3.1\% enriched assembly]{U-238 capture percent relative errors for the 3.1\% enriched assembly with null, degenerate, \ac{LNS} and \textit{i}\ac{MGXS} spatial homogenization.}
 \label{fig:chap11-assm-3.1-capt-err}
@@ -431,7 +422,7 @@ second paragraph: analysis
 
 \begin{figure}[h!]
 \centering
-\includegraphics[width=0.9\linewidth]{figures/results/spatial/assm-31-20BPs/capt-err}
+\includegraphics[width=0.87\linewidth]{figures/results/spatial/assm-31-20BPs/capt-err}
 \vspace{2mm}
 \caption[U-238 capture errors for the 3.1\% enriched assembly with 20 BPs]{U-238 capture percent relative errors for the 3.1\% enriched assembly with 20 \acp{BP} with null, degenerate, \ac{LNS} and \textit{i}\ac{MGXS} spatial homogenization.}
 \label{fig:chap11-assm-3.1-20BPs-capt-err}
@@ -441,7 +432,7 @@ second paragraph: analysis
 
 \begin{figure}[h!]
 \centering
-\includegraphics[width=0.9\linewidth]{figures/results/spatial/2x2/capt-err}
+\includegraphics[width=0.87\linewidth]{figures/results/spatial/2x2/capt-err}
 \vspace{2mm}
 \caption[U-238 capture errors for the 2$\times$2 colorset]{U-238 capture percent relative errors for the 2$\times$2 colorset with null, degenerate, \ac{LNS} and \textit{i}\ac{MGXS} spatial homogenization.}
 \label{fig:chap11-2x2-capt-err}
@@ -451,7 +442,7 @@ second paragraph: analysis
 
 \begin{figure}[h!]
 \centering
-\includegraphics[width=0.9\linewidth]{figures/results/spatial/reflector/capt-err}
+\includegraphics[width=0.87\linewidth]{figures/results/spatial/reflector/capt-err}
 \vspace{2mm}
 \caption[U-238 capture errors for the 2$\times$2 colorset with reflector]{U-238 capture percent relative errors for the 2$\times$2 colorset with a water reflector with null, degenerate, \ac{LNS} and \textit{i}\ac{MGXS} spatial homogenization.}
 \label{fig:chap11-refl-capt-err}
