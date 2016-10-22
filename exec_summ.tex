@@ -154,27 +154,20 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection*{Background and Motivation}
 
--brief literature review\\
-  -use MC to generate coarse mesh constants (Serpent)~\cite{serpent2013manual} \\
-  -relatively little work to use MC for fine mesh transport~\cite{redmond1997multigroup,cai2014condensation,nelson2014improved} \\
+The development and deployment of neutron physics simulations is governed by tradeoffs between accuracy and speed. High-fidelity simulations are \textit{accurate} and \textit{flexible} but require significant computational resources, while the \textit{approximations} made by low-fidelity methods reduce the number of variables which greatly improves the \textit{time-to-solution}. As a result, it is common to employ a mix of high- and low-fidelity tools for reactor analysis -- for example, high-fidelity tools are frequently used to inform and benchmark low-fidelity models for use within a narrow envelope of design parameters. This thesis develops a new approach within the same vein by employing continuous energy Monte Carlo (MC) neutron transport simulations to generate accurate multi-group cross sections (MGXS) for computationally efficient deterministic transport methods.
 
-\begin{emphbox}
-\textbf{This thesis is motivated by the desire to obtain Monte Carlo-quality solutions with computationally efficient deterministic neutron transport methods.}
-\end{emphbox}
+%\textbf{This thesis is motivated by the desire to obtain Monte Carlo-quality solutions with computationally efficient deterministic neutron transport methods.}
+
+This thesis investigates the use of Monte Carlo methods to generate MGXS, such as the U-235 fission MGXS illustrated in Fig.~\ref{fig:u235-sigf}, for whole-core deterministic reactor analysis. Monte Carlo presents a natural approach to replace engineering prescriptions to approximate the flux with a stochastic approximation of the exact flux. The advantage of a MC-based approach is that all of the relevant physics modeled in MC may be directly embedded into MGXS. This improvement in accuracy comes at the computational expense of converging group constant tallies to acceptably low uncertainties. MC methods have increasingly been used to generate few group constants for coarse mesh diffusion, most notably by the Serpent MC code~\cite{serpent2013manual}. However, there exist few rigorous and comprehensive analyses of MGXS generation for heterogeneous fine mesh deterministic transport methods~\cite{redmond1997multigroup,cai2014condensation,nelson2014improved}. \textbf{This thesis develops and evaluates MC-based methods to generate MGXS for fine mesh deterministic neutron transport codes.}
 
 \begin{figure}[h!]
 \centering
-\includegraphics[width=0.6\linewidth]{figures/intro/u235-ce-mg-xs}
+\includegraphics[width=0.75\linewidth]{figures/intro/u235-ce-mg-xs}
 \caption[U-235 continuous energy and multi-group fission cross section]{U-235 continuous energy and 16-group fission cross section.}
 \label{fig:u235-sigf}
 \end{figure}
 
-\begin{figure}[h!]
-\centering
-\includegraphics[width=0.9\linewidth]{figures/mgxs/mgxs-overlay}
-\caption[Energy and spatial variation in MGXS]{The calculation of multi-group cross sections requires knowledge of the spatial and energy variation of the continuous energy cross section and flux. The color-coded position $\mathbf{r}$ and energy $E$ variables correspond to the figures with the matching colored outlines. The microscopic cross section $\sigma_{x,i}$ depends on reactor configuration (a) and neutron energy (b). The flux $\phi$ varies with position (c) and energy (d).}
-\label{fig:mgxs-overlay}
-\end{figure}
+In addition, MC-based MGXS generation methods to date have retained the multi-level geometric framework illustrated in Fig.~\ref{fig:multi-level-flow-chart} to tabulate MGXS for individual reactor components -- such as infinite fuel pins and/or assemblies -- for subsequent use in whole-core multi-group calculations. The multi-level approach is inspired by legacy MGXS generation techniques which apply high-fidelity models of the energy self-shielding physics to low-fidelity geometric models of unique core components. The complexity of the energy treatment is then reduced at each level as larger and more complex geometric models are considered. Although the use of MC within a multi-level scheme eliminates the need to approximate the flux in energy, it does not account for spatial self-shielding effects throughout a reactor core. \textbf{This thesis abandons the multi-level framework in place of a whole-core MC calculation which simultaneously accounts for all energy and spatial self-shielding effects in a single step.}
 
 \begin{figure}[h!]
 \centering
@@ -183,14 +176,8 @@
 \label{fig:multi-level-flow-chart}
 \end{figure}
 
-\begin{emphbox}
-\textbf{This thesis develops and evaluates MC-based methods to generate MGXS for fine mesh deterministic neutron transport codes.}
-\end{emphbox}
-
-\begin{emphbox}
-\textbf{This thesis uses statistical clustering algorithms to accelerate whole-core MC calculations
-which simultaneously model all energy and spatial self-shielding effects for fine mesh MGXS generation in a single step.}
-\end{emphbox}
+This thesis uses statistical clustering algorithms to accelerate whole-core MC calculations
+which simultaneously model all energy and spatial self-shielding effects for fine mesh MGXS generation in a single step.
 
 \clearpage
 
@@ -432,52 +419,88 @@ LNS homogenization computes a single set of MGXS for the fuel pin instances in e
 \centering
 \begin{subfigure}{0.47\textwidth}
   \centering
-  \includegraphics[width=0.7\linewidth]{figures/quantification/homogenization/2x2-degenerate-materials}
+  \includegraphics[width=0.85\linewidth]{figures/quantification/homogenization/2x2-degenerate-materials}
   \caption{}
   \label{fig:2x2-degenerate}
 \end{subfigure}%
 \begin{subfigure}{0.47\textwidth}
   \centering
-  \includegraphics[width=0.7\linewidth]{figures/quantification/homogenization/2x2-degenerate-materials}
+  \includegraphics[width=0.85\linewidth]{figures/quantification/homogenization/2x2-degenerate-materials}
   \caption{}
   \label{fig:reflector-degenerate}
 \end{subfigure}
 \begin{subfigure}{0.47\textwidth}
   \centering
-  \includegraphics[width=0.7\linewidth]{figures/patterns/lns/2x2/materials}
+  \includegraphics[width=0.85\linewidth]{figures/patterns/lns/2x2/materials}
   \caption{}
   \label{fig:2x2-lns}
 \end{subfigure}%
 \begin{subfigure}{0.47\textwidth}
   \centering
-  \includegraphics[width=0.7\linewidth]{figures/patterns/lns/reflector/materials}
+  \includegraphics[width=0.85\linewidth]{figures/patterns/lns/reflector/materials}
   \caption{}
   \label{fig:reflector-lns}
 \end{subfigure}
 \begin{subfigure}{0.47\textwidth}
   \centering
-  \includegraphics[width=0.7\linewidth]{figures/unsupervised/geometries/with-features/8-clusters/combined/2x2}
+  \includegraphics[width=0.85\linewidth]{figures/unsupervised/geometries/with-features/8-clusters/combined/2x2}
   \caption{}
   \label{fig:2x2-8-clusters}
 \end{subfigure}%
 \begin{subfigure}{0.47\textwidth}
   \centering
-  \includegraphics[width=0.7\linewidth]{figures/unsupervised/geometries/with-features/8-clusters/combined/reflector}
+  \includegraphics[width=0.85\linewidth]{figures/unsupervised/geometries/with-features/8-clusters/combined/reflector}
   \caption{}
   \label{fig:reflector-8-clusters}
 \end{subfigure}
-\caption[Materials for the 2$\times$2 colorsets]{The materials for the periodic 2$\times$2 colorset with degenerate, LNS \textit{i}MGXS spatial homogenization are illustrated in (a), (c) and (e), while those for the colorset with a water reflector are depicted in (b), (d) and (f). The materials for the \textit{i}MGXS scheme represent 8 GMM clusters.}
+\caption[Materials for the 2$\times$2 colorsets]{The materials for the periodic 2$\times$2 colorset with degenerate, LNS and \textit{i}MGXS spatial homogenization are illustrated in (a), (c) and (e), while those for the colorset with a water reflector are depicted in (b), (d) and (f). The materials for the \textit{i}MGXS scheme represent 8 GMM clusters.}
 \label{fig:colorset-geometries}
 \end{figure}
 
 \clearpage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection*{Eigenvalues}
+
+\begin{table}[ht!]
+  \centering
+  \caption[OpenMOC eigenvalue bias]{OpenMOC eigenvalue bias $\Delta\rho$ for \textit{i}MGXS spatial homogenization.}
+  \small
+  \label{table:eigenvalues}
+  \vspace{6pt}
+  \begin{tabular}{p{4cm} R{0.9cm} R{0.9cm} R{0.9cm} R{0.9cm} R{0.9cm} R{0.9cm}}
+  \toprule
+  & \multicolumn{6}{S[table-format=6.1]}{\textbf{\# Clusters}} \\
+  \cline{2-7}
+  \multirow{-2}{*}{\bf Benchmark} &
+  \multicolumn{1}{c}{\textbf{1}} & 
+  \multicolumn{1}{c}{\textbf{2}} & 
+  \multicolumn{1}{c}{\textbf{4}} & 
+  \multicolumn{1}{c}{\textbf{8}} & 
+  \multicolumn{1}{c}{\textbf{16}} & 
+  \multicolumn{1}{c}{\textbf{\# pins}} \\
+  \midrule
+1.6\% Assm & -168 & -168 & -168 & -168 & -168 & -168 \\
+  \midrule
+3.1\% Assm & -194 & -194 & -194 & -194 & -194 & -194 \\
+  \midrule
+3.1\% Assm w/ 20 BPs & -240 & -237 & -236 & -235 & -235 & -235 \\
+  \midrule
+Colorset & -191 & -189 & -189 & -189 & -189 & -188 \\
+  \midrule
+Colorset w/ Reflector &-141 & -136 & -136 & -134 & -129 & -141 \\
+  \midrule
+BEAVRS Quarter Core & -122 & ? & -120 & -119 & -119 & -116 \\
+  \bottomrule
+\end{tabular}
+\end{table}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection*{Pin-Wise U-238 Capture Rate Errors}
 
 \begin{figure}[h!]
 \centering
-\includegraphics[width=0.8\linewidth]{figures/results/spatial/reflector/capt-err}
+\includegraphics[width=0.83\linewidth]{figures/results/spatial/reflector/capt-err}
 \vspace{2mm}
 \caption[U-238 capture rate errors for the 2$\times$2 colorset with reflector]{U-238 capture rate percentage relative errors for the 2$\times$2 colorset with a water reflector with null, degenerate, LNS and \textit{i}MGXS spatial homogenization with 2, 8 and 16 GMM clusters.}
 \label{fig:refl-capt-err}
@@ -490,16 +513,15 @@ LNS homogenization computes a single set of MGXS for the fuel pin instances in e
 
 \begin{figure}[h!]
 \centering
-\begin{subfigure}{0.9\textwidth}
+\begin{subfigure}{0.49\textwidth}
   \centering
-\includegraphics[width=0.55\linewidth]{figures/results/compare/2x2/compare-capt}
+\includegraphics[width=0.95\linewidth]{figures/results/compare/2x2/compare-capt}
   \caption{}
   \label{fig:refl-capt-rates-comp-refl}
-\end{subfigure}
-\par\bigskip
-\begin{subfigure}{0.9\textwidth}
+\end{subfigure} %
+\begin{subfigure}{0.49\textwidth}
   \centering
-\includegraphics[width=0.55\linewidth]{figures/results/compare/reflector/compare-capt}
+\includegraphics[width=0.95\linewidth]{figures/results/compare/reflector/compare-capt}
   \caption{}
   \label{fig:refl-capt-rates-comp-2x2}
 \end{subfigure}
@@ -542,26 +564,27 @@ LNS homogenization computes a single set of MGXS for the fuel pin instances in e
   \small
   \label{table:imgxs-runtimes}
   \vspace{6pt}
-  \begin{tabular}{l l R{2.5cm} S[table-format=3.2] S[table-format=3.2] S[table-format=3.2]}
+  \begin{tabular}{l l l l S[table-format=3.2] S[table-format=3.2] S[table-format=3.2]}
   \toprule
   & & & \multicolumn{3}{c}{\bf Runtime [core-hours]} \\
-  \cline{4-6}
+  \cline{4-7}
   \multirow{-2}{*}{\bf Benchmark} &
   \multirow{-2}{*}{\bf Scheme} &
-  \multirow{-2}{*}{\bf \# Particles} &
+  \multirow{-2}{*}{\parbox{2cm}{\bf Max. Rel. \\ Err. [\%]}}
+  \multirow{-2}{*}{\bf \# Histories} &
   \multicolumn{1}{c}{\bf OpenMC} &
   \multicolumn{1}{c}{\bf OpenMOC} &
   \multicolumn{1}{c}{\bf Total} \\
   \midrule
-\multirow{4}{*}{\parbox{2.5cm}{2$\times$2 Colorset}} & Reference & 8,755,000 & 81.7 & & 81.7 \\
-& Null & 100,000 & 0.04 & 2.00 & 2.03 \\
-& Degenerate & 700,000,000 & 248 & 2.29 & 250 \\
-& \textit{i}MGXS & 10,000,000 & 3.54 & 1.96 & 5.50 \\
+\multirow{4}{*}{\parbox{2.5cm}{2$\times$2 Colorset}} & Reference & & & & & \\
+& Null & & & & & \\
+& Degenerate & & & & & \\
+& \textit{i}MGXS & & & & & \\
   \midrule
-\multirow{4}{*}{\parbox{2.5cm}{2$\times$2 Colorset w/ Reflector}} & Reference & & & & \\
-& Null & & & 5.07 & \\
-& Degenerate & & & 5.36 & \\
-& \textit{i}MGXS & & & 4.90 & \\
+\multirow{4}{*}{\parbox{2.5cm}{2$\times$2 Colorset w/ Reflector}} & Reference & & & & & \\
+& Null & & & & & \\
+& Degenerate & & & & & \\
+& \textit{i}MGXS & & & & & \\
   \bottomrule
 \end{tabular}
 \end{table}

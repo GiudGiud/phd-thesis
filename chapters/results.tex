@@ -1,52 +1,31 @@
-\chapter{Verification and Evaluation of the \textit{i}MGXS Scheme}
+\chapter{Evaluation of the \textit{i}MGXS Scheme}
 \label{chap:results}
 
-first paragraph: over-arching objective
--recall two primary objectives:
-  -approach null convergence rate
-  -achieve degenerate's accuracy
+The preceding chapter introduced a methodology for \textit{inferential multi-group cross section} (\textit{i}\ac{MGXS}) spatial homogenization. The \textit{i}\ac{MGXS} scheme uses unsupervised clustering algorithms to infer the optimal assignment of fuel pin instances to spatial homogenization tally zones based on an analysis of ``noisy'' \ac{MC} tally data. This chapter evaluates the \textit{i}\ac{MGXS} homogenization with respect to the scheme's two primary objectives:
 
-second paragraph: motivation for \textit{i}\ac{MGXS}
--recall Chaps 8 and 9 results:
-  -all schemes produce the same eigenvalue
-  -clustering MGXS largely inconsequential for pin-wise fission rates
-  -clustering MGXS very important for accurate U-238 capture rates
-  -deterministic LNS scheme worked well, but suffers from two main flaws:
-    -not flexible for arbitrary geometries (e.g., reflectors, baffles)
-    -not scalable for large geometries
--recall Chap. 10:
-  -developed \textit{i}\ac{MGXS} to circumvent the above issues with LNS
--segue to next paragraph - need to evaluate \textit{i}\ac{MGXS} scheme
+\begin{itemize}[noitemsep]
+\item Approach the \textbf{accuracy} of \textit{degenerate} spatial homogenization (Sec.~\ref{subsec:chap8-degenerate})
+\item Approach the \ac{MC} \textbf{convergence} of \textit{null} spatial homogenization (Sec.~\ref{subsec:chap8-null})
+\end{itemize}
 
-third paragraph: multi-pronged objective
-0) Verify iMGXS scheme - make sure everything works as expected
-1) Quantify accuracy wrt degenerate case
-2) Quantify convergence rate of OpenMOC results with \textit{i}\ac{MGXS} 
-3) Evaluate model selection criteria
-4) Determine total runtime required for various options
-   -reference (MC only)
-   -null (not as accurate, but fastest converging)
-   -degenerate (most accurate but slowest converging)
-   -iMGXS (nearly as accurate as degenerate and nearly as fast converging as null)
+\noindent Furthermore, the \textit{i}\ac{MGXS} scheme seeks to address the shortcomings of the Local Neighbor Symmetry (\ac{LNS}) spatial homogenization scheme (Sec.~\ref{sec:chap9-lns-homogenize}) -- namely, its inability to flexibly distinguish \ac{MGXS} clusters in arbitrary geometries (\textit{e.g.}, pins along assembly-assembly and assembly-reflector interfaces) and its poor scalability for large geometries.
 
-fourth paragraph: outline
--Sec.~\ref{subsec:chap11-imgxs-results} - analysis of MG results (biases)
--Sec.~\ref{sec:chap11-converge} - convergence of OpenMOC solutions 
--Sec.~\ref{sec:chap11-model-select} - evaluate model selection heuristics
--Sec.~\ref{sec:chap11-synthesis} - synthesis, runtimes
+The results presented in this chapter reflect the key observations made in Chaps.~\ref{chap:quantify} and~\ref{chap:spatial} for the null, degenerate and \ac{LNS} homogenization schemes. First, it was observed that pin-wise homogenization with track density-weighted \ac{MGXS} (Sec.~\ref{subsec:chap8-fiss-rates}) has no impact on the resultant eigenvalue since all schemes preserve global reactivity. In addition, it was shown that pin-wise \ac{MGXS} clustering must be accounted for to accurately predict pin-wise U-238 capture rates, but it is much less consequential for accurate fission rate predictions. These results inform the results and analysis presented in this chapter.
+
+The accuracy of the \textit{i}\ac{MGXS} scheme is evaluated with respect to the null and degenerate schemes in Sec.~\ref{subsec:chap11-imgxs-results}. The analysis includes a presentation of the eigenvalue bias and the distributions of pin-wise U-238 capture rate errors for four clustering algorithms (Sec.~\ref{sec:chap10-train-predictor}) with varying numbers of clusters, for each of the six heterogeneous \ac{PWR} benchmarks (Sec.~\ref{sec:chap7-benchmarks}). The convergence rate of the OpenMOC solutions with the null, degenerate and \textit{i}\ac{MGXS} schemes is presented in Sec.~\ref{sec:chap11-converge} for ``noisy'' \ac{MC} tally data computed with varying numbers of particle histories. Sec.~\ref{sec:chap11-model-select} examines the empirical results for model selection criteria (Sec.~\ref{sec:chap10-model-select}) which may be use to select the most appropriate number of clusters for the \textit{i}\ac{MGXS} scheme. Finally, Sec.~\ref{sec:chap11-synthesis} concludes with an analysis of the computational resource requirements for a reference \ac{MC} calculation in comparison to deterministic multi-group calculations with the degenerate and \textit{i}\ac{MGXS} schemes necessary to reach a desired level of accuracy for pin-wise U-238 capture rates.
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Multi-Group Results with LNS}
+\section{Multi-Group Results with \textit{i}MGXS}
 \label{subsec:chap11-imgxs-results}
 
-Each of the six benchmarks was modeled with OpenMOC using \ac{MGXS} generated by the \textit{i}\ac{MGXS} spatial homogenization scheme. Each of the six heterogeneous benchmarks was modeled with 70-group \ac{MGXS} using the same OpenMOC runtime parameters as those used in Chap.~\ref{chap:quantify} for infinite, null and degenerate homogenization and in Chap.~\ref{chap:spatial} for \ac{LNS} homogenization.. The eigenvalues and U-238 capture rates computed by OpenMOC are compared to the reference OpenMC solutions in Secs.~\ref{subsec:chap11-lns-eigenvalues} and~\ref{subsec:chap11-imgxs-capt-rates}, respectively.
+Each of the six benchmarks was modeled with OpenMOC using \ac{MGXS} generated by the \textit{i}\ac{MGXS} spatial homogenization scheme. Each of the six heterogeneous benchmarks was modeled with 70-group \ac{MGXS} using the same OpenMOC runtime parameters as those used in Chap.~\ref{chap:quantify} for the infinite, null and degenerate homogenization, and in Chap.~\ref{chap:spatial} for \ac{LNS} homogenization. The eigenvalues and U-238 capture rates computed by OpenMOC are compared to the reference OpenMC solutions in Secs.~\ref{subsec:chap11-lns-eigenvalues} and~\ref{subsec:chap11-imgxs-capt-rates}, respectively.
 
--only 70 groups per the results from preceding chapters
 -recall litmus-only feature selection - used in all cases!!!
 
 second paragraph: OpenMC MGXS generation:
 -100,000 particles / batch - individual assemblies
--400,000 particles / batch - 2x2 and reflector??
+-100,000 particles / batch - 2x2 and reflector??
 -1,000,000 particles / batch - quarter core
 -10,000 batches for assemblies and reflector
 -how many batches for full core??
@@ -498,8 +477,8 @@ The OpenMOC energy-integrated pin-wise U-238 capture rates were compared to the 
 
 \clearpage
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsubsection{Spatial Distributions of Capture Rate Errors}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Spatial Distributions of U-238 Capture Rate Errors}
 \label{subsec:chap11-imgxs-capt-rates-space-distrib}
 
 first paragraph: outline
@@ -994,6 +973,7 @@ second paragraph: outline
 -consider that cross-validation could make these heuristics more robust and less erratic
   -recall Sec.~\ref{subsec:chap10-cross-validate}
 -could compare cluster labels to those from LNS (use LNS as the ``ground truth'')
+-make axes labels clearer
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Davies-Bouldin Index}
