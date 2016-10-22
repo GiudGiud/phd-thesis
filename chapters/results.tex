@@ -104,89 +104,23 @@ The OpenMOC eigenvalues were compared to the reference OpenMC eigenvalues from T
 \subsection{U-238 Capture Rates}
 \label{subsec:chap11-imgxs-capt-rates}
 
-The OpenMOC energy-integrated pin-wise U-238 capture rates were compared to the reference OpenMC capture rates for \textit{i}\ac{MGXS} homogenization to compute the percent relative errors for each pin's capture rates. Sec.~\ref{subsec:chap11-imgxs-capt-rates-num-clusters} investigates the dependence of the maximum and mean errors with the number of clusters, while Sec.~\ref{subsec:chap11-imgxs-capt-rates-benchmark} compares the errors between null, degenerate and \textit{i}\ac{MGXS} homogenization. Sec.~\ref{subsec:chap11-imgxs-capt-rates-space-distrib} illustrates the spatial distributions of U-238 capture rate errors, while Sec.~\ref{subsec:chap11-imgxs-capt-rates-compare} compares OpenMOC's U-238 capture rate predictions for different clustering models to understand relative impact of clustered \ac{MGXS} for different types of fuel pins.
+The OpenMOC energy-integrated pin-wise U-238 capture rates were compared to the reference OpenMC capture rates for \textit{i}\ac{MGXS} homogenization to compute the percent relative errors for each pin's capture rates. Sec.~\ref{subsec:chap11-imgxs-capt-rates-num-clusters} investigates the dependence of the maximum and mean errors with the number of clusters, while Sec.~\ref{subsec:chap11-imgxs-capt-rates-benchmark} compares the errors between null, degenerate and \textit{i}\ac{MGXS} homogenization. Sec.~\ref{subsec:chap11-imgxs-capt-rates-space-distrib} illustrates the spatial distributions of U-238 capture rate errors. Finally, Sec.~\ref{subsec:chap11-imgxs-capt-rates-compare} compares OpenMOC's U-238 capture rate predictions for different clustering models to understand relative impact of clustered \ac{MGXS} for different types of fuel pins.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Variation with the Number of Clusters}
 \label{subsec:chap11-imgxs-capt-rates-num-clusters}
 
-first paragraph: objective
--quantify error with increasing number of clusters
--compare efficacy of the four clustering algorithms for the same number of clusters
--figures of capture rate percent relative errors by number of clusters
--Fig.~\ref{fig:chap11-coverge-complexity} - error with model complexity
-  -expect diminishing returns with more clusters (greater model complexity)
-  -expect the ``noisy'' in \ac{MC} tally data to minimize how close we can get to degenerate
-  -a single cluster is equivalent to the null
-  -a cluster for each pin is degenerate
-  -will eventually approach the degenerate case with fully converged MGXS
-    -dashed line for degenerate is with fully converged MGXS
+This section compares the U-238 capture rate for each of the four clustering algorithms as the number of clusters is varied. The simplest clustering model assigns all fuel pin instances to the same cluster, which is equivalent to null homogenization; conversely, the most complex clustering model assigns each fuel pin instance to its own unique cluster, which is equivalent to degenerate homogenization. Based on the results achieved with \ac{LNS} spatial homogenization, it is expected that the U-238 capture rate error can be greatly reduced from that for null homogenization -- and approach that of degenerate homogenization -- with only perhaps 10 -- 20 clusters for the assembly and colorset benchmarks. Beyond this point, it is expected that there are diminishing returns to increased model complexity. 
 
-second paragraph: outline and 
--Fig.~\Crefrange{fig:chap11-capt-err-by-cluster-assm-16}{fig:capt-err-by-cluster-assm-full-core} 
-  -the max and mean errors for each of the benchmarks
-    -individual assemblies, 2$\times$2 colorset and quarter core \ac{BEAVRS} model
--impact of clustering algorithm:
-  -all algorithms within perform similarly for individual assemblies w/o \acp{BP}
-  -KEY OBSERVATION:
-    -with each successive addition of a cluster, best algorithm will discriminate those pins with the largest error into their own cluster
-    -clustering algorithm does not have access to error
-      -must make this distinction directly from \ac{MC} tally data
-  -1) BIRCH seems to outperform other algorithms for 3.1\% assm with \acp{BP} and periodic colorset
-    -achieving reduction from 0.7 -- 0.55\% in max rel. err. with only 6 clusters
-      -GMM requires 8, agglomerative requires 9 and $k$-means requires 10      
-    -dropoff may correspond to the discrimination of most limiting fuel pins into own cluster
-    -distinction less clear for the reflected colorset
-      -seems to require even more clusters (it does to reach degenerate's accuracy)
-    -generally the most ``consistent'' and stable algorithm
-
-third paragraph: impact of number of clusters:
--more clusters needed to reduce error for geometries with more complicated spatial heterogeneities
--in general, the mean is more limiting (requires more clusters) to converge/saturate
-1) the majority of the reduction comes with the inclusion of just a few clusters
-   -max err. for 1.6\% assm (1.1\%) eventually reduces to 0.45\%
-   -just 3 clusters gets to 0.55\%, or 85\% of the reduction with just three clusters
-2) more clusters needed as geometric complexities are added
-   -add BPs
-     -roughly 6 clusters needed for 3.1\% assm, while 10 or so needed with \acp{BP}
-   -add reflector
-     -perioridic colorset mean err saturated with 10 clusters
-     -reflected colorset still trending downward even with 20 clusters
-
-%-should mention errors with ICA, PCA, or FA to illustrate that clustering can screw up??? 
-%-should mention errors look much different for pinch featur selection???
-
-\begin{figure}[h!]
+\begin{figure}[ht!]
 \centering
 \begin{tikzpicture}
 \begin{axis}[xmin=0,xmax=51,ymin=0,ymax=1.1,xlabel={\# Clusters},ylabel={Error},xticklabels={},yticklabels={},xtick={},ytick={},ticks=none,legend style={at={(1.5,0.7)},anchor=east,legend columns=1}]
-\addplot[smooth,red,very thick] coordinates {
-(1,1)
-(8,0.6)
-(25,0.7)
-(50,1)
-};
-\addplot[smooth,blue,very thick] coordinates {
-(1,1)
-(10,0.5)
-(30,0.515)
-(50,0.6)
-};
-\addplot[smooth,green,very thick] coordinates {
-(1,1)
-(14,0.3)
-(50,0.25)
-};
-\addplot[smooth,very thick] coordinates {
-(1,1)
-(8,0.4)
-(16,0.15)
-(50,0.1)
-};
-\addplot[smooth,dashed] coordinates {
-(0,0.1)
-(51,0.1)
-};
+\addplot[smooth,red,very thick] coordinates { (1,1) (8,0.6) (25,0.7) (50,1) };
+\addplot[smooth,blue,very thick] coordinates { (1,1) (10,0.5) (30,0.515) (50,0.6) };
+\addplot[smooth,green,very thick] coordinates { (1,1) (14,0.3) (50,0.25) };
+\addplot[smooth,very thick] coordinates { (1,1) (8,0.4) (16,0.15) (50,0.1) };
+\addplot[smooth,dashed] coordinates { (0,0.1) (51,0.1) };
 \addlegendentry{$\;\;X$ Histories}
 \addlegendentry{$4X$ Histories}
 \addlegendentry{$8X$ Histories}
@@ -194,9 +128,33 @@ third paragraph: impact of number of clusters:
 \addlegendentry{Degenerate}
 \end{axis}
 \end{tikzpicture}
-\caption[Convergence of\textit{i}MGXS to degenerate homogenization]{Convergence of \textit{i}\ac{MGXS} to degenerate homogenization in the limit of infinite particle histories.}
+\caption[Asympotic convergence of\textit{i}MGXS to degenerate homogenization]{Asymptotic convergence of reaction rate error with \textit{i}\ac{MGXS} in the limit of infinite particle histories to degenerate homogenization with fully converged \ac{MGXS}.}
 \label{fig:chap11-coverge-complexity}
 \end{figure}
+
+Furthermore, the balance between model complexity and accuracy will depend on the degree of statistical undertainty present in the \ac{MC} tally data, as depicted in Fig.~\ref{fig:chap11-coverge-complexity}. In particular, the statistical uncertainties of the ``noisy'' \ac{MC} tally data for $X$ particle histories will preclude the \textit{i}\ac{MGXS} scheme from achieving the asymptotic accuracy of the degenerate scheme with fully converged \ac{MGXS}. The inclusion of more clusters in \textit{i}\ac{MGXS} scheme will enable it to approach the asymptotic accuracy of the degenerate scheme if enough particle histories have been simulated to reliably estimate the mean of each \ac{MGXS} cluster. The optimal balance between accuracy and speed is achieved when the majority of the gap in accuracy between the null and degenerate schemes is eliminiated with only a few clusters in \textit{i}\ac{MGXS}, which quickly converge with only a fraction of the particle histories needed to converge the \ac{MGXS} for the degenerate scheme.
+
+The maximum and mean errors for \textit{i}\ac{MGXS} with 1 -- 50 clusters are illustrated in Figs.~\Crefrange{fig:chap11-capt-err-by-cluster-assm-16}{fig:capt-err-by-cluster-assm-full-core} for the individual assembly, 2$\times$2 colorset and quarter core \ac{BEAVRS} benchmark models. A couple of key observations can be made with regards to the errors' dependence on the number of clusters, as well as the clustering algorithm. First, it is clear from Figs.~\Crefrange{fig:chap11-capt-err-by-cluster-assm-16}{fig:chap11-capt-err-by-cluster-assm-31-20BPs} that the errors for the individual assemblies is greatly reduced with only 4 -- 8 clusters, with additional clusters having a marginal impact. As expected, the introduction of spatial heterogeneities requires more clusters to converge the error reduction. For example, both the max and mean errors are still trending downward even with 20 clusters for the 2$\times$2 colorset with a water reflector.
+
+%1) the majority of the reduction comes with the inclusion of just a few clusters
+%   -max err. for 1.6\% assm (1.1\%) eventually reduces to 0.45\%
+%   -just 3 clusters gets to 0.55\%, or 85\% of the reduction with just three clusters
+%2) more clusters needed as geometric complexities are added
+%   -add BPs
+%     -roughly 6 clusters needed for 3.1\% assm, while 10 or so needed with \acp{BP}
+%   -add reflector
+%     -perioridic colorset mean err saturated with 10 clusters
+
+The different clustering algorithms also vary somewhat in terms of their impact on the max and mean error. However, the figures do not clearly indicate which if any of the algorithms consistently under or overperforms the others for all benchmarks. All four algorithms perform similarly for the 1.6\% and 3.1\% enriched fuel assemblies without \acp{BP} for 1 -- 20 clusters, as shown in Figs.~\Crefrange{fig:chap11-capt-err-by-cluster-assm-16}{fig:chap11-capt-err-by-cluster-assm-31}. Although the mean errors are similar for up to 50 clusters for both assemblies, the max errors fluctuate somewhat erratically between 0.2 -- 0.4\% for 20 -- 50 clusters. Similarly, the mean errors for the 3.1\% enriched assembly with 20 \acp{BP} and the 2$\times$2 colorsets exhibit a consistent downward trend, while the maximum errors separate and fluctuate wildly beyond 10 clusters for the four clustering algorithms. Although no algorithm can be clearly chosen as a ``winner'', \ac{GMM} seems to most consistently outperform the other clustering algorithms for 10 or more clusters. 
+
+Finally, it should be noted that while the mean error is generally a smooth, monotonically decreasing curve, the max error exhibits sharp discontinuities with the addition of clusters. The maximum error likely decreases in a steplike fashion when the addition of a new cluster discriminates those fuel pins with the largest error into their own unique cluster. Evidently, new clusters generally do not refine the \ac{MGXS} for pins with the worst errors. This is likely due to the fact that the $k$-means, agglomerative and \ac{GMM} clustering models optimize a global metric representing the cluster assignments of all points in a dataset, rather than the behavior of the most poorly defined cluster in the model. A revised clustering algorithm may be needed to achieve the maximum error reduction with as few clusters as possible, by successively refining the samples in the most poorly defined clusters. The BIRCH algorithm shows some promise with 10 or fewer clusters, which may be the result of its locally optimized assignment of samples to clusters.
+
+\begin{emphbox}
+\textbf{Only a few \ac{MGXS} clusters are needed to substantially reduce the U-238 capture rate errors, with diminishing returns for the inclusion of more clusters. None of the clustering algorithms is a clear winner, though BIRCH generally performs the best for <10 clusters, while \acp{GMM} do better with 10+ clusters.}
+\end{emphbox}
+
+%-should mention errors with ICA, PCA, or FA to illustrate that clustering can screw up??? 
+%-should mention errors look much different for pinch featur selection???
 
 \begin{figure}[h!]
 \centering
@@ -306,16 +264,13 @@ third paragraph: impact of number of clusters:
 \label{fig:capt-err-by-cluster-assm-full-core}
 \end{figure}
 
-SUMMARY BOX
+\clearpage
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Benchmark with Null and Degenerate Schemes}
 \label{subsec:chap11-imgxs-capt-rates-benchmark}
 
-first paragraph: outline
--recall litmus-only feature selection
--Tabs.~\ref{table:chap11-max-capt-rates-litmus-only} and~\ref{table:chap11-mean-capt-rates-litmus-only}
--compare 1 (null) with 2 -- 16 clusters with the degenerate case
+The maximum and mean percent relative errors for each pin's U-238 capture rates are listed for each benchmark in Tabs.~\ref{table:chap1-max-capt-rates} and~\ref{table:chap11-mean-capt-rates}, respectively, for each of varying numbers of clusters for each clustering algorithm. In particular, the maximum errors are the maximum of the absolute values of the errors along with the appropriate sign, while the mean errors are the averages of the absolute error magnitudes. The errors are tabulated for 2 -- 16 clusters, along with the null (1 cluster for all pin instances) and degenerate schemes (one cluster per pin instance).
 
 second paragraph: analysis
 -by benchmark:
@@ -331,8 +286,6 @@ second paragraph: analysis
     -not quite enough for the 3.1\% enriched assm with \acp{BP}
     -max err. is still quite a bit larger
   -in all cases (save for the periodic colorset)
-
-The OpenMOC energy-integrated pin-wise U-238 capture rates were compared to the reference OpenMC fission rates for \ac{LNS} homogenization. The percent relative errors for each pin's fission rates were computed and the maximum and mean errors are listed for each benchmark and energy group structure in Tab.~\ref{table:chap9-lns-capture-rates}, respectively. In particular, the maximum errors are the maximum of the absolute values of the errors along with the appropriate sign, while the mean errors are the averages of the absolute error magnitudes. The results in Tab.~\ref{table:chap9-lns-capture-rates} can be compared to the corresponding data for infinite, null and degenerate homogenization in Tabs.~\ref{table:chap8-openmoc-max-capt-rates} and~\ref{table:chap8-openmoc-mean-capt-rates}. The 70-group degenerate results are reproduced in Tab.~\ref{table:chap9-lns-capture-rates} to simplify comparison with \ac{LNS}.
 
 \begin{table}[h!]
   \centering
@@ -378,10 +331,10 @@ The OpenMOC energy-integrated pin-wise U-238 capture rates were compared to the 
 & \ac{GMM} & & -2.00 & -1.77 & 1.50 & 1.07 & \\
 & $k$-means & & -1.82 & -1.69 & 1.35 & -1.26 & \\
   \midrule
-\multirow{4}{*}{\parbox{2.5cm}{BEAVRS Full Core}} & Agglomerative & \multirow{4}{*}{-4.78} & 329.46 & -4.60 & -4.19 & -4.01 & \multirow{4}{*}{-3.03} \\
-& BIRCH & & 851.56 & -4.51 & -4.02 & -4.02 & \\
-& \ac{GMM} & & 329.46 & -4.56 & -4.00 & -4.21 & \\
-& $k$-means & & 97.56 & -4.61 & -4.21 & -4.02 & \\
+\multirow{4}{*}{\parbox{2.5cm}{BEAVRS Full Core}} & Agglomerative & \multirow{4}{*}{-4.78} & & -4.60 & -4.19 & -4.01 & \multirow{4}{*}{-3.03} \\
+& BIRCH & & & -4.51 & -4.02 & -4.02 & \\
+& \ac{GMM} & & & -4.56 & -4.00 & -4.21 & \\
+& $k$-means & & & -4.61 & -4.21 & -4.02 & \\
   \bottomrule
 \end{tabular}
 \end{table}
@@ -432,10 +385,10 @@ The OpenMOC energy-integrated pin-wise U-238 capture rates were compared to the 
 & \ac{GMM} & & 0.48 & 0.37 & 0.29 & 0.24 & \\
 & $k$-means & & 0.47 & 0.37 & 0.27 & 0.22 & \\
   \midrule
-\multirow{4}{*}{\parbox{2.5cm}{BEAVRS Full Core}} & Agglomerative & \multirow{4}{*}{0.49} & 83.89 & 0.48 & 0.49 & 0.49 & \multirow{4}{*}{0.39} \\
-& BIRCH & & 128.76 & 0.48 & 0.48 & 0.49 & \\
-& \ac{GMM} & & 83.89 & 0.51 & 0.50 & 0.51 & \\
-& $k$-means & & 38.49 & 0.50 & 0.49 & 0.49 & \\
+\multirow{4}{*}{\parbox{2.5cm}{BEAVRS Full Core}} & Agglomerative & \multirow{4}{*}{0.49} & & 0.48 & 0.49 & 0.49 & \multirow{4}{*}{0.39} \\
+& BIRCH & & & 0.48 & 0.48 & 0.49 & \\
+& \ac{GMM} & & & 0.51 & 0.50 & 0.51 & \\
+& $k$-means & & & 0.50 & 0.49 & 0.49 & \\
   \bottomrule
 \end{tabular}
 \end{table}
