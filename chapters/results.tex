@@ -134,7 +134,7 @@ This section compares the U-238 capture rate for each of the four clustering alg
 
 Furthermore, the balance between model complexity and accuracy will depend on the degree of statistical undertainty present in the \ac{MC} tally data, as depicted in Fig.~\ref{fig:chap11-coverge-complexity}. In particular, the statistical uncertainties of the ``noisy'' \ac{MC} tally data for $X$ particle histories will preclude the \textit{i}\ac{MGXS} scheme from achieving the asymptotic accuracy of the degenerate scheme with fully converged \ac{MGXS}. The inclusion of more clusters in \textit{i}\ac{MGXS} scheme will enable it to approach the asymptotic accuracy of the degenerate scheme if enough particle histories have been simulated to reliably estimate the mean of each \ac{MGXS} cluster. The optimal balance between accuracy and speed is achieved when the majority of the gap in accuracy between the null and degenerate schemes is eliminiated with only a few clusters in \textit{i}\ac{MGXS}, which quickly converge with only a fraction of the particle histories needed to converge the \ac{MGXS} for the degenerate scheme.
 
-The maximum and mean errors for \textit{i}\ac{MGXS} with 1 -- 50 clusters are illustrated in Figs.~\Crefrange{fig:chap11-capt-err-by-cluster-assm-16}{fig:capt-err-by-cluster-assm-full-core} for the individual assembly, 2$\times$2 colorset and quarter core \ac{BEAVRS} benchmark models. A couple of key observations can be made with regards to the errors' dependence on the number of clusters, as well as the clustering algorithm. First, it is clear from Figs.~\Crefrange{fig:chap11-capt-err-by-cluster-assm-16}{fig:chap11-capt-err-by-cluster-assm-31-20BPs} that the errors for the individual assemblies is greatly reduced with only 4 -- 8 clusters, with additional clusters having a marginal impact. As expected, the introduction of spatial heterogeneities requires more clusters to converge the error reduction. For example, both the max and mean errors are still trending downward even with 20 clusters for the 2$\times$2 colorset with a water reflector.
+The maximum and mean errors for \textit{i}\ac{MGXS} with 1 -- 50 clusters are illustrated in Figs.~\Crefrange{fig:chap11-capt-err-by-cluster-assm-16}{fig:capt-err-by-cluster-full-core} for the individual assembly, 2$\times$2 colorset and quarter core \ac{BEAVRS} benchmark models. In particular, the maximum errors are the maximum of the absolute values of the errors, while the mean errors are the averages of the absolute error magnitudes. A couple of key observations can be made with regards to the errors' dependence on the number of clusters, as well as the clustering algorithm. First, it is clear from Figs.~\Crefrange{fig:chap11-capt-err-by-cluster-assm-16}{fig:chap11-capt-err-by-cluster-assm-31-20BPs} that the errors for the individual assemblies is greatly reduced with only 4 -- 8 clusters, with additional clusters having a marginal impact. As expected, the introduction of spatial heterogeneities requires more clusters to converge the error reduction. For example, both the max and mean errors are still trending downward even with 20 clusters for the 2$\times$2 colorset with a water reflector.
 
 %1) the majority of the reduction comes with the inclusion of just a few clusters
 %   -max err. for 1.6\% assm (1.1\%) eventually reduces to 0.45\%
@@ -216,16 +216,16 @@ Finally, it should be noted that while the mean error is generally a smooth, mon
   \centering
   \includegraphics[width=\linewidth]{figures/results/err-by-cluster/2x2/max-rel-err}
   \caption{}
-  \label{fig:chap11-max-capt-err-by-cluster-assm-2x2}
+  \label{fig:chap11-max-capt-err-by-cluster-2x2}
 \end{subfigure}
 \begin{subfigure}{0.9\textwidth}
   \centering
   \includegraphics[width=\linewidth]{figures/results/err-by-cluster/2x2/mean-rel-err}
   \caption{}
-  \label{fig:chap11-mean-capt-err-by-cluster-assm-2x2}
+  \label{fig:chap11-mean-capt-err-by-cluster-2x2}
 \end{subfigure}
 \caption[U-238 capture error for the 2$\times$2 colorset]{The max (a) and mean (b) U-238 capture rate error for the 2$\times$2 colorset with \textit{i}\ac{MGXS} spatial homogenization.}
-\label{fig:chap11-capt-err-by-cluster-assm-2x2}
+\label{fig:chap11-capt-err-by-cluster-2x2}
 \end{figure}
 
 \begin{figure}[h!]
@@ -234,16 +234,16 @@ Finally, it should be noted that while the mean error is generally a smooth, mon
   \centering
   \includegraphics[width=\linewidth]{figures/results/err-by-cluster/reflector/max-rel-err}
   \caption{}
-  \label{fig:chap11-max-capt-err-by-cluster-assm-refl}
+  \label{fig:chap11-max-capt-err-by-cluster-refl}
 \end{subfigure}
 \begin{subfigure}{0.9\textwidth}
   \centering
   \includegraphics[width=\linewidth]{figures/results/err-by-cluster/reflector/mean-rel-err}
   \caption{}
-  \label{fig:chap11-mean-capt-err-by-cluster-assm-refl}
+  \label{fig:chap11-mean-capt-err-by-cluster-refl}
 \end{subfigure}
 \caption[U-238 capture error for the 2$\times$2 colorset with reflector]{The max (a) and mean (b) U-238 capture rate error for the 2$\times$2 colorset with water reflector with \textit{i}\ac{MGXS} spatial homogenization.}
-\label{fig:chap11-capt-err-by-cluster-assm-refl}
+\label{fig:chap11-capt-err-by-cluster-refl}
 \end{figure}
 
 \begin{figure}[h!]
@@ -252,16 +252,16 @@ Finally, it should be noted that while the mean error is generally a smooth, mon
   \centering
   \includegraphics[width=\linewidth]{figures/results/err-by-cluster/full-core/max-rel-err}
   \caption{}
-  \label{fig:max-capt-err-by-cluster-assm-full-core}
+  \label{fig:max-capt-err-by-cluster-full-core}
 \end{subfigure}
 \begin{subfigure}{0.9\textwidth}
   \centering
   \includegraphics[width=\linewidth]{figures/results/err-by-cluster/full-core/mean-rel-err}
   \caption{}
-  \label{fig:mean-capt-err-by-cluster-assm-full-core}
+  \label{fig:mean-capt-err-by-cluster-full-core}
 \end{subfigure}
 \caption[U-238 capture error for quarter core BEAVRS model]{The max (a) and mean (b) U-238 capture rate error for the quarter core \ac{BEAVRS} model with \textit{i}\ac{MGXS} spatial homogenization.}
-\label{fig:capt-err-by-cluster-assm-full-core}
+\label{fig:capt-err-by-cluster-full-core}
 \end{figure}
 
 \clearpage
@@ -270,26 +270,13 @@ Finally, it should be noted that while the mean error is generally a smooth, mon
 \subsubsection{Benchmark with Null and Degenerate Schemes}
 \label{subsec:chap11-imgxs-capt-rates-benchmark}
 
-The maximum and mean percent relative errors for each pin's U-238 capture rates are listed for each benchmark in Tabs.~\ref{table:chap1-max-capt-rates} and~\ref{table:chap11-mean-capt-rates}, respectively, for each of varying numbers of clusters for each clustering algorithm. In particular, the maximum errors are the maximum of the absolute values of the errors along with the appropriate sign, while the mean errors are the averages of the absolute error magnitudes. The errors are tabulated for 2 -- 16 clusters, along with the null (1 cluster for all pin instances) and degenerate schemes (one cluster per pin instance).
+The maximum and mean percent relative errors for each pin's U-238 capture rates are listed for each benchmark in Tabs.~\ref{table:chap11-max-capt-rates} and~\ref{table:chap11-mean-capt-rates}, respectively, for a variable number of clusters for each clustering algorithm. In particular, the maximum errors are the maximum of the absolute values of the errors along with the appropriate sign, while the mean errors are the averages of the absolute error magnitudes. The errors are tabulated for 2 -- 16 clusters, along with null homogenization (one cluster for all pin instances) and degenerate homogenization (one cluster per pin instance).
 
-second paragraph: analysis
--by benchmark:
-  -error increases 
--by algorithm:
-  -largest differences are with the max err
-    -BIRCH, GMM smaller errors (8 clusters) for 3.1\% assm w/ and w/o \acp{BP} 
-    -BIRCH and GMM smaller errors (16 clusters) for reflected colorset
-  -pretty consistent for mean err, recall discrepancies observed in preceding plots
--by number of clusters:
-  -error always goes down, or stays relatively constant
-  -16 clusters is enough to reduce the mean err to degenerate case for individual assms w/o \acp{BP}
-    -not quite enough for the 3.1\% enriched assm with \acp{BP}
-    -max err. is still quite a bit larger
-  -in all cases (save for the periodic colorset)
+Since the tables simply represent a snapshot of the data illustrated in Figs.~\Crefrange{fig:chap11-capt-err-by-cluster-assm-16}{fig:capt-err-by-cluster-full-core}, the observations made in Sec.~\ref{subsec:chap11-imgxs-capt-rates-num-clusters} remain valid here. First, the majority of the error is reduced with only a few clusters. For example, 70 -- 80\% of the reduction in the maximum error enabled with degenerate homogenization can be achieved with only 4 clusters for the 1.6\% and 3.1\% enriched fuel assembly benchmarks without \acp{BP}. Although 16 clusters (or more) are needed to reduce the error to 70\% for the 3.1\% enriched assembly with 20 \acp{BP}, over 75\% of the error reduction is achieved with only 4 clusters for the periodic 2$\times$2 colorset. Likewise, the addition of a water reflector to the colorset necessitates the use of 16 or more clusters to reduce the error by 75\% or more. In addition, the maximum errors exhibit greater variation across algorithms than the mean errors, as was previously noted in Sec.~\ref{subsec:chap11-imgxs-capt-rates-num-clusters}. Finally, the BIRCH and \ac{GMM} algorithms generally achieve smaller errors than the $k$-means and agglomerative clustering algorithms for a fixed number of clusters.
 
 \begin{table}[h!]
   \centering
-  \caption[Maximum OpenMOC U-238 capture rate errors]{Maximum absolute U-238 capture rate percent relative errors for \textit{i}\ac{MGXS} spatial homogenization.}
+  \caption[Maximum OpenMOC U-238 capture rate errors]{Maximum absolute U-238 capture rate percent relative errors for \textit{i}\ac{MGXS} spatial homogenization for each clustering algorithm.}
   \small
   \label{table:chap11-max-capt-rates}
   \vspace{6pt}
@@ -343,7 +330,7 @@ second paragraph: analysis
 
 \begin{table}[h!]
   \centering
-  \caption[Mean OpenMOC U-238 capture rate errors]{Mean absolute U-238 capture rate percent relative errors for \textit{i}\ac{MGXS}.}
+  \caption[Mean OpenMOC U-238 capture rate errors]{Mean absolute U-238 capture rate percent relative errors for \textit{i}\ac{MGXS} spatial homogenization for each clustering algorithm.}
   \small
   \label{table:chap11-mean-capt-rates}
   \vspace{6pt}
