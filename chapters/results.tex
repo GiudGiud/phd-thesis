@@ -796,7 +796,7 @@ The figures illustrate the potential for \textit{i}\ac{MGXS} to achieve nearly t
 \section{Evaluation of Model Selection Techniques}
 \label{sec:chap11-model-select}
 
-This section analyzes the model selection criteria introduced in Sec.~\ref{sec:chap10-model-select}. The various criteria are computed for the clustering models trained in Sec.~\ref{subsec:chap11-imgxs-capt-rates-num-clusters}  for 1 -- 50 clusters for each of the four clustering algorithms. The model selection criteria are designed to quantitatively compare clustering models, and in particular, to help choose the optimal number of clusters. In a truly unsupervised (\textit{i.e.}, production) setting, the OpenMOC eigenvalue bias and reaction rate errors with respect to a reference OpenMC solution would not be available to help choose the optimal number of clusters. Instead, the ``best'' clustering model would be chosen strictly from the model selection criteria.
+This section analyzes the model selection criteria introduced in Sec.~\ref{sec:chap10-model-select}. The various criteria are computed for the clustering models trained in Sec.~\ref{subsec:chap11-imgxs-capt-rates-num-clusters} for up to 50 clusters for each of the four clustering algorithms. The model selection criteria are designed to quantitatively compare clustering models, and in particular, to help choose the optimal number of clusters. In a truly unsupervised (\textit{i.e.}, production) setting, the OpenMOC eigenvalue bias and reaction rate errors with respect to a reference OpenMC solution would not be available to help choose the optimal number of clusters. Instead, the ``best'' clustering model would be chosen strictly from the model selection criteria.
 
 Each criterion was computed for the clustering models built for the 1.6\% enriched fuel assembly and 2$\times$2 colorset with water reflector. The Davies-Bouldin, Dunn and Calinski-Harabaz indices are presented in Secs.~\Crefrange{subsec:chap11-db-index}{subsec:chap11-ch-index}, respectively. The silhouette coefficients are presented in Sec.~\ref{subsec:chap11-silhouette-coeff}. Finally, Sec.~\ref{subsec:chap11-bic} highlights the Bayesian Information Criterion (BIC) for the \ac{GMM} clustering algorithm. Cross-validation (Sec.~\ref{subsec:chap10-cross-validate}) was not employed to compute the heuristics, but could be used in the future to compute more robust estimates for each criterion.	
 
@@ -806,7 +806,7 @@ Each criterion was computed for the clustering models built for the 1.6\% enrich
 \subsection{Davies-Bouldin Index}
 \label{subsec:chap11-db-index}
 
-The Davies-Bouldin (DB) index is the ratio of within-cluster scatter to between-cluster separation (Sec.~\ref{subsec:chap10-db-index}) and is presented in Fig.~\ref{fig:chap11-db-indices} for both benchmarks. In theory, the ``best'' clustering model should minimize the DB index. The figures illustrate that the smallest DB indices correspond to the clustering models with a single cluster (\textit{i.e.}, null homogenization). As more clusters are added to each model, the within-cluster scatter should decrease, while the between-cluster separation should increase. The increasing DB indices indicate that the within-cluster scatter decreases more slowly than the between-cluster separation increases for both benchmarks. It is unclear why the DB index behaves in this way. Furthermore, it is not clear that the DB index would be a useful metric for determining the optimal number of clusters since it would choose only a single cluster for both benchmarks.
+The Davies-Bouldin (DB) index is the ratio of within-cluster scatter to between-cluster separation (Sec.~\ref{subsec:chap10-db-index}) and is presented in Fig.~\ref{fig:chap11-db-indices} for both benchmarks. In theory, the ``best'' clustering model should minimize the DB index. The figures illustrate that the smallest DB indices correspond to the clustering models with two clusters\footnote{The Davies-Bouldin index is undefined for fewer than two clusters.}. As more clusters are added to each model, the within-cluster scatter should decrease, while the between-cluster separation should increase. The increasing DB indices indicate that the within-cluster scatter decreases more slowly than the between-cluster separation increases for both benchmarks. It is unclear why the DB index behaves in this way. Furthermore, it is not clear that the DB index would be a useful metric for determining the optimal number of clusters since it would only choose two clusters for both benchmarks.
 
 \begin{figure}[h!]
 \centering
@@ -832,7 +832,7 @@ The Davies-Bouldin (DB) index is the ratio of within-cluster scatter to between-
 \subsection{Dunn Index}
 \label{subsec:chap11-dunn-index}
 
-The Dunn index is the ratio of the minimum inter-cluster distance to the maximum intra-cluster distance (Sec.~\ref{subsec:chap10-dunn-index}) and is presented in Fig.~\ref{fig:chap11-dunn-indices} for both benchmarks. In theory, the ``best'' clustering model should maximize the Dunn index. The figures illustrate that in general, the largest Dunn indices correspond to the clustering models with a single cluster (\textit{i.e.}, null homogenization). There are a few exceptions to this, however, as the Dunn indices do not monotonically decrease for all algorithms and in many cases increase before decreasing to some relatively stable minimum value. As more clusters are added to each model, both the minimum inter-cluster and maximum intra-cluster distances should decrease. The decreasing Dunn indices indicate that the minimum inter-cluster distance decreases more slowly than the maximum intra-cluster distance for both benchmarks. It is unclear why the Dunn index behaves in this way. Furthermore, it is not clear that the Dunn index would be a useful metric for determining the optimal number of clusters since it would generally choose only a single cluster for both benchmarks. Nevertheless, it should be recalled that the Dunn index is designed to characterize the most poorly defined cluster(s) in the model. The Dunn index varies in a steplike fashion in the figures, indicating that the most poorly defined cluster(s) are not in typically refined with each successive cluster added to the models.
+The Dunn index is the ratio of the minimum inter-cluster distance to the maximum intra-cluster distance (Sec.~\ref{subsec:chap10-dunn-index}) and is presented in Fig.~\ref{fig:chap11-dunn-indices} for both benchmarks. The Dunn indices are only highlighted for 3 -- 50 clusters since the index was over five orders of magnitude larger for only two clusters, which would not be useful to plot alongside the indices for more clusters\footnote{The Dunn index is undefined for fewer than two clusters.}. In theory, the ``best'' clustering model should maximize the Dunn index. The clustering models with only two clusters maximize the Dunn index. As more clusters are added to each model, both the minimum inter-cluster and maximum intra-cluster distances should decrease. The decreasing Dunn indices indicate that the minimum inter-cluster distance decreases more slowly than the maximum intra-cluster distance for both benchmarks. It is unclear why the Dunn index behaves in this way. Furthermore, it is not clear that the Dunn index would be a useful metric for determining the optimal number of clusters since it would only choose two clusters for both benchmarks. Nevertheless, it should be recalled that the Dunn index is designed to characterize the most poorly defined cluster(s) in the model. The Dunn index varies in a steplike fashion in the figures, indicating that the most poorly defined cluster(s) are not in typically refined with each successive cluster added to the models.
 
 \begin{figure}[h!]
 \centering
@@ -859,7 +859,7 @@ The Dunn index is the ratio of the minimum inter-cluster distance to the maximum
 \subsection{Calinski-Harabaz Index}
 \label{subsec:chap11-ch-index}
 
-The Calinski-Harabaz (CH) index is the ratio of between-cluster and within-cluster dispersion (Sec.~\ref{subsec:chap10-calinski-harabaz}) and is presented in Fig.~\ref{fig:chap11-ch-indices} for both benchmarks. In theory, the ``best'' clustering model should maximize the CH index. The figures illustrate that the largest CH indices correspond to the clustering models with a single cluster (\textit{i.e.}, null homogenization). As more clusters are added to each model, the between-cluster dispersion should increase, while the within-cluster dispersion should decrease. The decreasing CH indices indicate that the between-cluster dispersion increases more slowly than the within-cluster dispersion decreases for both benchmarks. It is unclear why the CH index behaves in this way. Furthermore, it is not clear that the CH index would be a useful metric for determining the optimal number of clusters since it would choose only a single cluster for both benchmarks. Nevertheless, unlike the DB and Dunn indices, the CH index exhibits smoothly varying behavior with the number of clusters. In addition, the CH index is very nearly the same for all four clutering algorithms. Hence, the CH index might be useful if future work successfully designed  features such that the index exhibited a maxima representing the optimal number of clusters.
+The Calinski-Harabaz (CH) index is the ratio of between-cluster and within-cluster dispersion (Sec.~\ref{subsec:chap10-calinski-harabaz}) and is presented in Fig.~\ref{fig:chap11-ch-indices} for both benchmarks. In theory, the ``best'' clustering model should maximize the CH index. The figures illustrate that the largest CH indices correspond to the clustering models with two clusters\footnote{The Calinski-Harabaz index is undefined for fewer than two clusters.}. As more clusters are added to each model, the between-cluster dispersion should increase, while the within-cluster dispersion should decrease. The decreasing CH indices indicate that the between-cluster dispersion increases more slowly than the within-cluster dispersion decreases for both benchmarks. It is unclear why the CH index behaves in this way. Furthermore, it is not clear that the CH index would be a useful metric for determining the optimal number of clusters since it would only choose two clusters for both benchmarks. Nevertheless, unlike the DB and Dunn indices, the CH indices exhibit smoothly varying behavior with the number of clusters. In addition, the CH indices are very nearly the same for all four clutering algorithms. Hence, the CH index might be useful if future work successfully employed features such that the index exhibited a maxima representing the optimal number of clusters.
 
 \begin{figure}[h!]
 \centering
@@ -885,30 +885,27 @@ The Calinski-Harabaz (CH) index is the ratio of between-cluster and within-clust
 \subsection{Silhouette Coefficient}
 \label{subsec:chap11-silhouette-coeff}
 
-first paragraph: outline and analysis
--recall Sec.~\ref{subsec:chap10-silhouette-coeff}
--Figs.~\Crefrange{fig:chap11-assm-16-silhouette-coeff}{fig:chap11-refl-silhouette-coeff}
--want to maximize silhouette coeff
--coeffs peak for a single cluster for both assm and colorset
--more tightly bunched behavior for the four algorithms than was the case for Dunn and DB, but less so than for CH
--again not clear how one would use these results to create a robust, automated model selection system
-  -perhaps CV would help??
+The silhouette coefficient compares the average distance between a sample and all other samples within its assigned cluster to the average distance to samples in all other clusters (Sec.~\ref{subsec:chap10-silhouette-coeff}). The average silhouette coefficients are presented in Fig.~\ref{fig:chap11-silhouette-coeffs} for both benchmarks. In theory, the ``best'' clustering model should maximize the silhouette coefficient. The figures illustrate that the largest silhouette coefficients correspond to the clustering models with only two clusters\footnote{The silhouette coefficient is undefined for fewer than two clusters.}. As more clusters are added to each model, the average distance $a_{k}$ between a sample $k$ and all other samples within its assigned cluster should decrease, while the average distance $b_{k}$ between the sample and the samples in other clusters should increase. The monotonically decreasing silhouette coefficients indicate that in general, $a_{k}$ decreases more quickly than $b_{k}$ for both benchmarks. It is unclear why the silhouette coefficients behave in this way. Furthermore, it is not clear that the silhouette coefficient would be a useful metric for determining the optimal number of clusters since it would only choose two clusters for both benchmarks. Nevertheless, the silhouette coefficient exhibits more smoothly varying behavior with the number of clusters than the DB and Dunn indices, though it is less smooth than the CH indices. In addition, the silhouette coefficients are very nearly the same for all four clustering algorithms. Hence, the silhouette coefficient might be useful if future work successfully employed features such that the coefficient exhibited a maxima representing the optimal number of clusters.
 
 \begin{figure}[h!]
 \centering
-\includegraphics[width=0.87\linewidth]{figures/results/model-select/assm-16/silhouette-combined-U238-capture-1}
-\vspace{2mm}
-\caption[Silhouette coefficients for the 1.6\% enriched assembly]{Silhouette coefficients for the 1.6\% enriched assembly.}
-\label{fig:chap11-assm-16-silhouette-coeff}
+\begin{subfigure}{\textwidth}
+  \centering
+  \includegraphics[width=0.87\linewidth]{figures/results/model-select/assm-16/silhouette-combined-U238-capture-1}
+  \caption{}
+  \label{fig:chap11-assm-16-silhouette-coeff}
+\end{subfigure}
+\begin{subfigure}{\textwidth}
+  \centering
+  \includegraphics[width=0.87\linewidth]{figures/results/model-select/reflector/silhouette-combined-U238-nu-fission-1}
+  \caption{}
+  \label{fig:chap11-refl-silhouette-coeff}
+\end{subfigure}
+\caption[Silhouette coefficients]{Silhouette coefficients for the 1.6\% enriched assembly (a) and 2$\times$2 colorset with a water reflector (b) for each of the four clustering algorithms.}
+\label{fig:chap11-silhouette-coeffs}
 \end{figure}
 
-\begin{figure}[h!]
-\centering
-\includegraphics[width=0.87\linewidth]{figures/results/model-select/reflector/silhouette-combined-U238-nu-fission-1}
-\vspace{2mm}
-\caption[Silhouette coefficients for the 2$\times$2 colorset with reflector]{Silhouette coefficients for the 2$\times$2 colorset with a water reflector.}
-\label{fig:chap11-refl-silhouette-coeff}
-\end{figure}
+\clearpage
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Bayesian Information Criterion}
