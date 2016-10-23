@@ -796,89 +796,64 @@ The figures illustrate the potential for \textit{i}\ac{MGXS} to achieve nearly t
 \section{Evaluation of Model Selection Techniques}
 \label{sec:chap11-model-select}
 
-first paragraph: objective
--recall Sec.~\ref{sec:chap10-model-select}
--model selection needed to select number of clusters
-  -can only evaluate clustering models with respect to the \ac{MC} tally data
-  -don't have access to either:
-    1) the ``true'' cluster labels
-    2) the OpenMOC-OpenMC error
--can use intra-cluster and inter-cluster similarities
--can use likelihood and regularization (BIC) to balance bias-variance tradeoff
+This section analyzes the model selection criteria introduced in Sec.~\ref{sec:chap10-model-select}. The various criteria are computed for the clustering models trained in Sec.~\ref{subsec:chap11-imgxs-capt-rates-num-clusters}  for 1 -- 50 clusters for each of the four clustering algorithms. The model selection criteria are designed to quantitatively compare clustering models, and in particular, to help choose the optimal number of clusters. In a truly unsupervised (\textit{i.e.}, production) setting, the OpenMOC eigenvalue bias and reaction rate errors with respect to a reference OpenMC solution would not be available to help choose the optimal number of clusters. Instead, the ``best'' clustering model would be chosen strictly from the model selection criteria.
 
-second paragraph: outline
--evaluate each heuristic with the 1.6\% enr assm and 2$\times$2 colorset with water reflector
--Sec.~\ref{subsec:chap11-db-index} Davies-Bouldin indices
--Sec.~\ref{subsec:chap11-dunn-index} Dunn indices
--Sec.~\ref{subsec:chap11-ch-index} Calinski-Harabaz indices
--Sec.~\ref{subsec:chap11-silhouette-coeff} silhouette coefficients
--Sec.~\ref{subsec:chap11-bic} Bayesian Information Criterion
+Each criterion was computed for the clustering models built for the 1.6\% enriched fuel assembly and 2$\times$2 colorset with water reflector. The Davies-Bouldin, Dunn and Calinski-Harabaz indices are presented in Secs.~\Crefrange{subsec:chap11-db-index}{subsec:chap11-ch-index}, respectively. The silhouette coefficients are presented in Sec.~\ref{subsec:chap11-silhouette-coeff}. Finally, Sec.~\ref{subsec:chap11-bic} highlights the Bayesian Information Criterion (BIC) for the \ac{GMM} clustering algorithm. Cross-validation (Sec.~\ref{subsec:chap10-cross-validate}) was not employed to compute the heuristics, but could be used in the future to compute more robust estimates for each criterion.	
 
--consider that cross-validation could make these heuristics more robust and less erratic
-  -recall Sec.~\ref{subsec:chap10-cross-validate}
--could compare cluster labels to those from LNS (use LNS as the ``ground truth'')
--make axes labels clearer
+%-could compare cluster labels to those from LNS (use LNS as the ``ground truth'')
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Davies-Bouldin Index}
 \label{subsec:chap11-db-index}
 
-first paragraph: outline and analysis
--recall Sec.~\ref{subsec:chap10-db-index}
--Figs.~\Crefrange{fig:chap11-assm-16-db-index}{fig:chap11-refl-db-index}
--want to minimize DB index
--minima are all for a single cluster
--can use ``elbow'' method to look at point at which DB index shoots up
-  -around 10 clusters for assm
-  -around 9 clusters for colorset
--not clear how one would use these results to create a robust, automated model selection system
-  -perhaps CV would help??
+The Davies-Bouldin (DB) index is the ratio of within-cluster scatter to between-cluster separation (Sec.~\ref{subsec:chap10-db-index}) and is presented in Fig.~\ref{fig:chap11-db-indices} for both benchmarks. In theory, the ``best'' clustering model should minimize the DB index. The figures illustrate that the smallest DB indices correspond to the clustering models with a single cluster (\textit{i.e.}, null homogenization). As more clusters are added to each model, the within-cluster scatter should decrease, while the between-cluster separation should increase. The increasing DB indices indicate that the within-cluster scatter decreases slower than the between-cluster separation increases for both benchmarks. It is unclear why the DB index behaves in this way. Furthermore, it is not clear that the DB index would be a useful metric for determining the optimal number of clusters since it would choose only a single cluster for both cases presented here.
 
 \begin{figure}[h!]
 \centering
-\includegraphics[width=0.87\linewidth]{figures/results/model-select/assm-16/db-combined-U238-capture-1}
-\vspace{2mm}
-\caption[Davies-Bouldin indices for the 1.6\% enriched assembly]{Davies-Bouldin indices for the 1.6\% enriched assembly.}
-\label{fig:chap11-assm-16-db-index}
-\end{figure}
-
-\begin{figure}[h!]
-\centering
-\includegraphics[width=0.87\linewidth]{figures/results/model-select/reflector/db-combined-U238-nu-fission-1}
-\vspace{2mm}
-\caption[Davies-Bouldin indices for the 2$\times$2 colorset with reflector]{Davies-Bouldin indices for the 2$\times$2 colorset with a water reflector.}
+\begin{subfigure}{\textwidth}
+  \centering
+  \includegraphics[width=0.9\linewidth]{figures/results/model-select/assm-16/db-combined-U238-capture-1}
+  \caption{}
+  \label{fig:chap11-assm-16-db-index}
+\end{subfigure}
+\begin{subfigure}{\textwidth}
+  \centering
+  \includegraphics[width=0.9\linewidth]{figures/results/model-select/reflector/db-combined-U238-nu-fission-1}
+  \caption{}
 \label{fig:chap11-refl-db-index}
+\end{subfigure}
+\caption[Davies-Bouldin indices]{Davies-Bouldin indices for the 1.6\% enriched assembly (a) and 2$\times$2 colorset with a water reflector (b) for each of the four clustering algorithms.}
+\label{fig:chap11-db-indices}
 \end{figure}
+
+\clearpage
 
 %%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Dunn Index}
 \label{subsec:chap11-dunn-index}
 
-first paragraph: outline and analysis
--recall Sec.~\ref{subsec:chap10-dunn-index}
--Figs.~\Crefrange{fig:chap11-assm-16-dunn-index}{fig:chap11-refl-dunn-index}
--want to maximize Dunn index
--Dunn index is constrained by the most poorly behaving cluster
-  -leads to the step-like behavior
-    -indicates that the most poorly behaving cluster is not always refined with each successive cluster added to the models
--again not clear how one would use these results to create a robust, automated model selection system
-  -perhaps CV would help??
+The Dunn index is the ratio of the minimum inter-cluster distance to the maximum intra-cluster distance (Sec.~\ref{subsec:chap10-dunn-index}) and is presented in Fig.~\ref{fig:chap11-dunn-indices} for both benchmarks. In theory, the ``best'' clustering model should maximize the Dunn index. The figures illustrate that in general, the largest Dunn indices correspond to the clustering models with a single cluster (\textit{i.e.}, null homogenization). There are a few exceptions to this, however, as the Dunn indices do not monotonically decrease for all algorithms and in many cases increase before decreasing to some relatively stable minimum value. As more clusters are added to each model, both the minimum inter-cluster and maximum intra-cluster distances should decrease. The decreasing Dunn indices indicate that the minimum inter-cluster distance decreases more slowly than the maximum intra-cluster distance for both benchmarks. It is unclear why the Dunn index behaves in this way. Furthermore, it is not clear that the Dunn index would be a useful metric for determining the optimal number of clusters since it would generally choose only a single cluster for both cases presented here. Finally, it should be recalled that the Dunn index is designed to characterize the most poorly defined cluster(s) in the model. The Dunn index varies in a steplike fashion in the figures, indicating that the most poorly defined cluster(s) are not in typically refined with each successive cluster added to the models.
 
 \begin{figure}[h!]
 \centering
-\includegraphics[width=0.87\linewidth]{figures/results/model-select/assm-16/dunn-combined-U238-capture-1}
+\begin{subfigure}{\textwidth}
+  \centering
+\includegraphics[width=0.9\linewidth]{figures/results/model-select/assm-16/dunn-combined-U238-capture-1}
 \vspace{2mm}
-\caption[Dunn indices for the 1.6\% enriched assembly]{Dunn indices for the 1.6\% enriched assembly.}
-\label{fig:chap11-assm-16-dunn-index}
-\end{figure}
-
-\begin{figure}[h!]
-\centering
-\includegraphics[width=0.87\linewidth]{figures/results/model-select/reflector/dunn-combined-U238-nu-fission-1}
-\vspace{2mm}
-\caption[Dunn indices for the 2$\times$2 colorset with reflector]{Dunn indices for the 2$\times$2 colorset with a water reflector.}
+  \caption{}
+  \label{fig:chap11-assm-16-dunn-index}
+\end{subfigure}
+\begin{subfigure}{\textwidth}
+  \centering
+\includegraphics[width=0.9\linewidth]{figures/results/model-select/reflector/dunn-combined-U238-nu-fission-1}
+  \caption{}
 \label{fig:chap11-refl-dunn-index}
+\end{subfigure}
+\caption[Dunn indices]{Dunn indices for the 1.6\% enriched assembly (a) and 2$\times$2 colorset with a water reflector (b) for each of the four clustering algorithms.}
+\label{fig:chap11-dunn-indices}
 \end{figure}
+
+\clearpage
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Calinski-Harabaz Index}
@@ -1019,42 +994,56 @@ second paragraph:
   \small
   \label{table:chap11-runtimes}
   \vspace{6pt}
-  \begin{tabular}{l l R{2.5cm} R{1.5cm} S[table-format=3.2] S[table-format=3.2] S[table-format=3.2]}
+  \begin{tabular}{l l l l S[table-format=3.2] S[table-format=3.2] S[table-format=3.2]}
   \toprule
-  \rowcolor{lightgray}
-  & & & \multicolumn{3}{c}{\cellcolor{lightgray} \bf Runtime [core-hours]} \\
-  \multirow{-2}{*}{\cellcolor{lightgray} \bf Benchmark} &
-  \multirow{-2}{*}{\cellcolor{lightgray} \bf Scheme} &
-  \multirow{-2}{*}{\cellcolor{lightgray} \bf \# Particles} &
-  \multirow{-2}{*}{\cellcolor{lightgray} \bf Rel. Err. [\%]} &
-  \multicolumn{1}{c}{\cellcolor{lightgray} \bf OpenMC} &
-  \multicolumn{1}{c}{\cellcolor{lightgray} \bf OpenMOC} &
-  \multicolumn{1}{c}{\cellcolor{lightgray} \bf Total} \\
+  & & & \multicolumn{3}{c}{\bf Runtime [core-hours]} \\
+  \cline{4-7}
+  \multirow{-2}{*}{\bf Benchmark} &
+  \multirow{-2}{*}{\bf Scheme} &
+  \multirow{-2}{*}{\parbox{2cm}{\bf Max. Rel. \\ Err. [\%]}}
+  \multirow{-2}{*}{\bf \# Histories} &
+  \multicolumn{1}{c}{\bf OpenMC} &
+  \multicolumn{1}{c}{\bf OpenMOC} &
+  \multicolumn{1}{c}{\bf Total} \\
   \midrule
+%  \label{table:chap11-runtimes}
+%  \vspace{6pt}
+%  \begin{tabular}{l l R{2.5cm} R{1.5cm} S[table-format=3.2] S[table-format=3.2] S[table-format=3.2]}
+%  \toprule
+%  \rowcolor{lightgray}
+%  & & & \multicolumn{3}{c}{\cellcolor{lightgray} \bf Runtime [core-hours]} \\
+%  \multirow{-2}{*}{\cellcolor{lightgray} \bf Benchmark} &
+%  \multirow{-2}{*}{\cellcolor{lightgray} \bf Scheme} &
+%  \multirow{-2}{*}{\cellcolor{lightgray} \bf \# Particles} &
+%  \multirow{-2}{*}{\cellcolor{lightgray} \bf Rel. Err. [\%]} &
+%  \multicolumn{1}{c}{\cellcolor{lightgray} \bf OpenMC} &
+%  \multicolumn{1}{c}{\cellcolor{lightgray} \bf OpenMOC} &
+%  \multicolumn{1}{c}{\cellcolor{lightgray} \bf Total} \\
+%  \midrule
 \multirow{4}{*}{\parbox{2.5cm}{1.6\% Assm}} & Reference & 550,000,000 & & 57.2 & & 57.2 \\
-& Null & 100,000 & &  0.02 & 0.36 & 0.38 \\
-& Degenerate & 115,000,000 & & 27.7 & 0.40 & 28.1 \\
-& \textit{i}\ac{MGXS} & 4,000,000 & & 0.96 & 0.38 & 1.34 \\
+& Null & 100,000 & & 0.02 & 0.4 & 0.38 \\
+& Degenerate & 115,000,000 & & 27.7 & 0.4 & 28.1 \\
+& \textit{i}\ac{MGXS} & 4,000,000 & & 0.96 & 0.4 & 1.34 \\
   \midrule
 \multirow{4}{*}{\parbox{2.5cm}{3.1\% Assm}} & Reference & 550,000,000 & & 50.7 & & 50.7 \\
-& Null & 100,000 & & 0.02 & 0.40 & 0.42 \\
-& Degenerate & 115,000,000 & & 25.3 & 0.40 & 25.7 \\
-& \textit{i}\ac{MGXS} & 4,000,000 & & 0.88 & 0.37 & 1.25 \\
+& Null & 100,000 & & 0.02 & 0.4 & 0.42 \\
+& Degenerate & 115,000,000 & & 25.3 & 0.4 & 25.7 \\
+& \textit{i}\ac{MGXS} & 4,000,000 & & 0.88 & 0.4 & 1.25 \\
   \midrule
 \multirow{4}{*}{\parbox{2.5cm}{3.1\% Assm w/ 20 \acp{BP}}} & Reference & 550,000,000 & & 50.1 & & 50.1 \\
-& Null & 100,000 & & 0.02 & 0.41 & 0.43 \\
-& Degenerate & 115,000,000 & & 27.7 & 0.41 & 28.1 \\
-& \textit{i}\ac{MGXS} & 4,000,000 & & 0.96 & 0.42 & 1.38 \\
+& Null & 100,000 & & 0.02 & 0.4 & 0.43 \\
+& Degenerate & 115,000,000 & & 27.7 & 0.4 & 28.1 \\
+& \textit{i}\ac{MGXS} & 4,000,000 & & 0.96 & 0.4 & 1.38 \\
   \midrule
 \multirow{4}{*}{\parbox{2.5cm}{2$\times$2 Colorset}} & Reference & 8,755,000 & & 81.7 & & 81.7 \\
-& Null & 100,000 & & 0.04 & 2.00 & 2.03 \\
-& Degenerate & 700,000,000 & & 248 & 2.29 & 250 \\
-& \textit{i}\ac{MGXS} & 10,000,000 & & 3.54 & 1.96 & 5.50 \\
+& Null & 100,000 & & 0.04 & 2.0 & 2.03 \\
+& Degenerate & 700,000,000 & & 248 & 2.0 & 250 \\
+& \textit{i}\ac{MGXS} & 10,000,000 & & 3.54 & 2.0 & 5.50 \\
   \midrule
 \multirow{4}{*}{\parbox{2.5cm}{2$\times$2 Colorset w/ Reflector}} & Reference & & & & & \\
-& Null & & & & 5.07 & \\
-& Degenerate & & & & 5.36 & \\
-& \textit{i}\ac{MGXS} & & & & 4.90 & \\
+& Null & & & & 5.0 & \\
+& Degenerate & & & & 5.0 & \\
+& \textit{i}\ac{MGXS} & & & & 5.0 & \\
   \midrule
 \multirow{4}{*}{\parbox{2.5cm}{BEAVRS Quarter Core}} & Reference & & & & & \\
 & Null & & & & 419 & \\
