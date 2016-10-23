@@ -614,9 +614,9 @@ The convergence rate of the eigenvalues generated with null, degenerate and \tex
 \subsection{Eigenvalue Convergence}
 \label{subsec:chap11-eigenvalue-converge}
 
-The OpenMOC eigenvalues were compared to the reference OpenMC eigenvalues from Tab.~\ref{table:chap7-ref-eigenvalues} for each of the 100 active batches. The eigenvalue bias $\Delta\rho$ was computed from Eqn.~\ref{eqn:chap5-delta-rho} in units of \ac{pcm}. The batch-by-batch bias is presented in Figs.~\Crefrange{fig:chap11-assm-1.6-eigenvalue-converge}{fig:chap11-refl-eigenvalue-converge} for the individual assembly and 2$\times$2 colorset benchmarks. In particular, the bias is presented for null, degenerate and \textit{i}\ac{MGXS} homogenization with BIRCH clustering of 2, 4 and 10 clusters for the assemblies and periodic colorset, and for 2, 4 and 16 clusters for the colorset with a water reflector. The bias is highlighted for 10$^{5}$ -- 10$^{9}$ active histories for the assemblies and 10$^{6}$ -- 10$^{9}$ histories for the colorsets, respectively\footnote{A few hundred thousand histories were required to sufficiently converge the \ac{MGXS} for the colorsets to compute stable solutions with OpenMOC.}.
+The OpenMOC eigenvalues were compared to the reference OpenMC eigenvalues from Tab.~\ref{table:chap7-ref-eigenvalues} for each of the 100 active batches. The eigenvalue bias $\Delta\rho$ was computed from Eqn.~\ref{eqn:chap5-delta-rho} in units of \ac{pcm}. The batch-by-batch bias is presented in Figs.~\Crefrange{fig:chap11-assm-1.6-eigenvalue-converge}{fig:chap11-refl-eigenvalue-converge} for the individual assembly and 2$\times$2 colorset benchmarks. In particular, the bias is presented for null, degenerate and \textit{i}\ac{MGXS} homogenization with BIRCH clustering of 2, 4 and 10 clusters for the assemblies and periodic colorset, and for 2, 4 and 16 clusters for the colorset with a water reflector. The biases are highlighted for 10$^{5}$ -- 10$^{9}$ active histories for the assemblies and 10$^{6}$ -- 10$^{9}$ histories for the colorsets, respectively\footnote{\label{converge}Several hundred thousand histories were required to sufficiently converge the \ac{MGXS} for the colorsets to compute stable solutions with OpenMOC.}.
 
-The biases converge to nearly the same value for all of the benchmarks and spatial homogenization schemes, as expected based on the converged eigenvalue biases tabulated in Sec.~\ref{subsec:chap11-imgxs-eigenvalues}. This is consistent with the fact that globally-integrated reaction rates are preserved for all schemes irregardless of the number of clusters modeled. Of particular note is that the bias for the null and \textit{i}\ac{MGXS} schemes are quite consistent even with as few as 10$^{5}$ particle histories. The bias for the degenerate scheme deviates by up 100 \ac{pcm}, but eventually converges to the null and \textit{i}\ac{MGXS} schemes with enough particle histories. The bias fluctuates on the order of 500 \ac{pcm} with fewer than 10$^{7}$ particle histories, but converges with 10$^{8}$ histories for all of the benchmarks and schemes.
+The biases converge to nearly the same value for all of the benchmarks and spatial homogenization schemes, as expected based on the converged eigenvalue biases tabulated in Sec.~\ref{subsec:chap11-imgxs-eigenvalues}. This is consistent with the fact that globally-integrated reaction rates are preserved for all schemes irregardless of the number of clusters modeled. Of particular note is that the bias for the null and \textit{i}\ac{MGXS} schemes are quite consistent even with only 10$^{5}$ and 10$^{6}$ particle histories for the assembly and colorset benchmarks, respectively. The bias for the degenerate scheme deviates by up 100 \ac{pcm}, but eventually converges to the null and \textit{i}\ac{MGXS} schemes with enough particle histories. The bias fluctuates on the order of 500 \ac{pcm} with fewer than 10$^{7}$ particle histories, but converges with 10$^{8}$ histories for all of the benchmarks and schemes.
 
 A number of different factors may cause the eigenvalue to fluctuate and deviate between schemes for few particle histories. First, the statistical uncertainties of the \ac{MGXS} must be minimized in order to converge the OpenMOC eigenvaues. In addition, it should be recalled from Sec.~\ref{sec:chap3-mgxs-gen} that the \ac{MGXS} are generated from OpenMC using a mixture of track-length and analog tally estimators. In particular, the total, fission and capture \ac{MGXS} are computed with track-length estimators, while the scattering matrices and fission spectra are computed from analog estimators since they depend on the neutron's outgoing energy at each interaction. Although both track-length and analog estimators will converge to the same expected value, analog estimators will converge more slowly. As a result, neutron balance will not be preserved for \ac{MGXS} computed from a mixture of track-length and analog estimators without a sufficient number of simulated histories. This issue was the a key motivating factor for Nelson's Nuclear Data PreProcessor (NDPP)~\cite{nelson2014improved} to enable track-length estimators for multi-group scattering matrices and fission spectra. Methods  such as NDPP may be a fruitful area of future research to enable faster converging eigenvalues from \ac{MGXS} generated with \ac{MC}.
 
@@ -673,40 +673,26 @@ A number of different factors may cause the eigenvalue to fluctuate and deviate 
 \subsection{U-238 Capture Rate Convergence}
 \label{subsec:chap11-capture-converge}
 
-first paragraph: outline
--Figs.~\Crefrange{fig:chap11-assm-1.6-capture-converge}{fig:chap11-refl-capture-converge}
-  -individual assemblies and colorsets
--use BIRCH clustering with 2, 4 and 10 clusters for assemblies and periodic colorset
--use BIRCH clustering with 2, 4 and 16 clusters for reflected colorset
--openmc 1-sigma uncertainty is reported relative to the mean
-  -not a direct comparison to the percentage relative error reported for OpenMOC
+The OpenMOC energy-integrated pin-wise U-238 capture rates were compared to the reference OpenMC capture rates to compute the percent relative errors for each pin's capture rates for each of the 100 active batches. The batch-by-batch maximum and mean relative errors are presented in Figs.~\Crefrange{fig:chap11-assm-1.6-capture-converge}{fig:chap11-refl-capture-converge} for the individual assembly and 2$\times$2 colorset benchmarks. In particular, the errors are presented for null, degenerate and \textit{i}\ac{MGXS} homogenization with BIRCH clustering of 2, 4 and 10 clusters for the assemblies and periodic colorset, and for 2, 4 and 16 clusters for the colorset with a water reflector. In addition, the maximum and mean statistical uncertainty (1-sigma) of the OpenMC estimate for the pin-wise U-238 capture rates is also highlighted in each figure\footnote{Although the OpenMOC relative error and OpenMC statistical uncertainty are not equivalent, it is useful to compare their convergence rates as a proxy for the relative runtimes of directly computing a reference solution with OpenMC versus using OpenMC to generate sufficiently converged \ac{MGXS} for OpenMOC.}. The OpenMOC errors and OpenMC uncertainties are highlighted for 10$^{5}$ -- 10$^{9}$ active histories for the assemblies and 10$^{6}$ -- 10$^{9}$ histories for the colorsets, respectively\textsuperscript{\ref{converge}}.
 
-second paragraph: analysis
--smoother convergence for mean than for the max error
--openmc will converge to zero
--null, degenerate and \textit{i}\ac{MGXS} schemes will not converge to some non-zero bias
-  -accounts for various approx (energy, spatial and angular discretization)
--convergence of null
-  -null is stable with 100,000 particles for assemblies and 1,000,000 particle for colorsets
--convergence of degenerate
-  -takes over 100,000,000 particles to converge for assemblies
-  -takes at least 1,000,000,000 particles to converge for colorsets (not even shown on plots)
--convergence of \textit{i}\ac{MGXS}
-  -the more clusters, the longer it takes to converge
-  -the more clusters, the lower the final converged value (smaller bias)
-  -the more clusters, the more erratic the convergence
-    -would be interesting to look at alternatives to track density-weighting
-    -how about taking the median MGXS from each cluster?
-      -would be less sensitive to outliers and potentially more ``robust''
-      -but wouldn't preserve global reactivity
-    -recall argument about LNS - uneven number of fuel pin instances assigned to each cluster
-      -clusters with the fewest pins will be most constraining on convergence
--convergence of openmc to degenerate
-  -openmc max always less than degenerate
-  -but openmc mean greater than degenerate for few particles
-    -eventually drops below as degenerate converges to non-zero bias
-  -takes perhaps 30,000,000 particles for max to reach degenerate for assemblies (60,000,000 for colorsets?)
-  -but over 500,000,000 particles for mean to reach degenerate
+% . If the OpenMC uncertainty were to converge faster, then it would make more sense to compute eigenvalues and reaction rate distributions directly from OpenMC simulations, instead of using it to generate \ac{MGXS} for OpenMOC. Alternatively, if the OpenMOC solutions  converge more quickly than OpenMC -- which is assumed as the basis for this thesis -- then }.
+
+A couple of key conclusions can be drawn from these results. First, the mean error is more smoothly converging than the maximum error for all benchmarks. Both the maximum and mean errors for the null homogenization scheme are converged with only 10$^{5}$ and 10$^{6}$ histories for the assembly and colorset benchmarks, respectively. In contrast, the errors for the degenerate scheme are not fully converged even with 10$^{9}$ histories. This indicates that at least some fraction of the OpenMOC relative errors with the degenerate scheme is due to the lingering statistical uncertainties of the \ac{MGXS}. The degenerate error would only converge if more particle histories were simulated to compute the \ac{MGXS}. The convergence of the \textit{i}\ac{MGXS} scheme lies between that of the null and degenerate schemes, and requires more particle histories to converge as more clusters are identified. The convergence behavior is increasingly erratic with more histories, as is illustrated by the maximum error of the \textit{i}\ac{MGXS} scheme with 16 clusters for the colorset with water reflector in Fig.~\ref{fig:chap11-refl-capture-converge-max}.
+
+The OpenMC statistical uncertainties converge at a rate similar to the OpenMOC errors for degenerate homogenization. The maximum OpenMC uncertainty is always less than the maximum degenerate error. However, the mean uncertainty is greater than the mean degenerate error for fewer than approximately 500,000,000 histories. With a sufficient number of histories, the uncertainties fall below the errors. The OpenMC uncertainties approach zero while the OpenMOC errors approach a non-zero bias dependent on the approximation error separating the OpenMOC and reference OpenMC solutions. The final converged errors illustrate the same behavior as discussed in Sec.~\ref{subsec:chap11-imgxs-capt-rates}. In particular, the converged \textit{i}\ac{MGXS} errors increasingly approach the degenerate errors as more clusters are introduced. While the degenerate scheme always outperforms \textit{i}\ac{MGXS}, the improvement is relatively marginal compared to the improvement that \textit{i}\ac{MGXS} achieves with respect to the null scheme. 
+
+The figures illustrate the potential for \textit{i}\ac{MGXS} to achieve nearly the same accuracy as the degenerate scheme with a factor of 10 or fewer particle histories. Furthermore, the results indicate that OpenMOC's errors converge at least 10$\times$ faster than OpenMC's statistical uncertainties converge to the same value.
+
+\begin{emphbox}
+\textbf{The OpenMOC U-238 capture rate errors with null homogenization converge with fewer than 10$^{6}$ histories, while the errors with degenerate homogenization are not converged even with 10$^{9}$ histories. The convergence rate of the errors decreases with the number of clusters used in \textit{i}\ac{MGXS} spatial homogenization. The \textit{i}\ac{MGXS} scheme requires 10$\times$ fewer particle histories to converge than both the degenerate scheme and the OpenMC reference solution.}
+\end{emphbox}
+
+%    -would be interesting to look at alternatives to track density-weighting
+%    -how about taking the median MGXS from each cluster?
+%      -would be less sensitive to outliers and potentially more ``robust''
+%      -but wouldn't preserve global reactivity
+%    -recall argument about LNS - uneven number of fuel pin instances assigned to each cluster
+%      -clusters with the fewest pins will be most constraining on convergence
 
 \begin{figure}[h!]
 \centering
@@ -723,7 +709,7 @@ second paragraph: analysis
   \label{fig:chap11-assm-1.6-capture-converge-mean}
 \end{subfigure}
 \vspace{2mm}
-\caption[Fission rate covergence for a 1.6\% enriched assembly]{Convergence of the max (a) and mean (b) absolute U-238 capture rate percent relative errors for a 1.6\% enriched assembly.}
+\caption[Fission rate covergence for a 1.6\% enriched assembly]{Convergence of the max (a) and mean (b) absolute U-238 capture rate percent relative errors for the 1.6\% enriched assembly.}
 \label{fig:chap11-assm-1.6-capture-converge}
 \end{figure}
 
@@ -742,7 +728,7 @@ second paragraph: analysis
   \label{fig:chap11-assm-3.1-capture-converge-mean}
 \end{subfigure}
 \vspace{2mm}
-\caption[Fission rate covergence for a 3.1\% enriched assembly]{Convergence of the max (a) and mean (b) absolute U-238 capture rate percent relative errors for a 3.1\% enriched assembly.}
+\caption[Fission rate covergence for a 3.1\% enriched assembly]{Convergence of the max (a) and mean (b) absolute U-238 capture rate percent relative errors for the 3.1\% enriched assembly.}
 \label{fig:chap11-assm-3.1-capture-converge}
 \end{figure}
 
@@ -761,7 +747,7 @@ second paragraph: analysis
   \label{fig:chap11-assm-3.1-20BPs-capture-converge-mean}
 \end{subfigure}
 \vspace{2mm}
-\caption[Fission rate covergence for a 3.1\% enriched assembly with 20 \acp{BP}]{Convergence of the max (a) and mean (b) absolute U-238 capture rate percent relative errors for a 3.1\% enriched assembly with 20 \acp{BP}.}
+\caption[Fission rate covergence for a 3.1\% enriched assembly with 20 \acp{BP}]{Convergence of the max (a) and mean (b) absolute U-238 capture rate percent relative errors for the 3.1\% enriched assembly with 20 \acp{BP}.}
 \label{fig:chap11-assm-3.1-20BPs-capture-converge}
 \end{figure}
 
@@ -780,7 +766,7 @@ second paragraph: analysis
   \label{fig:chap11-2x2-capture-converge-mean}
 \end{subfigure}
 \vspace{2mm}
-\caption[Fission rate covergence for a 2$\times$2 colorset]{Convergence of the max (a) and mean (b) absolute U-238 capture rate percent relative errors for a 2$\times$2 colorset.}
+\caption[Fission rate covergence for a 2$\times$2 colorset]{Convergence of the max (a) and mean (b) absolute U-238 capture rate percent relative errors for the periodic colorset.}
 \label{fig:chap11-2x2-capture-converge}
 \end{figure}
 
@@ -799,13 +785,11 @@ second paragraph: analysis
   \label{fig:chap11-refl-capture-converge-mean}
 \end{subfigure}
 \vspace{2mm}
-\caption[Fission rate covergence for a 2$\times$2 colorset with reflector]{Convergence of the max (a) and mean (b) absolute U-238 capture rate percent relative errors for a 2$\times$2 colorset with a water reflector.}
+\caption[Fission rate covergence for a 2$\times$2 colorset with reflector]{Convergence of the max (a) and mean (b) absolute U-238 capture rate percent relative errors for the colorset with a water reflector.}
 \label{fig:chap11-refl-capture-converge}
 \end{figure}
 
--full core plots
-
-SUMMARY BOX
+\clearpage
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
