@@ -77,7 +77,7 @@ The OpenMOC eigenvalues were compared to the reference OpenMC eigenvalues from T
 & \ac{GMM} & & -136 & -136 & -137 & -132 & \\
 & $k$-means & & -136 & -136 & -134 & -132 & \\
   \midrule
-\multirow{4}{*}{\parbox{2.5cm}{BEAVRS Full Core}} & Agglomerative & \multirow{4}{*}{-122} & & -120 & -119 & -119 & \multirow{4}{*}{-116} \\
+\multirow{4}{*}{\parbox{2.5cm}{BEAVRS Quarter Core}} & Agglomerative & \multirow{4}{*}{-122} & & -120 & -119 & -119 & \multirow{4}{*}{-116} \\
 & BIRCH & &  & -120 & -120 & -119 & \\
 & \ac{GMM} & & & -119 & -118 & -119 & \\
 & $k$-means & & & -120 & -119 & -119 & \\
@@ -318,7 +318,7 @@ Since the tables simply represent a snapshot of the data illustrated in Figs.~\C
 & \ac{GMM} & & -2.00 & -1.77 & 1.50 & 1.07 & \\
 & $k$-means & & -1.82 & -1.69 & 1.35 & -1.26 & \\
   \midrule
-\multirow{4}{*}{\parbox{2.5cm}{BEAVRS Full Core}} & Agglomerative & \multirow{4}{*}{-4.78} & & -4.60 & -4.19 & -4.01 & \multirow{4}{*}{-3.03} \\
+\multirow{4}{*}{\parbox{2.5cm}{BEAVRS Quarter Core}} & Agglomerative & \multirow{4}{*}{-4.78} & & -4.60 & -4.19 & -4.01 & \multirow{4}{*}{-3.03} \\
 & BIRCH & & & -4.51 & -4.02 & -4.02 & \\
 & \ac{GMM} & & & -4.56 & -4.00 & -4.21 & \\
 & $k$-means & & & -4.61 & -4.21 & -4.02 & \\
@@ -372,7 +372,7 @@ Since the tables simply represent a snapshot of the data illustrated in Figs.~\C
 & \ac{GMM} & & 0.48 & 0.37 & 0.29 & 0.24 & \\
 & $k$-means & & 0.47 & 0.37 & 0.27 & 0.22 & \\
   \midrule
-\multirow{4}{*}{\parbox{2.5cm}{BEAVRS Full Core}} & Agglomerative & \multirow{4}{*}{0.49} & & 0.48 & 0.49 & 0.49 & \multirow{4}{*}{0.39} \\
+\multirow{4}{*}{\parbox{2.5cm}{BEAVRS Quarter Core}} & Agglomerative & \multirow{4}{*}{0.49} & & 0.48 & 0.49 & 0.49 & \multirow{4}{*}{0.39} \\
 & BIRCH & & & 0.48 & 0.48 & 0.49 & \\
 & \ac{GMM} & & & 0.51 & 0.50 & 0.51 & \\
 & $k$-means & & & 0.50 & 0.49 & 0.49 & \\
@@ -958,8 +958,33 @@ second paragraph:
  -each colorset
  -corner-baffle case
 
+-10 clusters for assemblies and periodic colorset; 16 clusters for coloreset with reflector
+
 -define a Figure of merit per Kord's suggestion
 -add rel. err. and uncertainty to the table
+
+\begin{table}[ht!]
+  \centering
+  \caption[OpenMC particle tracking rates]{The particle tracking rates for OpenMC.}
+  \small
+  \label{table:chap11-openmc-rates}
+  \vspace{6pt}
+  \begin{tabular}{l S[table-format=4.1] S[table-format=4.1]}
+  \toprule
+  & \multicolumn{2}{c}{\bf Active Histories / Core-Second} \\
+  \cline{2-3}
+  \multirow{-2}{*}{\bf Benchmark} &
+  \multicolumn{1}{c}{\bf With \ac{MGXS}} &
+  \multicolumn{1}{c}{\bf Without \ac{MGXS}\footnotemark} \\
+  \toprule
+Assemblies & 1100 & 3000 \\
+Colorsets & 1100 & 3000 \\
+BEAVRS Quarter Core & 600 & 2400 \\
+  \bottomrule
+\end{tabular}
+\end{table}
+
+\footnotetext{This corresponds to OpenMC calculations which only tallied the pin-wise fission and U-238 capture rates.}
 
 %OpenMC particles / sec / core
 %benchmark         no MGXs        MGXS
@@ -979,67 +1004,72 @@ second paragraph:
 
 \begin{table}[ht!]
   \centering
-  \caption[Computational resource requirements for each simulation approach]{The computational resources needed for various simulation approaches to reach the level of accuracy achieved with degenerate spatial homogenization.}
+  \caption[Computational resource requirements for each simulation approach]{The computational resources needed to reach a desired level of accuracy on the mean pin-wise U-238 capture rates in each benchmark.}
   \small
   \label{table:chap11-runtimes}
   \vspace{6pt}
-  \begin{tabular}{l l l l S[table-format=3.2] S[table-format=3.2] S[table-format=3.2]}
+  \begin{tabular}{l l c r S[table-format=3.2] S[table-format=3.2] S[table-format=3.2]}
   \toprule
-  & & & \multicolumn{3}{c}{\bf Runtime [core-hours]} \\
-  \cline{4-7}
+  & & & & \multicolumn{3}{c}{\bf Runtime [core-hours]} \\
+  \cline{5-7}
   \multirow{-2}{*}{\bf Benchmark} &
   \multirow{-2}{*}{\bf Scheme} &
-  \multirow{-2}{*}{\parbox{2cm}{\bf Max. Rel. \\ Err. [\%]}}
+  \multirow{-2}{*}{\parbox{1.75cm}{\bf Mean Rel. \\ Err. [\%]}} &
   \multirow{-2}{*}{\bf \# Histories} &
   \multicolumn{1}{c}{\bf OpenMC} &
   \multicolumn{1}{c}{\bf OpenMOC} &
   \multicolumn{1}{c}{\bf Total} \\
   \midrule
-%  \label{table:chap11-runtimes}
-%  \vspace{6pt}
-%  \begin{tabular}{l l R{2.5cm} R{1.5cm} S[table-format=3.2] S[table-format=3.2] S[table-format=3.2]}
-%  \toprule
-%  \rowcolor{lightgray}
-%  & & & \multicolumn{3}{c}{\cellcolor{lightgray} \bf Runtime [core-hours]} \\
-%  \multirow{-2}{*}{\cellcolor{lightgray} \bf Benchmark} &
-%  \multirow{-2}{*}{\cellcolor{lightgray} \bf Scheme} &
-%  \multirow{-2}{*}{\cellcolor{lightgray} \bf \# Particles} &
-%  \multirow{-2}{*}{\cellcolor{lightgray} \bf Rel. Err. [\%]} &
-%  \multicolumn{1}{c}{\cellcolor{lightgray} \bf OpenMC} &
-%  \multicolumn{1}{c}{\cellcolor{lightgray} \bf OpenMOC} &
-%  \multicolumn{1}{c}{\cellcolor{lightgray} \bf Total} \\
-%  \midrule
-\multirow{4}{*}{\parbox{2.5cm}{1.6\% Assm}} & Reference & 550,000,000 & & 57.2 & & 57.2 \\
-& Null & 100,000 & & 0.02 & 0.4 & 0.38 \\
-& Degenerate & 115,000,000 & & 27.7 & 0.4 & 28.1 \\
-& \textit{i}\ac{MGXS} & 4,000,000 & & 0.96 & 0.4 & 1.34 \\
+\multirow{4}{*}{\parbox{2.5cm}{1.6\% Assm}} & Null & 0.50 & 100,000 & 0.025 & 0.4 & 0.42 \\
+& \textit{i}\ac{MGXS}\footnotemark & 0.10 & 65,000,000 & 15 & 0.4 & 15 \\
+& Degenerate & 0.10 & 500,000,000 & 126 & 0.4 & 126 \\
+& Reference & 0.10 & 650,000,000	& 60 & & 60 \\
   \midrule
-\multirow{4}{*}{\parbox{2.5cm}{3.1\% Assm}} & Reference & 550,000,000 & & 50.7 & & 50.7 \\
-& Null & 100,000 & & 0.02 & 0.4 & 0.42 \\
-& Degenerate & 115,000,000 & & 25.3 & 0.4 & 25.7 \\
-& \textit{i}\ac{MGXS} & 4,000,000 & & 0.88 & 0.4 & 1.25 \\
+\multirow{4}{*}{\parbox{2.5cm}{3.1\% Assm}} & Null & 0.50 & 100,000 & 0.025 & 0.4 & 0.42 \\
+& \textit{i}\ac{MGXS}\textsuperscript{\ref{birch-assm}} & 0.1 & 65,000,000 & 15 & 0.4 & 15 \\
+& Degenerate & 0.10 & 500,000,000 & 126 & 0.4 & 126 \\
+& Reference & 0.10 & 650,000,000 & 60 & & 60 \\
   \midrule
-\multirow{4}{*}{\parbox{2.5cm}{3.1\% Assm w/ 20 \acp{BP}}} & Reference & 550,000,000 & & 50.1 & & 50.1 \\
-& Null & 100,000 & & 0.02 & 0.4 & 0.43 \\
-& Degenerate & 115,000,000 & & 27.7 & 0.4 & 28.1 \\
-& \textit{i}\ac{MGXS} & 4,000,000 & & 0.96 & 0.4 & 1.38 \\
+\multirow{4}{*}{\parbox{2.5cm}{3.1\% Assm w/ 20 \acp{BP}}} & Null & 0.41 & 100,000 & 0.025 & 0.4 & 0.42 \\
+& \textit{i}\ac{MGXS}\textsuperscript{\ref{birch-assm}} & 0.13 & 65,000,000 & 15 & 0.4 & 15 \\
+& Degenerate & 0.13 & 325,000,000 & 82 & 0.4 & 82 \\
+& Reference & 0.16 & 450,000,000 & 42 & & 42 \\
   \midrule
-\multirow{4}{*}{\parbox{2.5cm}{2$\times$2 Colorset}} & Reference & 8,755,000 & & 81.7 & & 81.7 \\
-& Null & 100,000 & & 0.04 & 2.0 & 2.03 \\
-& Degenerate & 700,000,000 & & 248 & 2.0 & 250 \\
-& \textit{i}\ac{MGXS} & 10,000,000 & & 3.54 & 2.0 & 5.50 \\
+\multirow{4}{*}{\parbox{2.5cm}{2$\times$2 Colorset}} & Null & 0.45 & 100,000 & 0.035 & 2.0 & 2.0 \\
+& \textit{i}\ac{MGXS}\textsuperscript{\ref{birch-assm}} & 0.16 & 100,000,000 & 35 & 2.0 & 35 \\
+& Degenerate & 0.16 & 1,000,000,000 & 347 & 2.0 & 349 \\
+& Reference & 0.16 & 1,000,000,000 & 93 & & 93 \\
   \midrule
-\multirow{4}{*}{\parbox{2.5cm}{2$\times$2 Colorset w/ Reflector}} & Reference & & & & & \\
-& Null & & & & 5.0 & \\
-& Degenerate & & & & 5.0 & \\
-& \textit{i}\ac{MGXS} & & & & 5.0 & \\
+\multirow{4}{*}{\parbox{2.5cm}{2$\times$2 Colorset w/ Reflector}} & Null & 0.48 & 100,000 & 0.035 & 5.0 & 5.0 \\
+& \textit{i}\ac{MGXS}\footnotemark & 0.25 & 85,000,000 & 30 & 5.0 & 35 \\
+& Degenerate & 0.25 & 450,000,000 & 156 & 5.0 & 161 \\
+& Reference & 0.25 & 550,000,000 & 51 & & 51 \\
   \midrule
-\multirow{4}{*}{\parbox{2.5cm}{BEAVRS Quarter Core}} & Reference & & & & & \\
-& Null & & & & 419 & \\
+\multirow{4}{*}{\parbox{2.5cm}{BEAVRS Quarter Core}} & Null & & & & 419 & \\
+& \textit{i}\ac{MGXS}\footnotemark & & & & 423 & \\
 & Degenerate & & & & 426 & \\
-& \textit{i}\ac{MGXS} & & & & 423 & \\
+& Reference & & & & &\\
   \bottomrule
 \end{tabular}
 \end{table}
 
-SUMMARY BOX!!!
+\addtocounter{footnote}{-3}
+\stepcounter{footnote}
+\footnotetext{\label{birch-assm}The results for the \textit{i}\ac{MGXS} scheme correspond to BIRCH clustering of 10 clusters.}
+
+\stepcounter{footnote}
+\footnotetext{\label{birch-refl}The results for the \textit{i}\ac{MGXS} scheme correspond to BIRCH clustering of 16 clusters.}
+
+\stepcounter{footnote}
+\footnotetext{\label{birch-beavrs}The results for the \textit{i}\ac{MGXS} scheme correspond to BIRCH clustering of ?? clusters.}
+
+
+\clearpage
+
+\vfill
+\begin{highlightsbox}[frametitle=Highlights]
+\begin{itemize}
+  \item The \textit{inferential \ac{MGXS}} (\textit{i}\ac{MGXS}) spatial homogenization scheme uses unsupervised clustering analysis of \ac{MC} tally data to predict which fuel pins experience similar spatial self-shielding effects.
+\end{itemize}
+\end{highlightsbox}
+\vfill
