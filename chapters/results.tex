@@ -891,13 +891,13 @@ The silhouette coefficient compares the average distance between a sample and al
 \centering
 \begin{subfigure}{\textwidth}
   \centering
-  \includegraphics[width=0.87\linewidth]{figures/results/model-select/assm-16/silhouette-combined-U238-capture-1}
+  \includegraphics[width=0.9\linewidth]{figures/results/model-select/assm-16/silhouette-combined-U238-capture-1}
   \caption{}
   \label{fig:chap11-assm-16-silhouette-coeff}
 \end{subfigure}
 \begin{subfigure}{\textwidth}
   \centering
-  \includegraphics[width=0.87\linewidth]{figures/results/model-select/reflector/silhouette-combined-U238-nu-fission-1}
+  \includegraphics[width=0.9\linewidth]{figures/results/model-select/reflector/silhouette-combined-U238-nu-fission-1}
   \caption{}
   \label{fig:chap11-refl-silhouette-coeff}
 \end{subfigure}
@@ -911,37 +911,34 @@ The silhouette coefficient compares the average distance between a sample and al
 \subsection{Bayesian Information Criterion}
 \label{subsec:chap11-bic}
 
-first paragraph: outline and analysis
--recall Sec.~\ref{subsec:chap10-bic}
--Figs.~\Crefrange{fig:chap11-assm-16-bic}{fig:chap11-refl-bic}
--want to minimize BIC
--BIC only has closed form solution for \ac{GMM}
--BIC is much more smoothly varying with the number of clusters than the preceding metrics
--BIC doesn't seem to reach a minima even with 20 clusters
-  -though seems to be leveling for the single assm
-  -would eventually start to increase due to growth of second penalty term in the BIC expression
--can see the impact of diminishing returns in the BIC
-  -the first 5 clusters causes the BIC to decrease the most
--could foresee a method which would choose the number of clusters using this method
-  -might choose based on the fractional change in the BIC with each successive cluster
+The Bayesian Information Criterion (BIC) balances a model's explanatory power, as quantifed by the maximum log-likelihood, with a regularization penalty on model complexity. Of the four clustering algorithms considered here, only the BIC has a closed form solution for \acp{GMM} (Sec.~\ref{subsec:chap10-bic}). The criteria are presented in Fig.~\ref{fig:chap11-bic} for both benchmarks. In theory, the ``best'' clustering model should minimize the BIC. The BIC for the 1.6\% enriched assembly (Fig.~\ref{fig:chap11-assm-16-bic}) reaches a minimum with 20 -- 24 clusters before the regularization penalty forces the BIC to increase with more clusters. Although the BIC for the colorset (Fig.~\ref{fig:chap11-refl-bic}) converges to approximately -20,000 for 30 or more clusters, it does not start increasing even with 50 clusters. This indicates that even with 50 clusters, the inclusion of additional clusters continues to sufficiently reduce the maximum log-likelihood function of the \ac{GMM} enough to balance the regularization penalty associated with introducing the new mixture components. It is expected that if enough clusters were included in the plot, the BIC would exhibit a clearly defined minimum as the regularization penalty begins to dominate the log-likelihood.
+
+Of the model selection metrics evaluated in this thesis, the BIC is the only one which shows promise as a means to choose the ``best'' number of clusters for the \textit{i}\ac{MGXS} data processing pipeline. The BIC is a smoothly varying metric for which an unsupervised thresholding technique could potentially be applied to select the optimal number of clusters. In particular, future work may consider choosing the optimal number of clusters for the model with the minimum BIC. Furthermore, it is noteworthy for both benchmarks, that the BIC achieves over 80\% its minimum value with only the first 10 clusters. This reflects the fact that only a few Gaussian mixture components are needed to model most of the clustering behavior, with diminishing returns achieved by more complex \acp{GMM}. An alternative approach might choose the optimal number of clusters by considering the fractional change of the BIC with each successive cluster (\textit{i.e.}, choose the number of clusters which approaches 80\% of the converged minimum). In effect, this would represent a variation of the BIC in which the regularization term is more heavily weighted than in Eqn.~\ref{eqn:chap10-bic} in order to preferentially select models with fewer clusters.
 
 \begin{figure}[h!]
 \centering
-\includegraphics[width=0.87\linewidth]{figures/results/model-select/assm-16/bic-combined-U238-capture-1}
-\vspace{2mm}
-\caption[Silhouette coefficients for the 1.6\% enriched assembly]{Bayesian Information Criteria (BIC) for the 1.6\% enriched assembly.}
-\label{fig:chap11-assm-16-bic}
+\begin{subfigure}{\textwidth}
+  \centering
+  \includegraphics[width=0.9\linewidth]{figures/results/model-select/assm-16/bic-combined-U238-capture-1}
+  \caption{}
+  \label{fig:chap11-assm-16-bic}
+\end{subfigure}
+\begin{subfigure}{\textwidth}
+  \centering
+  \includegraphics[width=0.9\linewidth]{figures/results/model-select/reflector/bic-combined-U238-nu-fission-1}
+  \caption{}
+  \label{fig:chap11-refl-bic}
+\end{subfigure}
+\caption[Bayesian information criteria]{Bayesian information criteria for the 1.6\% enriched assembly (a) and 2$\times$2 colorset with a water reflector (b) for each of the four clustering algorithms.}
+\label{fig:chap11-bic}
 \end{figure}
 
-\begin{figure}[h!]
-\centering
-\includegraphics[width=0.87\linewidth]{figures/results/model-select/reflector/bic-combined-U238-nu-fission-1}
-\vspace{2mm}
-\caption[BIC for the 2$\times$2 colorset with reflector]{Bayesian Information Criteria (BIC) for the 2$\times$2 colorset with a water reflector.}
-\label{fig:chap11-refl-bic}
-\end{figure}
+\clearpage
 
-SUMMARY BOX!!!
+\begin{emphbox}
+\textbf{Model selection criteria are needed to determine the optimal number of clusters without human supervision. The BIC shows promise as a means to choose the optimal number of components for \acp{GMM}. It is not clear whether the Davies-Bouldin, Dunn and Calinski-Harabaz indices or silhouette coefficients may be useful model selection criteria for the \textit{i}\ac{MGXS} scheme.}
+\end{emphbox}
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Synthesis}
