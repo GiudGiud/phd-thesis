@@ -950,59 +950,39 @@ As discussed in Chap.~\ref{chap:intro}, various methods for reactor physics simu
 \subsection{A Comparison of Simulation Runtimes}
 \label{subsec:chap11-runtimes}
 
-first paragraph: explain table
--Tab.~\ref{table:chap11-runtimes}
--explain objective of this section
--Tab.~\ref{table:chap11-openmc-rates} - particle tracking rates
-  -particle tracking rates; dependent on hardware platform and runtime configuration
--Tab.~\ref{table:chap11-runtimes} - runtimes
--10 clusters for assemblies and periodic colorset; 16 clusters for coloreset with reflector
--refer to data from Sec.~\ref{sec:chap11-converge} to determine convergence
-  -conservative analytical approach:
-    1) determine the  converged mean error for \textit{i}\ac{MGXS} scheme for each benchmark
-      -mean error chosen since it is more limiting for OpenMC
-    2) determine the approx. number of histories to reach the converged accuracy for each scheme
-      -null's accuracy converged to a bias greater than \textit{i}\ac{MGXS}
-      -\textit{i}\ac{MGXS} and degenerate convergence to prescribed accuracy determined by:
-        -analyzing the error at each of the statepoints (stored at logarithmically spaced intervals)
-        -error was considered ``converged'' once it fell below the accuracy criterion for three successive statepoints
-        -the number of histories was derived from the third statepoint 
-        -the number of histories is highly dependent on the number of clusters used by \textit{i}\ac{MGXS}
-      -used same procedure to determine number of histories to converge OpenMC uncertainties
-      -round number of particle histories up for simplicity and to be conservative
-      -this analysis is limited by the logarithmically-spaced statepoint intervals
-    3) use particle tracking rate to compute total time spent by OpenMC
-      -read number of batches from the convergence plots as the max(max err,mean err) <= degenerate err
-      -multiply number of batches by particle tracking rate
-      -uses the tracking rate without MGXS for the ``reference''
-      -use the tracking rate with MGXS for all others
-    4) record OpenMOC runtime for each benchmark and scheme
-      -note that the runtimes for the degenerate scheme were on average 20\% greater than those for the
-  -this analysis neglects the time spent processing the tally data to create the \ac{MGXS} libraries since this was negligible (\textit{i.e.}, <0.1 core-hour) for all benchmarks and configurations of the \textit{i}\ac{MGXS} data processing pipeline that were tested)
+This section examines the convergence rates for the U-238 capture rates presented in Sec.~\ref{sec:chap11-converge} to compare the computational resource requirements for the null, degenerate and \textit{i}\ac{MGXS} schemes relative to a reference \ac{MC} calculation. It is challenging to construct a general figure of merit to compare the four different simulation workflows since each one converges to a different solution. Instead, this section simply compares the simulation runtimes required for each workflow to converge to some prescribed relative error on the U-238 capture rates. In summary, the runtimes for the degenerate, \textit{i}\ac{MGXS} and reference \ac{MC} simulation workflows were computed as follows for each benchmark:
 
-third paragraph: observations
--speed to reach the desired accuracy:
--null is by far the fastest approach, but suffers from the largest error
--in terms of number of particle histories:
-  -for simple fuel assemblies:
-    -\textit{i}\ac{MGXS} is $\sim$10$\times$ fewer histories than a reference OpenMC calculation
-  -for assm with \acp{BP}:
-    -\textit{i}\ac{MGXS} is $\sim$7$\times$ fewer histories than a reference OpenMC calculation
-    -it's unclear why the gap between reference/degenerate and \textit{i}\ac{MGXS} decreased for this assm
-  -for periodic 2x2 colorset:
-    -\textit{i}\ac{MGXS} is $\sim$10$\times$ fewer histories than a reference OpenMC calculation
-  -for 2x2 colorset with water reflector:
-    -\textit{i}\ac{MGXS} is $\sim$6.5$\times$ fewer histories than a reference OpenMC calculation
--in terms of total runtime:
-  -\textit{i}\ac{MGXS} is between 5 -- 10$\times$ faster than degenerate case for each benchmark
-  -\textit{i}\ac{MGXS} is between 1.5 -- 4$\times$ faster than degenerate case for each benchmark
-    -most limited for 2$\times$2 with water reflector
-    -mostly due to active histories with lots of \ac{MGXS} tallies - nearly 3$\times$ slower
--nevertheless, indicates that \textit{i}\ac{MGXS} may enable:
-  -a faster simulation approach than reference \ac{MC} calculation,
-  -a more accurate simulation approach since all energy and spatial self-shielding effects are direclty embedded in \ac{MGXS} generated with \ac{MC} -- requires no approximation to the flux
+\vspace{12pt}
 
-% define a Figure of merit per Kord's suggestion???
+\begin{enumerate}[noitemsep,topsep=0pt]
+\item \textbf{Identify Convergence Threshold:}
+\begin{itemize}[noitemsep,topsep=0pt]
+  \item \textit{Converged mean pin-wise U-238 capture rate error for \textit{i}\ac{MGXS} scheme}
+\end{itemize}
+\item \textbf{Count \ac{MC} Particle Histories to Reach Threshold:} 
+\begin{itemize}[noitemsep,topsep=0pt]
+  \item \textit{Histories to converge degenerate and \textit{i}\ac{MGXS} errors}
+  \item \textit{Histories to converge 1-sigma uncertainties of OpenMC reference solution}
+\end{itemize}
+\item \textbf{Compute \ac{MC} Runtime:}
+\begin{itemize}[noitemsep,topsep=0pt]
+  \item \textit{Multiply OpenMC particle tracking rate by number of histories}
+\end{itemize}
+\item \textbf{Compute Total Runtime:}
+\begin{itemize}[noitemsep,topsep=0pt]
+  \item \textit{Add OpenMC and OpenMOC runtimes}
+\end{itemize}
+\end{enumerate}
+
+\vspace{12pt}
+
+\noindent The U-238 capture rate errors for the null scheme were shown in Sec.~\ref{sec:chap11-converge} to quickly converge to a relatively large bias that is not directly comparable with the errors for the \textit{i}\ac{MGXS} scheme. Instead, the runtime for the null scheme was simply computed from the number of \ac{MC} histories required to converge its error. Although the multi-step process to compute the OpenMC runtimes may seem straightforward, several subtle points influence the analysis at each step as well as the final conclusion. 
+
+First, the convergence threshold is based on the mean rather than the maximum U-238 capture rate error, since the mean error was shown to be more limiting for the OpenMC reference solutions in Sec.~\ref{sec:chap11-converge}\footnote{The number of histories needed to converge the eigenvalues may be more limiting than that required to converge the U-238 capture rate errors. However, the convergence behavior of the eigenvalues is the result of a reaction rate imbalance due to the mixture of analog and track-length tally estimators used to generate \ac{MGXS} (Sec.~\ref{subsec:chap11-eigenvalue-converge}), which may be eliminated with advanced \ac{MC} tally estimators~\cite{nelson2014improved}.}. Second, the number of \ac{MC} histories required to converge each scheme was found by analyzing the mean relative errors for each OpenMC statepoint (see Figs.~\Crefrange{fig:chap11-assm-1.6-capture-converge-mean}{fig:chap11-refl-capture-converge-mean}). The error was considered to be ``converged'' after the errors for three successive statepoints met the convergence threshold\footnote{The statepoints were exported for logarithmically-spaced batches as dicussed in Sec.~\ref{sec:chap11-converge}. As a result, the granularity on the number of \ac{MC} particle histories estimates was quite large, especially above 100,000,000 active histories, and should be refined for more accurate estimates in the future.}. The number of \ac{MC} histories corresponding to the third statepoint was recorded as the number of histories required to converge the error\footnote{The numbers of particle histories was conservatively rounded up in each case.}. Similarly, the number of histories required to converge the statistical uncertainties for the OpenMC reference solutions were determined using the same approach.
+
+Third, the particle tracking rate is the number of particle histories simulated per second per CPU core. The tracking rate depends on the computational hardware employed to run the simulation, as well as the runtime parameters, including the number of histores per active batch. Most importantly, the tracking rate scales with the number of tally \textit{objects} in an OpenMC simulation. As shown in Tab.~\ref{table:chap11-openmc-rates}, the tracking rates are 3 -- 4$\times$ faster when computing the reference solution than when generating \ac{MGXS}\footnote{The OpenMC reference calculation required two mesh tally \textit{objects} to compute pin-wise fission and U-238 capture rates. In contrast, 29 -- 56 distinct tally \textit{objects} were required to tally reaction rates and fluxes for each nuclide, energy group and reaction to type to generate \ac{MGXS} for each benchmark, even when using OpenMC's mergeable tally feature (Sec.~\ref{subsubsec:chap4-tally-slice-merge}).}. The tracking rates without \ac{MGXS} are employed to compute the OpenMC runtime for the reference solution, while the slower rates with \ac{MGXS} are used to compute the OpenMC runtimes for the null, degenerate and \textit{i}\ac{MGXS} workflows.
+
+\vspace{6pt}
 
 \begin{table}[ht!]
   \centering
@@ -1027,6 +1007,36 @@ BEAVRS Quarter Core & 600 & 2400 \\
 
 \footnotetext{This corresponds to calculations which only tallied the pin-wise fission and U-238 capture rates.}
 
+Fourth, the OpenMOC runtimes for the null, degenerate and \textit{i}\ac{MGXS} workflows were recorded and averaged for each benchmark. This is a reasonable approximation since the OpenMC runtimes are much larger than those for OpenMOC. Nevertheless, it should be noted that the OpenMOC runtimes for the degenerate scheme were on average 20\% greater than those for the the null and \textit{i}\ac{MGXS} schemes. The cause for this slowdown is likely due to the overhead associated with processing the large number of distinct materials to tabulate \ac{MGXS} for Coarse Mesh Finite Difference (\ac{CMFD}) acceleration. Finally, this analysis neglects the time spent within the \textit{i}\ac{MGXS} data processing pipeline since this was negligible (\textit{i.e.}, <0.1 core-hour) for all benchmarks and pipeline configurations (\textit{e.g.}, clustering algorithms) that were tested.
+
+% the number of histories is highly dependent on the number of clusters used by \textit{i}\ac{MGXS}
+
+The number of particle histories and OpenMC and OpenMOC runtimes are compiled in Tab.~\ref{table:chap11-runtimes} for each of the six benchmarks. The runtimes for the \textit{i}\ac{MGXS} scheme  correspond to BIRCH clustering of 10 clusters for the individual fuel assembly and periodic 2$\times$2 colorset benchmarks, and 16 clusters for the colorset with a water reflector. As clearly observed from the data, the workflow for null homogenization is easily the fastest approach if the resulting error can be tolerated. However, the \textit{i}\ac{MGXS} scheme easily outperforms both the degenerate and reference simulation worklows with respect to the prescribed relative errors on the mean U-238 capture rates. In particular, the \textit{i}\ac{MGXS} scheme requires between 7 -- 10$\times$ fewer \ac{MC} particle histories relative to the reference OpenMC calculation for each of the benchmarks. Furthermore, the total runtime for the workflow with \textit{i}\ac{MGXS} homogenization is 5 -- 10$\times$ faster than that for the degenerate scheme, and 1.5 -- 4$\times$ faster than the reference calculation. These results illustrate the potential for the \textit{i}\ac{MGXS} scheme to enable deterministic transport calculations to converge to a prescribed accuracy faster than a corresponding reference \ac{MC} calculation.
+
+%  -a more accurate simulation approach since all energy and spatial self-shielding effects are direclty embedded in \ac{MGXS} generated with \ac{MC} -- requires no approximation to the flux
+
+%-in terms of number of particle histories:
+%  -for simple fuel assemblies:
+%    -\textit{i}\ac{MGXS} is $\sim$10$\times$ fewer histories than a reference OpenMC calculation
+%  -for assm with \acp{BP}:
+%    -\textit{i}\ac{MGXS} is $\sim$7$\times$ fewer histories than a reference OpenMC calculation
+%    -it's unclear why the gap between reference/degenerate and \textit{i}\ac{MGXS} decreased for this assm
+%  -for periodic 2x2 colorset:
+%    -\textit{i}\ac{MGXS} is $\sim$10$\times$ fewer histories than a reference OpenMC calculation
+%  -for 2x2 colorset with water reflector:
+%    -\textit{i}\ac{MGXS} is $\sim$6.5$\times$ fewer histories than a reference OpenMC calculation
+
+%-in terms of total runtime:
+%  -\textit{i}\ac{MGXS} is between 5 -- 10$\times$ faster than degenerate case for each benchmark
+%  -\textit{i}\ac{MGXS} is between 1.5 -- 4$\times$ faster than degenerate case for each benchmark
+%    -most limited for 2$\times$2 with water reflector
+%    -mostly due to active histories with lots of \ac{MGXS} tallies - nearly 3$\times$ slower
+%-nevertheless, indicates that \textit{i}\ac{MGXS} may enable:
+%  -a faster simulation approach than reference \ac{MC} calculation,
+%  -a more accurate simulation approach since all energy and spatial self-shielding effects are direclty embedded in \ac{MGXS} generated with \ac{MC} -- requires no approximation to the flux
+
+% define a Figure of merit per Kord's suggestion???
+
 %OpenMC particles / sec / core
 %benchmark         no MGXs        MGXS
 %1.6               2673.3         1154.4
@@ -1047,7 +1057,7 @@ BEAVRS Quarter Core & 600 & 2400 \\
   & & & & \multicolumn{3}{c}{\bf Runtime [core-hours]} \\
   \cline{5-7}
   \multirow{-2}{*}{\bf Benchmark} &
-  \multirow{-2}{*}{\bf Scheme} &
+  \multirow{-2}{*}{\bf Workflow} &
   \multirow{-2}{*}{\parbox{1.75cm}{\bf Mean Rel. \\ Err. [\%]}} &
   \multirow{-2}{*}{\bf \# Histories} &
   \multicolumn{1}{c}{\bf OpenMC} &
@@ -1055,50 +1065,52 @@ BEAVRS Quarter Core & 600 & 2400 \\
   \multicolumn{1}{c}{\bf Total} \\
   \midrule
 \multirow{4}{*}{\parbox{2.5cm}{1.6\% Assm}} & Null & 0.50 & 100,000 & 0.025 & 0.4 & 0.42 \\
-& \textit{i}\ac{MGXS}\footnotemark & 0.10 & 65,000,000 & 15 & 0.4 & 15 \\
+& \textit{i}\ac{MGXS} & 0.10 & 65,000,000 & 15 & 0.4 & 15 \\
 & Degenerate & 0.10 & 500,000,000 & 126 & 0.4 & 126 \\
 & Reference & 0.10 & 650,000,000	& 60 & & 60 \\
   \midrule
 \multirow{4}{*}{\parbox{2.5cm}{3.1\% Assm}} & Null & 0.50 & 100,000 & 0.025 & 0.4 & 0.42 \\
-& \textit{i}\ac{MGXS}\textsuperscript{\ref{birch-assm}} & 0.10 & 65,000,000 & 15 & 0.4 & 15 \\
+& \textit{i}\ac{MGXS} & 0.10 & 65,000,000 & 15 & 0.4 & 15 \\
 & Degenerate & 0.10 & 500,000,000 & 126 & 0.4 & 126 \\
 & Reference & 0.10 & 650,000,000 & 60 & & 60 \\
   \midrule
 \multirow{4}{*}{\parbox{2.5cm}{3.1\% Assm w/ 20 \acp{BP}}} & Null & 0.41 & 100,000 & 0.025 & 0.4 & 0.42 \\
-& \textit{i}\ac{MGXS}\textsuperscript{\ref{birch-assm}} & 0.13 & 65,000,000 & 15 & 0.4 & 15 \\
+& \textit{i}\ac{MGXS} & 0.13 & 65,000,000 & 15 & 0.4 & 15 \\
 & Degenerate & 0.13 & 325,000,000 & 82 & 0.4 & 82 \\
-& Reference & 0.16 & 450,000,000 & 42 & & 42 \\
+& Reference & 0.13 & 450,000,000 & 42 & & 42 \\
   \midrule
 \multirow{4}{*}{\parbox{2.5cm}{2$\times$2 Colorset}} & Null & 0.45 & 100,000 & 0.035 & 2.0 & 2.0 \\
-& \textit{i}\ac{MGXS}\textsuperscript{\ref{birch-assm}} & 0.16 & 100,000,000 & 35 & 2.0 & 35 \\
+& \textit{i}\ac{MGXS} & 0.16 & 100,000,000 & 35 & 2.0 & 37 \\
 & Degenerate & 0.16 & 1,000,000,000 & 347 & 2.0 & 349 \\
 & Reference & 0.16 & 1,000,000,000 & 93 & & 93 \\
   \midrule
 \multirow{4}{*}{\parbox{2.5cm}{2$\times$2 Colorset w/ Reflector}} & Null & 0.48 & 100,000 & 0.035 & 5.0 & 5.0 \\
-& \textit{i}\ac{MGXS}\footnotemark & 0.25 & 85,000,000 & 30 & 5.0 & 35 \\
+& \textit{i}\ac{MGXS} & 0.25 & 85,000,000 & 30 & 5.0 & 35 \\
 & Degenerate & 0.25 & 450,000,000 & 156 & 5.0 & 161 \\
 & Reference & 0.25 & 550,000,000 & 51 & & 51 \\
   \midrule
 \multirow{4}{*}{\parbox{2.5cm}{BEAVRS Quarter Core}} & Null & & & & 419 & \\
-& \textit{i}\ac{MGXS}\footnotemark & & & & 423 & \\
+& \textit{i}\ac{MGXS} & & & & 423 & \\
 & Degenerate & & & & 426 & \\
 & Reference & & & & &\\
   \bottomrule
 \end{tabular}
 \end{table}
 
-\addtocounter{footnote}{-3}
-\stepcounter{footnote}
-\footnotetext{\label{birch-assm}The results for the \textit{i}\ac{MGXS} scheme correspond to BIRCH clustering of 10 clusters.}
+%\textsuperscript{\ref{birch-assm}}
 
-\stepcounter{footnote}
-\footnotetext{\label{birch-refl}The results for the \textit{i}\ac{MGXS} scheme correspond to BIRCH clustering of 16 clusters.}
+%\addtocounter{footnote}{-3}
+%\stepcounter{footnote}
+%\footnotetext{\label{birch-assm}The results for the \textit{i}\ac{MGXS} scheme correspond to BIRCH clustering of 10 clusters.}
 
-\stepcounter{footnote}
-\footnotetext{\label{birch-beavrs}The results for the \textit{i}\ac{MGXS} scheme correspond to BIRCH clustering of ?? clusters.}
+%\stepcounter{footnote}
+%\footnotetext{\label{birch-refl}The results for the \textit{i}\ac{MGXS} scheme correspond to BIRCH clustering of 16 clusters.}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Comparison with Multi-Level Approach}
+%\stepcounter{footnote}
+%\footnotetext{\label{birch-beavrs}The results for the \textit{i}\ac{MGXS} scheme correspond to BIRCH clustering of ?? clusters.}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{A Comparison with a Multi-Level Approach}
 \label{subsec:chap11-multi-level}
 
 first paragraph: recall multi-level approach
