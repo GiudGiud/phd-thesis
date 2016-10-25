@@ -978,7 +978,7 @@ This section examines the convergence rates for the U-238 capture rates presente
 
 \noindent The U-238 capture rate errors for the null scheme were shown in Sec.~\ref{sec:chap11-converge} to quickly converge to a relatively large bias that is not directly comparable with the errors for the \textit{i}\ac{MGXS} scheme. Instead, the runtime for the null scheme was simply computed from the number of \ac{MC} histories required to converge its error. Although the multi-step process to compute the OpenMC runtimes may seem straightforward, several subtle points influence the analysis at each step as well as the final conclusion. 
 
-First, the convergence threshold is based on the mean rather than the maximum U-238 capture rate error, since the mean error was shown to be more limiting for the OpenMC reference solutions in Sec.~\ref{sec:chap11-converge}\footnote{The number of histories needed to converge the eigenvalues may be more limiting than that required to converge the U-238 capture rate errors. However, the convergence behavior of the eigenvalues is the result of a reaction rate imbalance due to the mixture of analog and track-length tally estimators used to generate \ac{MGXS} (Sec.~\ref{subsec:chap11-eigenvalue-converge}), which may be eliminated with advanced \ac{MC} tally estimators~\cite{nelson2014improved}.}. Second, the number of \ac{MC} histories required to converge each scheme was found by analyzing the mean relative errors for each OpenMC statepoint (see Figs.~\Crefrange{fig:chap11-assm-1.6-capture-converge-mean}{fig:chap11-refl-capture-converge-mean}). The error was considered to be ``converged'' after the errors for three successive statepoints met the convergence threshold\footnote{The statepoints were exported for logarithmically-spaced batches as dicussed in Sec.~\ref{sec:chap11-converge}. As a result, the granularity on the number of \ac{MC} particle histories estimates was quite large, especially above 100,000,000 active histories, and should be refined for more accurate estimates in the future.}. The number of \ac{MC} histories corresponding to the third statepoint was recorded as the number of histories required to converge the error\footnote{The numbers of particle histories was conservatively rounded up in each case.}. Similarly, the number of histories required to converge the statistical uncertainties for the OpenMC reference solutions were determined using the same approach.
+First, the convergence threshold is based on the mean rather than the maximum U-238 capture rate error, since the mean error was shown to be more limiting for the OpenMC reference solutions in Sec.~\ref{sec:chap11-converge}\footnote{The number of histories needed to converge the eigenvalues may be more limiting than that required to converge the U-238 capture rate errors. However, the convergence behavior of the eigenvalues is the result of a reaction rate imbalance due to the mixture of analog and track-length tally estimators used to generate \ac{MGXS} (Sec.~\ref{subsec:chap11-eigenvalue-converge}), which may be eliminated with advanced \ac{MC} tally estimators~\cite{nelson2014improved}.}. It should be noted that the convergence criterion is depends on the number of clusters identified by the \textit{i}\ac{MGXS} scheme -- in particular, the error between OpenMOC and OpenMC decreases are more clusters are introduced, but more histories are required to converge the \textit{i}\ac{MGXS} errors. Second, the number of \ac{MC} histories required to converge each scheme was found by analyzing the mean relative errors for each OpenMC statepoint (see Figs.~\Crefrange{fig:chap11-assm-1.6-capture-converge-mean}{fig:chap11-refl-capture-converge-mean}). The error was considered to be ``converged'' after the errors for three successive statepoints met the convergence threshold\footnote{The statepoints were exported for logarithmically-spaced batches as dicussed in Sec.~\ref{sec:chap11-converge}. As a result, the granularity on the number of \ac{MC} particle histories estimates was quite large, especially above 100,000,000 active histories, and should be refined for more accurate estimates in the future.}. The number of \ac{MC} histories corresponding to the third statepoint was recorded as the number of histories required to converge the error\footnote{The numbers of particle histories was conservatively rounded up in each case.}. Similarly, the number of histories required to converge the statistical uncertainties for the OpenMC reference solutions were determined using the same approach.
 
 Third, the particle tracking rate is the number of particle histories simulated per second per CPU core. The tracking rate depends on the computational hardware employed to run the simulation, as well as the runtime parameters, including the number of histores per active batch. Most importantly, the tracking rate scales with the number of tally \textit{objects} in an OpenMC simulation. As shown in Tab.~\ref{table:chap11-openmc-rates}, the tracking rates are 3 -- 4$\times$ faster when computing the reference solution than when generating \ac{MGXS}\footnote{The OpenMC reference calculation required two mesh tally \textit{objects} to compute pin-wise fission and U-238 capture rates. In contrast, 29 -- 56 distinct tally \textit{objects} were required to tally reaction rates and fluxes for each nuclide, energy group and reaction to type to generate \ac{MGXS} for each benchmark, even when using OpenMC's mergeable tally feature (Sec.~\ref{subsubsec:chap4-tally-slice-merge}).}. The tracking rates without \ac{MGXS} are employed to compute the OpenMC runtime for the reference solution, while the slower rates with \ac{MGXS} are used to compute the OpenMC runtimes for the null, degenerate and \textit{i}\ac{MGXS} workflows.
 
@@ -1009,11 +1009,7 @@ BEAVRS Quarter Core & 600 & 2400 \\
 
 Fourth, the OpenMOC runtimes for the null, degenerate and \textit{i}\ac{MGXS} workflows were recorded and averaged for each benchmark. This is a reasonable approximation since the OpenMC runtimes are much larger than those for OpenMOC. Nevertheless, it should be noted that the OpenMOC runtimes for the degenerate scheme were on average 20\% greater than those for the the null and \textit{i}\ac{MGXS} schemes. The cause for this slowdown is likely due to the overhead associated with processing the large number of distinct materials to tabulate \ac{MGXS} for Coarse Mesh Finite Difference (\ac{CMFD}) acceleration. Finally, this analysis neglects the time spent within the \textit{i}\ac{MGXS} data processing pipeline since this was negligible (\textit{i.e.}, <0.1 core-hour) for all benchmarks and pipeline configurations (\textit{e.g.}, clustering algorithms) that were tested.
 
-% the number of histories is highly dependent on the number of clusters used by \textit{i}\ac{MGXS}
-
 The number of particle histories and OpenMC and OpenMOC runtimes are compiled in Tab.~\ref{table:chap11-runtimes} for each of the six benchmarks. The runtimes for the \textit{i}\ac{MGXS} scheme  correspond to BIRCH clustering of 10 clusters for the individual fuel assembly and periodic 2$\times$2 colorset benchmarks, and 16 clusters for the colorset with a water reflector. As clearly observed from the data, the workflow for null homogenization is easily the fastest approach if the resulting error can be tolerated. However, the \textit{i}\ac{MGXS} scheme easily outperforms both the degenerate and reference simulation worklows with respect to the prescribed relative errors on the mean U-238 capture rates. In particular, the \textit{i}\ac{MGXS} scheme requires between 7 -- 10$\times$ fewer \ac{MC} particle histories relative to the reference OpenMC calculation for each of the benchmarks. Furthermore, the total runtime for the workflow with \textit{i}\ac{MGXS} homogenization is 5 -- 10$\times$ faster than that for the degenerate scheme, and 1.5 -- 4$\times$ faster than the reference calculation. These results illustrate the potential for the \textit{i}\ac{MGXS} scheme to enable deterministic transport calculations to converge to a prescribed accuracy faster than a corresponding reference \ac{MC} calculation.
-
-%  -a more accurate simulation approach since all energy and spatial self-shielding effects are direclty embedded in \ac{MGXS} generated with \ac{MC} -- requires no approximation to the flux
 
 %-in terms of number of particle histories:
 %  -for simple fuel assemblies:
@@ -1031,9 +1027,6 @@ The number of particle histories and OpenMC and OpenMOC runtimes are compiled in
 %  -\textit{i}\ac{MGXS} is between 1.5 -- 4$\times$ faster than degenerate case for each benchmark
 %    -most limited for 2$\times$2 with water reflector
 %    -mostly due to active histories with lots of \ac{MGXS} tallies - nearly 3$\times$ slower
-%-nevertheless, indicates that \textit{i}\ac{MGXS} may enable:
-%  -a faster simulation approach than reference \ac{MC} calculation,
-%  -a more accurate simulation approach since all energy and spatial self-shielding effects are direclty embedded in \ac{MGXS} generated with \ac{MC} -- requires no approximation to the flux
 
 % define a Figure of merit per Kord's suggestion???
 
@@ -1048,7 +1041,7 @@ The number of particle histories and OpenMC and OpenMOC runtimes are compiled in
 
 \begin{table}[ht!]
   \centering
-  \caption[Computational resource requirements for each simulation approach]{The computational resources needed to reach a desired level of accuracy on the mean pin-wise U-238 capture rates in each benchmark.}
+  \caption[Computational resource requirements for each simulation approach]{The computational resources required to converge the OpenMOC relative error or OpenMC statistical uncertainty on the mean pin-wise U-238 capture rates.}
   \small
   \label{table:chap11-runtimes}
   \vspace{6pt}
@@ -1065,33 +1058,39 @@ The number of particle histories and OpenMC and OpenMOC runtimes are compiled in
   \multicolumn{1}{c}{\bf Total} \\
   \midrule
 \multirow{4}{*}{\parbox{2.5cm}{1.6\% Assm}} & Null & 0.50 & 100,000 & 0.025 & 0.4 & 0.42 \\
+& \ac{LNS} & 0.10 & 20,000,000 & 5.1 & 0.4 & 5.5 \\
 & \textit{i}\ac{MGXS} & 0.10 & 65,000,000 & 15 & 0.4 & 15 \\
 & Degenerate & 0.10 & 500,000,000 & 126 & 0.4 & 126 \\
 & Reference & 0.10 & 650,000,000	& 60 & & 60 \\
   \midrule
 \multirow{4}{*}{\parbox{2.5cm}{3.1\% Assm}} & Null & 0.50 & 100,000 & 0.025 & 0.4 & 0.42 \\
+& \ac{LNS} & 0.10 & 20,000,000 & 5.1 & 0.4 & 5.5 \\
 & \textit{i}\ac{MGXS} & 0.10 & 65,000,000 & 15 & 0.4 & 15 \\
 & Degenerate & 0.10 & 500,000,000 & 126 & 0.4 & 126 \\
 & Reference & 0.10 & 650,000,000 & 60 & & 60 \\
   \midrule
 \multirow{4}{*}{\parbox{2.5cm}{3.1\% Assm w/ 20 \acp{BP}}} & Null & 0.41 & 100,000 & 0.025 & 0.4 & 0.42 \\
+& \ac{LNS} & 0.13 & 7,000,000 & 1.8 & 0.4 & 2.2 \\
 & \textit{i}\ac{MGXS} & 0.13 & 65,000,000 & 15 & 0.4 & 15 \\
 & Degenerate & 0.13 & 325,000,000 & 82 & 0.4 & 82 \\
 & Reference & 0.13 & 450,000,000 & 42 & & 42 \\
   \midrule
 \multirow{4}{*}{\parbox{2.5cm}{2$\times$2 Colorset}} & Null & 0.45 & 100,000 & 0.035 & 2.0 & 2.0 \\
+& \ac{LNS} & 0.16 & 5,500,000 & 1.4 & 2.0 & 3.4 \\
 & \textit{i}\ac{MGXS} & 0.16 & 100,000,000 & 35 & 2.0 & 37 \\
 & Degenerate & 0.16 & 1,000,000,000 & 347 & 2.0 & 349 \\
 & Reference & 0.16 & 1,000,000,000 & 93 & & 93 \\
   \midrule
 \multirow{4}{*}{\parbox{2.5cm}{2$\times$2 Colorset w/ Reflector}} & Null & 0.48 & 100,000 & 0.035 & 5.0 & 5.0 \\
+& \ac{LNS} & 0.25 & 65,000,000 & 16 & 5.0 & 21 \\
 & \textit{i}\ac{MGXS} & 0.25 & 85,000,000 & 30 & 5.0 & 35 \\
 & Degenerate & 0.25 & 450,000,000 & 156 & 5.0 & 161 \\
 & Reference & 0.25 & 550,000,000 & 51 & & 51 \\
   \midrule
-\multirow{4}{*}{\parbox{2.5cm}{BEAVRS Quarter Core}} & Null & & & & 419 & \\
-& \textit{i}\ac{MGXS} & & & & 423 & \\
-& Degenerate & & & & 426 & \\
+\multirow{4}{*}{\parbox{2.5cm}{BEAVRS Quarter Core}} & Null & & & & 425 & \\
+& \ac{LNS} & & & & 425 & \\
+& \textit{i}\ac{MGXS} & & & & 425 & \\
+& Degenerate & & & & 425 & \\
 & Reference & & & & &\\
   \bottomrule
 \end{tabular}
@@ -1113,42 +1112,82 @@ The number of particle histories and OpenMC and OpenMOC runtimes are compiled in
 \subsection{A Comparison with a Multi-Level Approach}
 \label{subsec:chap11-multi-level}
 
-first paragraph: recall multi-level approach
--recall Sec.~\ref{subsec:chap2-mgxs-lib-std-approach}
-  -Fig.~\ref{fig:chap2-mgxs-process}
--similar to the ``infinite'' scheme
-  -recall Sec.~\ref{subsec:chap8-infinite}
-  -generate \ac{MGXS} with \ac{MC} simulations of sub-components
--this thesis discrards the multi-level approach in order to improve accuracy
-  -use the noisy proxy for the true ``global'' flux from \ac{MC}
-  -how much slower is this than if we were to employ the same scheme for various sub-components??
-    -and then re-use those \ac{MGXS} in a full core scheme
+As a thought experiment, this section briefly considers the computational resources that would be required if one were to apply a traditional multi-level approach to generate \ac{MGXS} with \ac{MC}. It should be recalled from Sec.~\ref{subsec:chap2-mgxs-lib-std-approach} -- and specifically Fig.~\ref{fig:chap2-mgxs-process} -- that multi-level schemes are commonly used to model energy and spatial self-shielding effects for increasingly complex geometric sub-components (\textit{e.g.}, fuel pins, assemblies, etc.). The null, degenerate, \ac{LNS} and \textit{i}\ac{MGXS} spatial homogenization schemes introduced in this thesis abandon the multi-level approach, and instead use \ac{MC} to model the complete heterogeneous geometry in a single step. These schemes are more accurate since they use the ``true'' \ac{MC} flux to collapse the cross sections. However, this increased accuracy comes at a cost -- namely, the computational expense of modeling the complete heterogeneous geometry with \ac{MC}. This section estimates the computational expense of employing \ac{MC} to generate \ac{MGXS} for the quarter core \ac{BEAVRS} model with a multi-level scheme and compares it to the single-step schemes introduced in this thesis.
 
-second paragraph: analysis of kord's track density colorset approach
--refer to Kord's suggestions about comparing to case where each individual sub-component is modeled
--based on table, need $\sim$65,000,000 histories per assembly
--23 total assemblies:
-  -6 unique 1.6\% enriched fuel assemblies
-  -6 unique 2.4\% enriched fuel assemblies
-  -11 unique 3.1\% enriched fuel assemblies
-  -23 x 65,000,000 = nearly 1.5 billion
--each colorset
-  -4 2$\times$2 colorsets on the interior
-  -4 x 2 x 2 x 65,000,000 = 2.08 billion
--2 assembly reflector cases
-  -2 x 65,000,000 = 130,000,000
--3 cases with a 1-1-1 corner of assemblies adjacent to the baffle and reflector
-  -3 x 3 x 65,000,000 = nearly 600,000,000
--TOTAL: 4.2 billion
--compare this to the 193 x 65,000,000 = 12.5 billion histories for a full core
-  -about 1/3 as many histories needed for at 32 simulations to generate \ac{MGXS} for each sub-component
+A multi-level \ac{MC} scheme would employ \textit{separate} \ac{MC} simulations of each unique sub-component in the \ac{BEAVRS} model. The quarter core \ac{BEAVRS} model is comprised of 23 unique fuel assemblies\footnote{The \ac{BEAVRS} core is composed of six 1.6\% enriched, six 2.4\% enriched and 11 3.1\% enriched assemblies.} and four unique 2$\times$2 colorsets with different assembly-assembly interfaces for each of the three fuel enrichments within the interior of the core. Furthermore, there are 3.1\% enriched fuel assemblies both with and without \acp{BP} adjacent to the baffle and reflector, whose self-shielding effects would need to be appropriately modeled. Finally, there are two unique configurations of three fuel assemblies in an ``L'' configuration at the corners of the baffle-reflector interfaces which would need to be separately modeled.
+
+The computational expense for a multi-level \ac{MC} scheme can be estimated by summing the estimated computational expense of generating \ac{MGXS} for each sub-component. The results in Tab.~\ref{table:chap11-runtimes} indicated that approximately 20,000,000 \ac{MC} particle histories were required to converge the mean U-238 capture rate errors for the \ac{LNS} homogenization for the individual fuel assemblies\footnote{The mean errors for the \ac{LNS} scheme were ``converged'' to the mean errors for \textit{i}\ac{MGXS} with 20,000,000 histories, but continued to converge to an even smaller error with more histories.}. As a simple approximation, the \ac{MC} particle track density required to converge \ac{MGXS} is assumed to scale linearly with the number of fuel pins in each sub-component, with 20,000,000 histories required for a single assembly. The estimated number of particle histories is then divided by the particle tracking rates in Tab.~\ref{table:chap11-openmc-rates} to estimate the runtime for each sub-component. In this analysis, the particle tracking rate was assumed to be 1,100 histories per core-second.
+
+The number of particle histories and runtimes for each of the assembly, colorset and corner assembly sub-components in the quarter core \ac{BEAVRS} model are estimated in Tab.~\ref{table:chap11-multi-level}. According to this estimation approach, 940 million neutron histories would be required to converge the \ac{MGXS} for each of the 31 sub-components with an estimated runtime of 235 core-hours. The final row of the table applies the same approach to estimate the number of histories to converge the \ac{MGXS} for a single \ac{MC} simulation of the quarter core \ac{BEAVRS} geometry. In this case, there are $\nicefrac{193}{4}$ fuel assemblies, each of which would require 20,000,000 histories, for a total of 970 million histories.
+
+%-23 total assemblies:
+%  -6 unique 1.6\% enriched fuel assemblies
+%  -6 unique 2.4\% enriched fuel assemblies
+%  -11 unique 3.1\% enriched fuel assemblies
+%  -23 x 65,000,000 = nearly 1.5 billion
+%-each colorset
+%  -4 2$\times$2 colorsets on the interior
+%  -4 x 2 x 2 x 65,000,000 = 2.08 billion
+%-2 assembly reflector cases
+%  -2 x 65,000,000 = 130,000,000
+%-3 cases with a 1-1-1 corner of assemblies adjacent to the baffle and reflector
+%  -3 x 3 x 65,000,000 = nearly 600,000,000
+%-TOTAL: 4.2 billion
+%-compare this to the 193 x 65,000,000 = 12.5 billion histories for a full core
+%  -about 1/3 as many histories needed for at 32 simulations to generate \ac{MGXS} for each sub-component
+
+\vspace{6pt}
+
+\begin{table}[ht!]
+  \centering
+  \caption[Computational expense for a multi-level MGXS scheme with MC]{The computational expense of a multi-level \ac{MGXS} generation scheme.}
+	  \small
+  \label{table:chap11-multi-level}
+  \vspace{6pt}
+  \begin{tabular}{p{3.5cm} r p{2cm} p{1.5cm}}
+  \toprule
+  \multicolumn{1}{c}{\bf Component} &
+  \multicolumn{1}{c}{\bf Number} &
+  \multicolumn{1}{c}{\bf Histories} &
+  \multicolumn{1}{c}{\bf Runtime [Core-Hours]} \\
+  \toprule
+Assemblies & \multicolumn{1}{S[table-format=2.1]}{23} & \multicolumn{1}{r}{4.6 $\times$ 10$^{8}$} & \multicolumn{1}{S[table-format=3.1]}{115} \\
+\midrule
+Colorsets & \multicolumn{1}{S[table-format=2.1]}{4} & \multicolumn{1}{r}{3.2 $\times$ 10$^{8}$} & \multicolumn{1}{S[table-format=3.1]}{80} \\
+\midrule
+Reflected Assemblies & \multicolumn{1}{S[table-format=2.1]}{2} & \multicolumn{1}{r}{4 $\times$ 10$^{7}$} & \multicolumn{1}{S[table-format=3.1]}{10} \\
+\midrule
+Corner Assemblies & \multicolumn{1}{S[table-format=2.1]}{2} & \multicolumn{1}{r}{1.2 $\times$ 10$^{8}$} & \multicolumn{1}{S[table-format=3.1]}{30} \\
+  \midrule
+TOTAL & \multicolumn{1}{S[table-format=2.1]}{3}1 & \multicolumn{1}{r}{9.4 $\times$ 10$^{8}$} & \multicolumn{1}{S[table-format=3.1]}{235} \\
+  \specialrule{1.5pt}{1pt}{1pt}
+Quarter Core \ac{BEAVRS} & \multicolumn{1}{S[table-format=2.1]}{1} & \multicolumn{1}{r}{9.7 $\times$ 10$^{8}$} & \multicolumn{1}{S[table-format=3.1]}{245} \\
+  \bottomrule
+\end{tabular}
+\end{table}
+
+%-similar to the ``infinite'' scheme
+%  -recall Sec.~\ref{subsec:chap8-infinite}
+%  -generate \ac{MGXS} with \ac{MC} simulations of sub-components
+%  -how much slower is this than if we were to employ the same scheme for various sub-components??
+%    -and then re-use those \ac{MGXS} in a full core scheme
+
+The estimated runtime to generate \ac{MGXS} with a single \ac{MC} simulation of the quarter core \ac{BEAVRS} model is only 5\% greater than that required to generate \ac{MGXS} for each sub-component. Moreover, the \ac{MGXS} generated by a single \ac{MC} simulation will in general be more accurate since they were collapsed with ``true'' \ac{MC} flux from the complete heterogeneous geometry. In addition, the software infrastructure required to generate and use \ac{MGXS} for each of the many sub-components in a core model would be much greater than that needed to generate \ac{MGXS} from a single \ac{MC} simulation of the complete geometry. This analysis only provides a rough estimate of the relative runtimes and is subject to several key assumptions. Nevertheless, it points to the potential for advanced pin-wise spatial homogenization schemes -- such as those introduced in this thesis -- to harness \ac{MC} to efficiently generate accurate \ac{MGXS} for deterministic transport codes.
 
 \clearpage
 
 \vfill
 \begin{highlightsbox}[frametitle=Highlights]
 \begin{itemize}
-  \item The \textit{inferential \ac{MGXS}} (\textit{i}\ac{MGXS}) spatial homogenization scheme uses unsupervised clustering analysis of \ac{MC} tally data to predict which fuel pins experience similar spatial self-shielding effects.
+  \item The six benchmarks are modeled with \ac{MGXS} generated by the \textit{i}\ac{MGXS} scheme with varying numbers of clusters identified by each clustering algorithm.
+  \item The clustering algorithm and/or the number of clusters has no systematic impact on the eigenvalues due to the preservation of global reactivity.
+  \item The U-238 capture rate errors are greatly reduced with only a few \ac{MGXS} clusters, with diminishing returns for additional clusters.
+  \item The \textit{i}\ac{MGXS} scheme requires more clusters to achieve the same error as the \ac{LNS} scheme for all benchmarks except the colorset with a water reflector.
+  \item \textit{i}\ac{MGXS} outperforms \ac{LNS} for the reflected colorset since it distinguishes fuel pins along assembly-assembly and assembly-reflector interfaces.
+  \item The convergence rates of the U-238 capture rate errors with null, degenerate, \ac{LNS} and \textit{i}\ac{MGXS} spatial homogenization were evaluated with respect to the number of \ac{MC} histories used to generate \ac{MGXS}.
+  \item Approximately 10$\times$ fewer histories are required to converge the errors for \textit{i}\ac{MGXS} than for degenerate homogenization or a reference \ac{MC} calculation.
+  \item The total runtime for the entire simulation workflow with \textit{i}\ac{MGXS} homogenization is 5 -- 10$\times$ faster than that for the degenerate scheme, and 1.5 -- 4$\times$ faster than a reference \ac{MC} calculation.
+  \item The results in this chapter point to the potential for \textit{i}\ac{MGXS} as a means to efficiently generate \ac{MGXS} with reactor agnostic \ac{MC} calculations of the complete heterogeneous geometry in a single step.
 \end{itemize}
 \end{highlightsbox}
 \vfill
