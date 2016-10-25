@@ -1,7 +1,7 @@
 \chapter{The \textit{i}MGXS Spatial Homogenization Scheme}
 \label{chap:unsupervised}
 
-The preceding chapter illustrated the clustering of pin-wise \ac{MGXS} as a result of spatial self-shielding effects. It was shown that \ac{MGXS} clustering must be appropriately modeled to accurately resolve pin-wise U-238 capture rates. The \ac{LNS} spatial homogenization scheme was introduced to predict \ac{MGXS} clustering with a geometric template-like approach. The \ac{LNS} scheme was shown to achieve the same level of accuracy as degenerate homogenization while simultaneously accelerating the \ac{MC} tally convergence rate for simple benchmark problems. However, the \ac{LNS} scheme suffered from its inability to predict \ac{MGXS} clustering in geometries with water reflectors and steel baffles. In addition, the \ac{LNS} scheme did not scale well with the complexity of the core geometry, resulting in a large number of materials and thus an under-accelerated convergence rate. This chapter introduces an adaptable and scalable alternative to \ac{LNS} which uses unsupervised statistical learning methods to predict \ac{MGXS} clustering.
+The preceding chapter illustrated the clustering of pin-wise \ac{MGXS} as a result of spatially self-shielded spectral effects. It was shown that \ac{MGXS} clustering must be appropriately modeled to accurately resolve pin-wise U-238 capture rates. The \ac{LNS} spatial homogenization scheme was introduced to predict \ac{MGXS} clustering with a geometric template-like approach. The \ac{LNS} scheme was shown to achieve the same level of accuracy as degenerate homogenization while simultaneously accelerating the \ac{MC} tally convergence rate for simple benchmark problems. However, the \ac{LNS} scheme suffered from its inability to predict \ac{MGXS} clustering in geometries with water reflectors and steel baffles. In addition, the \ac{LNS} scheme did not scale well with the complexity of the core geometry, resulting in a large number of materials and thus an under-accelerated convergence rate. This chapter introduces an adaptable and scalable alternative to \ac{LNS} which uses unsupervised statistical learning methods to predict \ac{MGXS} clustering.
 
 The novel methodology presented here -- referred to as \textit{inferential \ac{MGXS}} (\textit{i}\ac{MGXS}) spatial homogenization -- uses algorithms developed by the machine learning community to infer \ac{MGXS} clusters directly from \ac{MC} tally data rather than predict clustering from an analysis of the core geometry. The \textit{i}\ac{MGXS} scheme can flexibly accommodate arbitrary core heterogeneities better than \ac{LNS} or other geometric-based approaches which must be extensively customized for particular core geometries. In addition, the \textit{i}\ac{MGXS} scheme aims to greatly accelerate the convergence rate of \ac{MGXS} tallied with \ac{MC} with respect to the degenerate and \ac{LNS} schemes as shown in Fig.~\ref{fig:chap10-flow-chart}.
 
@@ -225,7 +225,7 @@ A high-level overview of the various stages of the \textit{i}\ac{MGXS} data proc
 \section{Feature Extraction}
 \label{sec:chap10-feature-extract}
 
-The \textit{feature extraction} stage of the data processing pipeline in Fig.~\ref{fig:chap10-pipeline} builds \textit{features} from \ac{MC} tally data. In machine learning, features are simply variables which are used as inputs to a predictive model. Features may be engineered based upon prior domain knowledge or inferred from automated feature learning algorithms such as neural networks. In the context of \textit{i}\ac{MGXS}, features are restricted to tallies, or combinations of tallies, from \ac{MC} simulations which provide information about which fuel pin instances experience similar spatial self-shielding effects. For example, the pin-wise \ac{MGXS} $\hat{\sigma}_{x,i,k,g}$ may be used as features since they exhibit the very clustering effects which the \textit{i}\ac{MGXS} scheme attempts to predict\footnote{Using the pin-wise \ac{MGXS} as the only feature(s) for unsupervised clustering would render the clustering problem equivalent to specifying boundaries between the samples illustrated in the rug plots in Sec.~\ref{subsec:chap9-histograms}.}. Other tallied quantities may also be used as features for predicting which fuel pin instances have similarly self-shielded \ac{MGXS}. The goal of extracting \textit{i}\ac{MGXS} features is to enable machine learning algorithms to identify \ac{MGXS} clusters as quickly as possible from ``noisy'' or unconverged tally data.
+The \textit{feature extraction} stage of the data processing pipeline in Fig.~\ref{fig:chap10-pipeline} builds \textit{features} from \ac{MC} tally data. In machine learning, features are simply variables which are used as inputs to a predictive model. Features may be engineered based upon prior domain knowledge or inferred from automated feature learning algorithms such as neural networks. In the context of \textit{i}\ac{MGXS}, features are restricted to tallies, or combinations of tallies, from \ac{MC} simulations which provide information about which fuel pin instances experience similar spatial self-shielding effects. For example, the pin-wise microscopic \ac{MGXS} may be used as features since they exhibit the very clustering effects which the \textit{i}\ac{MGXS} scheme attempts to predict\footnote{Using the pin-wise \ac{MGXS} as the only feature(s) for unsupervised clustering would render the clustering problem equivalent to specifying boundaries between the samples illustrated in the rug plots in Sec.~\ref{subsec:chap9-histograms}.}. Other tallied quantities may also be used as features for predicting which fuel pin instances have similarly self-shielded \ac{MGXS}. The goal of extracting \textit{i}\ac{MGXS} features is to enable machine learning algorithms to identify \ac{MGXS} clusters as quickly as possible from ``noisy'' or unconverged tally data.
 
 The \textit{i}\ac{MGXS} scheme splits the \ac{MC} tally dataset up into \textit{samples} for each particular instance $k$ of a fuel pin as illustrated in Fig.~\ref{fig:chap10-feature-extract}. A \textit{sample} is a random vector with $J$ entries for each feature $\hat{f}_{j,k}$ corresponding to a particular instance $k$ of a fuel pin. A sample may be comprised of features derived from \ac{MC} tally data for one or multiple nuclides, energy groups and/or reaction types. Ideally, the features should maximize the \textit{separation distance} in feature space $\{\hat{f}_{1,\cdot}, \hat{f}_{2,\cdot}, \dots, \hat{f}_{J,\cdot}\}$ between samples from the same cluster. Since features in \textit{i}\ac{MGXS} are tallied quantities from \ac{MC} simulations, some samples may include ``outlier'' feature realizations which take on values far removed from the ``true'' value of the feature\footnote{The ``true'' values are the expected values for each feature.}. Outliers may result in the incorrect assignment of cluster labels to fuel pin instances. The predictive models used in \textit{i}\ac{MGXS} are trained with the complete vector of features in order to mitigate the sensitivity of the models to outlier features and minimize the frequency of mis-labeled cluster assignments.
 
@@ -238,9 +238,9 @@ The \textit{i}\ac{MGXS} scheme splits the \ac{MC} tally dataset up into \textit{
 \end{figure}
 
 In addition, it should be noted that features may not necessarily be defined for the same energy group structure as the \ac{MGXS} one wishes to cluster. For example, some or all features may be tallied on a relatively coarse energy group structure in order to minimize their \ac{MC} statistical uncertainties. It may in fact be beneficial to tally features in few groups in order to identify clusters with fewer \ac{MC} particle histories than would needed to distinguish structure from ``noisy'' fine group features.
-These coarse group features may be input to a clustering algorithm for spatial homogenization of pin-wise \ac{MGXS} defined on a fine(r) energy group structure. For example, the following sections and chapters cluster features defined for a coarse 2-group structure for spatial homogenization of the ``fine'' 70-group pin-wise \ac{MGXS}.
+These coarse group features may be input to a clustering algorithm for spatial homogenization of pin-wise \ac{MGXS} defined on a fine(r) energy group structure. For example, the following sections and chapters cluster features defined for a coarse 2-group structure for spatial homogenization of the ``fine'' 70-group pin-wise \ac{MGXS} that are later used in downstream \ac{MOC} transport calculations.
 
-The following sections introduce the features employed by \textit{i}\ac{MGXS} in this and the following chapter. These include the pin-wise \ac{MGXS} and their statistical uncertainties (Sec.~\ref{subsec:chap10-stat-uncertainty}), as well as features referred to as fractional reactivities (Sec.~\ref{subsec:chap10-frac-reactivity}), spectral indices (Sec.~\ref{subsec:chap10-spec-index}) and nuclide fractions (Sec.~\ref{subsec:chap10-nuclide-frac}). Each feature is specific to a fuel pin instance, and may further be distinguished for one or more nuclides, energy groups and/or reaction types. Each feature is presented with accompanying illustrations generated using a custom-built tool to visualize \textit{i}\ac{MGXS} features~\cite{abel2016bokeh}, and which correspond to the 1.6\% enriched fuel assembly benchmark.
+The following sections introduce the features employed by \textit{i}\ac{MGXS} in this and the following chapter. These include the pin-wise \ac{MGXS} and their statistical uncertainties (Sec.~\ref{subsec:chap10-stat-uncertainty}), as well as features referred to as fractional reactivities (Sec.~\ref{subsec:chap10-frac-reactivity}), spectral indices (Sec.~\ref{subsec:chap10-spec-index}) and reaction fractions (Sec.~\ref{subsec:chap10-reaction-frac}). Each feature is specific to a fuel pin instance, and may further be distinguished for one or more nuclides, energy groups and/or reaction types. Each feature is presented with accompanying illustrations generated using a custom-built tool to visualize \textit{i}\ac{MGXS} features~\cite{abel2016bokeh}, and which correspond to the 1.6\% enriched fuel assembly benchmark.
 
 %The clustering algoritms used in \textit{i}\ac{MGXS} may more easily identify clusters from the less ``noisy'' feature data, and the cluster labels used to spatially homogenize fine(r) group pin-wise \ac{MGXS}. 
 
@@ -251,7 +251,7 @@ The following sections introduce the features employed by \textit{i}\ac{MGXS} in
 \subsection{MGXS Statistical Uncertainty}
 \label{subsec:chap10-stat-uncertainty}
 
-The statistical uncertainty for each pin-wise \ac{MGXS} may be a useful feature to indicate clustering effects. In particular, the standard deviation of the sample mean is easily obtained from OpenMC tallies and can be included in the feature vector for each fuel pin instance. The intuition behind this is that the track densities -- and therefore, the statistical uncertainties -- in different fuel pins may reflect the spatial self-shielding effects experienced by different types of fuel pins. For example, the thermal flux track density will vary for fuel pins with differential moderation from \acp{CRGT}, reflectors, etc., which may present itself through a systematic clustering of the statistical uncertainties. Similarly, the track density will vary for fuel pins which experience varying degrees of spatial self-shielding in U-238 resonance groups -- which greatly impacts the resultant \ac{MGXS} in those groups -- and may be identifiable in the \ac{MGXS} uncertainties.
+The statistical uncertainty for each pin-wise \ac{MGXS} may be a useful feature to indicate clustering effects. In particular, the standard deviation of the sample mean is easily obtained from OpenMC tallies and can be included in the feature vector for each fuel pin instance. The intuition behind this is that the track densities -- and therefore, the statistical uncertainties -- in different fuel pins may reflect the spatial self-shielding effects experienced by different types of fuel pins. For example, the thermal flux track density will vary for fuel pins with different levels of moderation from \acp{CRGT}, reflectors, etc., which may present itself through a systematic clustering of the statistical uncertainties. Similarly, the track density will vary for fuel pins which experience varying degrees of spatial self-shielding in U-238 resonance groups -- which greatly impacts the resultant \ac{MGXS} in those groups -- and may be identifiable in the \ac{MGXS} uncertainties.
 
 The statistical uncertainty feature is illustrated with scatter plots in Figs.~\ref{fig:chap10-fiss-mean-std} and~\ref{fig:chap10-capt-mean-std} for 2-group U-235 fission and U-238 capture \ac{MGXS} data, respectively. The scatter plots include a single data point for each of the 264 fuel pins in the 1.6\% enriched fuel assembly benchmark. The $x$ and $y$ coordinates correspond to the tallied \ac{MGXS} means $\hat{\sigma}_{x,i,k,g}$ and standard deviations $\sigma_{\hat{\sigma}_{x,i,k,g}}$ in units of barns, respectively. The complete datasets are illustrated in Figs.~\ref{fig:chap10-fiss-mean-std-mgxs} and~\ref{fig:chap10-capt-mean-std-mgxs}. The interactive \textit{i}\ac{MGXS} visualization tool was used to select clusters of \ac{MGXS} and plot the geometry to indicate the associated fuel pins, as displayed in Figs.~\Crefrange{fig:chap10-fiss-mean-std-geom-2}{fig:chap10-fiss-mean-std-mgxs-3} and~\Crefrange{fig:chap10-capt-mean-std-geom-2}{fig:chap10-capt-mean-std-mgxs-3} for the fission and capture \ac{MGXS}, respectively. The figures illustrate that the U-235 \ac{MGXS} uncertainties are smallest for the fuel pins with the most differential moderation (\textit{i.e.}, pins facially adjacent to \acp{CRGT}) and a relatively larger thermal flux track density. In contrast, the U-238 capture \ac{MGXS} uncertainties are largest for those pins with the most differential moderation due to the smaller fast-to-thermal flux ratio in these pins.
 
@@ -369,7 +369,7 @@ The fractional reactivity feature is illustrated with scatter plots in Figs.~\re
 
 The scatter plots illustrate the highly linear relationship between the U-235 fission \ac{MGXS} and fractional reactivities: those pins facially and corner adjacent to distinct \acp{CRGT} have both the largest fission \ac{MGXS} and fission rates due to the differential moderation of the neighboring \acp{CRGT} (at least for this benchmark). The clustering of U-238 capture \ac{MGXS} generally indicates a similar proportional relationship with fractional reactivity. Perhaps more importantly, Fig.~\ref{fig:chap10-capt-mean-pcm} distinguishes ``sub-clusters'' within each of the four primary clusters of U-238 capture \ac{MGXS}. Although the sub-clusters within a primary cluster have similar \ac{MGXS}\footnote{The track density-weighted average \ac{MGXS} for the sub-clusters would be relatively similar.}, there is some variation due to subtle differences in the spatial self-shielding experienced by the pins in each primary cluster.
 
-The visualizations highlight the \textit{hierarchical} nature of spatial self-shielding effects: some factors are most important and induce primary clusters (\textit{i.e.}, whether a fuel pin is adjacent to zero, one or two \acp{CRGT}), while other factors are less consequential yet still induce sub-clusters (\textit{i.e.}, the type adjacency of neighboring \acp{CRGT}). The hierarchy of spatial self-shielding effects will grow increasingly intricate with the size and complexity of the reactor configuration, further motivating the importance for an unsupervised methodology like \textit{i}\ac{MGXS} to identify \ac{MGXS} clustering for arbitrary core geometries.
+The visualizations highlight the \textit{hierarchical} nature of spatial self-shielding effects: some factors are more important and induce primary clusters (\textit{i.e.}, whether a fuel pin is adjacent to zero, one or two \acp{CRGT}), while other factors are less consequential yet still induce sub-clusters (\textit{i.e.}, the type adjacency of neighboring \acp{CRGT}). The hierarchy of spatial self-shielding effects will grow increasingly intricate with the size and complexity of the reactor configuration, further motivating the importance for an unsupervised methodology like \textit{i}\ac{MGXS} to identify \ac{MGXS} clustering for arbitrary core geometries.
 
 \begin{figure}[h!]
 \centering
@@ -567,18 +567,18 @@ The figures illustrate a complex relationship between the U-235 fission \ac{MGXS
 %(at least for this benchmark). 
 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Nuclide Fraction}
-\label{subsec:chap10-nuclide-frac}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Reaction Fraction}
+\label{subsec:chap10-reaction-frac}
 
-In contrast to the energy-integrated fractional reactivity and spectral index features, the \textit{nuclide fraction} is specific to each energy group. The nuclide fraction is defined as the ratio of each pin-wise microscopic \ac{MGXS} $\hat{\sigma}_{x,i,k,g}$ for reaction $x$, nuclide $i$ and energy group $k$ to the total \ac{MGXS} $\hat{\sigma}_{t,i,k,g}$ for the corresponding nuclide and energy group:
+In contrast to the energy-integrated fractional reactivity and spectral index features, the \textit{reaction fraction} is specific to each energy group. The reaction fraction is defined as the ratio of each pin-wise microscopic \ac{MGXS} $\hat{\sigma}_{x,i,k,g}$ for reaction $x$, nuclide $i$ and energy group $k$ to the total \ac{MGXS} $\hat{\sigma}_{t,i,k,g}$ for the corresponding nuclide and energy group:
 
 \begin{equation}
-\label{eqn:chap10-nuclide-frac}
+\label{eqn:chap10-reaction-frac}
 \hat{\tau}_{x,i,k,g} = \frac{\hat{\sigma}_{x,i,k,g}}{\hat{\sigma}_{t,i,k,g}}
 \end{equation}
 
-The nuclide fraction feature $\hat{\tau}_{x,i,k,g}$ is motivated by the hypothesis that spatial self-shielding effects may disproportionately impact certain reaction types (\textit{e.g.}, U-238 capture) more than the total \ac{MGXS}. Since the nuclide fraction is computed for each energy group, it may be more challenging to identify clusters with this feature with ``noisy'' \ac{MC} tally data than may be the case for the energy-integrated fractional reactivity and spectral index features. Like the spectral index, the nuclide fraction may identify pins with similar flux shapes but very different flux magnitudes since it is the ratio of two pin-wise reaction rates.
+The reaction fraction feature $\hat{\tau}_{x,i,k,g}$ is motivated by the hypothesis that spatial self-shielding effects may disproportionately impact certain reaction types (\textit{e.g.}, U-238 capture) more than the total \ac{MGXS}. Since the reaction fraction is computed for each energy group, it may be more challenging to identify clusters with this feature with ``noisy'' \ac{MC} tally data than may be the case for the energy-integrated fractional reactivity and spectral index features. Like the spectral index, the reaction fraction may identify pins with similar flux shapes but very different flux magnitudes since it is the ratio of two pin-wise reaction rates.
 
 \begin{figure}[h!]
 \centering
@@ -586,40 +586,40 @@ The nuclide fraction feature $\hat{\tau}_{x,i,k,g}$ is motivated by the hypothes
   \centering
   \includegraphics[width=0.9\linewidth]{figures/unsupervised/features/assm-16/geometry}
   \caption{}
-  \label{fig:chap10-fiss-mean-nuc-frac-geom}
+  \label{fig:chap10-fiss-mean-react-frac-geom}
 \end{subfigure}%
 \begin{subfigure}{0.45\textwidth}
   \centering
-  \includegraphics[width=0.9\linewidth]{figures/unsupervised/features/assm-16/u235-fiss/mean-nuc-frac/mgxs}
+  \includegraphics[width=0.9\linewidth]{figures/unsupervised/features/assm-16/u235-fiss/mean-react-frac/mgxs}
   \caption{}
-  \label{fig:chap10-fiss-mean-nuc-frac-mgxs}
+  \label{fig:chap10-fiss-mean-react-frac-mgxs}
 \end{subfigure}
 \begin{subfigure}{0.45\textwidth}
   \centering
-  \includegraphics[width=0.9\linewidth]{figures/unsupervised/features/assm-16/u235-fiss/mean-nuc-frac/geometry-2}
+  \includegraphics[width=0.9\linewidth]{figures/unsupervised/features/assm-16/u235-fiss/mean-react-frac/geometry-2}
   \caption{}
-  \label{fig:chap10-fiss-mean-nuc-frac-geom-2}
+  \label{fig:chap10-fiss-mean-react-frac-geom-2}
 \end{subfigure}%
 \begin{subfigure}{0.45\textwidth}
   \centering
-  \includegraphics[width=0.9\linewidth]{figures/unsupervised/features/assm-16/u235-fiss/mean-nuc-frac/mgxs-2}
+  \includegraphics[width=0.9\linewidth]{figures/unsupervised/features/assm-16/u235-fiss/mean-react-frac/mgxs-2}
   \caption{}
-  \label{fig:chap10-fiss-mean-nuc-frac-mgxs-2}
+  \label{fig:chap10-fiss-mean-react-frac-mgxs-2}
 \end{subfigure}
 \begin{subfigure}{0.45\textwidth}
   \centering
-  \includegraphics[width=0.9\linewidth]{figures/unsupervised/features/assm-16/u235-fiss/mean-nuc-frac/geometry-3}
+  \includegraphics[width=0.9\linewidth]{figures/unsupervised/features/assm-16/u235-fiss/mean-react-frac/geometry-3}
   \caption{}
-  \label{fig:chap10-fiss-mean-nuc-frac-geom-3}
+  \label{fig:chap10-fiss-mean-react-frac-geom-3}
 \end{subfigure}%
 \begin{subfigure}{0.45\textwidth}
   \centering
-  \includegraphics[width=0.9\linewidth]{figures/unsupervised/features/assm-16/u235-fiss/mean-nuc-frac/mgxs-3}
+  \includegraphics[width=0.9\linewidth]{figures/unsupervised/features/assm-16/u235-fiss/mean-react-frac/mgxs-3}
   \caption{}
-  \label{fig:chap10-fiss-mean-nuc-frac-mgxs-3}
+  \label{fig:chap10-fiss-mean-react-frac-mgxs-3}
 \end{subfigure}
-\caption[Clustering of U-235 fission MGXS nuclide fractions]{Scatter plots of the pin-wise U-235 fission (group 2 of 2) \ac{MGXS} means ($x$) and nuclide fractions ($y$) for the 1.6\% enriched fuel assembly.}
-\label{fig:chap10-fiss-mean-nuc-frac}
+\caption[Clustering of U-235 fission MGXS reaction fractions]{Scatter plots of the pin-wise U-235 fission (group 2 of 2) \ac{MGXS} means ($x$) and reaction fractions ($y$) for the 1.6\% enriched fuel assembly.}
+\label{fig:chap10-fiss-mean-react-frac}
 \end{figure}
 
 %\clearpage
@@ -630,47 +630,47 @@ The nuclide fraction feature $\hat{\tau}_{x,i,k,g}$ is motivated by the hypothes
   \centering
   \includegraphics[width=0.9\linewidth]{figures/unsupervised/features/assm-16/geometry}
   \caption{}
-  \label{fig:chap10-capt-mean-nuc-frac-geom}
+  \label{fig:chap10-capt-mean-react-frac-geom}
 \end{subfigure}%
 \begin{subfigure}{0.45\textwidth}
   \centering
-  \includegraphics[width=0.9\linewidth]{figures/unsupervised/features/assm-16/u238-capt/mean-nuc-frac/mgxs}
+  \includegraphics[width=0.9\linewidth]{figures/unsupervised/features/assm-16/u238-capt/mean-react-frac/mgxs}
   \caption{}
-  \label{fig:chap10-capt-mean-nuc-frac-mgxs}
+  \label{fig:chap10-capt-mean-react-frac-mgxs}
 \end{subfigure}
 \begin{subfigure}{0.45\textwidth}
   \centering
-  \includegraphics[width=0.9\linewidth]{figures/unsupervised/features/assm-16/u238-capt/mean-nuc-frac/geometry-2}
+  \includegraphics[width=0.9\linewidth]{figures/unsupervised/features/assm-16/u238-capt/mean-react-frac/geometry-2}
   \caption{}
-  \label{fig:chap10-capt-mean-nuc-frac-geom-2}
+  \label{fig:chap10-capt-mean-react-frac-geom-2}
 \end{subfigure}%
 \begin{subfigure}{0.45\textwidth}
   \centering
-  \includegraphics[width=0.9\linewidth]{figures/unsupervised/features/assm-16/u238-capt/mean-nuc-frac/mgxs-2}
+  \includegraphics[width=0.9\linewidth]{figures/unsupervised/features/assm-16/u238-capt/mean-react-frac/mgxs-2}
   \caption{}
-  \label{fig:chap10-capt-mean-nuc-frac-mgxs-2}
+  \label{fig:chap10-capt-mean-react-frac-mgxs-2}
 \end{subfigure}
 \begin{subfigure}{0.45\textwidth}
   \centering
-  \includegraphics[width=0.9\linewidth]{figures/unsupervised/features/assm-16/u238-capt/mean-nuc-frac/geometry-3}
+  \includegraphics[width=0.9\linewidth]{figures/unsupervised/features/assm-16/u238-capt/mean-react-frac/geometry-3}
   \caption{}
-  \label{fig:chap10-capt-mean-nuc-frac-geom-3}
+  \label{fig:chap10-capt-mean-react-frac-geom-3}
 \end{subfigure}%
 \begin{subfigure}{0.45\textwidth}
   \centering
-  \includegraphics[width=0.9\linewidth]{figures/unsupervised/features/assm-16/u238-capt/mean-nuc-frac/mgxs-3}
+  \includegraphics[width=0.9\linewidth]{figures/unsupervised/features/assm-16/u238-capt/mean-react-frac/mgxs-3}
   \caption{}
-  \label{fig:chap10-capt-mean-nuc-frac-mgxs-3}
+  \label{fig:chap10-capt-mean-react-frac-mgxs-3}
 \end{subfigure}
-\caption[Clustering of U-238 capture MGXS nuclide fractions]{Scatter plots of the pin-wise U-238 capture (group 1 of 2) \ac{MGXS} means ($x$) and nuclide fractions ($y$) for the 1.6\% enriched fuel assembly.}
-\label{fig:chap10-capt-mean-nuc-frac}
+\caption[Clustering of U-238 capture MGXS reaction fractions]{Scatter plots of the pin-wise U-238 capture (group 1 of 2) \ac{MGXS} means ($x$) and reaction fractions ($y$) for the 1.6\% enriched fuel assembly.}
+\label{fig:chap10-capt-mean-react-frac}
 \end{figure}
 
 %\clearpage
 
-The nuclide fraction feature is illustrated with scatter plots in Figs.~\ref{fig:chap10-fiss-mean-nuc-frac} and~\ref{fig:chap10-capt-mean-nuc-frac} for 2-group U-235 fission and U-238 capture \ac{MGXS} data, respectively. The scatter plots include a single data point for each of the 264 fuel pins in the 1.6\% enriched fuel assembly benchmark. The $x$ and $y$ coordinates correspond to the tallied \ac{MGXS} means $\hat{\sigma}_{x,i,k,g}$ and nuclide fractions $\beta_{k}$, respectively. The complete datasets are illustrated in Figs.~\ref{fig:chap10-fiss-mean-nuc-frac-mgxs} and~\ref{fig:chap10-capt-mean-nuc-frac-mgxs}. The interactive \textit{i}\ac{MGXS} visualization tool was used to select clusters of \ac{MGXS} and plot the geometry to indicate the associated fuel pins, as displayed in Figs.~\Crefrange{fig:chap10-fiss-mean-nuc-frac-geom-2}{fig:chap10-fiss-mean-nuc-frac-mgxs-3} and~\Crefrange{fig:chap10-capt-mean-nuc-frac-geom-2}{fig:chap10-capt-mean-nuc-frac-mgxs-3} for the fission and capture \ac{MGXS}, respectively. 
+The reaction fraction feature is illustrated with scatter plots in Figs.~\ref{fig:chap10-fiss-mean-react-frac} and~\ref{fig:chap10-capt-mean-react-frac} for 2-group U-235 fission and U-238 capture \ac{MGXS} data, respectively. The scatter plots include a single data point for each of the 264 fuel pins in the 1.6\% enriched fuel assembly benchmark. The $x$ and $y$ coordinates correspond to the tallied \ac{MGXS} means $\hat{\sigma}_{x,i,k,g}$ and reaction fractions $\beta_{k}$, respectively. The complete datasets are illustrated in Figs.~\ref{fig:chap10-fiss-mean-react-frac-mgxs} and~\ref{fig:chap10-capt-mean-react-frac-mgxs}. The interactive \textit{i}\ac{MGXS} visualization tool was used to select clusters of \ac{MGXS} and plot the geometry to indicate the associated fuel pins, as displayed in Figs.~\Crefrange{fig:chap10-fiss-mean-react-frac-geom-2}{fig:chap10-fiss-mean-react-frac-mgxs-3} and~\Crefrange{fig:chap10-capt-mean-react-frac-geom-2}{fig:chap10-capt-mean-react-frac-mgxs-3} for the fission and capture \ac{MGXS}, respectively. 
 
-The figures illustrate a positive correlation between both the U-235 fission and U-238 capture \ac{MGXS} and the nuclide fractions (at least for this benchmark). In particular, the more differential moderation from neighboring \acp{CRGT}, the larger the nuclide fraction. Although the fission, capture and total rates all increase with differential moderation, these scatter plots indicate that U-235 fission and U-238 capture increase \textit{faster} than the corresponding total reaction rates with U-235 and U-238. The clusters are more spread out than the linear trends observed for the fractional reactivities, but this is likely due to the relatively larger statistical uncertainty for the energy-specific nuclide fractions than the energy-integrated fractional reactivities.
+The figures illustrate a positive correlation between both the U-235 fission and U-238 capture \ac{MGXS} and the reaction fractions (at least for this benchmark). In particular, the more differential moderation from neighboring \acp{CRGT}, the larger the reaction fraction. Although the fission, capture and total rates all increase with differential moderation, these scatter plots indicate that U-235 fission and U-238 capture increase \textit{faster} than the corresponding total reaction rates with U-235 and U-238. The clusters are more spread out than the linear trends observed for the fractional reactivities, but this is likely due to the relatively larger statistical uncertainty for the energy-specific reaction fractions than the energy-integrated fractional reactivities.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %\subsection{Total Fraction}
@@ -697,7 +697,7 @@ Each of the features described in the preceding sections is assembled into featu
 \centering
 \includegraphics[width=0.95\linewidth]{figures/unsupervised/features/engineering/features}
 \vspace{2mm}
-\caption[Example \textit{i}MGXS sample feature vectors]{\textit{i}\ac{MGXS} feature extraction computes fractional reactivities $\hat{\alpha}_{k}$, spectral indices $\hat{\beta}_{k}$, nuclide fractions $\hat{\tau}_{x,i,k,g}$, \ac{MGXS} means $\hat{\sigma}_{x,i,k,g}$ and standard deviations $\sigma_{\hat{\sigma}_{x,i,k,g}}$.}
+\caption[Example \textit{i}MGXS sample feature vectors]{\textit{i}\ac{MGXS} feature extraction computes fractional reactivities $\hat{\alpha}_{k}$, spectral indices $\hat{\beta}_{k}$, reaction fractions $\hat{\tau}_{x,i,k,g}$, \ac{MGXS} means $\hat{\sigma}_{x,i,k,g}$ and standard deviations $\sigma_{\hat{\sigma}_{x,i,k,g}}$.}
 \label{fig:chap10-features-example}
 \end{figure}
 
@@ -736,7 +736,7 @@ Automated feature selection methods are often classified into three main categor
 
 This thesis makes a fairly limited use of feature selection techniques in its implementation of \textit{i}\ac{MGXS}. In particular, a number of relatively simple filter and wrapper methods are presented in the following sections as options to select the best features. This process is illustrated as part of the \textit{i}\ac{MGXS} data processing pipeline in Fig.~\ref{fig:chap10-select}. Sec.~\ref{subsec:chap10-litmus} presents \textit{litmus tests} to filter the features and choose those pairings of nuclides and reaction types which are most likely to exhibit clustering. Sec.~\ref{subsec:chap10-var-threshold} introduces variance thresholding, while Sec.~\ref{subsec:chap10-univariate-selection} highlights a collection of filter methods which select the highest scoring features. Sec.~\ref{subsec:chap10-select-from-model} discusses a wrapper method which selects features based on their importances for decision tree or ensemble regressors. Finally, while domain knowledge is not an automated approach to feature down-selection, it is employed by the case studies in the following chapter and is discussed in Sec.~\ref{subsec:chap10-pinch-selection}.
 
-%Sec.~\ref{subsec:chap10-litmus-tot-frac} introduces a threshold-based method to downselect those nuclides with the most relevant data to cluster for a given energy group. Similarly, Sec.~\ref{subsec:chap10-litmus-nuc-frac} presents a threshold for the nuclide fraction to choose the ``best'' reaction type to cluster for a given nuclide and energy group.
+%Sec.~\ref{subsec:chap10-litmus-tot-frac} introduces a threshold-based method to downselect those nuclides with the most relevant data to cluster for a given energy group. Similarly, Sec.~\ref{subsec:chap10-litmus-react-frac} presents a threshold for the reaction fraction to choose the ``best'' reaction type to cluster for a given nuclide and energy group.
 
 \begin{figure}[h!]
 \centering
@@ -746,19 +746,19 @@ This thesis makes a fairly limited use of feature selection techniques in its im
 \label{fig:chap10-select}
 \end{figure}
 
-It is important to note that the methods and metrics highlighted here should be considered an exhaustive list of options for feature selection for \textit{i}\ac{MGXS}. Furthermore, while all of the options discussed are supported in the \textit{i}\ac{MGXS} implementation for this thesis, out of practical necessity only a few of the methods are evaluated by the empirical cases studies in this and the following chapter. Future work may aim to provide a more systematic appraisal of various feature selection methods for the \textit{i}\ac{MGXS} scheme.
+It is important to note that the methods and metrics highlighted here should not be considered an exhaustive list of options for feature selection for \textit{i}\ac{MGXS}. Furthermore, while all of the options discussed are supported in the \textit{i}\ac{MGXS} implementation for this thesis, out of practical necessity only a few of the methods are evaluated by the empirical cases studies in this and the following chapter. Future work may aim to provide a more systematic appraisal of various feature selection methods for the \textit{i}\ac{MGXS} scheme.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Litmus Tests}
 \label{subsec:chap10-litmus}
 
-\textit{Litmus tests} are filter methods specifically designed to select data for particular nuclides and reaction types for clustering. The litmus tests presented here are used to down-select the \ac{MGXS} mean and standard deviation features by predicting which nuclides and reaction types are most likely to exhibit clustering effects. The litmus tests are independently applied to each nuclide, energy group, and reaction type grouping. Sec.~\ref{subsubsec:chap10-litmus-tot-frac} introduces total fraction thresholding to select a nuclide for a given energy group, while Sec.~\ref{subsubsec:chap10-litmus-nuc-frac} introduces nuclide fraction thresholding to select a reaction type for a given nuclide and energy group. Sec.~\ref{subsubsec:chap10-litmus-nuc-frac} discusses how normality tests can be used to reject features which may have been drawn from a normal distribution.
+\textit{Litmus tests} are filter methods specifically designed to select data for particular nuclides and reaction types for clustering. The litmus tests presented here are used to down-select the \ac{MGXS} mean and standard deviation features by predicting which nuclides and reaction types are most likely to exhibit clustering effects. The litmus tests are independently applied to each nuclide, energy group, and reaction type grouping. Sec.~\ref{subsubsec:chap10-litmus-tot-frac} introduces total fraction thresholding to select a nuclide for a given energy group, while Sec.~\ref{subsubsec:chap10-litmus-react-frac} introduces reaction fraction thresholding to select a reaction type for a given nuclide and energy group. Sec.~\ref{subsubsec:chap10-litmus-react-frac} discusses how normality tests can be used to reject features which may have been drawn from a normal distribution.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Total Fraction Thresholding}
 \label{subsubsec:chap10-litmus-tot-frac}
 
-\textit{Total fraction thresholding} is a filter method used to select \ac{MGXS}-based features\footnote{\ac{MGXS}-based features include the microscopic \ac{MGXS} means $\hat{\sigma}_{x,i,k,g}$ and standard deviations $\sigma_{\hat{\sigma}_{x,i,k,g}}$, as well as the nuclide fraction $\hat{\tau}_{x,i,k,g}$.} for one or more nuclides for a particular energy group $g$ and reaction type $x$.
+\textit{Total fraction thresholding} is a filter method used to select \ac{MGXS}-based features\footnote{\ac{MGXS}-based features include the microscopic \ac{MGXS} means $\hat{\sigma}_{x,i,k,g}$ and standard deviations $\sigma_{\hat{\sigma}_{x,i,k,g}}$, as well as the reaction fraction $\hat{\tau}_{x,i,k,g}$.} for one or more nuclides for a particular energy group $g$ and reaction type $x$.
 The total fraction gives an indication of how much a particular nuclide contributes to the total \ac{MGXS}. 
 The \textit{total fraction} $\hat{\omega}_{x,i,k,g}$ is defined as the ratio of a macroscopic \ac{MGXS} $\hat{\Sigma}_{x,i,k,g}$ for nuclide $i$ and fuel pin instance $k$ to the total macroscopic \ac{MGXS} for all nuclides:
 
@@ -767,20 +767,20 @@ The \textit{total fraction} $\hat{\omega}_{x,i,k,g}$ is defined as the ratio of 
 \hat{\omega}_{x,i,k,g} = \frac{\hat{\Sigma}_{x,i,k,g}}{\displaystyle\sum\limits_{i=1}^{I}\hat{\Sigma}_{t,i,k,g}}
 \end{equation}
 
-The \textit{i}\ac{MGXS} implementation in this thesis simply chooses \ac{MGXS}-based features for nuclide $i$ if the mean $\overline{\hat{\omega}}_{x,i,g}$ across fuel pins is greater than some user-defined threshold. This litmus test assumes that nuclide(s) which contribute little to the total \ac{MGXS} are not important to cluster. This assumption may not always be valid if some small \ac{MGXS} disproportionately reflect spatial self-shielding effects. For example, if the flux is appreciably depressed in narrow resonance groups for nuclides and reaction types which are especially sensitive to spatial self-shielding (\textit{e.g.}, U-238 capture), then the \ac{MGXS} may likewise be depressed such that the total fraction drops below the threshold and the feature(s) are neglected. A relatively conservative value of 0.1 may be used for the threshold such that \ac{MGXS}-based features for trace nuclides (\textit{e.g.}, O-17, U-234) are neglected while those for U-235 and U-238 are always selected.
+The \textit{i}\ac{MGXS} implementation in this thesis simply chooses \ac{MGXS}-based features for nuclide $i$ if the mean $\overline{\hat{\omega}}_{x,i,g}$ across fuel pins is greater than some user-defined threshold. This litmus test assumes that nuclide(s) which contribute little to the total \ac{MGXS} are not important to cluster. This assumption may not always be valid if some small \ac{MGXS} are highly sensitive to spatial self-shielding effects. For example, if the flux is appreciably depressed in narrow resonance groups for nuclides and reaction types which are especially sensitive to spatial self-shielding (\textit{e.g.}, U-238 capture), then the \ac{MGXS} may likewise be depressed such that the total fraction drops below the threshold and the feature(s) are neglected. A relatively conservative value of 0.1 may be used for the threshold such that \ac{MGXS}-based features for trace nuclides (\textit{e.g.}, O-17, U-234) are neglected while those for U-235 and U-238 are always selected.
 
 
 %The case studies explored in the following chapter use a relatively conservative value of 0.1 for the threshold such that \ac{MGXS}-based features for trace nuclides (\textit{e.g.}, O-17, U-234) are neglected while those for U-235 and U-238 are always selected.
 
 %This is unlikely, however, since spatial self-shielding effects are only manifested as clusters in pin-wise \ac{MGXS} if the continuous energy data varies over a relatively large range for a given energy group. A widely varying cross section, such as those in the resonance regime, will most likely result in a relatively large microscopic \ac{MGXS} and total fraction for the nuclide.
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsubsection{Nuclide Fraction Thresholding}
-\label{subsubsec:chap10-litmus-nuc-frac}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Reaction Fraction Thresholding}
+\label{subsubsec:chap10-litmus-react-frac}
 
-\textit{Nuclide fraction thresholding} is a filter method used to select \ac{MGXS}-based features for one or more reaction types for a particular nuclide $i$ and energy group $g$ pairing. The nuclide fraction $\hat{\tau}_{x,i,k,g}$ (Eqn.~\ref{eqn:chap10-nuclide-frac}) gives an indication of how much a particular reaction contributes to a nuclide's total \ac{MGXS}. This litmus test is employed in a similar fashion to total fraction thresholding. In particular, the \textit{i}\ac{MGXS} implementation in this thesis simply chooses \ac{MGXS}-based features for nuclide $i$ and reaction $x$ if the mean $\overline{\hat{\tau}}_{x,i,g}$ across fuel pins is greater than some user-defined threshold.
+\textit{Reaction fraction thresholding} is a filter method used to select \ac{MGXS}-based features for one or more reaction types for a particular nuclide $i$ and energy group $g$ pairing. The reaction fraction $\hat{\tau}_{x,i,k,g}$ (Eqn.~\ref{eqn:chap10-reaction-frac}) gives an indication of how much a particular reaction contributes to a nuclide's total \ac{MGXS}. This litmus test is employed in a similar fashion to total fraction thresholding. In particular, the \textit{i}\ac{MGXS} implementation in this thesis simply chooses \ac{MGXS}-based features for nuclide $i$ and reaction $x$ if the mean $\overline{\hat{\tau}}_{x,i,g}$ across fuel pins is greater than some user-defined threshold.
 
-The nuclide fraction thresholding litmus test assumes that reaction(s) which contribute little to a nuclide's total \ac{MGXS} are not important to cluster. As was noted for total fraction thresholding, this assumption may not always be valid if some small \ac{MGXS} disproportionately reflect spatial self-shielding effects. For example, if the flux is appreciably depressed in narrow resonance groups for nuclides and reaction types which are especially sensitive to spatial self-shielding (\textit{e.g.}, U-238 capture), then the \ac{MGXS} may likewise be depressed such that the total fraction drops below the threshold and the feature(s) are neglected. A relatively conservative value of 0.3 may be used for the threshold such that \ac{MGXS}-based features for U-235 fission and U-238 capture are always selected for thermal energy groups.
+The reaction fraction thresholding litmus test assumes that reaction(s) which contribute little to a nuclide's total \ac{MGXS} are not important to cluster. As was noted for total fraction thresholding, this assumption may not always be valid if some small \ac{MGXS} are highly sensitive to spatial self-shielding effects. A relatively conservative value of 0.3 may be used for the threshold such that \ac{MGXS}-based features for U-235 fission and U-238 capture are always selected for thermal energy groups.
 
 %The case studies explored in the following chapter use a relatively conservative value of 0.3 for the threshold such that \ac{MGXS}-based features for U-235 fission and U-238 capture are always selected for thermal energy groups.
 
@@ -788,7 +788,7 @@ The nuclide fraction thresholding litmus test assumes that reaction(s) which con
 \subsubsection{Normality Tests}
 \label{subsubsec:chap10-litmus-normality}
 
-\textit{Normality tests} select features which fail to satisfy the null hypothesis that the data is drawn from a normal distribution. Normality tests are a filter method for feature selection motivated by the thought experiment posed in Chap.~\ref{chap:spatial} and investigated in Sec.~\ref{subsec:chap9-qq-plots} with \ac{Q-Q} plots. This litmus test assumes that the realizations of a given feature are normally distributed if they do not reflect spatial self-shielding effects. If this assumption is valid, then those features which pass a normality test do not provide any useful information about \ac{MGXS} clustering and can be neglected.
+\textit{Normality tests} select features which fail to satisfy the null hypothesis that the data is drawn from a normal distribution. Normality tests are a filter method for feature selection motivated by the thought experiment posed in Chap.~\ref{chap:spatial} and investigated in Sec.~\ref{subsec:chap9-qq-plots} with \ac{Q-Q} plots. This litmus test assumes that the realizations of a given feature are normally distributed if they are insensitive to spatial self-shielding effects. If this assumption is valid, then those features which pass a normality test do not provide any useful information about \ac{MGXS} clustering and can be neglected.
 
 The \textit{i}\ac{MGXS} implementation in this thesis uses the Shapiro-Wilk test of normality~\cite{shapiro1965analysis} computed using the Python \texttt{scipy.stats} package~\cite{jones2011scipy}. The Shapiro-Wilk test is applied to all samples for a given feature to compute a $p$-value to quantify the null hypothesis that the population came from a normal distribution. A user-defined significance level $\alpha$ is chosen (\textit{e.g.}, 0.001) and compared with the Shapiro-Wilk $p$-value. If $p > \alpha$ then the null hypothesis that the feature is normally distributed is accepted and the feature is dropped from the dataset. Alternatively, if $p < \alpha$, then the null hypothesis is rejected and the feature is selected as a potentially good candidate to indicate \ac{MGXS} clustering.
 
@@ -798,7 +798,7 @@ The \textit{i}\ac{MGXS} implementation in this thesis uses the Shapiro-Wilk test
 
 \textit{Variance thresholding} is a filter method which removes low variance features. The \textit{i}\ac{MGXS} implementation in this thesis uses the \texttt{VarianceThreshold} class from the \texttt{sklearn.feature_selection} module to administer variance thresholding. It is important to note that variance thresholding must be applied to the features \textit{prior} to standardization (see Sec.~\ref{subsec:chap10-feature-standardize}).
 
-Variance thresholding presents an opportunity for a user to guide the \textit{i}\ac{MGXS} feature selection process. A user may define specialized variance thresholds for one or more features based on some prior understanding of the reactor physics relevant to the problem at hand. For example, a user may know that it is only important to model \ac{MGXS} clustering if the variance of one, some or all features is greater than some collection of corresponding thresholds. If the feature variances are below the threshold, the features will be rejected and the data may be treated with a ``coarse'' clustering model with more data points assigned to fewer clusters, and improved statistics for the resultant track density-weighted \ac{MGXS} (see Sec.~\ref{subsubsec:chap9-relative-uncertainties}).
+Variance thresholding presents an opportunity for a user to guide the \textit{i}\ac{MGXS} feature selection process. A user may define specialized variance thresholds for one or more features based on some prior understanding of the reactor physics relevant to the problem at hand. For example, a user may know that it is only important to model \ac{MGXS} clustering if the variance of one, some or all features is greater than some collection of corresponding thresholds. If the feature variances are below the threshold, the features will be rejected and the data may be treated with a ``coarse'' clustering model with more data points assigned to fewer clusters, with improved statistics for the resultant track density-weighted \ac{MGXS} (see Sec.~\ref{subsubsec:chap9-relative-uncertainties}).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Univariate Feature Selection}
@@ -1041,7 +1041,7 @@ res = \max_{1 \le m \le M} \|\boldsymbol{\mu}_{m}^{(t+1)} - \boldsymbol{\mu}_{m}
 \end{algorithmic}
 \end{algorithm}
 
-This thesis employs the $k$-means algorithm implemented in the \texttt{KMeans} class of the \texttt{sklearn.cluster} module in the \texttt{scikit-learn} Python package. The Euclidean distance metric is used to compare the similarity of samples in feature space, and the $k$-means++ algorithm is used to initialize cluster centroids. Two attractive features of $k$-means are its simplicity and speed. It has a linear computational complexity of $\mathcal{O}(KJMT)$ for $K$ fuel pin instances, $J$ features, $M$ clusters and $T$ iterations. The algorithm is relatively easy to parallelize since it primarily consists of by independent calculations of the distances between each sample and cluster centroid. In addition, out-of-core variants of the algorithm exist for very big datasets such as those that might be realized if the \textit{i}\ac{MGXS} scheme were used to model a full core 3D \ac{PWR}. For example, mini-batch $k$-means~\cite{sculley2010minibatchkmeans} is an out-of-core version of the algorithm and is implemented as \texttt{MiniBatchKMeans} in the \texttt{sklearn.cluster} module.
+This thesis employs the $k$-means algorithm implemented in the \texttt{KMeans} class of the \texttt{sklearn.cluster} module in the \texttt{scikit-learn} Python package. The Euclidean distance metric is used to compare the similarity of samples in feature space, and the $k$-means++ algorithm is used to initialize cluster centroids. Two attractive features of $k$-means are its simplicity and speed. It has a linear computational complexity of $\mathcal{O}(KJMT)$ for $K$ fuel pin instances, $J$ features, $M$ clusters and $T$ iterations. The algorithm is relatively easy to parallelize since it primarily consists of independent calculations of the distances between each sample and cluster centroid. In addition, out-of-core variants of the algorithm exist for very big datasets such as those that might be realized if the \textit{i}\ac{MGXS} scheme were used to model a full core 3D \ac{PWR}. For example, mini-batch $k$-means~\cite{sculley2010minibatchkmeans} is an out-of-core version of the algorithm and is implemented as \texttt{MiniBatchKMeans} in the \texttt{sklearn.cluster} module.
 
 The $k$-means algorithm makes a number of assumptions about what constitutes a ``cluster'' that have consequences for the types of clusters that it finds. For example, $k$-means optimizes the inertia which implicitly assumes that clusters are convex and isotropic, and in particular, that clusters are spherical and of similar size in feature space. As a result, $k$-means is not well-suited to identify clusters with irregular shapes without special distance metrics and/or dimensionality reduction techniques. Another complication is that while $k$-means is provably guaranteed to converge\footnote{This is only true if the Euclidean distance metric is used.}, it only finds local minima of the inertia. Furthermore, the performance is especially sensitive to the placement of the initial centroids. The $k$-means++ algorithm is designed to mitigate this by ensuring that the centroids are uniformly and randomly dispersed across the important regions of feature space. Nonetheless, since the algorithm is fast, it is common to run $k$-means many times with different initial cluster centroids and choose the solution with the smallest inertia. Finally, $k$-means requires a user to define the number of clusters $M$ to find within the dataset. In practice, the optimal value of $M$ is unknown \textit{a priori}, and model selection techniques must be used to select from a sequence of cluster models trained for different values of $M$, as discussed in Sec.~\ref{sec:chap10-model-select}.
 
@@ -1095,7 +1095,7 @@ The agglomerative clustering algorithm makes no explicit assumption about the sh
 %http://slideplayer.com/slide/4942836/
 
 The Balanced Iterative Reducing and Clustering Using Hierarchies (BIRCH) clustering algorithm~\cite{zhang1996birch} is an out-of-core hierarchical clustering algorithm designed for large datasets.
-BIRCH reduces the dataset to a series of \textit{subclusters} signified by the CF leaf nodes, which are themselves clustered using a standard clustering algorithm such as $k$-means or agglomerative clustering.
+BIRCH reduces the dataset to a series of \textit{subclusters} contained within the CF leaf nodes, which are themselves clustered using a standard clustering algorithm such as $k$-means or agglomerative clustering.
 BIRCH is often considered a \textit{data reduction} method which represents a dataset as a height-balanced Characteristic Feature Tree (CFT) composed of Characteristic Feature (CF) nodes. This approach is advantageous for ``big data'' settings since it does not require the equal inspection of all data points to make clustering decisions at each step as do many other algorithms (\textit{i.e.}, $k$-means, agglomerative clustering). Instead, BIRCH makes local clustering decisions when inserting a sample into the CFT. After each node's Characteristic Feature has been updated and the CFT rebalanced, the sample may be discarded (\textit{i.e.}, no longer stored in main memory). 
 
 The CFT is governed by two user-defined parameters: the threshold $T$ representing the maximum \textit{radius} of a subcluster, and the branching factor $B$ specifying the maximum number of \textit{children} per CF node\footnote{A CF node's \textit{children} are the CF nodes that it points to at the next level in the Characteristic Feature Tree.}. The radius $R_{a_{i}}$ of the $i$\textsuperscript{th} subcluster $\mathbb{S}_{a_{i}}$ contained by CF node $\mathbb{N}_{a}$ is defined as the average squared distance of each sample $\boldsymbol{\hat{f}}_{k}$ assigned to its $i$\textsuperscript{th} subcluster from its centroid $\boldsymbol{\mu}_{\mathbb{N}_{a_{i}}}$:
@@ -1186,7 +1186,7 @@ SS_{a_{i}} = \displaystyle\sum\limits_{\boldsymbol{\hat{f}}_{k} \in \mathbb{N}_{
 \end{algorithmic}
 \end{algorithm}
 
-The key steps of the BIRCH clustering algorithm are summarized in Alg.~\ref{alg:chap10-birch}. BIRCH consists of a primary loop over all samples to build the Characteristic Feature Tree, and typically only needs to make a single pass through a dataset. For each sample, BIRCH starts at the root note and proceeds to traverse the CFT, inserting the sample into each CF node and/or height-balancing the tree by creating new nodes as dictated by the threshold and branching factor. The BIRCH algorithm constructs the CFT by leveraging the \textit{Characteristic Feature Additivity Theorem}~\cite{zhang1996birch}, which allows subcluster $\mathbb{S}_{a_{i}}$ to be merged with the singleton subcluster $\mathbb{S}_{k}$ for sample $k$ without loss of information:
+The key steps of the BIRCH clustering algorithm are summarized in Alg.~\ref{alg:chap10-birch}. BIRCH consists of a primary loop over all samples to build the Characteristic Feature Tree, and typically only needs to make a single pass through a dataset. For each sample, BIRCH starts at the root node and proceeds to traverse the CFT, inserting the sample into each CF node and/or height-balancing the tree by creating new nodes as dictated by the threshold and branching factor. The BIRCH algorithm constructs the CFT by leveraging the \textit{Characteristic Feature Additivity Theorem}~\cite{zhang1996birch}, which allows subcluster $\mathbb{S}_{a_{i}}$ to be merged with the singleton subcluster $\mathbb{S}_{k}$ for sample $k$ without loss of information:
 
 \begin{equation}
 \label{eqn:chap10-birch-cf-additivity}
@@ -1366,7 +1366,7 @@ The machine learning community has developed a plethora of model selection techn
 
 The following sections describe several model selection criteria that are use to evaluate the clustering models produce by the \textit{i}\ac{MGXS} scheme. Secs.~\Crefrange{subsec:chap10-db-index}{subsec:chap10-silhouette-coeff} introduce the Davies-Bouldin, Dunn and Calinski-Harabaz indices and silhouette coefficients. These criteria use different metrics to quantify intra- and inter-cluster similarities to quantify the quality of a clustering model. Sec.~\ref{subsec:chap10-bic} presents the Bayesian Information Criterion, a technique with a strong theoretical formulation that may be used to evaluate \acp{GMM}. Finally, Sec.~\ref{subsec:chap10-cross-validate} discusses cross-validation and how it may be used in conjunction with any of these model selection criteria to prevent over-fitting.
 
-It is important to note that model selection may \textit{only} examine the clustering models. The clustered \ac{MGXS} may \textit{not} be employed in a multi-group transport simulation and then compared with respect to some reference \ac{MC} solution. Although such an exercise is important as a proof of principle of the \textit{i}\ac{MGXS} scheme, is unacceptable as a model selection technique since it is supervised. Furthermore, it would nullify the over-arching goal of this thesis -- to obtain \ac{MC} quality solutions with computationally efficient deterministic multi-group transport codes -- since it would require the computationally expensive calculation of a \ac{MC} reference solution.
+It is important to note that model selection may \textit{only} examine the clustering models. The clustered \ac{MGXS} may \textit{not} be employed in a multi-group transport simulation and then compared with respect to some reference \ac{MC} solution. Although such an exercise is important as a proof of principle of the \textit{i}\ac{MGXS} scheme, it is unacceptable as a model selection technique since it is supervised. Furthermore, it would nullify the over-arching goal of this thesis -- to obtain \ac{MC} quality solutions with computationally efficient deterministic multi-group transport codes -- since it would require the computationally expensive calculation of a \ac{MC} reference solution.
 
 %    -evaluation is biased towards algorithms that use the same cluster model
 %      -i.e., if the metric is distance-based, it will over-rate $k$-means and other variance minimization clustering algorithms
@@ -1535,14 +1535,14 @@ The first term in the BIC uses the maximum log-likelihood to measure the ability
 \section{Spatial Homogenization}
 \label{sec:chap10-imgxs-homogenization}
 
-The final \textit{spatial homogenization} stage in the data processing pipeline in Fig.~\ref{fig:chap10-pipeline} applies the selected clustering model to spatially homogenize pin-wise \ac{MGXS} as illustrated in Fig.~\ref{fig:chap10-flow-chart}. Like the degenerate and \ac{LNS} spatial homogenization schemes (Secs.~\ref{subsec:chap8-degenerate} and~\ref{subsec:chap9-lns-overview}), a single \ac{MC} calculation of the complete heterogeneous geometry is used to generate \ac{MGXS} for all materials. The \ac{MGXS} are tallied separately for each instance of fissile material zones using OpenMC's distributed cell tallies (Sec.~\ref{subsec:chap4-distribcells}). The clustering model found from the preceding stages of the \textit{i}\ac{MGXS} data processing pipeline assigns an integral cluster label $\ell_{k}$ to each unique pin instance $k$ in the combinatorial geometry (CG). \textit{Track density-weighting} (Sec.~\ref{subsec:chap9-lns-math}) is used to average \ac{MGXS} across all pin instances with the same cluster label in an identical fashion to \ac{LNS} spatial homogenization. The OpenCG region differentiation algorithm (Sec.~\ref{sec:chap4-region-diff}) is used to build an OpenMOC geometry with unique cells and materials for each fuel pin which mirrors the clustering model's representation of the \ac{CG} model. Like the infinite, null, degenerate and \ac{LNS} schemes, spatial self-shielding effects experienced by different non-fissile spatial zones are averaged across the entire geometry for each non-fissile material.
+The final \textit{spatial homogenization} stage in the data processing pipeline in Fig.~\ref{fig:chap10-pipeline} applies the selected clustering model to spatially homogenize pin-wise \ac{MGXS} as illustrated in Fig.~\ref{fig:chap10-imgxs-pipeline}. Like the degenerate and \ac{LNS} spatial homogenization schemes (Secs.~\ref{subsec:chap8-degenerate} and~\ref{subsec:chap9-lns-overview}), a single \ac{MC} calculation of the complete heterogeneous geometry is used to generate \ac{MGXS} for all materials. The \ac{MGXS} are tallied separately for each instance of fissile material zones using OpenMC's distributed cell tallies (Sec.~\ref{subsec:chap4-distribcells}). The clustering model found from the preceding stages of the \textit{i}\ac{MGXS} data processing pipeline assigns an integral cluster label $\ell_{k}$ to each unique pin instance $k$ in the combinatorial geometry (CG). \textit{Track density-weighting} (Sec.~\ref{subsec:chap9-lns-math}) is used to average \ac{MGXS} across all pin instances with the same cluster label in an identical fashion to \ac{LNS} spatial homogenization. The OpenCG region differentiation algorithm (Sec.~\ref{sec:chap4-region-diff}) is used to build an OpenMOC geometry with unique cells and materials for each fuel pin which mirrors the clustering model's representation of the \ac{CG} model. Like the infinite, null, degenerate and \ac{LNS} schemes, spatial self-shielding effects experienced by different non-fissile spatial zones are averaged across the entire geometry for each non-fissile material.
 
 \begin{figure}[h!]
 \centering
 \includegraphics[width=0.9\linewidth]{figures/unsupervised/features/engineering/flow-chart}
 \vspace{2mm}
 \caption[\textit{i}MGXS flow chart]{The detailed \textit{i}\ac{MGXS} data processing pipeline.}
-\label{fig:chap10-flow-chart}
+\label{fig:chap10-imgxs-pipeline}
 \end{figure}
 
 It is important to recall that \textit{i}\ac{MGXS} spatial homogenization aims to homogenize across as many fuel pin instances as possible while sacrificing little or no accuracy in downstream multi-group calculations. The observations made in scheme Sec.~\ref{sec:chap9-convergence} about the convergence rate for \ac{MGXS} generated with \ac{MC} are equally valid for \textit{i}\ac{MGXS} as they were for the null, degenerate and \ac{LNS} schemes. In particular, the standard deviation of the \ac{MGXS} homogenized across each cluster is reduced by a factor inversely proportional to the number of pins in the clusters according to Eqn.~\ref{eqn:chap9-homogenize-std-dev}. Therefore, the more fuel pin instances assigned to each cluster, the faster the \ac{MGXS} will converge to within an acceptable level of uncertainty. However, an uneven assignment of pin instances to clusters will impact the relative accelerated convergence rates achieved for different clusters. In other words, the overall reduction in \ac{MGXS} uncertainties -- or conversely, the acceleration of the \ac{MGXS} convergence rates -- will be bounded by the cluster with the fewest fuel pin instances.
@@ -1555,7 +1555,7 @@ It is important to recall that \textit{i}\ac{MGXS} spatial homogenization aims t
 
 This section employs the \textit{i}\ac{MGXS} spatial homogenization scheme and presents visualizations of the predicted material configurations for each of the six heterogeneous benchmarks introduced in Chap.~\ref{chap:benchmarks}. The \texttt{openmc.mgxs} module (Sec.~\ref{subsec:chap4-mgxs}) was used to compute 70-group \ac{MGXS} with OpenMC, along with all other tallies necessary to compute each of the features described in Sec.~\ref{sec:chap10-feature-extract}. The OpenMC simulations were performed with 1000 batches of 10$^{6}$ particle histories per batch for each benchmark. The fission source was converged with 200 inactive batches for the quarter core \ac{BEAVRS} model, while 100 inactive batches were employed for the other five benchmarks (Sec.~\ref{subsec:chap7-src-stationarity}). OpenMC's ``iso-in-lab'' feature (Sec.~\ref{subsec:chap4-iso-in-lab}) was employed since it is used in the following chapter to enable consistent comparisons between OpenMC's reference results and OpenMOC's calculations with an isotropic in lab scattering source.
 
-The 70-group \ac{MC} tally data was condensed to 2-groups for feature extraction within the \textit{i}\ac{MGXS} data processing pipeline. Two different approaches were separately evaluated for feature selection. Pinch feature selection (Sec.~\ref{subsec:chap10-pinch-selection}) was used to select features derived from U-238 capture \ac{MGXS} in group 1 of 2 (encompassing the resonance regime), as well as the fractional reactivity and spectral index features (Secs.~\ref{subsec:chap10-frac-reactivity} and~\ref{subsec:chap10-spec-index}). A second feature selection approach, referred to here as \textit{litmus-only} feature selection, only used the nuclide fraction thresholding litmus test (Sec.~\ref{subsubsec:chap10-litmus-nuc-frac}) to select the ``best'' reaction type (\textit{i.e}, total, capture or fission) for each pair of nuclides and energy groups, for each nuclide in the fuel (\textit{i.e.}, U-234, U-235, U-238, O-16 and O-17) and both energy groups. All available features were used for each selected reaction type, nuclide and energy group. No dimensionality reduction techniques (Sec.~\ref{sec:chap10-dimension-reduce}) were applied to the selected features. The agglomerative clustering algorithm (Sec.~\ref{subsec:chap10-agglomerative}) was used for each of the case studies presented here\footnote{The four clustering algorithms highlighted in Sec.~\ref{sec:chap10-train-predictor} were observed to produce different clustered geometries for each of the benchmarks. For the sake of brevity, only those geometries produced by agglomerative clustering are illustrated here.}. 
+The 70-group \ac{MC} tally data was condensed to 2-groups for feature extraction within the \textit{i}\ac{MGXS} data processing pipeline. Two different approaches were separately evaluated for feature selection. Pinch feature selection (Sec.~\ref{subsec:chap10-pinch-selection}) was used to select features derived from U-238 capture \ac{MGXS} in group 1 of 2 (encompassing the resonance regime), as well as the fractional reactivity and spectral index features (Secs.~\ref{subsec:chap10-frac-reactivity} and~\ref{subsec:chap10-spec-index}). A second feature selection approach, referred to here as \textit{litmus-only} feature selection, only used the reaction fraction thresholding litmus test (Sec.~\ref{subsubsec:chap10-litmus-react-frac}) to select the ``best'' reaction type (\textit{i.e}, total, capture or fission) for each pair of nuclides and energy groups, for each nuclide in the fuel (\textit{i.e.}, U-234, U-235, U-238, O-16 and O-17) and both energy groups. All available features were used for each selected reaction type, nuclide and energy group. No dimensionality reduction techniques (Sec.~\ref{sec:chap10-dimension-reduce}) were applied to the selected features. The agglomerative clustering algorithm (Sec.~\ref{subsec:chap10-agglomerative}) was used for each of the case studies presented here\footnote{The four clustering algorithms highlighted in Sec.~\ref{sec:chap10-train-predictor} were observed to produce different clustered geometries for each of the benchmarks. For the sake of brevity, only those geometries produced by agglomerative clustering are illustrated here.}. 
 
 %\footnote{Significantly different clustering predictions were observed when PCA, ICA or FA were applied to reduce the dimensionality of the dataset.}
 
@@ -1567,7 +1567,7 @@ In addition, it is noteworthy that the \textit{i}\ac{MGXS} scheme discriminates 
 
 Interestingly, the models of 2 -- 4 clusters for the quarter core \ac{BEAVRS} model cluster the pins in the interior fuel assemblies in a way which resembles the clustered geometries for the individual fuel assemblies in Figs.~\ref{fig:chap10-assm-16-geometries} and~\ref{fig:chap10-assm-31-20BPs-geometries}. This indicates that the flux profile in the interior assemblies is similar to that in an infinite lattice. As more clusters are introduced, the pins along the assembly-assembly interfaces are resolved into their own clusters. However, it should be noted that more ``outlier'' pins (pins assigned to the ``wrong'' cluster) are observed as more clusters are introduced, although the predictions with litmus-only feature selection are more ``robust'' for more clusters. Ideally, the model selection criteria discussed in Sec.~\ref{sec:chap10-model-select} may be used to determine the minimum number of clusters necessary without sacrificing accuracy due to the presence of outliers.
 
-The interested reader is referred to App.~\ref{sec:clustering-without-features} for a presentation of the clustered geometries produced when non-\ac{MGXS} features are removed during feature selection (\textit{i.e.}, the clustering algorithm only considers the pin-wise \ac{MGXS} means and uncertainties). This highlights the importance of using features such as the fractional reactivities, spectral indices and nuclide fractions to best identify structures in \ac{MC} tally data due to spatial self-shielding effects. Furthermore, App.~\ref{sec:clustering-with-dimension-reduce} illustrates the clustered geometries produced when dimensionality reduction techniques such as PCA, ICA and FA are employed. 
+The interested reader is referred to App.~\ref{sec:clustering-without-features} for a presentation of the clustered geometries produced when non-\ac{MGXS} features are removed during feature selection (\textit{i.e.}, the clustering algorithm only considers the pin-wise \ac{MGXS} means and uncertainties). This highlights the importance of using features such as the fractional reactivities, spectral indices and reaction fractions to best identify structures in \ac{MC} tally data due to spatial self-shielding effects. Furthermore, App.~\ref{sec:clustering-with-dimension-reduce} illustrates the clustered geometries produced when dimensionality reduction techniques such as PCA, ICA and FA are employed. 
 
 %These observations reflects the challenge of identifying well separated clusters in \ac{MC} tally data.
 %-differentiation from infinite lattice
