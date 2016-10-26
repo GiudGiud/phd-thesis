@@ -390,9 +390,17 @@ LNS homogenization computes a single set of MGXS for the fuel pin instances in e
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection*{Heterogeneous PWR Benchmarks}
 
--construction of six heterogeneous benchmarks from BEAVRS~\cite{horelik2013beavrs} \\
+A series of six heterogeneous benchmarks were derived from the Benchmark for Evaluation And Validation of Reactor Simulations (BEAVRS) Pressurized Water Reactor (PWR) model~\cite{horelik2013beavrs} to evaluate the \textit{i}MGXS scheme. BEAVRS is a highly-detailed PWR specification which was created to validate high-fidelity core analysis methods. Each of the benchmarks was fabricated in 2D due to the geometric constraints in OpenMOC. One of the benchmarks was constructed as a 2$\times$2 colorset of 1.6\% and 3.1\% enriched fuel assemblies surrounded by a water reflector as depicted in Fig.~\ref{fig:reflector}. \textbf{The colorset is designed to quantify the impact of the moderation provided by the reflector, as well as the leakage of neutrons through the reflector, on spatially self-shielded MGXS.} The most complex benchmark is a 2D planar slice of the top right quadrant of the BEAVRS model as depicted in Fig.~\ref{fig:full-core}. The quarter core model is the all rods out configuration at the core axial mid-plane with a critical boron concentration, and includes assemblies with 1.6\%, 2.4\% and 3.1\% enriched fuel depicted in Fig.~\ref{fig:full-core}, respectively. \textbf{The BEAVRS model is designed to quantify the effects of radial heterogneities including the inter-assembly water gaps, stainless steel baffle surrounding the fuel assemblies, core barrel, neutron shield panels on spatially self-shielded MGXS.} 
 
-\clearpage
+%\textbf{The benchmarks were designed with increasingly complex heterogeneous features -- and corresponding spatial self-shielding effects -- in order to understand their implications for accurate pin-wise MGXS generation.} In particular, the impact of fuel enrichment, control rod guide tubes (CRGTs), burnable poisons (BPs), inter-assembly currents, water reflectors, steel baffles and the core barrel and vessel is considered.
+
+%Five of the six benchmark models are based upon sub-components of the full core BEAVRS model, while the sixth benchmark is of the full BEAVRS core model. 
+
+%The space outside of the pressure vessel is filled with air with vacuum boundaries applied to the top and right with reflective booundaries on the bottom and left.
+ 
+%The reflected colorset includes reflective boundaries on the top and left with vacuum boundaries on the bottom and right.
+
+%The colorset benchmark includes the effects of inter-assembly spatial heterogeneities on the spatially self-shielded MGXS of fuel pins of different enrichments placed adjacent to one another. 
 
 \begin{figure}[h!]
 \centering
@@ -415,12 +423,13 @@ LNS homogenization computes a single set of MGXS for the fuel pin instances in e
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection*{Validation Metrics}
 
--eigenvalues \\
--fission rates \\
--U-238 capture rates \\
--only present U-238 capture rates here \\
+Each of the benchmarks is analyzed with OpenMC to generate 70-group MGXS for use in deterministic transport calculations with OpenMOC. In addition, \textbf{a series of OpenMC simulations were used to calculate reference eigenvalues and pin-wise fission rates and U-238 capture rates for each benchmark.} The eigenvalue is a key integral quantity used to assess the reactivity of a reactor. The fission rates are directly related to the relative power density of each fuel pin which is important for fuel depletion as well as thermal hydraulic feedback. The U-238 capture rates result in the production of Pu-239 which contributes up to 40\% of the power produced from fission in PWRs at the end-of-life (EOL). Hence, the spatial distributions of the fission rates and U-238 capture rates must be correctly modeled for accurate high-fidelity depletion calculations. 
 
-\clearpage
+%The reference results for each of these three metrics were computed with highly converged OpenMC simulations.
+
+\textbf{The eigenvalue, fission rate and capture rate errors between OpenMC and OpenMOC were quantified for each benchmark and spatial homogenization scheme.} The type of spatial homogenization strongly impacts the resultant accuracy of OpenMOC's U-238 capture rate predictions. In contrast, the homogenization schemes has little impact on the OpenMOC fission rate predictions. As expected, the various schemes are inconsequential to the eigenvalue predictions, since each method uses the same MC flux to collapse the MGXS and preserve global reactivity. Hence, only the U-238 capture rate errors are presented and analyzed in the following section.
+
+% This underscores the importance of accounting for spatial heterogeneities -- such as the moderation from CRGTs and reflectors -- when generating MGXS to predict U-238 capture and Pu-239 production in LWRs.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section*{Results}
