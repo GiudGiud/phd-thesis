@@ -167,7 +167,7 @@ This thesis investigates the use of Monte Carlo methods to generate MGXS, such a
 \label{fig:u235-sigf}
 \end{figure}
 
-In addition, MC-based MGXS generation methods to date have retained the multi-level geometric framework illustrated in Fig.~\ref{fig:multi-level-flow-chart} to tabulate MGXS for individual reactor components -- such as infinite fuel pins and/or assemblies -- for subsequent use in whole-core multi-group calculations. The multi-level approach is inspired by legacy MGXS generation techniques which apply high-fidelity models of the energy self-shielding physics to low-fidelity geometric models of unique core components. The complexity of the energy treatment is then reduced at each level as larger and more complex geometric models are considered. Although the use of MC within a multi-level scheme eliminates the need to approximate the flux in energy, it does not account for spatial self-shielding effects throughout a reactor core. \textbf{This thesis abandons the multi-level framework in place of a whole-core MC calculation which simultaneously accounts for all energy and spatial self-shielding effects in a single step.}
+In addition, MC-based MGXS generation methods to date have retained the multi-level geometric framework illustrated in Fig.~\ref{fig:multi-level-flow-chart} to tabulate MGXS for individual reactor components -- such as infinite fuel pins and/or assemblies -- for subsequent use in whole-core multi-group calculations. The multi-level approach is inspired by legacy MGXS generation techniques which apply high-fidelity models of the energy self-shielding physics to low-fidelity geometric models of unique core components. The complexity of the energy treatment is then reduced at each level as larger and more complex geometric models are considered. \textbf{This thesis abandons the multi-level framework in place of a whole-core MC calculation which simultaneously accounts for all energy and spatial self-shielding effects in a single step.}
 
 \begin{figure}[h!]
 \centering
@@ -196,9 +196,7 @@ The subject matter of this thesis is organized along two main themes:
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section*{Software Infrastructure: A Simulation Triad}
 
--OpenMC~\cite{romano2013openmc} generates MGXS \\
--OpenMOC~\cite{boyd2014openmoc} uses MGXS in deterministic multi-group transport calculations \\
--OpenCG~\cite{boyd2015opencg} enables processing and transfer of tally data  \\
+This thesis investigates Monte Carlo as a means to generate multi-group cross sections for fine mesh transport codes. This work required the development of a ``simulation triad'' encompassing three primary codes as illustrated in Fig.~\ref{fig:simulation-triad}. First, the OpenMC Monte Carlo code~\cite{romano2013openmc} was utilized to generate multi-group cross sections. Second, the MGXS were used by the OpenMOC code~\cite{boyd2014openmoc} for deterministic multi-group transport calculations. Finally, the OpenCG library~\cite{boyd2015opencg} enabled the processing and transfer of tally data on combinatorial geometry (CG) meshes between OpenMC and OpenMOC. The following sections summarize the author's contributions to each component code in the simulation triad to support the objectives of this thesis.
 
 \begin{figure}[h!]
   \centering
@@ -206,6 +204,21 @@ The subject matter of this thesis is organized along two main themes:
 \caption[A simulation triad of OpenMC, OpenMOC and OpenCG]{A simulation triad consisting of the OpenMC, OpenMOC and OpenCG codes ``glued'' together with Python formed the foundation for this thesis research.}
 \label{fig:simulation-triad}
 \end{figure}
+
+%%%%%%%%%%%%%%%%%%%%
+\subsection*{OpenMC}
+
+The OpenMC code is a continuous energy Monte Carlo neutron transport code~\cite{romano2013openmc} with support for general constructive solid geometry models. This thesis designed and implemented a fully-featured OpenMC Python API to enable the processing of large tally datasets to generate MGXS. In addition, a distributed cell tally algorithm~\cite{lax2014distribcell} was implemented in OpenMC to compute MGXS across repeated fuel pin cells in reactor core geometries. Finally, an option for isotropic in lab scattering was implemented and used to generate MGXS. The isotropic scattering feature enabled ``apples-to-apples'' comparisons between the reference eigenvalues and reaction rates produced by OpenMC and those computed from isotropic multi-group calculations with OpenMOC. In total, the author contributed over 20,000 lines of Python and 2,000 lines of Fortran code to the open source release version of OpenMC to support this work.
+
+%%%%%%%%%%%%%%%%%%%%%
+\subsection*{OpenMOC}
+
+The OpenMOC code is a multi-group neutron transport code implementing the deterministic Method of Characteristics (MOC)~\cite{boyd2014openmoc}. The OpenMOC code is capable of performing 2D MOC neutron transport calculations for LWR core configurations. The \texttt{openmoc.materialize} Python module was implemented to automate the loading MGXS data into OpenMOC \texttt{Material} objects. The module is designed to support the large MGXS libraries generated by OpenMC. In addition, a new module was implemented  to interface with the OpenCG region differentiation algorithm, which constructed ``clustered geometries'' for OpenMOC. Finally, a scheme to compute SuPerHomog\'{e}n\'{e}isation (SPH) factors to ensure reaction rate consistency with OpenMC was implemented in OpenMOC. In total, the author contributed over 15,000 lines of C++ and nearly 20,000 lines of Python code to the open source release version of OpenMOC to support this work.
+
+%%%%%%%%%%%%%%%%%%%%
+\subsection*{OpenCG}
+
+A new combinatorial goemetry (CG) Python library called OpenCG~\cite{boyd2015opencg} was developed to accelerate the building of complicated reactor geometries and facilitate large scale data processing. The simulation triad shown in Fig.~\ref{fig:simulation-triad} includes ``compatibility modules'' which export OpenCG geometries to OpenMC and OpenMOC. Two novel algorithms known as Local Neighbor Symmetry (LNS) and region differentiation were developed in OpenCG to enable the spatial homogenization methodology introduced in this thesis. First, the LNS algorithm is analogous to the geometric templates used in lattice physics codes such as CASMO~\cite{edenius1995casmo} to identify fuel pins which have similar MGXS. The LNS algorithm performs a systematic analysis of a geometry to identify neighbor cells, or pairs of cells which are adjacent to one another. Second, the region differentiation algorithm was developed to efficiently and systematically construct geometries to reflect the assignment of MGXS to arbitrary ``clusters'' of fuel pins for the spatial homogenization methodology. The differentiated geometries are then exported to OpenMOC for deterministic neutron transport calculations. In total, the author contributed over 10,000 lines of Python code in OpenCG to support this work.
 
 \clearpage
 
@@ -381,22 +394,24 @@ LNS homogenization computes a single set of MGXS for the fuel pin instances in e
 
 -construction of six heterogeneous benchmarks from BEAVRS~\cite{horelik2013beavrs} \\
 
+\clearpage
+
 \begin{figure}[h!]
 \centering
 \begin{subfigure}{0.47\textwidth}
   \centering
-  \includegraphics[width=0.9\linewidth]{figures/benchmarks/2x2}
+  \includegraphics[width=0.93\linewidth]{figures/benchmarks/reflector}
   \caption{}
-  \label{fig:2x2}
+  \label{fig:reflector}
 \end{subfigure}%
 \begin{subfigure}{0.47\textwidth}
   \centering
-  \includegraphics[width=0.9\linewidth]{figures/benchmarks/reflector}
+  \includegraphics[width=0.93\linewidth]{figures/benchmarks/quarter-core}
   \caption{}
-  \label{fig:reflector}
+  \label{fig:full-core}
 \end{subfigure}
-\caption[A reflected 2$\times$2 colorset]{A 2$\times$2 colorset of BEAVRS assemblies with periodic boundary conditions (a), and the same colorset surrounded by a water reflector with reflective (left and top) and vacuum (right and bottom) boundary conditions (b).}
-\label{fig:benchmark-geometries}
+\caption[PWR benchmarks]{The 2$\times$2 colorset with water reflector (a) and the quarter core BEAVRS (b) models used to evaluate the \textit{i}MGXS spatial homogenization scheme.}
+\label{fig:benchmarks}
 \end{figure}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -419,45 +434,40 @@ LNS homogenization computes a single set of MGXS for the fuel pin instances in e
 \centering
 \begin{subfigure}{0.47\textwidth}
   \centering
-  \includegraphics[width=0.85\linewidth]{figures/quantification/homogenization/2x2-degenerate-materials}
+  \includegraphics[width=0.95\linewidth]{figures/benchmarks/2x2}
   \caption{}
-  \label{fig:2x2-degenerate}
+  \label{fig:reflector}
 \end{subfigure}%
 \begin{subfigure}{0.47\textwidth}
   \centering
-  \includegraphics[width=0.85\linewidth]{figures/quantification/homogenization/2x2-degenerate-materials}
+  \includegraphics[width=0.95\linewidth]{figures/quantification/homogenization/2x2-degenerate-materials}
   \caption{}
   \label{fig:reflector-degenerate}
 \end{subfigure}
 \begin{subfigure}{0.47\textwidth}
   \centering
-  \includegraphics[width=0.85\linewidth]{figures/patterns/lns/2x2/materials}
-  \caption{}
-  \label{fig:2x2-lns}
-\end{subfigure}%
-\begin{subfigure}{0.47\textwidth}
-  \centering
-  \includegraphics[width=0.85\linewidth]{figures/patterns/lns/reflector/materials}
+  \includegraphics[width=0.95\linewidth]{figures/patterns/lns/reflector/materials}
   \caption{}
   \label{fig:reflector-lns}
-\end{subfigure}
-\begin{subfigure}{0.47\textwidth}
-  \centering
-  \includegraphics[width=0.85\linewidth]{figures/unsupervised/geometries/with-features/8-clusters/combined/2x2}
-  \caption{}
-  \label{fig:2x2-8-clusters}
 \end{subfigure}%
 \begin{subfigure}{0.47\textwidth}
   \centering
-  \includegraphics[width=0.85\linewidth]{figures/unsupervised/geometries/with-features/8-clusters/combined/reflector}
+  \includegraphics[width=0.95\linewidth]{figures/unsupervised/geometries/with-features/8-clusters/combined/reflector}
   \caption{}
   \label{fig:reflector-8-clusters}
 \end{subfigure}
-\caption[Materials for the 2$\times$2 colorsets]{The materials for the periodic 2$\times$2 colorset with degenerate, LNS and \textit{i}MGXS spatial homogenization are illustrated in (a), (c) and (e), while those for the colorset with a water reflector are depicted in (b), (d) and (f). The materials for the \textit{i}MGXS scheme represent 8 GMM clusters.}
+\caption[Materials for the 2$\times$2 colorset]{The materials for the 2$\times$2 colorset with null (a), degenerate (b), LNS (c) and \textit{i}MGXS spatial homogenization with 8 GMM clusters (d).}
 \label{fig:colorset-geometries}
 \end{figure}
 
 \clearpage
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=\linewidth]{figures/unsupervised/geometries/with-features/8-clusters/combined/full-core-zoom}
+\caption[Materials for the BEAVRS]{The quarter core BEAVRS model with \textit{i}MGXS spatial homogenization.}
+\label{fig:full-core-8-clusters}
+\end{figure}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection*{Eigenvalues}
@@ -480,52 +490,50 @@ LNS homogenization computes a single set of MGXS for the fuel pin instances in e
   \multicolumn{1}{c}{\textbf{16}} & 
   \multicolumn{1}{c}{\textbf{\# pins}} \\
   \midrule
-1.6\% Assm & -168 & -168 & -168 & -168 & -168 & -168 \\
+Colorset w/ Reflector & -141 & -136 & -136 & -134 & -129 & -141 \\
   \midrule
-3.1\% Assm & -194 & -194 & -194 & -194 & -194 & -194 \\
-  \midrule
-3.1\% Assm w/ 20 BPs & -240 & -237 & -236 & -235 & -235 & -235 \\
-  \midrule
-Colorset & -191 & -189 & -189 & -189 & -189 & -188 \\
-  \midrule
-Colorset w/ Reflector &-141 & -136 & -136 & -134 & -129 & -141 \\
-  \midrule
-BEAVRS Quarter Core & -122 & ? & -120 & -119 & -119 & -116 \\
+BEAVRS Quarter Core & -122 & -119 & -120 & -119 & -119 & -116 \\
   \bottomrule
 \end{tabular}
 \end{table}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection*{Pin-Wise U-238 Capture Rate Errors}
+\subsection*{Pin-Wise U-238 Capture Rates}
 
 \begin{figure}[h!]
 \centering
 \includegraphics[width=0.83\linewidth]{figures/results/spatial/reflector/capt-err}
 \vspace{2mm}
-\caption[U-238 capture rate errors for the 2$\times$2 colorset with reflector]{U-238 capture rate percentage relative errors for the 2$\times$2 colorset with a water reflector with null, degenerate, LNS and \textit{i}MGXS spatial homogenization with 2, 8 and 16 GMM clusters.}
+\caption[U-238 capture rate errors for the 2$\times$2 colorset]{U-238 capture rate percentage relative errors for the 2$\times$2 colorset with null, degenerate, LNS and \textit{i}MGXS spatial homogenization with 2, 8 and 16 clusters.}
 \label{fig:refl-capt-err}
 \end{figure}
 
 \clearpage
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection*{Comparing Pin-Wise U-238 Capture Rates}
+\begin{figure}[h!]
+\centering
+\begin{subfigure}{0.9\textwidth}
+  \centering
+  \includegraphics[width=0.65\linewidth]{figures/results/capt-to-fiss/spatial/full-core/capt-to-fiss-err-null}
+  \caption{}
+  \label{fig:chap11-full-core-capt-err-null}
+\end{subfigure}
+\begin{subfigure}{0.9\textwidth}
+  \centering
+\includegraphics[width=0.65\linewidth]{figures/results/capt-to-fiss/spatial/full-core/capt-to-fiss-err-birch-40}
+  \caption{}
+  \label{fig:chap11-full-core-capt-err-birch-40}
+\end{subfigure}
+\caption[U-238 capture rate errors for BEAVRS]{U-238 capture percent relative errors for the quarter core BEAVRS model with null homogenization (a) and \textit{i}MGXS homogenization with 20 clusters (b).}
+\label{fig:chap11-full-core-capt-err-b}
+\end{figure}
+
+\clearpage
 
 \begin{figure}[h!]
 \centering
-\begin{subfigure}{0.49\textwidth}
-  \centering
-\includegraphics[width=0.95\linewidth]{figures/results/compare/2x2/compare-capt}
-  \caption{}
-  \label{fig:refl-capt-rates-comp-refl}
-\end{subfigure} %
-\begin{subfigure}{0.49\textwidth}
-  \centering
-\includegraphics[width=0.95\linewidth]{figures/results/compare/reflector/compare-capt}
-  \caption{}
-  \label{fig:refl-capt-rates-comp-2x2}
-\end{subfigure}
-\caption[U-238 capture rate comparison for the colorset]{A comparison of U-238 capture rate spatial distributions for \textit{i}MGXS with GMM clustering and null spatial homogenization schemes for the periodic 2$\times$2 colorset (a) and colorset with a water reflector (b).}
+\includegraphics[width=0.85\linewidth]{figures/results/compare/reflector/compare-capt}
+\caption[U-238 capture rate comparison for the colorset]{A comparison of U-238 capture rate spatial distributions for \textit{i}MGXS with GMM clustering and null spatial homogenization schemes for the 2$\times$2 colorset.}
 \label{fig:refl-capt-rates-comp}
 \end{figure}
 
@@ -538,56 +546,20 @@ BEAVRS Quarter Core & -122 & ? & -120 & -119 & -119 & -116 \\
 \centering
 \begin{subfigure}{\textwidth}
   \centering
-  \includegraphics[width=0.8\linewidth]{figures/results/convergence/2x2/keff-bias-evo}
+  \includegraphics[width=0.9\linewidth]{figures/results/convergence/reflector/max-capt-err-evo-exec-summary}
   \caption{}
-  \label{fig:2x2-eigenvalue-converge}
+  \label{fig:refl-max-converge}
 \end{subfigure}
 \begin{subfigure}{\textwidth}
   \centering
-  \includegraphics[width=0.8\linewidth]{figures/results/convergence/2x2/mean-capt-err-evo}
+  \includegraphics[width=0.9\linewidth]{figures/results/convergence/reflector/mean-capt-err-evo-exec-summary}
   \caption{}
-  \label{fig:2x2-capture-converge-mean}
+  \label{fig:refl-mean-converge}
 \end{subfigure}
 \vspace{2mm}
-\caption[Fission rate covergence for the periodic 2$\times$2 colorset]{Convergence of the eigenvalue bias (a) and mean absolute U-238 capture rate percent relative errors (b) for the periodic 2$\times$2 colorset.}
-\label{fig:2x2-capture-converge}
+\caption[Fission rate covergence for the 2$\times$2 colorset]{Convergence of the max (a) and mean (b) absolute U-238 capture rate percent relative errors for the 2$\times$2 colorset.}
+\label{fig:refl-capture-converge}
 \end{figure}
-
-\clearpage
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection*{Runtimes for Spatial Homogenization Schemes}
-
-\begin{table}[ht!]
-  \centering
-  \caption[Runtimes]{Runtimes.}
-  \small
-  \label{table:imgxs-runtimes}
-  \vspace{6pt}
-  \begin{tabular}{l l l l S[table-format=3.2] S[table-format=3.2] S[table-format=3.2]}
-  \toprule
-  & & & \multicolumn{3}{c}{\bf Runtime [core-hours]} \\
-  \cline{4-7}
-  \multirow{-2}{*}{\bf Benchmark} &
-  \multirow{-2}{*}{\bf Scheme} &
-  \multirow{-2}{*}{\parbox{2cm}{\bf Max. Rel. \\ Err. [\%]}}
-  \multirow{-2}{*}{\bf \# Histories} &
-  \multicolumn{1}{c}{\bf OpenMC} &
-  \multicolumn{1}{c}{\bf OpenMOC} &
-  \multicolumn{1}{c}{\bf Total} \\
-  \midrule
-\multirow{4}{*}{\parbox{2.5cm}{2$\times$2 Colorset}} & Reference & & & & & \\
-& Null & & & & & \\
-& Degenerate & & & & & \\
-& \textit{i}MGXS & & & & & \\
-  \midrule
-\multirow{4}{*}{\parbox{2.5cm}{2$\times$2 Colorset w/ Reflector}} & Reference & & & & & \\
-& Null & & & & & \\
-& Degenerate & & & & & \\
-& \textit{i}MGXS & & & & & \\
-  \bottomrule
-\end{tabular}
-\end{table}
 
 \clearpage
 
@@ -609,8 +581,6 @@ BEAVRS Quarter Core & -122 & ? & -120 & -119 & -119 & -116 \\
   -linear source to reduce number of spatial zones \\
   -vectorize transport solver over energy groups \\
 
-\break
-
 evaluate \textit{i}MGXS scheme:
 -add anisotropic scattering to OpenMOC to enable solution of the ``correct'' problem
 -systematic study of featues -- ones actually matter? \\
@@ -619,8 +589,6 @@ evaluate \textit{i}MGXS scheme:
 -more research into model selection schemes -- none of them robustly works for my case studies! \\
 -evaluate \textit{i}MGXS with clustering ``on-the-fly'' with noisy MC tally data \\
 -can \textit{i}MGXS reduce the number of necessary energy groups?? \\
-
-\break
 
 reach goals:\\
 -multi-physics applications: moderator density, fuel temperature, burnup, etc. as features \\
