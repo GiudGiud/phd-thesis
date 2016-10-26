@@ -154,7 +154,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection*{Background and Motivation}
 
-The development and deployment of neutron physics simulations is governed by tradeoffs between accuracy and speed. High-fidelity simulations are \textit{accurate} and \textit{flexible} but require significant computational resources, while the \textit{approximations} made by low-fidelity methods reduce the number of variables which greatly improves the \textit{time-to-solution}. As a result, it is common to employ a mix of high- and low-fidelity tools for reactor analysis -- for example, high-fidelity tools are frequently used to inform and benchmark low-fidelity models for use within a narrow envelope of design parameters. This thesis develops a new approach within the same vein by employing continuous energy Monte Carlo (MC) neutron transport simulations to generate accurate multi-group cross sections (MGXS) for computationally efficient deterministic transport methods.
+The development and deployment of neutron physics simulations is governed by tradeoffs between accuracy and speed. High-fidelity simulations are accurate and flexible but require significant computational resources, while the approximations made by low-fidelity methods reduce the number of variables which greatly improves the time-to-solution. As a result, it is common to employ a mix of high- and low-fidelity tools for reactor analysis -- for example, high-fidelity tools are frequently used to inform and benchmark low-fidelity models for use within a narrow envelope of design parameters. This thesis develops a new approach within the same vein by employing continuous energy Monte Carlo (MC) neutron transport simulations to generate accurate multi-group cross sections (MGXS) for computationally efficient deterministic transport methods.
 
 %\textbf{This thesis is motivated by the desire to obtain Monte Carlo-quality solutions with computationally efficient deterministic neutron transport methods.}
 
@@ -176,10 +176,9 @@ In addition, MC-based MGXS generation methods to date have retained the multi-le
 \label{fig:multi-level-flow-chart}
 \end{figure}
 
-This thesis uses statistical clustering algorithms to accelerate whole-core MC calculations
-which simultaneously model all energy and spatial self-shielding effects for fine mesh MGXS generation in a single step.
+In theory, whole-core MC calculations can be used to tally MGXS in each spatial zone (\textit{e.g.}, 100 axial depletion zones within each of 50,000+ fuel pins in a PWR core) to account for the spatial variation of the flux. However, such simulations have not been employed for practical reasons -- in particular, the computational expense of performing such calculations has been prohibitive for MC codes until recent years. Furthermore, roughly the same number of particle histories would be required to converge the MGXS tallies in each spatial zone as would be required for a direct whole-core calculation by MC. \textbf{Therefore, a new method is required to accelerate the convergence of the MGXS tallies in each fine mesh region in order for MC to be practical for reactor agnostic fine mesh MGXS generation.}
 
-\clearpage
+This thesis proposes to use statistical clustering methods to accelerate the convergence of whole-core MC calculations for MGXS generation. This novel approach relies on the fact that many distinct spatial zones across a reactor core experience similar if not identical spatial self-shielding effects, and therefore have similar if not identical MGXS. The stochastic nature of MC simulations will contribute statistical ``noise'' to the tally estimates for the MGXS. As a result, the MGXS estimates for similarly self-shielded spatial zones form clusters which converge as more particle histories are simulated. \textbf{The goal of this thesis is to develop and apply machine learning algorithms to identify MGXS clusters from ``noisy'' Monte Carlo tally data. This methodology aims to generate MGXS for deterministic neutron transport codes in a reactor agnostic and computationally efficient manner.}
 
 %%%%%%%%%%%%%%%%%%%%%%%%
 \subsection*{Objectives}
@@ -191,7 +190,7 @@ The subject matter of this thesis is organized along two main themes:
 \item \textbf{\textit{Statistical Clustering}} -- Develop statistical clustering methods to accelerate the convergence of MGXS on heterogeneous MC tally meshes.
 \end{itemize}
 
-\clearpage
+The first theme of this thesis rigorously assesses the efficacy of MGXS generation with MC for fine mesh transport calculations. Some of the approximations made by MC-based MGXS generation are quantified, including an in-depth analysis of systematic bias resulting from constant-in-angle total MGXS. The second theme develops a new methodology called \textit{inferential multi-group cross sections} (\textit{i}MGXS) to simultaneously capture local and global spatial self-shielding effects in MGXS for whole-core calculations. The \textit{i}MGXS scheme applies statistical clustering methods to accelerate the convergence of MGXS tallied on fine, heterogeneous spatial meshes in Monte Carlo. The \textit{i}MGXS scheme is evaluated for a six heterogeneous PWR benchmarks to quantify its accuracy and convergence relative to alternative schemes for MC-based MGXS generation.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section*{Software Infrastructure: A Simulation Triad}
@@ -200,7 +199,7 @@ This thesis investigates Monte Carlo as a means to generate multi-group cross se
 
 \begin{figure}[h!]
   \centering
-  \includegraphics[width=\linewidth]{figures/workflow/triad/simulation-triad}
+  \includegraphics[width=0.95\linewidth]{figures/workflow/triad/simulation-triad}
 \caption[A simulation triad of OpenMC, OpenMOC and OpenCG]{A simulation triad consisting of the OpenMC, OpenMOC and OpenCG codes ``glued'' together with Python formed the foundation for this thesis research.}
 \label{fig:simulation-triad}
 \end{figure}
@@ -218,9 +217,8 @@ The OpenMOC code is a multi-group neutron transport code implementing the determ
 %%%%%%%%%%%%%%%%%%%%
 \subsection*{OpenCG}
 
-A new combinatorial goemetry (CG) Python library called OpenCG~\cite{boyd2015opencg} was developed to accelerate the building of complicated reactor geometries and facilitate large scale data processing. The simulation triad shown in Fig.~\ref{fig:simulation-triad} includes ``compatibility modules'' which export OpenCG geometries to OpenMC and OpenMOC. Two novel algorithms known as Local Neighbor Symmetry (LNS) and region differentiation were developed in OpenCG to enable the spatial homogenization methodology introduced in this thesis. First, the LNS algorithm is analogous to the geometric templates used in lattice physics codes such as CASMO~\cite{edenius1995casmo} to identify fuel pins which have similar MGXS. The LNS algorithm performs a systematic analysis of a geometry to identify neighbor cells, or pairs of cells which are adjacent to one another. Second, the region differentiation algorithm was developed to efficiently and systematically construct geometries to reflect the assignment of MGXS to arbitrary ``clusters'' of fuel pins for the spatial homogenization methodology. The differentiated geometries are then exported to OpenMOC for deterministic neutron transport calculations. In total, the author contributed over 10,000 lines of Python code in OpenCG to support this work.
+A new combinatorial goemetry (CG) Python library called OpenCG~\cite{boyd2015opencg} was developed to construct complicated reactor geometries for OpenMOC. Two novel algorithms known as Local Neighbor Symmetry (LNS) and region differentiation were developed in OpenCG to support the \textit{i}MGXS methodology. The LNS algorithm analyzes a combinatorial geometry to identify neighbor cells, or pairs of cells which are adjacent to one another. The LNS algorithm is analogous to the geometric templates used in lattice physics codes such as CASMO~\cite{edenius1995casmo} to identify fuel pins which have similar MGXS. The region differentiation algorithm was developed to efficiently construct geometries which represent the assignment of MGXS to arbitrary ``clusters'' of fuel pins. The differentiated geometries are exported to OpenMOC for deterministic neutron transport calculations. The author contributed over 10,000 lines of Python code in OpenCG to support this work.
 
-\clearpage
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %\section*{Angular-Dependent MGXS and SPH Factors}
