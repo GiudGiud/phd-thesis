@@ -329,13 +329,13 @@ A new combinatorial goemetry (CG) Python library called OpenCG~\cite{boyd2015ope
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section*{Tallying Pin-Wise MGXS with Monte Carlo}
 
-This thesis develops new methodologs for MGXS generation which employ a single Monte Carlo calculation is used to model the complete heterogeneous geometry in a single step. The advantage of these approaches is that they use the ``true'' MC flux to collapse the flux. However, it they achieve this increase in accuracy  at added expense of generating large tally datasets. This thesis develops a method 
-
-In theory, multi-group cross sections are to vary continuously in space. Howver, most deterministic methods used to solve the multi-group transport equation make the simplifying assumption that material properties are constant across each spatial mesh cell. \textit{Spatial homogenization} is used to compute flux-weighted volume-averaged cross sections within each spatial mesh cell. 
-
-This thesis develops the inferential MGXS spatial homogenization scheme in which a single Monte Carlo calculation is used to model the complete heterogeneous geometry to generate MGXS. 
-
-In particular, \textit{i}MGXS captures spatial self-shielding effects from core heterogeneities which induce clustering of the MGXS in different fuel pin types. The motivation for MGXS clustering and a brief description of the scheme is presented in the following sections.
+%This thesis develops new methodologs for MGXS generation which employ a single Monte Carlo calculation is used to model the complete heterogeneous geometry in a single step. The advantage of these approaches is that they use the ``true'' MC flux to collapse the flux. However, it they achieve this increase in accuracy  at added expense of generating large tally datasets. This thesis develops a method 
+%
+%In theory, multi-group cross sections are to vary continuously in space. Howver, most deterministic methods used to solve the multi-group transport equation make the simplifying assumption that material properties are constant across each spatial mesh cell. \textit{Spatial homogenization} is used to compute flux-weighted volume-averaged cross sections within each spatial mesh cell. 
+%
+%This thesis develops the inferential MGXS spatial homogenization scheme in which a single Monte Carlo calculation is used to model the complete heterogeneous geometry to generate MGXS. 
+%
+%In particular, \textit{i}MGXS captures spatial self-shielding effects from core heterogeneities which induce clustering of the MGXS in different fuel pin types. The motivation for MGXS clustering and a brief description of the scheme is presented in the following sections.
 
 %-each scheme models complete heterogeneous geometry in a single step
 %-uses the true ``MC'' flux to collapse the MGXS for fissile and non-fissile zones
@@ -519,35 +519,39 @@ The geometries produced with null, degenerate, LNS and \textit{i}MGXS spatial ho
 The BEAVRS geometry built by \textit{i}MGXS with 24 clusters is presented in Fig.~\ref{fig:full-core-8-clusters}. Three zones are highlighted to illustrate the distinct clustering patterns found for interior fuel assemblies, fuel assemblies along the top baffle/reflector interface, and fuel assemblies at the corner of geometry. The pins in the interior assemblies are clustered in a way which resembles the clustered geometries found for fuel assemblies in an infinite lattice. As noted for the colorset, the \textit{i}MGXS scheme discriminates pins along assembly-assembly and reflector-assembly interfaces. Furthermore, the pins in the corner assemblies cluster according to varying levels of moderation provided by the reflector in this region of the core. These results illustrate the ability of the \textit{i}MGXS scheme to categorize fuel pins into clusters based on subtle differences in spatial self-shielding effects.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection*{Eigenvalues}
-
-\begin{table}[ht!]
-  \centering
-  \caption[OpenMOC eigenvalue bias]{OpenMOC eigenvalue bias $\Delta\rho$ for \textit{i}MGXS spatial homogenization.}
-  \small
-  \label{table:eigenvalues}
-  \vspace{6pt}
-  \begin{tabular}{p{4cm} R{0.9cm} R{0.9cm} R{0.9cm} R{0.9cm} R{0.9cm} R{0.9cm}}
-  \toprule
-  & \multicolumn{6}{S[table-format=6.1]}{\textbf{\# Clusters}} \\
-  \cline{2-7}
-  \multirow{-2}{*}{\bf Benchmark} &
-  \multicolumn{1}{c}{\textbf{1}} & 
-  \multicolumn{1}{c}{\textbf{2}} & 
-  \multicolumn{1}{c}{\textbf{4}} & 
-  \multicolumn{1}{c}{\textbf{8}} & 
-  \multicolumn{1}{c}{\textbf{16}} & 
-  \multicolumn{1}{c}{\textbf{\# pins}} \\
-  \midrule
-Colorset w/ Reflector & -141 & -136 & -136 & -134 & -129 & -141 \\
-  \midrule
-BEAVRS Quarter Core & -122 & -119 & -120 & -119 & -119 & -116 \\
-  \bottomrule
-\end{tabular}
-\end{table}
+%\subsection*{Eigenvalues}
+%
+%\begin{table}[ht!]
+%  \centering
+%  \caption[OpenMOC eigenvalue bias]{OpenMOC eigenvalue bias $\Delta\rho$ for \textit{i}MGXS spatial homogenization.}
+%  \small
+%  \label{table:eigenvalues}
+%  \vspace{6pt}
+%  \begin{tabular}{p{4cm} R{0.9cm} R{0.9cm} R{0.9cm} R{0.9cm} R{0.9cm} R{0.9cm}}
+%  \toprule
+%  & \multicolumn{6}{S[table-format=6.1]}{\textbf{\# Clusters}} \\
+%  \cline{2-7}
+%  \multirow{-2}{*}{\bf Benchmark} &
+%  \multicolumn{1}{c}{\textbf{1}} & 
+%  \multicolumn{1}{c}{\textbf{2}} & 
+%  \multicolumn{1}{c}{\textbf{4}} & 
+%  \multicolumn{1}{c}{\textbf{8}} & 
+%  \multicolumn{1}{c}{\textbf{16}} & 
+%  \multicolumn{1}{c}{\textbf{\# pins}} \\
+%  \midrule
+%Colorset w/ Reflector & -141 & -136 & -136 & -134 & -129 & -141 \\
+%  \midrule
+%BEAVRS Quarter Core & -122 & -119 & -120 & -119 & -119 & -116 \\
+%  \bottomrule
+%\end{tabular}
+%\end{table}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection*{Pin-Wise U-238 Capture Rates}
+
+The OpenMOC energy-integrated pin-wise U-238 capture rates are compared to the reference OpenMC capture rates for each homogenization scheme to compute the percent relative errors for each pin's capture rates. The spatial distributions of capture rate errors are plotted as heatmaps for colorset benchmark in Fig.~\ref{fig:refl-capt-err} with null, degenerate, LNS and \textit{i}MGXS homogenization with BIRCH clustering of 2, 4 and 16 clusters.
+
+The error is largest for the null homogenization scheme since it neglects to model MGXS clustering due to spatial self-shielding effects in each fuel pin. The error is smallest for the degenerate scheme since it exactly models the different spatial self-shielding effects for each fuel pin in the geometry. The LNS scheme largely ``smooths'' the error distribution for the interior pins, but exhibits large errors for the single outermost row of pins adjacent to the reflector, and to a lesser extent, the pins along the inter-assembly interfaces. This illustrates LNS' inability to distinguish fuel pins along interfaces between spatial zones. Unlike the LNS scheme, the \textit{i}MGXS scheme excels at discriminating pins along assembly-assembly and assembly-reflector interfaces into unique clusters such that little residual error is observed with 16 clusters.
 
 \begin{figure}[h!]
 \centering
@@ -557,7 +561,12 @@ BEAVRS Quarter Core & -122 & -119 & -120 & -119 & -119 & -116 \\
 \label{fig:refl-capt-err}
 \end{figure}
 
-\clearpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection*{Pin-Wise Capture-to-Fission Ratios}
+
+As a corollary to the U-238 capture rates, the OpenMOC energy-integrated radiative capture-to-fission ratios were compared to the reference OpenMC capture-to-fission ratios for each homogenization scheme. The spatial distributions of the ratios are plotted as heatmaps for the quarter core BEAVRS model in Fig.~\ref{fig:refl-capt-err} with null and \textit{i}MGXS homogenization with BIRCH clustering of 40 clusters. 
+
+The error is highly structured for the null homogenization scheme since it neglects to account for spatial self-shielding effects of control rod guide tubes and burnable poisons on nearby fuel pins, and from the baffle/reflector on the fuel pins along the core periphery. In contrast, the \textit{i}MGXS scheme ``smooths'' the error distribution for the interior fuel pins. Furthermore, \textit{i}MGXS eliminates the most limiting errors for those fuel pins along the baffle/reflector interface. The residual structural error for the \textit{i}MGXS scheme is gradually removed as more clusters are introduced into the model to account for the varying spatial self-shielding effects throughout the core.
 
 \begin{figure}[h!]
 \centering
@@ -573,11 +582,9 @@ BEAVRS Quarter Core & -122 & -119 & -120 & -119 & -119 & -116 \\
   \caption{}
   \label{fig:chap11-full-core-capt-err-birch-40}
 \end{subfigure}
-\caption[U-238 capture rate errors for BEAVRS]{U-238 capture percent relative errors for the quarter core BEAVRS model with null homogenization (a) and \textit{i}MGXS homogenization with 20 clusters (b).}
+\caption[Capture-to-fission ratio errors for BEAVRS]{Capture-to-fission percent relative errors for the quarter core BEAVRS model with null homogenization (a) and \textit{i}MGXS homogenization with 20 clusters (b).}
 \label{fig:chap11-full-core-capt-err-b}
 \end{figure}
-
-\clearpage
 
 \begin{figure}[h!]
 \centering
@@ -585,8 +592,6 @@ BEAVRS Quarter Core & -122 & -119 & -120 & -119 & -119 & -116 \\
 \caption[U-238 capture rate comparison for the colorset]{A comparison of U-238 capture rate spatial distributions for \textit{i}MGXS with GMM clustering and null spatial homogenization schemes for the 2$\times$2 colorset.}
 \label{fig:refl-capt-rates-comp}
 \end{figure}
-
-\clearpage
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection*{Convergence Rates of MOC Solutions}
