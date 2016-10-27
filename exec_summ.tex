@@ -356,7 +356,9 @@ A new combinatorial goemetry (CG) Python library called OpenCG~\cite{boyd2015ope
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection*{Clustering of Pin-Wise MGXS}
 
-Core heterogeneities such as control rod guide tubes, burnable poisons and reflectors induce clustering of pin-wise MGXS due to spatial self-shielding effects. An illustration of the clustering of U-238 radiative capture MGXS is given in Fig.~\ref{fig:capt-mean-std} for a single PWR fuel assembly with control rod guide tubes. The scatter plots illustrate the clustering of MGXS tallied for each of the 264 fuel pins in the assembly. The MGXS separate into four clusters due to the softening of the flux due to different levels of moderation from neighboring CRGTs in increasing order for the following four groupings of fuel pins: (a) pins not adjacent to a CRGT, (b) pins corner adjacent to a CRGT, (c) pins facially adjacent to a CRGT and (d) pins facially and corner adjacent to separate CRGTs. The spatial homogenization schemes introduced here employ machine learning to infer the clustering of pin-wise MGXS from ``noisy'' MC tally data.
+Core heterogeneities such as control rod guide tubes, burnable poisons and reflectors induce clustering of pin-wise MGXS due to spatial self-shielding effects. An illustration of the clustering of U-238 radiative capture MGXS is given in Fig.~\ref{fig:capt-mean-std} for a single PWR fuel assembly with control rod guide tubes. The scatter plots illustrate the clustering of MGXS tallied for each of the 264 fuel pins in the assembly. The MGXS separate into four clusters due to the softening of the flux due to different levels of moderation from neighboring CRGTs in increasing order for the following four groupings of fuel pins: (a) pins not adjacent to a CRGT, (b) pins corner adjacent to a CRGT, (c) pins facially adjacent to a CRGT and (d) pins facially and corner adjacent to separate CRGTs. The spatial homogenization schemes introduced here apply different models to approximate clustering of pin-wise MGXS.
+
+%The spatial homogenization schemes introduced here employ machine learning to infer the clustering of pin-wise MGXS from ``noisy'' MC tally data.
 
 \begin{figure}[h!]
 \centering
@@ -409,7 +411,7 @@ This work developed several different spatial homogenization schemes to model sp
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection*{\textit{i}MGXS Spatial Homogenization}
 
-\textbf{\textit{Inferential MGXS spatial homogenization} uses algorithms developed by the machine learning community to infer MGXS clusters directly from MC tally data.} The \textit{i}MGXS scheme can flexibly accommodate arbitrary core heterogeneities better than heuristic approaches like LNS which must be customized for particular core geometries. In addition, the \textit{i}MGXS scheme accelerates the convergence rate of MGXS tallied with MC with respect to the degenerate and LNS schemes since it homogenizes MC tallies across many more fuel pins.
+\textbf{\textit{Inferential MGXS spatial homogenization} uses machine learning to infer MGXS clusters directly from ``noisy'' MC tally data.} The \textit{i}MGXS scheme can flexibly accommodate arbitrary core heterogeneities better than heuristic approaches like LNS which must be customized for particular core geometries. In addition, the \textit{i}MGXS scheme accelerates the convergence rate of MGXS tallied with MC with respect to the degenerate and LNS schemes since it homogenizes MC tallies across many more fuel pins.
 
 % rather than predict clustering from an analysis of the core geometry.
 
@@ -483,25 +485,25 @@ The geometries produced with null, degenerate, LNS and \textit{i}MGXS spatial ho
 \centering
 \begin{subfigure}{0.47\textwidth}
   \centering
-  \includegraphics[width=0.95\linewidth]{figures/benchmarks/2x2}
+  \includegraphics[width=0.75\linewidth]{figures/benchmarks/2x2}
   \caption{}
   \label{fig:reflector}
 \end{subfigure}%
 \begin{subfigure}{0.47\textwidth}
   \centering
-  \includegraphics[width=0.95\linewidth]{figures/quantification/homogenization/2x2-degenerate-materials}
+  \includegraphics[width=0.75\linewidth]{figures/quantification/homogenization/2x2-degenerate-materials}
   \caption{}
   \label{fig:reflector-degenerate}
 \end{subfigure}
 \begin{subfigure}{0.47\textwidth}
   \centering
-  \includegraphics[width=0.95\linewidth]{figures/patterns/lns/reflector/materials}
+  \includegraphics[width=0.75\linewidth]{figures/patterns/lns/reflector/materials}
   \caption{}
   \label{fig:reflector-lns}
 \end{subfigure}%
 \begin{subfigure}{0.47\textwidth}
   \centering
-  \includegraphics[width=0.95\linewidth]{figures/unsupervised/geometries/with-features/8-clusters/combined/reflector}
+  \includegraphics[width=0.75\linewidth]{figures/unsupervised/geometries/with-features/8-clusters/combined/reflector}
   \caption{}
   \label{fig:reflector-8-clusters}
 \end{subfigure}
@@ -551,14 +553,23 @@ The BEAVRS geometry built by \textit{i}MGXS with 24 clusters is presented in Fig
 
 The OpenMOC energy-integrated pin-wise U-238 capture rates are compared to the reference OpenMC capture rates for each homogenization scheme to compute the percent relative errors for each pin's capture rates. The spatial distributions of capture rate errors are plotted as heatmaps for colorset benchmark in Fig.~\ref{fig:refl-capt-err} with null, degenerate, LNS and \textit{i}MGXS homogenization with BIRCH clustering of 2, 4 and 16 clusters.
 
-The error is largest for the null homogenization scheme since it neglects to model MGXS clustering due to spatial self-shielding effects in each fuel pin. The error is smallest for the degenerate scheme since it exactly models the different spatial self-shielding effects for each fuel pin in the geometry. The LNS scheme largely ``smooths'' the error distribution for the interior pins, but exhibits large errors for the single outermost row of pins adjacent to the reflector, and to a lesser extent, the pins along the inter-assembly interfaces. This illustrates LNS' inability to distinguish fuel pins along interfaces between spatial zones. Unlike the LNS scheme, the \textit{i}MGXS scheme excels at discriminating pins along assembly-assembly and assembly-reflector interfaces into unique clusters such that little residual error is observed with 16 clusters.
-
 \begin{figure}[h!]
 \centering
 \includegraphics[width=0.83\linewidth]{figures/results/spatial/reflector/capt-err}
 \vspace{2mm}
 \caption[U-238 capture rate errors for the 2$\times$2 colorset]{U-238 capture rate percentage relative errors for the 2$\times$2 colorset with null, degenerate, LNS and \textit{i}MGXS spatial homogenization with 2, 8 and 16 clusters.}
 \label{fig:refl-capt-err}
+\end{figure}
+
+The error is largest for the null homogenization scheme since it neglects to model MGXS clustering due to spatial self-shielding effects in each fuel pin. The error is smallest for the degenerate scheme since it exactly models the different spatial self-shielding effects for each fuel pin in the geometry. The LNS scheme largely ``smooths'' the error distribution for the interior pins, but exhibits large errors for the single outermost row of pins adjacent to the reflector, and to a lesser extent, the pins along the inter-assembly interfaces. This illustrates LNS' inability to distinguish fuel pins along interfaces between spatial zones. Unlike the LNS scheme, the \textit{i}MGXS scheme excels at discriminating pins along assembly-assembly and assembly-reflector interfaces into unique clusters such that little residual error is observed with 16 clusters.
+
+In addition, it is often useful to compare the reaction rates from two different OpenMOC simulations with null and \textit{i}MGXS homogenization. The percent relative deviation of the U-238 capture rate distributions between the null and \textit{i}MGXS schemes can be computed to visualize the impact of clusters on the U-238 capture rate predictions. Fig.~\ref{fig:refl-capt-rates-comp} present the percent relative deviations for the colorset benchmark for BIRCH clustering of 2, 4, 8 and 16 clusters. The figures illustrate the \textit{hierarchical} nature of MGXS clustering by discriminating fuel pins with different spatial self-shielding effects that occur in different spatial regimes. For example, the first 2 -- 4 clusters discriminate pins along the assembly-assembly and assembly-reflector interfaces. As more clusters are introduced, they are increasingly customized to model the more local spatial self-shielding effects affecting the pins within the interior of each assembly due to the presence of control rod guide tubes and burnable poisons.
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.63\linewidth]{figures/results/compare/reflector/compare-capt}
+\caption[U-238 capture rate comparison for the colorset]{A comparison of U-238 capture rate spatial distributions for \textit{i}MGXS with GMM clustering and null spatial homogenization schemes for the 2$\times$2 colorset.}
+\label{fig:refl-capt-rates-comp}
 \end{figure}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -586,16 +597,15 @@ The error is highly structured for the null homogenization scheme since it negle
 \label{fig:chap11-full-core-capt-err-b}
 \end{figure}
 
-\begin{figure}[h!]
-\centering
-\includegraphics[width=0.85\linewidth]{figures/results/compare/reflector/compare-capt}
-\caption[U-238 capture rate comparison for the colorset]{A comparison of U-238 capture rate spatial distributions for \textit{i}MGXS with GMM clustering and null spatial homogenization schemes for the 2$\times$2 colorset.}
-\label{fig:refl-capt-rates-comp}
-\end{figure}
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection*{Convergence Rates of MOC Solutions}
 
+This thesis also quantified the number of MC particle histories necessary to sufficiently converge MGXS for stable OpenMOC solutions with each spatial homogenization scheme. OpenMC simulations were used to generate MGXS for varying numbers of particle histories. The MGXS are computed from MC tally data stored as OpenMC \textit{statepoint files} for 100 different active batches (\textit{i.e.}, different numbers of particle histories). The OpenMC statepoints for the earliest batches contained MC tally data with the largest statistical uncertainties, while the tallies for the latter batches had smaller statistical uncertainties. The different statepoints enabled a thorough evaluation of the sensitivity of OpenMOC's solutions to the statistical uncertainties of the MGXS.
+
+The OpenMOC U-238 capture rates were compared to the reference OpenMC capture rates to compute the percent relative errors for each pin's rates for each of the OpenMC statepoints. The relative errors are presented in Fig.~\ref{fig:refl-capture-converge} for the colorset with null, degenerate, LNS and \textit{i}MGXS spatial homogeniation with 16 BIRCH clusters. The statistical uncertainty (1-sigma) of the OpenMC estimate for the pin-wise U-238 capture rates is also highlighted in each figure to quantify how much faster a solution for a specified accuracy can be achieved with OpenMOC with MGXS generated by OpenMC.
+
+The OpenMC uncertainties approach zero while the OpenMOC errors approach a non-zero bias dependent on the approximation error related to OpenMOC's numerical discretization. The convergence of the \textit{i}MGXS scheme lies between that of the null and degenerate schemes, and requires more particle histories to converge as more clusters are identified. The converged \textit{i}MGXS errors increasingly approach the degenerate errors as more clusters are introduced. \textbf{The figures illustrate that \textit{i}MGXS achieves nearly the same accuracy as the degenerate scheme with a factor of at least 10 fewer particle histories. Furthermore, the results indicate that OpenMOC's errors converge at least 10$\times$ faster than OpenMC's statistical uncertainties.}
+ 
 \begin{figure}[h!]
 \centering
 \begin{subfigure}{\textwidth}
