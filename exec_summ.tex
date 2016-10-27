@@ -329,9 +329,13 @@ A new combinatorial goemetry (CG) Python library called OpenCG~\cite{boyd2015ope
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section*{Tallying Pin-Wise MGXS with Monte Carlo}
 
-This thesis develops a new methodology for MGXS generation which employs a single Monte Carlo calculation is used to model the complete heterogeneous geometry in a single step. The advantage of this approach is that it uses the ``true'' MC flux to collapse the flux. However, it 
+This thesis develops new methodologs for MGXS generation which employ a single Monte Carlo calculation is used to model the complete heterogeneous geometry in a single step. The advantage of these approaches is that they use the ``true'' MC flux to collapse the flux. However, it they achieve this increase in accuracy  at added expense of generating large tally datasets. This thesis develops a method 
 
-In theory, multi-group cross sections are to vary continuously in space. Howver, most deterministic methods used to solve the multi-group transport equation make the simplifying assumption that material properties are constant across each spatial mesh cell. \textit{Spatial homogenization} is used to compute flux-weighted volume-averaged cross sections within each spatial mesh cell. This thesis develops the inferential MGXS spatial homogenization scheme in which a single Monte Carlo calculation is used to model the complete heterogeneous geometry to generate MGXS. In particular, \textit{i}MGXS captures spatial self-shielding effects from core heterogeneities which induce clustering of the MGXS in different fuel pin types. The motivation for MGXS clustering and a brief description of the scheme is presented in the following sections.
+In theory, multi-group cross sections are to vary continuously in space. Howver, most deterministic methods used to solve the multi-group transport equation make the simplifying assumption that material properties are constant across each spatial mesh cell. \textit{Spatial homogenization} is used to compute flux-weighted volume-averaged cross sections within each spatial mesh cell. 
+
+This thesis develops the inferential MGXS spatial homogenization scheme in which a single Monte Carlo calculation is used to model the complete heterogeneous geometry to generate MGXS. 
+
+In particular, \textit{i}MGXS captures spatial self-shielding effects from core heterogeneities which induce clustering of the MGXS in different fuel pin types. The motivation for MGXS clustering and a brief description of the scheme is presented in the following sections.
 
 %-each scheme models complete heterogeneous geometry in a single step
 %-uses the true ``MC'' flux to collapse the MGXS for fissile and non-fissile zones
@@ -469,7 +473,11 @@ Each of the benchmarks is analyzed with OpenMC to generate 70-group MGXS for use
 \section*{Results}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection*{\textit{i}MGXS Clustered Geometries}
+\subsection*{Clustered Geometries}
+
+The geometries produced with null, degenerate, LNS and \textit{i}MGXS spatial homogenization for the 2$\times$2 colorset benchmark are displayed in Fig.~\ref{fig:colorset-geometries}. Each uniquely colored material represents a unique set of MGXS. The null scheme uses a single MGXS for each fuel pin of a particular enrichment, while the degenerate scheme assigns a unique MGXS to each fuel pin. The LNS and \textit{i}MGXS schemes distinguish fuel pins based on neighboring heterogeneities, such as control rod guide tubes and burnable poisons. Unlike LNS, the \textit{i}MGXS scheme discriminates pins along assembly-assembly and reflector-assembly interfaces. \textbf{The ability of \textit{i}MGXS to separate out fuel pins along interfaces without geometric heuristics illustrates one key advantage of \textit{i}MGXS over the LNS scheme.}
+
+%As a result, the \textit{i}MGXS scheme is expected to outperform LNS spatial homogenization for arbitrary core geometries.
 
 \begin{figure}[h!]
 \centering
@@ -497,11 +505,9 @@ Each of the benchmarks is analyzed with OpenMC to generate 70-group MGXS for use
   \caption{}
   \label{fig:reflector-8-clusters}
 \end{subfigure}
-\caption[Materials for the 2$\times$2 colorset]{The materials for the 2$\times$2 colorset with null (a), degenerate (b), LNS (c) and \textit{i}MGXS spatial homogenization with 8 GMM clusters (d).}
+\caption[Materials for the 2$\times$2 colorset]{The materials for the 2$\times$2 colorset with null (a), degenerate (b), LNS (c) and \textit{i}MGXS spatial homogenization with 8 clusters (d).}
 \label{fig:colorset-geometries}
 \end{figure}
-
-\clearpage
 
 \begin{figure}[h!]
 \centering
@@ -509,6 +515,8 @@ Each of the benchmarks is analyzed with OpenMC to generate 70-group MGXS for use
 \caption[Materials for the BEAVRS]{The quarter core BEAVRS model with \textit{i}MGXS spatial homogenization.}
 \label{fig:full-core-8-clusters}
 \end{figure}
+
+The BEAVRS geometry built by \textit{i}MGXS with 24 clusters is presented in Fig.~\ref{fig:full-core-8-clusters}. Three zones are highlighted to illustrate the distinct clustering patterns found for interior fuel assemblies, fuel assemblies along the top baffle/reflector interface, and fuel assemblies at the corner of geometry. The pins in the interior assemblies are clustered in a way which resembles the clustered geometries found for fuel assemblies in an infinite lattice. As noted for the colorset, the \textit{i}MGXS scheme discriminates pins along assembly-assembly and reflector-assembly interfaces. Furthermore, the pins in the corner assemblies cluster according to varying levels of moderation provided by the reflector in this region of the core. These results illustrate the ability of the \textit{i}MGXS scheme to categorize fuel pins into clusters based on subtle differences in spatial self-shielding effects.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection*{Eigenvalues}
