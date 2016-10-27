@@ -326,65 +326,101 @@ A new combinatorial goemetry (CG) Python library called OpenCG~\cite{boyd2015ope
 %
 %\clearpage
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section*{Spatial Homogenization Schemes}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section*{Tallying Pin-Wise MGXS with Monte Carlo}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection*{Track Density-Weighted Homogenization}
+This thesis develops a new methodology for MGXS generation which employs a single Monte Carlo calculation is used to model the complete heterogeneous geometry in a single step. The advantage of this approach is that it uses the ``true'' MC flux to collapse the flux. However, it 
 
-\begin{equation}
-\label{eqn:imgxs-set}
-\mathbb{S}_{m} = \left\{1 \le k \le K: S(k) = m\right\}
-\end{equation}
+In theory, multi-group cross sections are to vary continuously in space. Howver, most deterministic methods used to solve the multi-group transport equation make the simplifying assumption that material properties are constant across each spatial mesh cell. \textit{Spatial homogenization} is used to compute flux-weighted volume-averaged cross sections within each spatial mesh cell. This thesis develops the inferential MGXS spatial homogenization scheme in which a single Monte Carlo calculation is used to model the complete heterogeneous geometry to generate MGXS. In particular, \textit{i}MGXS captures spatial self-shielding effects from core heterogeneities which induce clustering of the MGXS in different fuel pin types. The motivation for MGXS clustering and a brief description of the scheme is presented in the following sections.
 
-LNS homogenization computes a single set of MGXS for the fuel pin instances in each set $k \in \mathbb{S}_{m}$ classified by the LNS algorithm. This is equivalent to a specialization of Eqn.~\ref{eqn:imgxs-micro} with track density-weighted averages of the reaction rates and flux tallies in each pin instance:
+%-each scheme models complete heterogeneous geometry in a single step
+%-uses the true ``MC'' flux to collapse the MGXS for fissile and non-fissile zones
+%-the schemes vary by how they treat the MGXS for the different fuel pins across a reactor geometry
+%
+%This thesis investigates the effect of spatial homogenization on the various fuel pins in LWR benchmarks.
+%
+%This thesis is based on the observation that \textbf{pins with similar neighboring heterogeneities have similar microscopic MGXS}. If pins with similar microscopic MGXS can be identified, the MGXS tallied in these pin instances may be \textit{spatially homogenized} to
+%
+% compute an estimate which is nearly as accurate as the \ac{MGXS} from degenerate homogenization, and nearly as converged as the \ac{MGXS} from null homogenization. 
+%
+%%-need to define spatial self-shielding
+%
+%Spatially-homogenized \ac{MGXS} preserve reaction rates in discrete spatial zones.
+%
+%This chapter investigates this hypothesis by analyzing the pin-wise \ac{MGXS} tallied with OpenMC to identify patterns -- namely, clustering -- for pins with similar neighbors. 
 
-\begin{equation}
-\label{eqn:imgxs-micro}
-\hat{\sigma}_{x,i,m,g} = \frac{\displaystyle\sum\limits_{k=1}^{K}\mathbb{1}_{\mathbb{S}_{m}}(k) \langle \sigma_{x,i}, \psi \rangle_{k,g}^{t\ell}}{\displaystyle\sum\limits_{k=1}^{K}\mathbb{1}_{\mathbb{S}_{m}}(k) \langle \psi \rangle_{k,g}^{t\ell}}
-\end{equation}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection*{Clustering of Pin-Wise MGXS}
+
+Core heterogeneities such as control rod guide tubes, burnable poisons and reflectors induce clustering of pin-wise MGXS due to spatial self-shielding effects. An illustration of the clustering of U-238 radiative capture MGXS is given in Fig.~\ref{fig:capt-mean-std} for a single PWR fuel assembly with control rod guide tubes. The scatter plots illustrate the clustering of MGXS tallied for each of the 264 fuel pins in the assembly. The MGXS separate into four clusters due to the softening of the flux due to different levels of moderation from neighboring CRGTs in increasing order for the following four groupings of fuel pins: (a) pins not adjacent to a CRGT, (b) pins corner adjacent to a CRGT, (c) pins facially adjacent to a CRGT and (d) pins facially and corner adjacent to separate CRGTs. The spatial homogenization schemes introduced here employ machine learning to infer the clustering of pin-wise MGXS from ``noisy'' MC tally data.
 
 \begin{figure}[h!]
 \centering
-\includegraphics[width=0.9\linewidth]{figures/unsupervised/features/engineering/flow-chart}
+\begin{subfigure}{0.45\textwidth}
+  \centering
+  \includegraphics[width=0.9\linewidth]{figures/unsupervised/features/assm-16/u238-capt/mean-std/geometry-2}
+  \caption{}
+  \label{fig:chap10-capt-mean-std-geom-2}
+\end{subfigure}%
+\begin{subfigure}{0.45\textwidth}
+  \centering
+  \includegraphics[width=0.9\linewidth]{figures/unsupervised/features/assm-16/u238-capt/mean-std/mgxs-2}
+  \caption{}
+  \label{fig:chap10-capt-mean-std-mgxs-2}
+\end{subfigure}
+\begin{subfigure}{0.45\textwidth}
+  \centering
+  \includegraphics[width=0.9\linewidth]{figures/unsupervised/features/assm-16/u238-capt/mean-std/geometry-3}
+  \caption{}
+  \label{fig:chap10-capt-mean-std-geom-3}
+\end{subfigure}%
+\begin{subfigure}{0.45\textwidth}
+  \centering
+  \includegraphics[width=0.9\linewidth]{figures/unsupervised/features/assm-16/u238-capt/mean-std/mgxs-3}
+  \caption{}
+  \label{fig:chap10-capt-mean-std-mgxs-3}
+\end{subfigure}
+\caption[Clustering of U-238 capture MGXS]{Scatter plots of the pin-wise U-238 capture MGXS means ($x$) and standard deviations ($y$) in barns for a 1.6\% enriched fuel assembly.}
+\label{fig:capt-mean-std}
+\end{figure}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection*{Null, Degenerate and LNS Spatial Homogenization}
+
+This work developed several different spatial homogenization schemes to model spatial self-shielding effects in MGXS. Although all spatial zones may experience spatial self-shielding, this thesis only models the impact of spatial self-shielding on MGXS in fissile regions. Each scheme uses a single MC calculation of the complete heterogeneous geometry to collapse MGXS with the ``true'' flux. The null, LNS and degenerate schemes model spatial self-shielding for each fuel pin with increasing granularity and complexity.
+
+\textbf{\textit{Null spatial homogenization} is the simplest method and averages all spatial self-shielding effects across the entire geometry.} Null homogenization does not account for spatial self-shielding effects experienced by different fuel pins and is equivalent to averaging the data points in Fig.~\ref{fig:capt-mean-std} to compute a single MGXS to be used in all fuel pins. \textbf{\textit{Degenerate spatial homogenization} takes the opposite approach and assigns each fuel pin its own MGXS.} The degenerate scheme accounts for the different spatial self-shielding effects experienced by each instance of each fuel pin throughout a heterogeneous geometry, and is equivalent to modeling each of the data points in Fig.~\ref{fig:capt-mean-std} as its own unique cluster. Although degenerate homogenization is more accurate than null homogenization, it requires many more MC particle histories to converge the uncertainties on the MGXS tallied separately for each fuel pin.
+
+\textbf{\textit{LNS spatial homogenization} uses OpenCG's LNS algorithm to predict the clustering of pin-wise MGXS based on an analysis of the combinatorial geometry.} The LNS scheme is akin to \textit{geometric templates} employed by some lattice physics codes, such as CASMO~\cite{rhodes2006casmo}, to predict which groupings of pins are likely to experience similar spatial self-shielding effects and hence have similar MGXS. The LNS algorithm groups fuel pins together based on an analysis of each pin's neighbors. The MGXS are homogenized across all pin within the same LNS grouping. LNS homogenization is an attempt to model MGXS clustering with fewer materials than degenerate homgenization in order accelerate the MC tally convergence rate by homogenizing MGXS across many pins. However, the LNS algorithm scales poorly for large geometries and fails to predict spatial self-shielding effects in arbitrary core geometries, such as those that occur at assembly-assembly and assembly-reflector interfaces. These shortcomings motivate the need for an unsupervised approach to accurately and scalably predict MGXS clustering.
+
+%Pins with like neighboring pins, within assemblies with like neighboring assemblies, will receive the same LNS identifier.
+
+%LNS homogenization computes a single set of MGXS for the fuel pin in each set classified by the LNS algorithm using a MC track density-weighted averages of the reaction rates and flux tallies in each pin.
+
+%\begin{equation}
+%\label{eqn:imgxs-micro}
+%\hat{\sigma}_{x,i,m,g} = \frac{\displaystyle\sum\limits_{k=1}^{K}\mathbb{1}_{\mathbb{S}_{m}}(k) \langle \sigma_{x,i}, \psi \rangle_{k,g}^{t\ell}}{\displaystyle\sum\limits_{k=1}^{K}\mathbb{1}_{\mathbb{S}_{m}}(k) \langle \psi \rangle_{k,g}^{t\ell}}
+%\end{equation}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection*{\textit{i}MGXS Spatial Homogenization}
+
+\textbf{\textit{Inferential MGXS spatial homogenization} uses algorithms developed by the machine learning community to infer MGXS clusters directly from MC tally data.} The \textit{i}MGXS scheme can flexibly accommodate arbitrary core heterogeneities better than heuristic approaches like LNS which must be customized for particular core geometries. In addition, the \textit{i}MGXS scheme accelerates the convergence rate of MGXS tallied with MC with respect to the degenerate and LNS schemes since it homogenizes MC tallies across many more fuel pins.
+
+% rather than predict clustering from an analysis of the core geometry.
+
+The \textit{i}MGXS spatial homogenization scheme is a multi-stage data processing pipeline as illustrated in Fig.~\ref{fig:imgxs-flow-chart}. The \textit{feature extraction} stage of the data processing pipeline in builds features (\textit{i.e.}, random variables) derived from ``noisy'' MC tally data which provide information about MGXS clustering for each fuel pin. The \textit{feature selection} stage removes redundant and/or highly correlated features to minimize the number of features used to train a clustering model. The \textit{dimensionality reduction} stage projects samples in a lower-dimensional vector space with the same descriptive power as the original features to reduce training time and and improve clustering model performance. The \textit{predictor training} stage builds a series of clustering models for different parameters (\textit{e.g.}, varying numbers of clusters), each of which predicts clusters of fuel pins that are grouped together with the same MGXS. The $k$-means~\cite{macqueen1967kmeans, lloyd1982kmeans}, agglomerative~\cite{johnson1967hierarchical}, BIRCH~\cite{zhang1996birch} and Gaussian Mixture Model~\cite{mclachlan1988mixture} clustering algorithms were each employed within the \textit{i}MGXS scheme for this thesis. The \textit{model selection} stage evaluates heuristics to choose clustering model parameters, including the number of clusters. Various methods which score clustering models based upon their intra- and inter-cluster similarities, or penalize model complexity using regularization, were evaluated within the \textit{i}MGXS scheme.
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.88\linewidth]{figures/unsupervised/features/engineering/flow-chart}
 \vspace{2mm}
 \caption[\textit{i}MGXS flow chart]{The \textit{i}MGXS data processing pipeline.}
 \label{fig:imgxs-flow-chart}
 \end{figure}
 
-\begin{figure}[h!]
-\centering
-\begin{subfigure}{0.45\textwidth}
-  \centering
-  \includegraphics[width=0.9\linewidth]{figures/unsupervised/features/assm-16/u238-capt/mean-pcm/geometry-2}
-  \caption{}
-  \label{fig:chap10-capt-mean-pcm-geom-2}
-\end{subfigure}%
-\begin{subfigure}{0.45\textwidth}
-  \centering
-  \includegraphics[width=0.9\linewidth]{figures/unsupervised/features/assm-16/u238-capt/mean-pcm/mgxs-2}
-  \caption{}
-  \label{fig:chap10-capt-mean-pcm-mgxs-2}
-\end{subfigure}
-\begin{subfigure}{0.45\textwidth}
-  \centering
-  \includegraphics[width=0.9\linewidth]{figures/unsupervised/features/assm-16/u238-capt/mean-pcm/geometry-3}
-  \caption{}
-  \label{fig:chap10-capt-mean-pcm-geom-3}
-\end{subfigure}%
-\begin{subfigure}{0.45\textwidth}
-  \centering
-  \includegraphics[width=0.9\linewidth]{figures/unsupervised/features/assm-16/u238-capt/mean-pcm/mgxs-3}
-  \caption{}
-  \label{fig:chap10-capt-mean-pcm-mgxs-3}
-\end{subfigure}
-\caption[Clustering of U-238 capture MGXS fractional reactivities]{Scatter plots of the pin-wise U-238 capture MGXS means ($x$) and fractional reactivities ($y$) for a 1.6\% enriched fuel assembly.}
-\label{fig:capt-mean-std}
-\end{figure}
 
-\clearpage
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section*{Model Validation}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -424,8 +460,6 @@ A series of six heterogeneous benchmarks were derived from the Benchmark for Eva
 \subsection*{Validation Metrics}
 
 Each of the benchmarks is analyzed with OpenMC to generate 70-group MGXS for use in deterministic transport calculations with OpenMOC. In addition, \textbf{a series of OpenMC simulations were used to calculate reference eigenvalues and pin-wise fission rates and U-238 capture rates for each benchmark.} The eigenvalue is a key integral quantity used to assess the reactivity of a reactor. The fission rates are directly related to the relative power density of each fuel pin which is important for fuel depletion as well as thermal hydraulic feedback. The U-238 capture rates result in the production of Pu-239 which contributes up to 40\% of the power produced from fission in PWRs at the end-of-life (EOL). Hence, the spatial distributions of the fission rates and U-238 capture rates must be correctly modeled for accurate high-fidelity depletion calculations. 
-
-%The reference results for each of these three metrics were computed with highly converged OpenMC simulations.
 
 \textbf{The eigenvalue, fission rate and capture rate errors between OpenMC and OpenMOC were quantified for each benchmark and spatial homogenization scheme.} The type of spatial homogenization strongly impacts the resultant accuracy of OpenMOC's U-238 capture rate predictions. In contrast, the homogenization schemes has little impact on the OpenMOC fission rate predictions. As expected, the various schemes are inconsequential to the eigenvalue predictions, since each method uses the same MC flux to collapse the MGXS and preserve global reactivity. Hence, only the U-238 capture rate errors are presented and analyzed in the following section.
 
