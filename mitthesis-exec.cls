@@ -464,8 +464,8 @@ at the
 \unvbox\@titlesupervisor
 \par
 \vfill
-\signature{Accepted by}{\@chairmanname \\ \@chairmantitle}
-\vfill
+%\signature{Accepted by}{\@chairmanname \\ \@chairmantitle}
+%vfill
 \end{titlepage}}
 
 % this environment should probably be called abstract,
