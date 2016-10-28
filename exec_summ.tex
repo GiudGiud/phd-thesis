@@ -156,7 +156,9 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection*{Background and Motivation}
 
-The development and deployment of neutron physics simulations is governed by tradeoffs between accuracy and speed. High-fidelity simulations are accurate and flexible but require significant computational resources, while the approximations made by low-fidelity methods reduce the number of variables which greatly improves the time-to-solution. As a result, it is common to employ a mix of high- and low-fidelity tools for reactor analysis -- for example, high-fidelity tools are frequently used to inform and benchmark low-fidelity models for use within a narrow envelope of design parameters. This thesis develops a new approach within the same vein by employing continuous energy Monte Carlo (MC) neutron transport simulations to generate accurate multi-group cross sections (MGXS) for computationally efficient deterministic transport methods.
+The development and deployment of neutron physics simulations is governed by tradeoffs between accuracy and speed. High-fidelity simulations are accurate and flexible but require significant computational resources, while the approximations made by low-fidelity methods reduce the number of variables which greatly improves the time-to-solution. As a result, it is common to employ a mix of high- and low-fidelity tools for reactor analysis -- for example, high-fidelity tools are frequently used to inform and benchmark low-fidelity models for use within a narrow envelope of design parameters. This thesis develops a new approach within the same vein by employing continuous energy Monte Carlo (MC) neutron transport simulations to generate accurate multi-group cross sections (MGXS) for computationally efficient deterministic transport methods. These new methods eliminate the need for engineering judgement by generating MGXS from ``noisy'' MC tally data computed from a single unconverged whole-core MC simulation.
+
+%Unlike the today's multi-level approaches for MGXS generation, the methods developed in this work remove the need for engineering judgement and instead infer MGXS from ``noisy'' MC tally data computed by a single unconverged whole-core MC simulation.
 
 %\textbf{This thesis is motivated by the desire to obtain Monte Carlo-quality solutions with computationally efficient deterministic neutron transport methods.}
 
@@ -164,7 +166,7 @@ This thesis investigates the use of Monte Carlo methods to generate MGXS, such a
 
 \begin{figure}[h!]
 \centering
-\includegraphics[width=0.75\linewidth]{figures/intro/u235-ce-mg-xs}
+\includegraphics[width=0.65\linewidth]{figures/intro/u235-ce-mg-xs}
 \caption[U-235 continuous energy and multi-group fission cross section]{U-235 continuous energy and 16-group fission cross section.}
 \label{fig:u235-sigf}
 \end{figure}
@@ -576,7 +578,7 @@ In addition, it is often useful to compare the reaction rates from two different
 \begin{figure}[h!]
 \centering
 \includegraphics[width=0.63\linewidth]{figures/results/compare/reflector/compare-capt}
-\caption[U-238 capture rate comparison for the mini core]{A comparison of U-238 capture rate spatial distributions for \textit{i}MGXS with GMM clustering and null spatial homogenization schemes for the 2$\times$2 mini core.}
+\caption[U-238 capture rate comparison for the mini core]{A comparison of U-238 capture rate spatial distributions for \textit{i}MGXS with BIRCH clustering and null spatial homogenization schemes for the 2$\times$2 mini core.}
 \label{fig:refl-capt-rates-comp}
 \end{figure}
 
