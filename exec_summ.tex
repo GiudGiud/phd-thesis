@@ -38,7 +38,7 @@
 
 \usepackage[breaklinks=true]{hyperref}
 \hypersetup{colorlinks=true, linkcolor=black, citecolor=black, urlcolor=black,
-  pdftitle={Reactor Agnostic Multi-Group Cross Section Generation for Fine Mesh Deterministic Neutron Transport Simulations},
+  pdftitle={Reactor Agnostic Multi-Group Cross Section Generation for Fine-Mesh Deterministic Neutron Transport Simulations},
   pdfauthor={William Robert Dawson Boyd}
 }
 \pagestyle{plain}
@@ -123,7 +123,7 @@
 
 \include{frontmatter/exec_cover}
 
-\title{EXECUTIVE SUMMARY \\~\\ Reactor Agnostic Multi-Group Cross Section Generation for Fine Mesh Deterministic Neutron Transport Simulations}
+\title{EXECUTIVE SUMMARY \\~\\ Reactor Agnostic Multi-Group Cross Section Generation for Fine-Mesh Deterministic Neutron Transport Simulations}
 
 \author{William Robert Dawson Boyd III}
 \prevdegrees{B.S., Georgia Institute of Technology (2010) \\
@@ -156,13 +156,13 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection*{Background and Motivation}
 
-The development and deployment of neutron physics simulations is governed by tradeoffs between accuracy and speed. High-fidelity simulations are accurate and flexible but require significant computational resources, while the approximations made by low-fidelity methods reduce the number of variables which greatly improves the time-to-solution. As a result, it is common to employ a mix of high- and low-fidelity tools for reactor analysis -- for example, high-fidelity tools are frequently used to inform and benchmark low-fidelity models for use within a narrow envelope of design parameters. This thesis develops a new approach within the same vein by employing continuous energy Monte Carlo (MC) neutron transport simulations to generate accurate multi-group cross sections (MGXS) for computationally efficient deterministic transport methods. These new methods eliminate the need for engineering judgement by generating MGXS from ``noisy'' MC tally data computed from a single unconverged whole-core MC simulation.
+The development and deployment of nuclear reactor core physics simulations is governed by tradeoffs between accuracy and speed. High-fidelity simulations are accurate and flexible but require significant computational resources, while the approximations made by low-fidelity methods reduce the number of variables which greatly improves the time-to-solution. As a result, it is common to employ a mix of high- and low-fidelity tools for reactor analysis -- for example, high-fidelity tools are frequently used to inform and benchmark low-fidelity models for use within a narrow envelope of design parameters. This thesis develops a new approach within the same vein by employing continuous energy Monte Carlo (MC) neutron transport simulations to generate accurate multi-group cross sections (MGXS) for computationally efficient whole-core deterministic transport methods. These new methods replace engineering judgement with machine learning which processes ``noisy'' tally data computed by a single whole-core MC simulation.
 
 %Unlike the today's multi-level approaches for MGXS generation, the methods developed in this work remove the need for engineering judgement and instead infer MGXS from ``noisy'' MC tally data computed by a single unconverged whole-core MC simulation.
 
 %\textbf{This thesis is motivated by the desire to obtain Monte Carlo-quality solutions with computationally efficient deterministic neutron transport methods.}
 
-This thesis investigates the use of Monte Carlo methods to generate MGXS, such as the U-235 fission MGXS illustrated in Fig.~\ref{fig:u235-sigf}, for whole-core deterministic reactor analysis. Monte Carlo presents a natural approach to replace engineering prescriptions to approximate the flux with a stochastic approximation of the exact flux. The advantage of a MC-based approach is that all of the relevant physics modeled in MC may be directly embedded into MGXS. This improvement in accuracy comes at the computational expense of converging group constant tallies to acceptably low uncertainties. MC methods have increasingly been used to generate few group constants for coarse mesh diffusion, most notably by the Serpent MC code~\cite{serpent2013manual}. However, there exist few rigorous and comprehensive analyses of MGXS generation for heterogeneous fine mesh deterministic transport methods~\cite{redmond1997multigroup,cai2014condensation,nelson2014improved}. \textbf{This thesis develops and evaluates MC-based methods to generate MGXS for fine mesh deterministic neutron transport codes.}
+This thesis investigates the use of Monte Carlo methods to generate MGXS, such as the U-235 fission MGXS illustrated in Fig.~\ref{fig:u235-sigf}, for reactor core analysis. Monte Carlo presents a natural approach to replace engineering prescriptions to approximate the flux with a stochastic approximation of the exact flux. The advantage of a MC-based approach is that all of the relevant physics modeled in MC may be directly embedded into MGXS. This improvement in accuracy comes at the computational expense of converging group constant tallies to acceptably low uncertainties. MC methods have increasingly been used to generate few group constants for coarse mesh diffusion, most notably by the Serpent MC code~\cite{serpent2013manual}. However, there exist few rigorous and comprehensive analyses of MGXS generation for heterogeneous fine-mesh deterministic transport methods~\cite{redmond1997multigroup,cai2014condensation,nelson2014improved}. \textbf{This thesis develops and evaluates MC-based methods to generate MGXS for fine-mesh deterministic neutron transport codes.}
 
 \begin{figure}[h!]
 \centering
@@ -171,7 +171,7 @@ This thesis investigates the use of Monte Carlo methods to generate MGXS, such a
 \label{fig:u235-sigf}
 \end{figure}
 
-In addition, MC-based MGXS generation methods to date have retained the multi-level geometric framework illustrated in Fig.~\ref{fig:multi-level-flow-chart} to tabulate MGXS for individual reactor components -- such as infinite fuel pins and/or assemblies -- for subsequent use in whole-core multi-group calculations. The multi-level approach is inspired by legacy MGXS generation techniques which apply high-fidelity models of the energy self-shielding physics to low-fidelity geometric models of unique core components. The complexity of the energy treatment is then reduced at each level as larger and more complex geometric models are considered. \textbf{This thesis replaces the multi-level framework in place of a whole-core MC calculation which simultaneously accounts for all energy and spatial self-shielding effects in a single step.}
+In addition, MC-based MGXS generation methods to date have retained the multi-level geometric framework illustrated in Fig.~\ref{fig:multi-level-flow-chart} to tabulate MGXS for individual reactor components -- such as infinite fuel pins and/or assemblies -- for subsequent use in whole-core multi-group calculations. The multi-level approach is inspired by legacy MGXS generation techniques which apply high-fidelity models of the energy self-shielding physics to low-fidelity geometric models of unique core components. The complexity of the energy treatment is then reduced at each level as larger and more complex geometric models are considered. \textbf{This thesis replaces the multi-level framework in place of a whole-core MC calculation which simultaneously accounts for all energy and spatial effects with a single simulation of the complete heterogeneous geometry.}
 
 \begin{figure}[h!]
 \centering
@@ -180,9 +180,9 @@ In addition, MC-based MGXS generation methods to date have retained the multi-le
 \label{fig:multi-level-flow-chart}
 \end{figure}
 
-In theory, whole-core MC calculations can be used to tally MGXS in each spatial zone (\textit{e.g.}, 100 axial depletion zones within each of 50,000+ fuel pins in a PWR core) to account for the spatial variation of the flux. However, such simulations have not been employed for practical reasons -- in particular, the computational expense of performing such calculations has been prohibitive for MC codes until recent years. Furthermore, roughly the same number of particle histories would be required to converge the MGXS tallies in each spatial zone as would be required for a direct whole-core calculation by MC. \textbf{Therefore, a new method is required to accelerate the convergence of the MGXS tallies in each fine mesh region in order for MC to be practical for reactor agnostic fine mesh MGXS generation.}
+In theory, whole-core MC calculations can be used to tally MGXS in each spatial zone (\textit{e.g.}, 100 axial depletion zones within each of 50,000+ fuel pins in a PWR core) to account for the spatial variation of the flux. However, such simulations have not been employed for practical reasons -- in particular, the computational expense of performing such calculations has been prohibitive for MC codes until recent years. Furthermore, roughly the same number of particle histories would be required to converge the MGXS tallies in each spatial zone as would be required for a direct whole-core calculation by MC. \textbf{Therefore, a new method is required to accelerate the convergence of the MGXS tallies in each fine-mesh region in order for MC to be practical for reactor agnostic fine-mesh MGXS generation.}
 
-This thesis proposes both engineering-based clustering and statistical clustering methods to accelerate the convergence of whole-core MC calculations for MGXS generation. This novel approach relies on the fact that many distinct spatial zones across a reactor core experience similar if not identical spatial self-shielding effects, and therefore have similar if not identical MGXS. The stochastic nature of MC simulations will contribute statistical ``noise'' to the tally estimates for the MGXS. As a result, the MGXS estimates for similarly self-shielded spatial zones form clusters which converge as more particle histories are simulated. \textbf{The goal of this thesis is to develop and apply machine learning algorithms to identify MGXS clusters from ``noisy'' Monte Carlo tally data. This methodology aims to generate MGXS for deterministic neutron transport codes in a reactor agnostic and computationally efficient manner.}
+This thesis proposes both engineering-based clustering and statistical clustering methods to accelerate the convergence of whole-core MC calculations for MGXS generation. This novel approach relies on the fact that many distinct spatial zones across a reactor core experience similar if not identical spatial and energy self-shielding effects, and therefore have similar if not identical MGXS. The stochastic nature of MC simulations will contribute statistical ``noise'' to the tally estimates for the MGXS. As a result, the MGXS estimates for similarly self-shielded spatial zones form clusters which converge as more particle histories are simulated. \textbf{The goal of this thesis is to develop and apply machine learning algorithms to identify MGXS clusters from ``noisy'' Monte Carlo tally data. This methodology aims to generate MGXS for deterministic neutron transport codes in a reactor agnostic and computationally efficient manner.}
 
 %%%%%%%%%%%%%%%%%%%%%%%%
 \subsection*{Objectives}
@@ -194,12 +194,12 @@ The subject matter of this thesis is organized along two main themes:
 \item \textbf{\textit{Statistical Clustering}} -- Develop statistical clustering methods to accelerate the convergence of MGXS on heterogeneous MC tally meshes.
 \end{itemize}
 
-The first theme of this thesis rigorously assesses the efficacy of MGXS generation with MC for fine mesh transport calculations. Some of the approximations made by MC-based MGXS generation are quantified, including an in-depth analysis of systematic bias resulting from constant-in-angle total MGXS. The second theme develops a new methodology called \textit{inferential multi-group cross sections} (\textit{i}MGXS) to simultaneously capture local and global spatial self-shielding effects in MGXS for whole-core calculations. The \textit{i}MGXS scheme applies statistical clustering methods to accelerate the convergence of MGXS tallied on fine, heterogeneous spatial meshes in Monte Carlo. The \textit{i}MGXS scheme is evaluated for a six heterogeneous PWR benchmarks to quantify its accuracy and convergence relative to alternative schemes for MC-based MGXS generation.
+The first theme of this thesis rigorously assesses the efficacy of MGXS generation with MC for fine-mesh transport calculations. Some of the approximations made by MC-based MGXS generation are quantified, including an in-depth analysis of systematic bias resulting from constant-in-angle total MGXS. The second theme develops a new methodology called \textit{inferential multi-group cross sections} (\textit{i}MGXS) to simultaneously capture local and global spatial self-shielding effects in MGXS for whole-core calculations. The \textit{i}MGXS scheme applies statistical clustering methods to accelerate the convergence of MGXS tallied on fine, heterogeneous spatial meshes in Monte Carlo. The \textit{i}MGXS scheme is evaluated for a six heterogeneous PWR benchmarks to quantify its accuracy and convergence relative to alternative schemes for MC-based MGXS generation.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section*{Software Infrastructure: A Simulation Triad}
 
-This thesis investigates Monte Carlo as a means to generate multi-group cross sections for fine mesh transport codes. This work required the development of a ``simulation triad'' encompassing three primary codes as illustrated in Fig.~\ref{fig:simulation-triad}. First, the OpenMC Monte Carlo code~\cite{romano2013openmc} was utilized to generate multi-group cross sections. Second, the MGXS were used by the OpenMOC code~\cite{boyd2014openmoc} for deterministic multi-group transport calculations. Finally, the OpenCG library~\cite{boyd2015opencg} enabled the processing and transfer of tally data on combinatorial geometry (CG) meshes between OpenMC and OpenMOC. The following sections summarize the author's contributions to each component code in the simulation triad to support the objectives of this thesis.
+This thesis investigates Monte Carlo as a means to generate multi-group cross sections for fine-mesh transport codes. This work required the development of a ``simulation triad'' encompassing three primary codes as illustrated in Fig.~\ref{fig:simulation-triad}. First, the OpenMC Monte Carlo code~\cite{romano2013openmc} was utilized to generate multi-group cross sections. Second, the MGXS were used by the OpenMOC code~\cite{boyd2014openmoc} for deterministic multi-group transport calculations. Finally, the OpenCG library~\cite{boyd2015opencg} enabled the processing and transfer of tally data on combinatorial geometry (CG) meshes between OpenMC and OpenMOC. The following sections summarize the author's contributions to each component code in the simulation triad to support the objectives of this thesis.
 
 \begin{figure}[h!]
   \centering
@@ -225,7 +225,7 @@ The OpenMOC code is a multi-group neutron transport code implementing the determ
 %%%%%%%%%%%%%%%%%%%%
 \subsection*{OpenCG}
 
-A new combinatorial geometry (CG) Python library called OpenCG~\cite{boyd2015opencg} was developed to construct complicated reactor geometries for OpenMOC. Two novel algorithms known as Local Neighbor Symmetry (LNS) and region differentiation were developed in OpenCG to support the \textit{i}MGXS methodology. The LNS algorithm analyzes a combinatorial geometry to identify neighbor cells, or pairs of cells which are adjacent to one another. The LNS algorithm is analogous to the geometric templates used in lattice physics codes such as CASMO~\cite{edenius1995casmo} to identify fuel pins which have similar MGXS. The region differentiation algorithm was developed to efficiently construct geometries which represent the assignment of MGXS to arbitrary ``clusters'' of fuel pins. The differentiated geometries are exported to OpenMOC for deterministic neutron transport calculations. 
+A new combinatorial geometry (CG) Python library called OpenCG~\cite{boyd2015opencg} was developed to construct complicated reactor geometries for OpenMOC. Two novel algorithms known as Local Neighbor Symmetry (LNS) and region differentiation were developed in OpenCG to support the \textit{i}MGXS methodology. The LNS algorithm analyzes a combinatorial geometry to identify neighbor cells, or pairs of cells which are adjacent to one another. The LNS algorithm is analogous to the geometric templates used in lattice physics codes such as CASMO~\cite{edenius1995casmo} to identify fuel pins which have similar resonance self-shielding Dancoff factors. The region differentiation algorithm was developed to efficiently construct geometries which represent the assignment of MGXS to arbitrary ``clusters'' of fuel pins. The differentiated geometries are exported to OpenMOC for deterministic neutron transport calculations. 
 
 %The author contributed over 10,000 lines of Python code in OpenCG to support this work.
 
@@ -366,7 +366,7 @@ A new combinatorial geometry (CG) Python library called OpenCG~\cite{boyd2015ope
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection*{Clustering of Pin-Wise MGXS}
 
-Core heterogeneities such as control rod guide tubes, burnable poisons and reflectors induce clustering of pin-wise MGXS due to spatial self-shielding effects. An illustration of the clustering of U-238 radiative capture MGXS is given in Fig.~\ref{fig:capt-mean-std} for a single PWR fuel assembly with control rod guide tubes. The scatter plots illustrate the clustering of MGXS tallied for each of the 264 fuel pins in the assembly. The MGXS separate into four clusters due to the softening of the flux due to different levels of moderation from neighboring CRGTs in increasing order for the following four groupings of fuel pins: (a) pins not adjacent to a CRGT, (b) pins corner adjacent to a CRGT, (c) pins facially adjacent to a CRGT and (d) pins facially and corner adjacent to separate CRGTs. The spatial homogenization schemes introduced here apply different models to approximate clustering of pin-wise MGXS.
+Core heterogeneities such as control rod guide tubes, burnable poisons and reflectors induce clustering of pin-wise MGXS due to spatial self-shielding effects. An illustration of the clustering of U-238 radiative capture MGXS is given in Fig.~\ref{fig:capt-mean-std} for a single PWR fuel assembly with control rod guide tubes. The scatter plots illustrate the clustering of MGXS tallied for each of the 264 fuel pins in the assembly. The MGXS separate into four clusters due to the softening of the flux due to different levels of moderation from neighboring control rod guide tubes (CRGTs) in increasing order for the following four groupings of fuel pins: (a) pins not adjacent to a CRGT, (b) pins corner adjacent to a CRGT, (c) pins facially adjacent to a CRGT and (d) pins facially and corner adjacent to separate CRGTs. The spatial homogenization schemes introduced here apply different models to approximate clustering of pin-wise MGXS.
 
 %The spatial homogenization schemes introduced here employ machine learning to infer the clustering of pin-wise MGXS from ``noisy'' MC tally data.
 
@@ -396,7 +396,7 @@ Core heterogeneities such as control rod guide tubes, burnable poisons and refle
   \caption{}
   \label{fig:chap10-capt-mean-std-mgxs-3}
 \end{subfigure}
-\caption[Clustering of U-238 capture MGXS]{Scatter plots of the pin-wise U-238 capture MGXS means ($x$) and standard deviations ($y$) in barns for a 1.6\% enriched fuel assembly.}
+\caption[Clustering of U-238 capture MGXS]{Scatter plots of the pin-wise U-238 capture MGXS means [barns] ($x$) and relative statistical uncertainties [\%] ($y$) in barns for a 1.6\% enriched fuel assembly.}
 \label{fig:capt-mean-std}
 \end{figure}
 
@@ -407,7 +407,9 @@ This work developed several different spatial homogenization schemes to model sp
 
 \textbf{\textit{Null spatial homogenization} is the simplest method and averages all spatial self-shielding effects across the entire geometry.} Null homogenization does not account for spatial self-shielding effects experienced by different fuel pins and is equivalent to averaging the data points in Fig.~\ref{fig:capt-mean-std} to compute a single MGXS to be used in all fuel pins. \textbf{\textit{Degenerate spatial homogenization} takes the opposite approach and assigns each fuel pin its own MGXS.} The degenerate scheme accounts for the different spatial self-shielding effects experienced by each instance of each fuel pin throughout a heterogeneous geometry, and is equivalent to modeling each of the data points in Fig.~\ref{fig:capt-mean-std} as its own unique cluster. Although degenerate homogenization is more accurate than null homogenization, it requires many more MC particle histories to converge the uncertainties on the MGXS tallied separately for each fuel pin.
 
-\textbf{\textit{LNS spatial homogenization} uses OpenCG's LNS algorithm to predict the clustering of pin-wise MGXS based on an analysis of the combinatorial geometry.} The LNS scheme is akin to \textit{geometric templates} employed by some lattice physics codes, such as CASMO~\cite{rhodes2006casmo}, to predict which groupings of pins are likely to experience similar spatial self-shielding effects and hence have similar MGXS. The LNS algorithm groups fuel pins together based on an analysis of each pin's neighbors. The MGXS are homogenized from ``noisy'' MC tally data across all pin within the same LNS grouping. LNS homogenization is an attempt to model MGXS clustering with fewer materials than degenerate homogenization in order accelerate the MC tally convergence rate by homogenizing MGXS across many pins. However, the LNS algorithm scales poorly for large geometries and fails to predict spatial self-shielding effects in arbitrary core geometries, such as those that occur at assembly-assembly and assembly-reflector interfaces. These shortcomings motivate the need for an unsupervised approach to accurately and scalably predict MGXS clustering.
+\textbf{\textit{LNS spatial homogenization} uses OpenCG's LNS algorithm to predict the clustering of pin-wise MGXS based on an analysis of the combinatorial geometry.} The LNS scheme is akin to \textit{geometric templates} employed by some lattice physics codes, such as CASMO~\cite{rhodes2006casmo}, to predict which groupings of pins are likely to experience similar spatial self-shielding effects and hence have similar MGXS. The LNS algorithm groups fuel pins together based on an analysis of each pin's neighbors. The MGXS are homogenized from ``noisy'' MC tally data across all pin within the same LNS grouping. LNS homogenization is an attempt to model MGXS clustering with fewer materials than degenerate homogenization in order accelerate the MC tally convergence rate by homogenizing MGXS across many pins. However, the LNS algorithm fails to predict spatial self-shielding effects in arbitrary core geometries, such as those that occur at assembly-assembly and assembly-reflector interfaces. These shortcomings motivate the need for an unsupervised approach to accurately and scalably predict MGXS clustering.
+
+% scales poorly for large geometries and
 
 %Pins with like neighboring pins, within assemblies with like neighboring assemblies, will receive the same LNS identifier.
 
@@ -442,7 +444,7 @@ The \textit{i}MGXS spatial homogenization scheme is a multi-stage data processin
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection*{Heterogeneous PWR Benchmarks}
 
-A series of six heterogeneous benchmarks were derived from the Benchmark for Evaluation And Validation of Reactor Simulations (BEAVRS) Pressurized Water Reactor (PWR) model~\cite{horelik2013beavrs} to evaluate the \textit{i}MGXS scheme. BEAVRS is a highly-detailed PWR specification which was created to validate high-fidelity core analysis methods. Each of the benchmarks was fabricated in 2D due to the geometric constraints in OpenMOC. One of the benchmarks was constructed as a 2$\times$2 ``mini core'' of 1.6\% and 3.1\% enriched fuel assemblies surrounded by a water reflector as depicted in Fig.~\ref{fig:reflector}. \textbf{The mini core is designed to quantify the impact of the moderation provided by the reflector, as well as the leakage of neutrons through the reflector, on spatially self-shielded MGXS.} The most complex benchmark is a 2D planar slice of the top right quadrant of the BEAVRS model as depicted in Fig.~\ref{fig:full-core}. The quarter core model is the all rods out configuration at the core axial mid-plane with a critical boron concentration, and includes assemblies with 1.6\%, 2.4\% and 3.1\% enriched fuel depicted in Fig.~\ref{fig:full-core}, respectively. \textbf{The BEAVRS model is designed to quantify the effects of radial heterogeneities including the inter-assembly water gaps, stainless steel baffle surrounding the fuel assemblies, core barrel, neutron shield panels on spatially self-shielded MGXS.} 
+A series of six 2D heterogeneous benchmarks were derived from the Benchmark for Evaluation And Validation of Reactor Simulations (BEAVRS) Pressurized Water Reactor (PWR) model~\cite{horelik2013beavrs} to evaluate the \textit{i}MGXS scheme. BEAVRS is a highly-detailed PWR specification which was created to validate high-fidelity core analysis methods. One of the benchmarks was constructed as a 2$\times$2 ``mini core'' of 1.6\% and 3.1\% enriched fuel assemblies surrounded by a water reflector as depicted in Fig.~\ref{fig:reflector}. \textbf{The mini core is designed to quantify the impact of the moderation provided by the reflector, as well as the leakage of neutrons through the reflector, on spatially self-shielded MGXS.} The most complex benchmark is a 2D planar slice of the top right quadrant of the BEAVRS model as depicted in Fig.~\ref{fig:full-core}. The quarter core model is the all rods out configuration at the core axial mid-plane with a critical boron concentration, and includes assemblies with 1.6\%, 2.4\% and 3.1\% enriched fuel depicted in Fig.~\ref{fig:full-core}, respectively. \textbf{The BEAVRS model is designed to quantify the effects of radial heterogeneities including the inter-assembly water gaps, stainless steel baffle surrounding the fuel assemblies, core barrel, neutron shield panels on spatially self-shielded MGXS.} 
 
 %\textbf{The benchmarks were designed with increasingly complex heterogeneous features -- and corresponding spatial self-shielding effects -- in order to understand their implications for accurate pin-wise MGXS generation.} In particular, the impact of fuel enrichment, control rod guide tubes (CRGTs), burnable poisons (BPs), inter-assembly currents, water reflectors, steel baffles and the core barrel and vessel is considered.
 
@@ -475,9 +477,9 @@ A series of six heterogeneous benchmarks were derived from the Benchmark for Eva
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection*{Validation Metrics}
 
-Each of the benchmarks is analyzed with OpenMC to generate 70-group MGXS for use in deterministic transport calculations with OpenMOC. In addition, \textbf{a series of OpenMC simulations were used to calculate reference eigenvalues and pin-wise fission rates and U-238 capture rates for each benchmark.} The eigenvalue is a key integral quantity used to assess the reactivity of a reactor. The fission rates are directly related to the relative power density of each fuel pin which is important for fuel depletion as well as thermal hydraulic feedback. The U-238 capture rates result in the production of Pu-239 which contributes up to 40\% of the power produced from fission in PWRs at the end-of-life (EOL). Hence, the spatial distributions of the fission rates and U-238 capture rates must be correctly modeled for accurate high-fidelity depletion calculations. 
+Each of the benchmarks is analyzed with OpenMC to generate 70-group MGXS for use in deterministic transport calculations with OpenMOC. In addition, \textbf{a series of OpenMC simulations were used to calculate reference eigenvalues and pin-wise fission rates and U-238 capture rates for each benchmark.} The eigenvalue (\textit{i.e.}, neutron multiplication factor) is a key integral quantity used to assess the reactivity of a reactor. The fission rates are directly related to the relative power density of each fuel pin which is important for fuel depletion and thermal hydraulic feedback. The U-238 capture rates result in the production of Pu-239 which contributes up to 40\% of the power produced from fission in PWRs at the end-of-life (EOL). Hence, the spatial distributions of the fission rates and U-238 capture rates must be correctly modeled for accurate high-fidelity depletion calculations. 
 
-\textbf{The eigenvalue, fission rate and capture rate errors between OpenMC and OpenMOC were quantified for each benchmark and spatial homogenization scheme.} The type of spatial homogenization strongly impacts the resultant accuracy of OpenMOC's U-238 capture rate predictions. In contrast, the homogenization schemes has little impact on the OpenMOC fission rate predictions. As expected, the various schemes are inconsequential to the eigenvalue predictions, since each method uses the same MC flux to collapse the MGXS and preserve global reactivity. Hence, only the U-238 capture rate errors are presented and analyzed in the following section, though the eigenvalues and fission rates are reported for each benchmark and spatial homogenization scheme in the thesis.
+\textbf{The differences in eigenvalue, fission rate and capture rates between OpenMC and OpenMOC were quantified for each benchmark and homogenization scheme.} The type of spatial homogenization strongly impacts the resultant accuracy of OpenMOC's U-238 capture rate predictions. The U-238 reaction rates display some of the largest spatial self-shielding effects -- varying by a factor of $\sim$20 between the center and outer rim of individual fuel pins -- and are especially sensitive to the spatial homogenization scheme used to generate MGXS for each pin. In contrast, the homogenization schemes have little impact on the OpenMOC fission rate predictions. As expected, the various schemes are inconsequential to the eigenvalue predictions, since each method uses the same MC flux to collapse the MGXS and preserve global reactivity. Hence, only the U-238 capture rate errors are presented and analyzed in the following section, while the eigenvalues and fission rates are reported for each benchmark in the thesis.
 
 % This underscores the importance of accounting for spatial heterogeneities -- such as the moderation from CRGTs and reflectors -- when generating MGXS to predict U-238 capture and Pu-239 production in LWRs.
 
@@ -495,25 +497,25 @@ The geometries produced with null, degenerate, LNS and \textit{i}MGXS spatial ho
 \centering
 \begin{subfigure}{0.47\textwidth}
   \centering
-  \includegraphics[width=0.75\linewidth]{figures/benchmarks/2x2}
+  \includegraphics[width=0.8\linewidth]{figures/benchmarks/2x2}
   \caption{}
   \label{fig:reflector}
 \end{subfigure}%
 \begin{subfigure}{0.47\textwidth}
   \centering
-  \includegraphics[width=0.75\linewidth]{figures/quantification/homogenization/2x2-degenerate-materials}
+  \includegraphics[width=0.8\linewidth]{figures/quantification/homogenization/2x2-degenerate-materials}
   \caption{}
   \label{fig:reflector-degenerate}
 \end{subfigure}
 \begin{subfigure}{0.47\textwidth}
   \centering
-  \includegraphics[width=0.75\linewidth]{figures/patterns/lns/reflector/materials}
+  \includegraphics[width=0.8\linewidth]{figures/patterns/lns/reflector/materials}
   \caption{}
   \label{fig:reflector-lns}
 \end{subfigure}%
 \begin{subfigure}{0.47\textwidth}
   \centering
-  \includegraphics[width=0.75\linewidth]{figures/unsupervised/geometries/with-features/8-clusters/combined/reflector}
+  \includegraphics[width=0.8\linewidth]{figures/unsupervised/geometries/with-features/8-clusters/combined/reflector}
   \caption{}
   \label{fig:reflector-8-clusters}
 \end{subfigure}
@@ -561,7 +563,7 @@ The BEAVRS geometry built by \textit{i}MGXS with 24 clusters is presented in Fig
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection*{Pin-Wise U-238 Capture Rates}
 
-The OpenMOC energy-integrated pin-wise U-238 capture rates are compared to the reference OpenMC capture rates for each homogenization scheme to compute the percent relative errors for each pin's capture rates. The spatial distributions of capture rate errors are plotted as heatmaps for mini core benchmark in Fig.~\ref{fig:refl-capt-err} with null, degenerate, LNS and \textit{i}MGXS homogenization with BIRCH clustering of 2, 4 and 16 clusters.
+The OpenMOC energy-integrated pin-wise U-238 capture rates are compared to the reference OpenMC capture rates for each homogenization scheme to compute the percent relative errors for each pin's capture rates. The spatial distributions of capture rate errors are plotted as heatmaps for the mini core benchmark in Fig.~\ref{fig:refl-capt-err} with null, degenerate, LNS and \textit{i}MGXS homogenization with BIRCH clustering of 2, 4 and 16 clusters.
 
 \begin{figure}[h!]
 \centering
