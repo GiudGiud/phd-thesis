@@ -11,21 +11,23 @@ The novel methodology presented here -- referred to as \textit{inferential \ac{M
 \centering
 \includegraphics[width=0.6\linewidth]{figures/unsupervised/flow-chart}
 \vspace{2mm}
-\caption[Expected relative runtime for different homogenization schemes]{The expected relative runtime for the degenerate, \ac{LNS} and \textit{i}\ac{MGXS} spatial homogenization schemes with respect to a reference \ac{MC} calculation.}
+\caption[Expected relative runtimes for different homogenization schemes]{The expected relative runtime for the degenerate, \ac{LNS} and \textit{i}\ac{MGXS} spatial homogenization schemes with respect to a reference \ac{MC} calculation.}
 \label{fig:chap10-flow-chart}
 \end{figure}
 
-This chapter begins by introducing a general latent variable model for \ac{MGXS} clustering which motivates \textit{i}\ac{MGXS} spatial homogenization in Sec.~\ref{sec:chap10-lsvm}. An overview of the \textit{i}\ac{MGXS} scheme is given in Sec.~\ref{sec:chap10-overview}, with in-depth presentations of each stage of tally data pre-processing, including feature extraction (Sec.~\ref{sec:chap10-feature-extract}) and selection (Sec.~\ref{sec:chap10-feature-select}), and dimensionality reduction (Sec.~\ref{sec:chap10-dimension-reduce}). Sec.~\ref{sec:chap10-train-predictor} highlights a few statistical clustering algorithms which may be interchangeably utilized within the code framework for i\ac{MGXS} implemented for this thesis. A few heuristics for clustering model selection are discussed in Sec.~\ref{sec:chap10-model-select}. Sec.~\ref{sec:chap10-imgxs-homogenization} discusses the track density-weighting used to spatially homogenize the pin-wise \ac{MGXS}. Finally, Sec.~\ref{sec:chap10-cluster-geometries} illustrates the material configurations produced by the \textit{i}\ac{MGXS} scheme for the heterogeneous \ac{PWR} benchmarks studied in this thesis. The eigenvalues and pin-wise fission and U-238 capture rates produced with the \textit{i}\ac{MGXS} scheme are evaluated in the following chapter.
+%This chapter begins by introducing a general latent variable model for \ac{MGXS} clustering which motivates \textit{i}\ac{MGXS} spatial homogenization in Sec.~\ref{sec:chap10-lsvm}. An overview of the \textit{i}\ac{MGXS} scheme is given in Sec.~\ref{sec:chap10-overview}, with in-depth presentations of each stage of tally data pre-processing, including feature extraction (Sec.~\ref{sec:chap10-feature-extract}) and selection (Sec.~\ref{sec:chap10-feature-select}), and dimensionality reduction (Sec.~\ref{sec:chap10-dimension-reduce}).
+
+This chapter begins with an overview of the \textit{i}\ac{MGXS} scheme in Sec.~\ref{sec:chap10-overview}, including in-depth presentations of each stage of tally data pre-processing, including feature extraction (Sec.~\ref{sec:chap10-feature-extract}) and selection (Sec.~\ref{sec:chap10-feature-select}), and dimensionality reduction (Sec.~\ref{sec:chap10-dimension-reduce}). Sec.~\ref{sec:chap10-train-predictor} highlights a few statistical clustering algorithms which may be interchangeably utilized within the code framework for i\ac{MGXS} implemented for this thesis. A few heuristics for clustering model selection are discussed in Sec.~\ref{sec:chap10-model-select}. Sec.~\ref{sec:chap10-imgxs-homogenization} discusses the track density-weighting used to spatially homogenize the pin-wise \ac{MGXS}. Finally, Sec.~\ref{sec:chap10-cluster-geometries} illustrates the material configurations produced by the \textit{i}\ac{MGXS} scheme for the heterogeneous \ac{PWR} benchmarks studied in this thesis. The eigenvalues and pin-wise fission and U-238 capture rates produced with the \textit{i}\ac{MGXS} scheme are evaluated in the following chapter.
 
 %Finally, Sec.~\ref{sec:chap10-cluster} details two approaches used to evaluate the ideal and realized convergence rates of the \textit{i}\ac{MGXS} scheme. 
 
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Latent Spectral Variable Model}
-\label{sec:chap10-lsvm}
+%\section{Latent Spectral Variable Model}
+%\label{sec:chap10-lsvm}
 
-[REDACTED: to include or no??]
+%[REDACTED: to include or no??]
 
 %
 %This section postulates the existence of a probability distribution from which pin-wise \ac{MGXS} are drawn when generated from Monte Carlo tallies. In particular, this section introduces a \textit{latent variable model} -- termed the \ac{LSVM} -- which encapsulates the spatial self-shielding effects in heterogeneous geometries that leads to clustering of pin-wise \ac{MGXS}. \ac{LSVM} inspires the development of the unsupervised statistical clustering methodology for spatial homogenization that is the topic of this and the following chapter. Latent variable models are a widely used theoretical construct for representing \textit{hidden variables} which parameterize the probability distributions that are thought to have produced some observed dataset. This section loosely follows Bishop's presentation of probabilistic mixture models~\cite{bishop2006pattern}, including the mathematical notation frequently employed by discussions of latent variable models in the statistics and machine learning literature. Sec.~\ref{subsec:chap10-lsvm-math} introduces the concept of latent spectral variables which dictate a parametrization of a mixture distribution which generated the pin-wise \ac{MGXS}. Sec.~\ref{subsec:chap10-lsvm-graph} illustrates \ac{LSVM} with a few graphical models.
@@ -216,7 +218,7 @@ A high-level overview of the various stages of the \textit{i}\ac{MGXS} data proc
 \centering
 \includegraphics[width=0.655\linewidth]{figures/unsupervised/pipeline}
 \vspace{2mm}
-\caption[MGXS pipeline]{The multi-stage \textit{i}\ac{MGXS} data processing pipeline.}
+\caption[The \textit{i}MGXS data processing pipeline]{The multi-stage \textit{i}\ac{MGXS} data processing pipeline.}
 \label{fig:chap10-pipeline}
 \end{figure}
 
@@ -982,7 +984,7 @@ Depending on the clustering algorithm, many different predictors may be built fo
 \centering
 \includegraphics[width=0.95\linewidth]{figures/unsupervised/features/engineering/cluster}
 \vspace{2mm}
-\caption[\textit{i}MGXS clustering]{Each clustering model assigns labels to each sample.}
+\caption[\textit{i}MGXS predictor training]{Each clustering model assigns labels to each sample.}
 \label{fig:chap10-cluster}
 \end{figure}
 
@@ -1541,7 +1543,7 @@ The final \textit{spatial homogenization} stage in the data processing pipeline 
 \centering
 \includegraphics[width=0.9\linewidth]{figures/unsupervised/features/engineering/flow-chart}
 \vspace{2mm}
-\caption[\textit{i}MGXS flow chart]{The detailed \textit{i}\ac{MGXS} data processing pipeline.}
+\caption[\textit{i}MGXS detailed data processing pipeline]{The detailed \textit{i}\ac{MGXS} data processing pipeline.}
 \label{fig:chap10-imgxs-pipeline}
 \end{figure}
 
@@ -1614,7 +1616,7 @@ The interested reader is referred to App.~\ref{sec:clustering-without-features} 
   \caption{}
   \label{fig:chap10-assm-16-combined-8}
 \end{subfigure}
-\caption[Materials for the 1.6\% fuel assembly with \textit{i}\ac{MGXS} homogenization]{Materials for the 1.6\% enriched fuel assembly with \textit{i}\ac{MGXS} spatial homogenization. The materials for 2, 4, and 8 clusters are illustrated in (a), (c) and (e) for pinch and in (b), (d) and (f) for litmus-only feature selection, respectively.}
+\caption[Clustered geometries for the 1.6\% enriched assembly]{Materials for the 1.6\% enriched fuel assembly with \textit{i}\ac{MGXS} spatial homogenization. The materials for 2, 4, and 8 clusters are illustrated in (a), (c) and (e) for pinch and in (b), (d) and (f) for litmus-only feature selection, respectively.}
 \label{fig:chap10-assm-16-geometries}
 \end{figure}
 
@@ -1658,7 +1660,7 @@ The interested reader is referred to App.~\ref{sec:clustering-without-features} 
   \caption{}
   \label{fig:chap10-assm-31-20BPs-combined-8}
 \end{subfigure}
-\caption[Materials for the 3.1\% fuel assembly with \textit{i}\ac{MGXS} homogenization]{Materials for the 3.1\% enriched fuel assembly with 20 \acp{BP} with \textit{i}\ac{MGXS} spatial homogenization. The materials for 2, 4, and 8 clusters are illustrated in (a), (c) and (e) for pinch and in (b), (d) and (f) for litmus-only feature selection, respectively.}
+\caption[Clustered geometries for the 3.1\% enriched assembly]{Materials for the 3.1\% enriched fuel assembly with 20 \acp{BP} with \textit{i}\ac{MGXS} spatial homogenization. The materials for 2, 4, and 8 clusters are illustrated in (a), (c) and (e) for pinch and in (b), (d) and (f) for litmus-only feature selection, respectively.}
 \label{fig:chap10-assm-31-20BPs-geometries}
 \end{figure}
 
@@ -1702,7 +1704,7 @@ The interested reader is referred to App.~\ref{sec:clustering-without-features} 
   \caption{}
   \label{fig:chap10-assm-2x2-combined-8}
 \end{subfigure}
-\caption[Materials for the 2$\times$2 periodic colorset with \textit{i}\ac{MGXS} homogenization]{Materials for the 2$\times$2 periodic colorset with \textit{i}\ac{MGXS} spatial homogenization. The materials for 2, 4, and 8 clusters are illustrated in (a), (c) and (e) for pinch and in (b), (d) and (f) for litmus-only feature selection, respectively.}
+\caption[Clustered geometries for the 2$\times$2 periodic colorset]{Materials for the 2$\times$2 periodic colorset with \textit{i}\ac{MGXS} spatial homogenization. The materials for 2, 4, and 8 clusters are illustrated in (a), (c) and (e) for pinch and in (b), (d) and (f) for litmus-only feature selection, respectively.}
 \label{fig:chap10-2x2-geometries}
 \end{figure}
 
@@ -1746,7 +1748,7 @@ The interested reader is referred to App.~\ref{sec:clustering-without-features} 
   \caption{}
   \label{fig:chap10-reflector-combined-8}
 \end{subfigure}
-\caption[Materials for the 2$\times$2 colorset with reflector with \textit{i}\ac{MGXS} homogenization]{Materials for the 2$\times$2 colorset with water reflector with \textit{i}\ac{MGXS} spatial homogenization. The materials for 2, 4, and 8 clusters are illustrated in (a), (c) and (e) for pinch and in (b), (d) and (f) for litmus-only feature selection, respectively.}
+\caption[Clustered geometries for the 2$\times$2 colorset with reflector]{Materials for the 2$\times$2 colorset with water reflector with \textit{i}\ac{MGXS} spatial homogenization. The materials for 2, 4, and 8 clusters are illustrated in (a), (c) and (e) for pinch and in (b), (d) and (f) for litmus-only feature selection, respectively.}
 \label{fig:chap10-reflector-geometries}
 \end{figure}
 
@@ -1766,7 +1768,7 @@ The interested reader is referred to App.~\ref{sec:clustering-without-features} 
   \caption{}
   \label{fig:chap10-full-core-combined-2}
 \end{subfigure}
-\caption[Materials for BEAVRS with \textit{i}\ac{MGXS} homogenization (2 clusters)]{Materials for the \ac{BEAVRS} model with \textit{i}\ac{MGXS} spatial homogenization of 2 clusters with pinch feature selection (a) and litmus-only feature selection (b).}
+\caption[Clustered geometries for BEAVRS]{Materials for the \ac{BEAVRS} model with \textit{i}\ac{MGXS} spatial homogenization of 2 clusters with pinch feature selection (a) and litmus-only feature selection (b).}
 \label{fig:chap10-full-core-geometries-2}
 \end{figure}
 
@@ -1786,7 +1788,7 @@ The interested reader is referred to App.~\ref{sec:clustering-without-features} 
   \caption{}
   \label{fig:chap10-full-core-combined-4}
 \end{subfigure}
-\caption[Materials for BEAVRS with \textit{i}\ac{MGXS} homogenization (4 clusters)]{Materials for the \ac{BEAVRS} model with \textit{i}\ac{MGXS} spatial homogenization of 4 clusters with pinch feature selection (a) and litmus-only feature selection (b).}
+\caption[Clustered geometries for BEAVRS]{Materials for the \ac{BEAVRS} model with \textit{i}\ac{MGXS} spatial homogenization of 4 clusters with pinch feature selection (a) and litmus-only feature selection (b).}
 \label{fig:chap10-full-core-geometries-4}
 \end{figure}
 
@@ -1806,7 +1808,7 @@ The interested reader is referred to App.~\ref{sec:clustering-without-features} 
   \caption{}
   \label{fig:chap10-full-core-combined-8}
 \end{subfigure}
-\caption[Materials for BEAVRS with \textit{i}\ac{MGXS} homogenization (8 clusters)]{Materials for the \ac{BEAVRS} model with \textit{i}\ac{MGXS} spatial homogenization of 8 clusters with pinch feature selection (a) and litmus-only feature selection (b).}
+\caption[Clustered geometries for BEAVRS]{Materials for the \ac{BEAVRS} model with \textit{i}\ac{MGXS} spatial homogenization of 8 clusters with pinch feature selection (a) and litmus-only feature selection (b).}
 \label{fig:chap10-full-core-geometries-8}
 \end{figure}
 
@@ -1826,7 +1828,7 @@ The interested reader is referred to App.~\ref{sec:clustering-without-features} 
   \caption{}
   \label{fig:chap10-full-core-combined-16}
 \end{subfigure}
-\caption[Materials for BEAVRS with \textit{i}\ac{MGXS} homogenization (16 clusters)]{Materials for the \ac{BEAVRS} model with \textit{i}\ac{MGXS} spatial homogenization of 16 clusters with pinch feature selection (a) and litmus-only feature selection (b).}
+\caption[Clustered geometries for BEAVRS]{Materials for the \ac{BEAVRS} model with \textit{i}\ac{MGXS} spatial homogenization of 16 clusters with pinch feature selection (a) and litmus-only feature selection (b).}
 \label{fig:chap10-full-core-geometries-16}
 \end{figure}
 
@@ -1846,7 +1848,7 @@ The interested reader is referred to App.~\ref{sec:clustering-without-features} 
   \caption{}
   \label{fig:chap10-full-core-combined-32}
 \end{subfigure}
-\caption[Materials for BEAVRS with \textit{i}\ac{MGXS} homogenization (32 clusters)]{Materials for the \ac{BEAVRS} model with \textit{i}\ac{MGXS} spatial homogenization of 32 clusters with pinch feature selection (a) and litmus-only feature selection (b).}
+\caption[Clustered geometries for BEAVRS]{Materials for the \ac{BEAVRS} model with \textit{i}\ac{MGXS} spatial homogenization of 32 clusters with pinch feature selection (a) and litmus-only feature selection (b).}
 \label{fig:chap10-full-core-geometries-32}
 \end{figure}
 
@@ -1866,7 +1868,7 @@ The interested reader is referred to App.~\ref{sec:clustering-without-features} 
   \caption{}
   \label{fig:chap10-full-core-combined-64}
 \end{subfigure}
-\caption[Materials for BEAVRS with \textit{i}\ac{MGXS} homogenization (64 clusters)]{Materials for the \ac{BEAVRS} model with \textit{i}\ac{MGXS} spatial homogenization of 64 clusters with pinch feature selection (a) and litmus-only feature selection (b).}
+\caption[Clustered geometries for BEAVRS]{Materials for the \ac{BEAVRS} model with \textit{i}\ac{MGXS} spatial homogenization of 64 clusters with pinch feature selection (a) and litmus-only feature selection (b).}
 \label{fig:chap10-full-core-geometries-64}
 \end{figure}
 

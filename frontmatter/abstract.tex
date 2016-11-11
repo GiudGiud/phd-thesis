@@ -1,8 +1,38 @@
 \begin{abstractpage}
 
-The nuclear reactor physics community has long strived for deterministic neutron transport-based tools for whole-core reactor analysis. A key challenge for whole-core transport methods is accurate reactor agnostic multi-group cross section (MGXS) generation. Monte Carlo (MC) presents the most accurate method for reactor agnostic multi-group cross section generation since it does not require the use of any local approximations to the flux. This accuracy comes at the computational expense of converging group constant tallies to acceptably low uncertainties. MC methods have increasingly been used to generate few group constants for coarse mesh diffusion, most notably by the Serpent MC code. This work develops methods that use MC to generate the fine-spatial mesh MGXS that are needed by high-fidelity whole-core transport codes. The novel techniques developed by this thesis employ engineering-based and statistical clustering algorithms to accelerate the convergence rate and reduce the data storage requirements for MGXS tallied on fine, heterogeneous spatial meshes in Monte Carlo.
+A key challenge for whole-core transport methods is accurate reactor agnostic multi-group cross section (MGXS) generation. Monte Carlo (MC) presents the most accurate method for reactor agnostic multi-group cross section generation since it does not require the use of any local approximations to the flux. This accuracy comes at the computational expense of converging group constant tallies to acceptably low uncertainties. This work develops methods that use MC to generate the fine-spatial mesh MGXS that are needed by high-fidelity whole-core transport codes. The novel techniques developed by this thesis employ engineering-based and statistical clustering algorithms to accelerate the convergence rate and reduce the data storage requirements for MGXS tallied on fine, heterogeneous spatial meshes in Monte Carlo.
+
+-need to discuss angular-dependent MGXS, SPH
+  -simple 1D slab and 2D fuel pin cell geometries
+-need stronger conclusions
+-need sentence summarizing future work
+-mention the flux separability approximation, angular-dependent MGXS
+-define all acronyms
+-simplify discussion of the benchmarks
+  -just mention increasing heterogeities, metrics for verification
+-mention simulation triad - openmc, openmoc, opencg
+
+%MC methods have increasingly been used to generate few group constants for coarse mesh diffusion, most notably by the Serpent MC code.
+
+%The nuclear reactor physics community has long strived for deterministic neutron transport-based tools for whole-core reactor analysis. A key challenge for whole-core transport methods is accurate reactor agnostic multi-group cross section (MGXS) generation. Monte Carlo (MC) presents the most accurate method for reactor agnostic multi-group cross section generation since it does not require the use of any local approximations to the flux. This accuracy comes at the computational expense of converging group constant tallies to acceptably low uncertainties. MC methods have increasingly been used to generate few group constants for coarse mesh diffusion, most notably by the Serpent MC code. This work develops methods that use MC to generate the fine-spatial mesh MGXS that are needed by high-fidelity whole-core transport codes. The novel techniques developed by this thesis employ engineering-based and statistical clustering algorithms to accelerate the convergence rate and reduce the data storage requirements for MGXS tallied on fine, heterogeneous spatial meshes in Monte Carlo.
 
 %No systematic methodology of approximations has been developed which is broadly applicable to all reactor types.
+
+-need to mention replacement of multi-level scheme
+-two themes:
+1) quantify and diagnose approximation error
+2) replace multi-level scheme with single full-core MC calculations
+    -engineering-based and statistical clustering-based methods
+      -simultaneously model spatial self-shielding effects while accelerating MC tally convergence to a prescribed accuracy 
+    -model pin-wise spatial self-shielding effects in MGXS generation
+      -mention clustering of pin-wise MGXS from spatial self-shielding
+      -Local Neighbor Symmetry (LNS) algorithm to model spatial self-shielding effects with ``geometric templates''
+      -
+    -iMGXS data processing pipeline, uses unsupervised machine learning to identify clustering trends
+  -must mention that global reactivity is shown to be very nearly preserved for all clustering schemes 
+  -pin-wise fission rates are only marginally impacted by clustering of U-235 fission
+  -pin-wise U-238 capture rates are most impacted by clustering predictions
+    -this is important to predict Pu-239 buildup in burnup calculations, etc.
 
 This thesis is organized along two main themes. First, the efficacy of MGXS generation with MC for fine-mesh transport calculations is rigorously assessed. Some of the approximations made by MC-based MGXS generation are quantified, including the angular, energy- and spatial-dependence of condensed MGXS. The second theme develops a novel methodology called inferential MGXS (\textit{i}MGXS) which directly models all energy and spatial self-shielding effects to generate accurate MGXS with a single whole-core MC calculation. The \textit{i}MGXS scheme is a data processing pipeline that uses unsupervised machine learning algorithms to infer the clustering of MGXS from ``noisy'' MC tally data with limited human supervision.
 

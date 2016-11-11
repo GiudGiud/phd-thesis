@@ -95,7 +95,7 @@ The \texttt{openmc.mgxs} module (see Sec.~\ref{subsec:chap4-mgxs}) was used to c
   \caption{}
   \label{fig:chap8-full-core-degenerate-materials}
 \end{subfigure}
-\caption[Depiction of infinite, null and degenerate spatial homogenization schemes]{OpenMOC materials for a single fuel assembly, a 2$\times$2 colorset and part of the 2D quarter core \ac{BEAVRS} model. The materials for the infinite and null schemes are depicted in (a), (c) and (e), and for the degenerate scheme in (b), (d) and (f), respectively. Each uniquely colored material represents a unique set of \ac{MGXS}.}
+\caption[Depiction of spatial homogenization schemes]{OpenMOC materials for a single fuel assembly, a 2$\times$2 colorset and part of the 2D quarter core \ac{BEAVRS} model. The materials for the infinite and null schemes are depicted in (a), (c) and (e), and for the degenerate scheme in (b), (d) and (f), respectively. Each uniquely colored material represents a unique set of \ac{MGXS}.}
 \label{fig:chap8-homogenization-schemes}
 \end{figure}
 
@@ -131,14 +131,14 @@ The degenerate scheme generates \ac{MGXS} for each fuel pin instance using OpenM
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{\ac{MOC} Runtime Parameters}
+\section{OpenMOC Runtime Parameters}
 \label{sec:chap8-moc-params}
 
 The infinite, null and spatial homogenization schemes were used to prepare \ac{MGXS} libraries for OpenMOC simulations of each of the six heterogeneous \ac{PWR} benchmarks introduced in Chap.~\ref{chap:benchmarks}. This section briefly outlines the energy group structures and angular, spatial and \ac{CMFD} meshes used in the OpenMOC simulations. The total number of flat source regions, and \ac{MOC} tracks and segments are summarized for each benchmark in Tab.~\ref{table:chap8-num-fsrs-tracks-segments}. It was crucial to use an adequate discretization to accurately compare simulation results between the three spatial homogenization schemes, as well as to the reference OpenMC results.
 
 \begin{table}[h!]
   \centering
-  \caption[Number of \ac{FSR}s, tracks and segments for each heterogeneous benchmark]{The number of \ac{MOC} \ac{FSR}s, tracks and segments modeled in each benchmark.}
+  \caption[Number of FSRs, tracks and segments for each benchmark]{The number of \ac{MOC} \ac{FSR}s, tracks and segments modeled in each benchmark.}
   \small
   \label{table:chap8-num-fsrs-tracks-segments}
   \vspace{6pt}
@@ -176,7 +176,7 @@ Each assembly, colorset and quarter core benchmark was modeled with \ac{MGXS} in
 
 \begin{table}[h!]
   \centering
-  \caption[Coarse \ac{CMFD} group structures]{The coarse \ac{CMFD} group structures for each of the fine \ac{MOC} group structures.}
+  \caption[CMFD coarse energy group structures]{The coarse \ac{CMFD} group structures for each of the fine \ac{MOC} group structures.}
   \small
   \label{table:chap8-coarse-cmfd-groups}
   \vspace{6pt}
@@ -205,7 +205,7 @@ Each assembly, colorset and quarter core benchmark was modeled with \ac{MGXS} in
 The OpenMOC simulations of each of the six heterogeneous benchmarks used the same \ac{MOC} angular discretization with 128 azimuthal angles and 0.05 cm track spacing. These parameters were selected since they were previously demonstrated to converge the solution for simple heterogeneous \ac{PWR} benchmark models~\cite{boyd2014ms}. Although the eigenvalues in Chap.~\ref{chap:biases} were only shown to converge for a 1D slab and 2D fuel pin with 0.01 cm track spacing, a coarser spacing of 0.05 cm was employed for the heterogeneous benchmarks for practical reasons\footnote{The computational expense of solving the \ac{MOC} equations scales linearly with the number of track segments. In addition, OpenMOC's memory footprint is dominated by track segments which can make some problems intractable except on high memory nodes. Finally, the time spent ray tracing across a combinatorial geometry is non-negligible if not prohibitive for fine track spacings in large geometries.}. The total number of tracks and segments resulting from the selected angular discretization are itemized in Tab.~\ref{table:chap8-num-fsrs-tracks-segments}. 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{\ac{FSR} Discretization}
+\subsection{FSR Discretization}
 \label{subsec:chap8-fsr-discretizations}
 
 Flat source region spatial discretization meshes were applied to each of the six heterogeneous benchmarks in the OpenMOC simulations. The total number of \ac{FSR}s is itemized in Tab.~\ref{table:chap8-num-fsrs-tracks-segments} for each benchmark analyzed in this thesis. The \ac{FSR} meshes applied to the fuel pin, control rod guide tube, instrument tube and burnable poison pin cells are shown in Fig.~\ref{fig:chap8-pin-cell-fsrs}. As shown in the figures, eight equal angle subdivisions were used in all material zones. The UO$_2$ fuel was further subdivided into five equal volume radial rings, while ten radial rings were employed in the water-filled \acp{CRGT} and instrument tubes. The borosilicate glass and borated water material zones filling the \acp{BP} were each discretized into five equal volume radial rings. Finally, five equally spaced rings were used in the moderator zones surrounding each pin.
@@ -307,7 +307,7 @@ As expected, the eigenvalue bias is highly dependent on energy group structure. 
 
 \begin{table}[ht!]
   \centering
-  \caption[OpenMOC eigenvalue bias for heterogeneous benchmarks]{OpenMOC eigenvalue bias $\Delta\rho$ for heterogeneous benchmarks with varying spatial homogenization schemes and energy group structures.}
+  \caption[OpenMOC eigenvalue bias]{OpenMOC eigenvalue bias $\Delta\rho$ for heterogeneous benchmarks with varying spatial homogenization schemes and energy group structures.}
   \small
   \label{table:chap8-openmoc-eigenvalues}
   \vspace{6pt}
@@ -532,7 +532,7 @@ The spatial distributions of fission rate errors are plotted as heatmaps for eac
   \caption{}
   \label{fig:chap8-full-core-fiss-err-degenerate}
 \end{subfigure}
-\caption[Fission rate errors for the quarter core BEAVRS model]{Fission rate percent relative errors for the quarter core \ac{BEAVRS} model with null (a) and degenerate (b) homogenization corresponding to the reference in Fig.~\ref{fig:chap7-fiss-rates-reflector}.}
+\caption[Fission rate errors for BEAVRS]{Fission rate percent relative errors for the quarter core \ac{BEAVRS} model with null (a) and degenerate (b) homogenization corresponding to the reference in Fig.~\ref{fig:chap7-fiss-rates-reflector}.}
 \label{fig:chap8-full-core-fiss-err}
 \end{figure}
 
@@ -706,7 +706,7 @@ The heatmaps illustrate systematic error trends in the pin-wise capture errors w
   \caption{}
   \label{fig:chap8-full-core-capt-err-degenerate}
 \end{subfigure}
-\caption[U-238 capture rate errors for the quarter core \ac{BEAVRS} model]{U-238 capture rate percent relative errors for the quarter core \ac{BEAVRS} model with null (a) and degenerate (b) homogenization corresponding to the reference in Fig.~\ref{fig:chap7-capt-rates-full-core}.}
+\caption[U-238 capture rate errors for BEAVRS]{U-238 capture rate percent relative errors for the quarter core \ac{BEAVRS} model with null (a) and degenerate (b) homogenization corresponding to the reference in Fig.~\ref{fig:chap7-capt-rates-full-core}.}
 \label{fig:chap8-full-core-capt-err}
 \end{figure}
 
