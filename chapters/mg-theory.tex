@@ -22,7 +22,7 @@ The field of reactor physics is concerned with computing the distribution of nuc
 \Sigma_{x}(\mathbf{r},E) = \sum_{i}N_{i}(\mathbf{r})\sigma_{i,x}(E)
 \end{dmath}
 
-The microscopic cross section is highly dependent on the energy of the incoming neutron. As illustrated in Fig.~\ref{fig:chap2-u238-xs}, a cross section varies several orders of magnitude within an energy interval on the order of an eV near nuclear resonances. The probability of some interactions also depend on other properties which characterize the output channel of the reaction. For example, the scattering cross section $\sigma_{s}$ depends on the energy and direction of motion of the outgoing neutron. The macroscopic cross section varies in space when nuclide densities depend on the position within a heterogeneous system.
+The microscopic cross section is highly dependent on the energy of the incoming neutron. As illustrated in Fig.~\ref{fig:chap2-u238-xs}, a cross section varies several orders of magnitude within an energy interval on the order of an eV near nuclear resonances. The probability of some interactions also depends on other properties which characterize the output channel of the reaction. For example, the scattering cross section $\sigma_{s}$ depends on the energy and direction of motion of the outgoing neutron. The macroscopic cross section varies in space when nuclide densities depend on the position within a heterogeneous system.
 
 \begin{figure}[H]
   \centering
@@ -104,7 +104,7 @@ Unlike the fission source, the source of neutrons from scattering cannot be trea
 \psi_{\ell}^{m}(\mathbf{r},E) = \displaystyle\int\limits_{4\pi} \psi(\mathbf{r},\mathbf{\Omega},E)Y_{\ell}^{m}(\mathbf{\Omega}) \mathrm{d}\mathbf{\Omega}
 \end{dmath}
 
-Similarly, the angular dependence of the scattering cross section $\Sigma_{s}(\mathbf{r},{\mathbf{\Omega'}\rightarrow\mathbf{\Omega}},{E'\rightarrow E})$ can be treated with a basis function expansion. The scattering cross section can be simplified without approximation by noting that the distribution over the change in direction $\mu$ is independent of the incoming angle $\mathbf{\Omega'}$ in isotropic media. The re-parametrized scattering cross section $\Sigma_{s}(\mathbf{r},\mu,E'\rightarrow E)$ can then expanded as an infinite sum of Legendre polynomials $P_{\ell}(\mu)$ and scattering moments $\Sigma_{s,\ell}(\mathbf{r},{E'\rightarrow E})$:
+Similarly, the angular dependence of the scattering cross section $\Sigma_{s}(\mathbf{r},{\mathbf{\Omega'}\rightarrow\mathbf{\Omega}},{E'\rightarrow E})$ can be treated with a basis function expansion. The scattering cross section can be simplified without approximation by noting that the distribution over the change in direction $\mu$ is independent of the incoming angle $\mathbf{\Omega'}$ in isotropic media. The re-parametrized scattering cross section $\Sigma_{s}(\mathbf{r},\mu,E'\rightarrow E)$ can then be expanded as an infinite sum of Legendre polynomials $P_{\ell}(\mu)$ and scattering moments $\Sigma_{s,\ell}(\mathbf{r},{E'\rightarrow E})$:
 
 \begin{dmath}
 \label{eqn:chap2-scatt-expand}
@@ -135,7 +135,7 @@ No approximation has been made to the scattering kernel's angular dependence in 
 \subsection{Transport Correction}
 \label{subsec:chap2-transport-corr}
 
-The scattering matrix and flux moments substantially increase the memory and storage requirements for calculation schemes which model anisotropic scattering with a finite moment expansion as introduced in Sec.~\ref{subsec:chap2-scatt-src}. In practice, many methods attempt to implicitly model anisotropic scattering effects with transport corrected cross sections. These approaches seek to define a correction which makes the transport equation with isotropic scattering in the laboratory system ($L=0$) equivalent to the general equation with anisotropic scattering. Various transport corrections are thoroughly detailed in the TRANSX~\cite{macfarlane1993transx} and NJOY~\cite{macfarlane2000njoy} manuals, each of which follow the approach taken by Bell, Hansen and Sandmeier in~\cite{bell1967transport}. This section summarizes the derivation in~\cite{hebert2009applied}.
+The scattering matrix and flux moments substantially increase the memory and storage requirements for calculation schemes which model anisotropic scattering with a finite moment expansion as introduced in Sec.~\ref{subsec:chap2-scatt-src}. In practice, many methods attempt to implicitly model anisotropic scattering effects with transport corrected cross sections. These approaches seek to define a correction which makes the transport equation with isotropic scattering in the laboratory system ($L=0$) equivalent to the general equation with anisotropic scattering. Various transport corrections are thoroughly detailed in the TRANSX~\cite{macfarlane1993transx} and NJOY~\cite{macfarlane2000njoy} manuals, each of which follows the approach taken by Bell, Hansen and Sandmeier in~\cite{bell1967transport}. This section summarizes the derivation in~\cite{hebert2009applied}.
 
 First, consider a truncated form of the Legendre polynomial expansion of the scattering cross section $\Sigma_{s}(\mathbf{r},\mu,E'\rightarrow E)$ in Eqn.~\ref{eqn:chap2-scatt-expand}:
 
@@ -401,7 +401,7 @@ The $k_{eff}$ eigenvalue is only defined for the fission operator in the transpo
 \subsection{Fission Matrix Condensation}
 \label{sec:chap2-fiss-mat}
 
-The scattering and fission production matrices dominate the memory storage requirements for \ac{MGXS} since they depend on both incoming and outgoing energy groups. In thermal reactors the energy distribution of neutrons produced in fission is nearly independent of the incoming neutron energy, and the fission production matrix can be condensed into two single dimensional vectors for each energy group. The fission spectrum $\chi_{g}$ is introduced as a probability distribution over outgoing fission energies:
+The scattering and fission production matrices dominate the memory storage requirements for \ac{MGXS} since they depend on both incoming and outgoing energy groups. In thermal reactors, the energy distribution of neutrons produced in fission is nearly independent of the incoming neutron energy, and the fission production matrix can be condensed into two single dimensional vectors for each energy group. The fission spectrum $\chi_{g}$ is introduced as a probability distribution over outgoing fission energies:
 
 \begin{dmath}
 \label{eqn:chap2-chi}
@@ -446,7 +446,7 @@ The group-wise fission production cross section $\nu\Sigma_{f,g'}$ is defined as
 %\int\displaylimits_{\mathbf{r} \in V_{i}}\left(\mathbf{\Omega} \cdot \nabla \psi_{g}(\mathbf{r},\mathbf{\Omega}) + \Sigma_{t,g}(\mathbf{r})\psi_{g}(\mathbf{r},\mathbf{\Omega})\right)\mathrm{d}\mathbf{r} \;\;\;\; = \;\;\;\;\; \int\displaylimits_{\mathbf{r} \in V_{i}}\sum_{g'=1}^{G} \int\displaylimits_{4\pi} \Sigma_{s,g' \rightarrow g}(\mathbf{r},{\mathbf{\Omega'}\rightarrow\mathbf{\Omega}}) \psi_{g}(\mathbf{r},\mathbf{\Omega'}) \mathrm{d}\mathbf{\Omega'} \mathrm{d}\mathbf{r} + \frac{1}{4\pi k_{eff}}\int\displaylimits_{\mathbf{r} \in V_{i}}\sum_{g'=1}^{G} \int\displaylimits_{4\pi} \nu\Sigma_{f,g' \rightarrow g}(\mathbf{r})\psi_{g}(\mathbf{r},\mathbf{\Omega'}) \mathrm{d}\mathbf{\Omega'} \mathrm{d}\mathbf{r}
 %\end{dmath}
 
-Up to this point the \ac{MGXS} have been defined as continuously varying in space. In practice, most deterministic methods used to solve the multi-group transport equation make the simplifying assumption that material properties are constant across each spatial mesh cell. Spatial homogenization is used to compute flux-weighted volume-averaged cross sections within each mesh cell $k$ with volume $V_{k}$ as follows:
+Up to this point, the \ac{MGXS} have been defined as continuously varying in space. In practice, most deterministic methods used to solve the multi-group transport equation make the simplifying assumption that material properties are constant across each spatial mesh cell. Spatial homogenization is used to compute flux-weighted volume-averaged cross sections within each mesh cell $k$ with volume $V_{k}$ as follows:
 
 \begin{dmath}
 \label{eqn:chap2-sigt-mg-scalar}
@@ -497,7 +497,9 @@ The preceding sections described approximations reducing the dimensionality of t
 \subsection{Challenges}
 \label{subsec:chap2-mgxs-lib-challenges}
 
-The preceding sections introduced a series of approximations which resulted in multi-group forms of the total, scattering and fission cross sections in Eqns.~\Crefrange{eqn:chap2-sigt-mg-scalar}{eqn:chap2-nusigf-mg-scalar}. Given a solution to the transport equation for the multi-group flux, general reaction rate distributions may be computed (\textit{e.g.}, radiative capture, recoverable fission energy) with multi-group cross sections for each nuclide and reaction type of interest. Energy condensation and spatial homogenization may be applied to compute multi-group microscopic cross sections $\sigma_{x,i}$ for each reaction type $x$ and nuclide $i$:
+%The preceding sections introduced a series of approximations which resulted in multi-group forms of the total, scattering and fission cross sections in Eqns.~\Crefrange{eqn:chap2-sigt-mg-scalar}{eqn:chap2-nusigf-mg-scalar}. 
+
+Given a solution to the transport equation for the multi-group flux, general reaction rate distributions may be computed (\textit{e.g.}, radiative capture, recoverable fission energy) with multi-group cross sections for each nuclide and reaction type of interest. Energy condensation and spatial homogenization may be applied to compute multi-group microscopic cross sections $\sigma_{x,i}$ for each reaction type $x$ and nuclide $i$:
 
 \begin{dmath}
 \label{eqn:chap2-micro-sigx}
