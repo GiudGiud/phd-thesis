@@ -1,16 +1,6 @@
 \begin{abstractpage}
 
-A key challenge for whole-core transport methods is accurate reactor agnostic multi-group cross section (MGXS) generation. Monte Carlo (MC) presents the most accurate method for reactor agnostic multi-group cross section generation since it does not require the use of any local approximations to the flux. This accuracy comes at the computational expense of converging group constant tallies to acceptably low uncertainties. This work develops methods that use MC to generate the fine-spatial mesh MGXS that are needed by high-fidelity whole-core transport codes. The novel techniques developed by this thesis employ engineering-based and statistical clustering algorithms to accelerate the convergence rate and reduce the data storage requirements for MGXS tallied on fine, heterogeneous spatial meshes in Monte Carlo.
-
--need to discuss angular-dependent MGXS, SPH
-  -simple 1D slab and 2D fuel pin cell geometries
--need stronger conclusions
--need sentence summarizing future work
--mention the flux separability approximation, angular-dependent MGXS
--define all acronyms
--simplify discussion of the benchmarks
-  -just mention increasing heterogeities, metrics for verification
--mention simulation triad - openmc, openmoc, opencg
+A key challenge for full-core transport methods is reactor agnostic multi-group cross section (MGXS) generation. Monte Carlo (MC) presents the most accurate method for MGXS generation since it does not require any approximations to the neutron flux. This accuracy comes at the computational expense of converging energy-integrated reaction rate and flux tallies to acceptably low uncertainties. This thesis develops methods that use MC to generate the fine-spatial mesh MGXS that are needed by high-fidelity transport codes. The novel methods developed by this thesis employ engineering-based and statistical clustering algorithms to accelerate the convergence of MGXS tallied on fine, heterogeneous spatial meshes by Monte Carlo.
 
 %MC methods have increasingly been used to generate few group constants for coarse mesh diffusion, most notably by the Serpent MC code.
 
@@ -18,29 +8,22 @@ A key challenge for whole-core transport methods is accurate reactor agnostic mu
 
 %No systematic methodology of approximations has been developed which is broadly applicable to all reactor types.
 
--need to mention replacement of multi-level scheme
--two themes:
-1) quantify and diagnose approximation error
-2) replace multi-level scheme with single full-core MC calculations
-    -engineering-based and statistical clustering-based methods
-      -simultaneously model spatial self-shielding effects while accelerating MC tally convergence to a prescribed accuracy 
-    -model pin-wise spatial self-shielding effects in MGXS generation
-      -mention clustering of pin-wise MGXS from spatial self-shielding
-      -Local Neighbor Symmetry (LNS) algorithm to model spatial self-shielding effects with ``geometric templates''
-      -
-    -iMGXS data processing pipeline, uses unsupervised machine learning to identify clustering trends
-  -must mention that global reactivity is shown to be very nearly preserved for all clustering schemes 
-  -pin-wise fission rates are only marginally impacted by clustering of U-235 fission
-  -pin-wise U-238 capture rates are most impacted by clustering predictions
-    -this is important to predict Pu-239 buildup in burnup calculations, etc.
+This thesis is organized along two main themes. First, the efficacy of MGXS generation with MC for fine-mesh transport calculations is rigorously assessed. Second, a novel methodology is developed to replace the traditional multi-level paradigm for MGXS generation with a single full-core MC calculation. 
 
-This thesis is organized along two main themes. First, the efficacy of MGXS generation with MC for fine-mesh transport calculations is rigorously assessed. Some of the approximations made by MC-based MGXS generation are quantified, including the angular, energy- and spatial-dependence of condensed MGXS. The second theme develops a novel methodology called inferential MGXS (\textit{i}MGXS) which directly models all energy and spatial self-shielding effects to generate accurate MGXS with a single whole-core MC calculation. The \textit{i}MGXS scheme is a data processing pipeline that uses unsupervised machine learning algorithms to infer the clustering of MGXS from ``noisy'' MC tally data with limited human supervision.
+The first theme quantifies some of the approximations made by MC-based MGXS generation -- including the angular, energy- and spatial-dependence of collapsed cross sections. A series of case studies investigate the impact of the flux separability approximation on reaction rates in U-238 capture resonances, which results in an eigenvalue bias of approximately -200 pcm for Pressurized Water Reactor (PWR) geometries and spectra. The use of SuPerHomog\'{e}n\'{e}isation factors is considered as one possible equivalence scheme for MGXS collapsed with the scalar rather than the angular neutron flux.
 
-The \textit{i}MGXS scheme is evaluated for six PWR benchmarks with heterogeneities with varying spatial self-shielding effects, including control rod guide tubes and water reflectors. The \textit{i}MGXS scheme was shown to enable highly accurate predictions of U-238 capture rates, reducing the error by a factor of four with respect to schemes which neglect to model MGXS clustering. In addition, the scheme requires at least an order of magnitude fewer MC particle histories to converge MGXS for accurate multi-group deterministic calculations than a reference MC calculation. These results demonstrate the promise for \textit{i}MGXS as a means to efficiently generate MGXS with reactor agnostic MC calculations of the complete heterogeneous geometry with little human oversight. The \textit{i}MGXS scheme may be valuable for future reactor physics analyses of advanced LWR core designs and next generation reactors with spatial heterogeneities that are poorly modeled by the engineering approximations in today's methods for MGXS generation.
+The second theme develops a new methodology which employs full-core MC calculations to generate MGXS for downstream multi-group deterministic codes. Two pin-wise spatial homogenization schemes are introduced to model the clustering of pin-wise MGXS due to spatial self-shielding spectral effects from radial geometric heterogeneities. The Local Neighbor Symmetry (LNS) scheme uses a nearest neighbor-like analysis of a reactor geometry to determine which fuel pins should be assigned the same MGXS. The inferential MGXS (\textit{i}MGXS) scheme applies unsupervised machine learning algorithms to ``noisy'' MC tally data to identify clustering of pin-wise MGXS without any knowledge of the reactor geometry. Both schemes simultaneously account for spatial self-shielding effects while also accelerating the convergence of the MC tallies used to generate MGXS.
+
+%This portion of the thesis illustrates the clustering of MGXS in fuel pins as a result of spatial self-shielding spectral effects from radial geometric heterogeneities.
+
+%-pin-wise U-238 capture rates are most impacted by clustering predictions
+%  -this is important to predict Pu-239 buildup in burnup calculations, etc.
+
+The LNS and \textit{i}MGXS schemes are evaluated for PWR benchmarks with geometric heterogeneities with varying spatial self-shielding spectral effects, including water-filled control rod guide tubes and water reflectors. The two schemes are shown to reduce the pin-wise U-238 capture rate errors by up to a factor of four with respect to schemes which neglect to model MGXS clustering. In addition, the scheme requires at least an order of magnitude fewer MC particle histories to converge MGXS for accurate multi-group deterministic calculations than a reference MC calculation. The two schemes marginally improve pin-wise fission rate predictions and have no impact on the predicted eigenvalues due to the preservation of global reactivity.
+
+The results in this thesis demonstrate the potential for single-step MC simulations of the complete heterogeneous geometry as a means to generate reactor agnostic MGXS for high-fidelity deterministic transport codes. The LNS and \textit{i}MGXS schemes are promising pathways to accelerate MC calculations by clustering the MGXS for pins which experience similar spatial self-shielding spectral effects. The \textit{i}MGXS scheme may be valuable for future reactor physics analyses of advanced LWR core designs and next generation reactors with spatial heterogeneities that are poorly modeled by the engineering approximations in today's methods for MGXS generation.
 
 %for which engineering approximations for MGXS generation poorly model spatial self-shielding effects of aribtrary core heterogeneities.
-
-%which do not easily lend themselves to engineering approximations for generating MGXS for neutron transport calculations.
 
 %Nevertheless, it points to the potential for \textit{i}MGXS to harness \ac{MC} to efficiently generate accurate \ac{MGXS} for deterministic transport codes.
 
