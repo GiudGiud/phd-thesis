@@ -12,28 +12,51 @@
 %    -remaining sentences: how this impacted my results
 %    -final sentence: possible solutions  
 
-notes from nate's thesis conclusions
-  -include an itemized summary of all contributions to achieve the major objectives
+%notes from nate's thesis conclusions
+%  -include an itemized summary of all contributions to achieve the major objectives
 
--outline conclusions and future work
-  -look at my executive summary
-  -look at my slides
-  -review the summary bullets in each chapter
+-look at my executive summary - perhaps include a one-page summary of bullets???
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Summary of Work}
 \label{sec:chap12-conclusions}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{MGXS Generation with Monte Carlo}
-\label{subsec:chap12-approx-error}
+first paragraph: recall motivation for work, outline
+-reactor agnostic MGXS
+-MC is most accurate method, but suffers from 
+-seek to harness the accuracy of \ac{MC} with the computational efficiency of deterministic methods
+-need methods to accelerate the convergence of \ac{MC} tallied on fine spatial meshes
+-quantify approx error inherent even when the ``exact'' flux is used to collapse cross sections
+-Sec.~\ref{subsec:chap12-single-step} - single-step approach to compute \ac{MGXS} with whole core calcs
+-Sec.~\ref{subsec:chap12-approx-error} - quantify and diagnose approx error
+-Sec.~\ref{subsec:chap12-mgxs-clustering} - quantify clustering of pin-wise MGXS
+-Sec.~\ref{subsec:chap12-homogenization-schemes} - develop and evaluate methods to model pin-wise MGXS clustering
 
-first paragraph: outline simulation triad, \ac{MC} approach to generate \ac{MGXS}
+This thesis had two primary goals: to quantify approximation error in MGXS and to develop new spatial homogenization methods to accelerate the convergence of MGXS on heterogeneous MC tally meshes. These goals were motivated by the desire to obtain Monte Carlo-quality solutions with computationally efficient deterministic neutron transport methods.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{A Single-Step Approach for MGXS Generation}
+\label{subsec:chap12-single-step}
+
+first paragraph: 
+-recall multi-level approach used by traditional \ac{MGXS} generation methods in Sec.~\ref{subsec:chap2-mgxs-lib-std-approach}
+-Standard \ac{MGXS} generation methods use a multi-level approach to approximate the neutron flux, accounting for self-shielding effects. Flux approximations are based on engineering prescriptions for specific reactor configurations and spectra and are not generalizable to new core designs.
+-developed scheme to replace multi-level method with a single \ac{MC} calculation of the complete heterogeneous geometry
+-
+
+second paragraph: outline simulation triad, \ac{MC} approach to generate \ac{MGXS}
 -generated \ac{MGXS} for fine-mesh transport codes
   -most published works to date for coarse mesh diffusion
   -one of few published efforts to do so for fine-mesh transport
 -used OpenMC, OpenMOC and OpenCG simulation triad
--
+-required implementation of new algorithms to facilitate large 
+  -distribcell tally algorithm to tally MGXS in each and every fuel pin
+  -iso-in-lab??
+  -\texttt{openmc.mgxs} module
+  -OpenCG \ac{LNS} algorithm
+  -use MC to simultaneously perform energy condensation and spatial homogenization to preserve rxn rates
+
+Design and implementation of software simulation infrastructure. The simulation framework replaces the multi-level approach to directly model all energy and spatial self-shielding with a single whole-core OpenMC calculation of the complete heterogeneous geometry to generate MGXS for use in OpenMOC.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Approximation Error in Multi-Group Methods}
@@ -68,77 +91,190 @@ second paragraph: outline reason and solution in Chap.~\ref{chap:sph}
 -It is unclear if a generalizable scheme based upon SPH factors may be used to correct for the flux separability approximation
 -Future work should investigate methods to account for the angular dependence of total MGXS in order to adequately preserve reaction rates in fine-mesh transport methods with MC-generated MGXS.
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{A Single-Step Approach for MGXS Generation}
-\label{subsec:chap12-single-step}
+-segue into pin-wise spatial homogenization error
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Pin-Wise MGXS Clustering Effects}
+Systematic evaluation of bias between OpenMC and OpenMOC. The approximations made to collapse MGXS in energy, space and angle were quantified for simple PWR benchmarks. The impact of the flux separability approximation was rigorously quantified, and a method based on SuPerHomogénéisation factors was implemented to ensure reaction rate consistency between OpenMC and OpenMOC.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Clustering of Pin-Wise MGXS}
 \label{subsec:chap12-mgxs-clustering}
+
+first paragraph: clustering exists?
+-exploration of clustering motivated by idea that pins with similar neighboring heterogeneities have similar microscopic \ac{MGXS}
+-population variance of pin-wise \ac{MGXS} increases due to presence of spatial heterogeneities
+  -depends on sensitivity to spatial self-shielding effects for each nuclide, reaction type, and energy group
+  -on the order of 1 -- 2\% for group 1/2 U-238 capture and group 2/2 U-235 fission
+-distributions of pin-wise \ac{MGXS} plotted as histograms and quantile-quantile plots show distinct clustering due to groups of fuel pins with similar neighboring heterogeneities, and hence similar spatially self-shielded flux spectra
+  -distributions look very different for each benchmark due to different heterogeneities
+  -clustering is more clearly defined for thermal U-235 fission \ac{MGXS}
+  -pop. var. of pin-wise \ac{MGXS} about to mean mean is 2.5\% for U-238 capt, only 1\% for U-235 fiss
+  -clustering effects are more important to model for U-238 capture than U-235 fission
+    -though they may not be as easily identified from ``noisy'' \ac{MC} tally data
+
+second paragraph: define null, degenerate schemes
+-devised two pin-wise spatial homogenization schemes to quantify impact of modeling or neglecting \ac{MGXS} clustering
+-define null, degenerate homogenization
+  -null homogenization
+    -all fuel pins form a single cluster
+    -a single \ac{MGXS} is assigned to all pins of a given enrichment
+    -does not distinguish spatial self-shielding effects experienced by different fuel pins
+    -least accurate but MC tallies converge quickly (track density is large within each spatial tally zone)
+  -degenerate homogenization
+    -each fuel pin is a unique cluster
+    -a unique \ac{MGXS} is assigned to each individual fuel pin instance
+    -distinguishes spatial self-shielding effects experienced by each fuel pins
+    -most accurate but MC tallies converge slowly (track density is small within each spatial tally zone)
+
+third paragraph: quantified gap b/w null and degenerate schemes
+-quantified clustering of \ac{MGXS} in each fuel pin due to spatial self-shielding effects
+  -i.e., moderation from neighboring guide tubes, water reflectors, etc.
+-six \ac{PWR} benchmarks with varying spatial self-shielding effects
+-mention energy group structures
+  -2, 8 and 70-group structures were considered
+  -energy group structure has a large impact on the results
+  -really need 70-group structure for accurate results (i.e., <10\% mean error in capture rates) 
+-three metrics:
+  -eigenvalues: eigenvalues are not impacted by clustering
+  -fission rates: fission rates are only marginally impacted, max error reduced by 5 -- 20\%
+  -capture rates: capture rates are much more sensitive
+    -degenerate reduces both max and mean error 2--4$\times$
+    -largest errors for fuel pins near control rod guide tubes and along assembly-assembly and assembly-reflector interfaces
+    -need to use degenerate scheme to reduce errors to level of fission rate errors
+    -degenerate scheme ``smooths'' U-238 capture rates (i.e., reduces largest errors)
+    -i.e., dominant factor in U-238 capture rate error is due to spatial self-shielding approx.
+
+fourth paragraph: strong conclusion
+-MGXS clustering is very important for modeling U-238 capture rates
+  -and therefore to predict Pu-239 production over time
+  -as U-235 is burned more of the overall fissions occur in Pu-239 that is bred
+  -a large fraction of fission in LWRs comes from Pu-239 at EOL  
+  -hence accurate fission rate predictions in depletion calcs depend on accurate local models of Pu-239 buildup over time
+  -many adv. reactors are designed to convert U-238 conversion to Pu-239, including SFRs and some MSRs
+    -many designs have fast spectra which are less sensitive to local spatial self-shielding spectral effects
+    -nevertheless, MGXS clustering must be modeled for highly accurate U-238 capture preductions in reactors with lots of heterogeneities
+      -including absorbing materials for power shaping and reflectors to reduce neutron leakage
+-however, modeling MGXS clustering with degenerate scheme is impractical
+  -uses very fine spatial tally mesh with low particle track density per spatial tally zone
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Pin-Wise Spatial Homogenization Schemes}
 \label{subsec:chap12-homogenization-schemes}
 
-This thesis had two primary goals: to quantify approximation error in MGXS and to develop new spatial homogenization methods to accelerate the convergence of MGXS on heterogeneous MC tally meshes. These goals were motivated by the desire to obtain Monte Carlo-quality solutions with computationally efficient deterministic neutron transport methods. The following summarizes the key accomplishments demonstrated by this thesis to meet this over-arching vision:
+first paragraph: motivate new schemes
+-developed new spatial homogenization schemes
+  -approach accuracy of degenerate scheme by accounting for spatial self-shielding effects
+  -approach MC convergence of null scheme by homogenizing over large spatial tally zones
+-need to homogenize across many fuel pins to reduce the MGXS statistical uncertainties and batchwise deviations
+-minimize number of spatial tally zones to minimize statistical uncertainties
+-modeling MGXS clustering to enable highly accurate U-238 capture predictions
 
-%This was accomplished with a simulation framework that evaluated the MGXS generated by stochastic transport simulations with OpenMC for use in deterministic multi-group transport simulations with OpenMOC. The \textit{i}MGXS spatial homogenization scheme was developed to directly model all energy and spatial self-shielding effects to generate accurate MGXS with a single whole-core MC calculation. 
+second paragraph: introduce schemes
+-Local Neighbor Symmetry (LNS) scheme:
+  -engineering-based approach to cluster fuel pins
+  -nearest neighbor-like analysis of combinatorial geometry
+  -define ``geometric template'' of fuel pins to be homogenized together
+-Inferential \ac{MGXS} (\textit{i}\ac{MGXS}) scheme
+  -uses unsupervised machine learning algorithms to identify clusters in ``noisy'' \ac{MC} tally data
+  -no knowledge of the reactor geometry
+  -uses data processing pipeline to analyze tally data
+  -designed to model arbitrary spatial self-shielding effects from neighboring heterogneities
+  -use machine learning methods designed to find clusters in data
+    -feature extraction, feature selection, dimensionality reduction, predictor training, model selection and spatial homogenization stages
 
-%This thesis had two primary goals: to quantify approximation error in MGXS and to develop new spatial homogenization methods to accelerate the convergence of MGXS on heterogeneous MC tally meshes. This was accomplished with a simulation framework that evaluated the MGXS generated by stochastic transport simulations with OpenMC for use in deterministic multi-group transport simulations with OpenMOC. The \textit{i}MGXS spatial homogenization scheme was developed to directly model all energy and spatial self-shielding effects to generate accurate MGXS with a single whole-core MC calculation. 
+third paragraph: evaluated new schemes  
+-evaluated for each of the six heterogeneous \ac{PWR} benchmarks
+-clustered geometries:
+  -LNS distinguishes fuel pins with neighboring \acp{CRGT} and/or \acp{BP}, but not those at interfaces
+  -\textit{i}\ac{MGXS} distinguishes pins irregardless of neighbors
+    -hierarchical clustering
+    -first few clusters distinguish pins as if in an repeating lattice (i.e., close neighbors)
+    -later clusters distinguish pins along interfaces    
+-eigenvalues not affected by either \ac{LNS} or \textit{i}\ac{MGXS} (preserved to within 10 \ac{pcm})
+-fission rates approach that of degenerate scheme, but not impacted much to beging with
+-capture rates approach that of degenerate scheme
+  -\ac{LNS} performed as well or slightly better than degenerate scheme for single assm benchmarks
+  -\ac{LNS} fails to distinguish inter-assembly and assemlby-reflector interfaces
+    -errors systematically / particularly large for fuel pins near baffle/reflector
+    -but should note that these pins have the smallest reaction rate magnitudes due to neutron leakage
+  -\textit{i}\ac{MGXS} was evaluated for different numbers of clusters
+    -accuracy greatly improved with just a few (order 10) clusters, with diminishing returns for more clusters
+    -for the same number of materials, accuracy was less than \ac{LNS} for single assembly benchmarks
+    -accuracy improved above \ac{LNS} for benchmarks with assm-assm and assembly-reflector interfaces
+      -distinguished fuel pins along interfaces which \ac{LNS} was unable to do
+      
+fourth paragraph: convergence
+-evaluated for the five assembly and 2$\times$2 colorset benchmarks
+-unable to evaluate convergence for quarter core \ac{BEAVRS} due to computational restraints
+-eigenvalues:
+  -all schemes converge to same eigenvalue bias with 10$^8$ particle histories
+  -eigenvalues fluctuate on the order of several hundred \ac{pcm} with less than 10$^{9}$ histories
+    -need at least 100,000,000 histories for reliable / stable eigenvalue calcs for such geometries
+      -more histories needed for larger geometries
+-capture rates:
+  -null homogenization converges with 10$^6$ histories
+  -degenerate homogenization isn't even fully converged with 10$^9$ histories
+    -was unable to fully converge, couldn't run enough particle histories
+  -\ac{LNS} and \textit{i}\ac{MGXS} converge / stabilize faster than degenerate or a reference \ac{MC} calculation
+    -mean errors converge faster (5 -- 20+$\times$ depending on the number of clusters)
+    -max errors may converge faster but if few clusters are used
+      -max error convergence is limited by the smallest cluster
+      -i.e., a cluster may be needed to model the few fuel pins at the corners of a geometry adjacent to a water/baffle
+        -these are the pins where the errors are the largest
+        -but with so few pins assigned to the cluster, the track density and therefore acceleration is minimal
 
-\begin{itemize}
+fifth paragraph: hope for future
+-related back to original goals: reactor agnostic, single-step, convergence rate, accuracy of \ac{MC}, ...
+-look at writeup in exec summary
+-focus on model selection criteria in future work section
+-need to talk about differences b/w \ac{LNS} and \textit{i}\ac{MGXS}
+-talk about degree of customization required for engineering-based schemes like \ac{LNS}
+-number of materials:
+  -\ac{LNS} requires 400+ of materials to model 12,000+ fuel pin instances in \ac{BEAVRS}
+    -analysis of geometry is based on cell/universe/lattice IDs
+-MGXS uncertainties shown to converge to a prescribed level faster for null than degenerate
+  -convergence rate is the same irregardless of the number of clusters
+  -uncertainty reduced according to the number of fuel pins assigned to each spatial homogenization set
+  -factor proportional to inverse square root of number of spatial homogenization zones
+  -faster for \ac{LNS}, \textit{i}\ac{MGXS}
+-The results in this thesis point to the potential for iMGXS as a means to efficiently generate MGXS with reactor agnostic MC calculations of the complete heterogeneous geometry in a single step.
+-iMGXS accounts for spatial self-shielding spectral effects without engineering heuristics based on the reactor core configuration.
+-This thesis demonstrates a path forward for MGXS generation with reactor agnostic MC for computationally efficient deterministic transport codes with the iMGXS scheme
 
-\item \textbf{Design and implementation of software simulation infrastructure.} The simulation framework replaces the multi-level approach to directly model all energy and spatial self-shielding with a single whole-core OpenMC calculation of the complete heterogeneous geometry to generate MGXS for use in OpenMOC.
-
-\item \textbf{Systematic evaluation of bias between OpenMC and OpenMOC.} The approximations made to collapse MGXS in energy, space and angle were quantified for simple PWR benchmarks. The impact of the flux separability approximation was rigorously quantified, and a method based on SuPerHomog\'{e}n\'{e}isation factors was implemented to ensure reaction rate consistency between OpenMC and OpenMOC.
-
-\item \textbf{Design and implementation of pin-wise spatial homogenization schemes.} The LNS scheme uses an engineering-based nearest of a reactor's geometric configuration to assign MGXS to each fuel pin. The iMGXS scheme uses machine learning to detect MGXS clustering in ``noisy'' MC tally data, and assigns MGXS to fuel pins without any knowledge of a reactor's geometric configuration.
-
-%\item \textbf{Design and implementation of pin-wise spatial homogenization schemes.} The LNS scheme employs an engineering-based nearest neighbor analysis of the geometric configuration of a reactor core to assign MGXS to each fuel pin. The iMGXS scheme uses unsupervised machine learning methods to detect MGXS clustering in ``noisy'' MC tally data and infer the optimal assignment of MGXS to each fuel pin.
-
-\item \textbf{Quantified the predictive accuracy of the LNS and \textit{i}MGXS schemes.} Both schemes were shown to reduce pin-wise U-238 capture rate errors by a factor of four by adequately accounting for spatial self-shielding effects from core heterogeneities. The \textit{i}MGXS scheme performed better than LNS for fuel pins along assembly-assembly and assembly-reflector interfaces. 
-
-%The iMGXS scheme achieves the same accuracy as LNS with up to two orders of magnitude fewer MGXS clusters for the quarter core BEAVRS model.
-
-%The OpenMOC solutions were compared to reference solutions generated with OpenMC for six heterogeneous PWR benchmarks. Both schemes reduced errors for U-238 capture rates predicted by OpenMOC relative to a reference OpenMC solution by a factor four. The iMGXS scheme 
-
-\item \textbf{Quantified the MC histories needed to converge the MGXS for each scheme.} Both schemes were shown to require at least an order of magnitude fewer MC particle histories to converge MGXS for accurate deterministic calculations than a reference MC calculation. 
-
-%\item Designed and implemented software framework to generate MGXS with OpenMC for use in OpenMOC. The simulation framework replaces the multi-level approach to model self-shielding with a single whole-core OpenMC calculation of the complete heterogeneous geometry to generate MGXS for use in OpenMOC.
-
-%\item Designed inferential multi-group cross section methodology for pin-wise spatial homogenization of MGXS. The iMGXS data processing pipeline uses machine learning methods to detect MGXS clustering in ``noisy'' MC tally data and infer the optimal assignment of fuel pins to spatial homogenization zones.
-\end{itemize}
-
-%These goals were motivated by the desire to obtain Monte Carlo-quality solutions with computationally efficient deterministic neutron transport methods.
-
-%The \textit{i}MGXS scheme is a data processing pipeline which uses machine learning algorithms to infer the clustering of MGXS in fuel pins due to spatial self-shielding effects with limited supervision or engineering domain knowledge.
-
-%The \textit{i}MGXS scheme was demonstrated to identify spatial self-shielding effects from ``noisy'' MC tally data without any knowledge of a reactor's geometric configuration. The scheme was shown to reduce pin-wise U-238 capture rate errors by a factor of four by adequately accounting for spatial self-shielding effects from core heterogeneities including control rod guide tubes, burnable poisons, and reflectors with on the order of only ten MGXS clusters. Furthermore, the \textit{i}MGXS scheme was shown to be advantageous over geometric heuristic approaches such as LNS which must be highly customized for specific types of core geometries, and which fail to distinguish MGXS clusters for pins at assembly-assembly and assembly-reflector interfaces. Finally, the \textit{i}MGXS scheme was shown to require at least an order of magnitude fewer MC particle histories to converge MGXS for accurate deterministic calculations than a reference MC calculation. 
-
-%\textbf{The \textit{i}MGXS scheme enables deterministic reactor physics simulations to produce accurate results from MGXS generated by MC faster than would be possible with a direct calculation with MC.} This thesis demonstrated the promise for \textit{i}MGXS as a means to efficiently generate MGXS with reactor agnostic MC calculations of the complete heterogeneous geometry in a single step.
-
-\textbf{The \textit{i}MGXS scheme enables deterministic reactor physics simulations to produce accurate results from MGXS generated by MC faster than would be possible with a direct calculation with MC.} Furthermore, the \textit{i}MGXS scheme was shown to be advantageous over geometric heuristic approaches such as LNS which must be highly customized for specific types of core geometries. This thesis demonstrated the promise for \textit{i}MGXS as a means to efficiently generate MGXS with reactor agnostic MC calculations of the complete heterogeneous geometry in a single step.
+The iMGXS scheme enables deterministic reactor physics simulations to produce accurate results from MGXS generated by MC faster than would be possible with a direct calculation with MC. Furthermore, the iMGXS scheme was shown to be advantageous over geometric heuristic approaches such as LNS which must be highly customized for specific types of core geometries. This thesis demonstrated the promise for iMGXS as a means to efficiently generate MGXS with reactor agnostic MC calculations of the complete heterogeneous geometry in a single step.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Contributions}
 \label{sec:chap12-contributions}
 
+-include use of \ac{SPH} factors
+-discuss replacing multi-level scheme
+-itemize which approximation errors were investigated
+  -MOC: angular discretization, \ac{FSR} discretization, energy discretization
+  -MGXS: isotropic in lab approximation, energy discretization, spatial homogenization zones (by FSR within each pin, across many ``clustered pins'')
+-have bullet specifically for pin-wise spatial homogenization schemes
+ -include individual sub-bullets for null, degenerate, LNS and iMGXS
+
+\begin{itemize}
+\item Generated MGXS with a single MC simulation of a complete heterogeneous reactor geometry for use fine-mesh deterministic transport calculations.
+\item Implemented a simulation triad that generated MGXS with OpenMC, used MGXS in deterministic OpenMOC calculations, and transferred MGXS between codes and built clustered geometries with OpenCG.
+\item Developed LNS and iMGXS pin-wise spatial homogenization schemes to account for spatial self-shielding effects on the MGXS in each fuel pin while simultaneously accelerating MC tally convergence.
+\item Quantified approximation error between reference OpenMC and deterministic OpenMOC calculations of the eigenvalues, pin-wise fission rates and U-238 capture rates for each homogenization scheme.
+\item Demonstrated that LNS and iMGXS spatial homogenization schemes require fewer MC histories to generate MGXS and converge deterministic calculations to a given accuracy than an equivalent MC calculation.
+\end{itemize}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Future Work}
 \label{sec:chap12-future-work}
 
-first paragraph: motivation
+first paragraph: motivation and outline
 -this is an exploratory thesis
   -generate MGXS with MC for fine-mesh transport
   -single-step process
   -diagnose approx. error
 -thesis identified many challenges and opportunities
 -this section itemizes the author's assessment of what should be done and in what order
-
-second paragraph: outline
--Sec.~\ref{subsec:further-imgxs} - improve \textit{i}\ac{MGXS}
--Sec.~\ref{subsec:improve-mc-methods} - improve \ac{MC} methods to generate \ac{MGXS}
+  -Sec.~\ref{subsec:further-imgxs} - improve \textit{i}\ac{MGXS}
+  -Sec.~\ref{subsec:improve-mc-methods} - improve \ac{MC} methods to generate \ac{MGXS}
 
 This thesis identified several issues which must be investigated in the future in order for \textit{i}MGXS to be useful in a production code setting. First, a systematic evaluation of the types of features, as well as algorithms for dimensionality reduction and clustering, which may be used in \textit{i}MGXS should be performed to better understand their impact on the resulting clustered geometry. A future study should also score each configuration of the \textit{i}MGXS data processing pipeline based on how many MC particle histories each scheme requires to accurately identify MGXS clusters from ``noisy'' MC tally data. 
 
