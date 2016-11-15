@@ -1,22 +1,19 @@
-\chapter{Conclusions and Future Work}
+\chapter{Conclusions}
 \label{chap:conclusions-future-work}
-
--read bryan, nate and nick's conclusions
 
 -notes from bryan's thesis conclusions
   -conclusions
     -first sentence: something that i did
     -remaining sentences: summarize / quantify conclusions
     -final sentence: what does it all mean / impact statement
-  -future work
-    -break up into multiple sections
-    -first sentence: problem / approximation
-    -remaining sentences: how this impacted my results
-    -final sentence: possible solutions  
+%  -future work
+%    -break up into multiple sections
+%    -first sentence: problem / approximation
+%    -remaining sentences: how this impacted my results
+%    -final sentence: possible solutions  
 
 notes from nate's thesis conclusions
   -include an itemized summary of all contributions to achieve the major objectives
-  -
 
 -outline conclusions and future work
   -look at my executive summary
@@ -24,24 +21,64 @@ notes from nate's thesis conclusions
   -review the summary bullets in each chapter
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Conclusions}
-\label{chap:conclusions}
+\section{Summary of Work}
+\label{sec:chap12-conclusions}
 
-%%%%%%%%%%%%%%%%%%%%
-\subsection{Summary}
-\label{chap:summary}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{MGXS Generation with Monte Carlo}
+\label{subsec:chap12-approx-error}
+
+first paragraph: outline simulation triad, \ac{MC} approach to generate \ac{MGXS}
+-generated \ac{MGXS} for fine-mesh transport codes
+  -most published works to date for coarse mesh diffusion
+  -one of few published efforts to do so for fine-mesh transport
+-used OpenMC, OpenMOC and OpenCG simulation triad
+-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Approximation Error in Multi-Group Methods}
-\label{chap:approx-error}
+\label{subsec:chap12-approx-error}
+
+first paragraph: outline eigenvalue bias observed in Chap.~\ref{chap:bias}
+-quantified approx error which persists even when using ``true'' flux from \ac{MC}
+-case studies systematically evaluated different sources of approximation error
+  -held all other approximations / discretization schemes constant
+-systematic bias on the order of -300 \ac{pcm} for representative 2D \ac{PWR} fuel pin cell
+  -varies with \ac{FSR} discretization and grows with more energy groups
+  -iso-in-lab scattering eliminates a third of the bias
+    -but shows that anisotropic scattering is not the dominant factor
+  -bias depends on the \ac{FSR} spatial mesh
+    -largely invariant to the spatial mesh used to generate \ac{MGXS}
+-eigenvalue bias shown to be the result of over-predictions of U-238 capture rates in resonance groups
+  -exacerbated for finer energy group structures - error increases with more groups
+  -largest for interior zones of fuel pin, smallest for outer rim of fuel pin nearest to the clad/moderator
+
+second paragraph: outline reason and solution in Chap.~\ref{chap:sph}
+-due to flux separability approximation (Sec.~\ref{subsec:chap2-angle})
+  -angular dependence of \ac{MGXS} neglected when cross sections collapsed with scalar rather than angular flux
+  -if angular dependence is ignored, an equivalence scheme is needed to account for effects instead
+-Chap.~\ref{chap:sph} investigated the use of \ac{SPH} factors to correct for approximation error
+  -The \ac{SPH} factor approach uses a reference fixed source to correct the total \ac{MGXS} to preserve reaction rates between fine and coarse mesh methods.
+  -SPH factors are introduced here as one approach to force reaction rate preservation in multi-group methods which use MC-generated MGXS
+-largely eliminated eigenvalue bias (from -200 \ac{pcm} to approx 10 \ac{pcm})
+  -depending on energy group structure and \ac{FSR} discretization
+-eliminated systematically large, positive reaction rate errors in resonance groups
+-used \ac{SPH} factors slightly less than unity (\textit{e.g.}, 0.97) in resonance groups)
+-\ac{SPH} factors
+-It is unclear if a generalizable scheme based upon SPH factors may be used to correct for the flux separability approximation
+-Future work should investigate methods to account for the angular dependence of total MGXS in order to adequately preserve reaction rates in fine-mesh transport methods with MC-generated MGXS.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{A Single-Step Method for MGXS Generation}
-\label{chap:approx-error}
+\subsection{A Single-Step Approach for MGXS Generation}
+\label{subsec:chap12-single-step}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Pin-Wise Spatial Homogenization}
-\label{chap:approx-error}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Pin-Wise MGXS Clustering Effects}
+\label{subsec:chap12-mgxs-clustering}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Pin-Wise Spatial Homogenization Schemes}
+\label{subsec:chap12-homogenization-schemes}
 
 This thesis had two primary goals: to quantify approximation error in MGXS and to develop new spatial homogenization methods to accelerate the convergence of MGXS on heterogeneous MC tally meshes. These goals were motivated by the desire to obtain Monte Carlo-quality solutions with computationally efficient deterministic neutron transport methods. The following summarizes the key accomplishments demonstrated by this thesis to meet this over-arching vision:
 
@@ -82,29 +119,219 @@ This thesis had two primary goals: to quantify approximation error in MGXS and t
 
 \textbf{The \textit{i}MGXS scheme enables deterministic reactor physics simulations to produce accurate results from MGXS generated by MC faster than would be possible with a direct calculation with MC.} Furthermore, the \textit{i}MGXS scheme was shown to be advantageous over geometric heuristic approaches such as LNS which must be highly customized for specific types of core geometries. This thesis demonstrated the promise for \textit{i}MGXS as a means to efficiently generate MGXS with reactor agnostic MC calculations of the complete heterogeneous geometry in a single step.
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Contributions}
+\label{sec:chap12-contributions}
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Future Work}
-\label{chap:future-work}
+\label{sec:chap12-future-work}
 
-This thesis identified several issues which must be investigated in the future in order for \textit{i}MGXS to be useful in a production code setting. First, a systematic evaluation of the types of features, as well as algorithms for dimensionality reduction and clustering, which may be used in \textit{i}MGXS should be performed to better understand their impact on the resulting clustered geometry. A future study should also score each configuration of the \textit{i}MGXS data processing pipeline based on how many MC particle histories  each scheme requires to accurately identify MGXS clusters from ``noisy'' MC tally data. 
+first paragraph: motivation
+-this is an exploratory thesis
+  -generate MGXS with MC for fine-mesh transport
+  -single-step process
+  -diagnose approx. error
+-thesis identified many challenges and opportunities
+-this section itemizes the author's assessment of what should be done and in what order
+
+second paragraph: outline
+-Sec.~\ref{subsec:further-imgxs} - improve \textit{i}\ac{MGXS}
+-Sec.~\ref{subsec:improve-mc-methods} - improve \ac{MC} methods to generate \ac{MGXS}
+
+This thesis identified several issues which must be investigated in the future in order for \textit{i}MGXS to be useful in a production code setting. First, a systematic evaluation of the types of features, as well as algorithms for dimensionality reduction and clustering, which may be used in \textit{i}MGXS should be performed to better understand their impact on the resulting clustered geometry. A future study should also score each configuration of the \textit{i}MGXS data processing pipeline based on how many MC particle histories each scheme requires to accurately identify MGXS clusters from ``noisy'' MC tally data. 
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Further Evaluation of the \textit{i}MGXS Scheme}
+\label{subsec:chap12-further-imgxs}
+
+first paragraph: motivate and outline
+-this work only scratched the surface of what is possible
+-Sec.~\ref{subsubsec:imgxs-noisy-mc-data} should consider using 
+-Sec.~\ref{subsubsec:optimize-imgxs} investigate various configurations of the \textit{i}MGXS scheme
+-Sec.~\ref{subsubsec:optimize-simulation-triad} speeding up the various components of the simulation triad
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Evaluate \textit{i}MGXS Scheme with Noisy Tally Data}
+\label{subsubsec:chap12-imgxs-noisy-mc-data}
+
+first paragraph: 
+-recall that convergence results in Sec.~\ref{sec:chap11-converge} used ``fully converged'' MC tally data
+  -gave an upper bound for how quickly results converge in best case scenario
+-what: repeat convergence studies with noisy ``MC'' tally data from statepoints at each batch
+-why:  need to determine how quickly OpenMOC results stabilize 
+-what would we expect??
+  -errors will likely be larger for fewer batches
+    -fuel pins more likely to be assigned to the wrong clusters
+  -eventually errors will asympotically approach those shown for the upper bound
+  -studies needed to determine how quickly the clustering predictions converge
+-this would revise our estimates for the expected runtime in Sec.~\ref{subsec:chap11-runtimes}
+  -wouldn't reduce but could potentially increase the runtime estimates
+  -also possible that clustering predictions ``converge'' or ``stabilize'' before the OpenMOC solutions
+-should also perform convergence studies with BEAVRS full core
+-Score iMGXS configurations by number of MC histories needed to accurately identify MGXS clusters from ``noisy'' MC tally data
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Optimize the \textit{i}MGXS Data Processing Pipeline}
+\label{subsubsec:chap12-optimize-imgxs}
+
+first paragraph: 
+-Systematically evaluate various configurations of the iMGXS data processing pipeline:
+-Feature extraction – Engineer new, better features?
+-Feature selection – Develop techniques to select “best” features?
+-Dimensionality reduction – Use fewer features for clustering?
+-Clustering models – Which use the fewest clusters to reduce errors?
+-Model selection – Which method best correlates with error reduction? none of them robustly works for my case studies!
+-evaluate each with respect to score with noisy data Sec.~\ref{subsubsec:imgxs-noisy-mc-data}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Optimize Computational Performance of Simulation Triad}
+\label{subsubsec:chap12-optimize-simulation-triad}
+
+first paragraph:
+-speed up OpenMOC full core: \\
+  -find a way use quarter assembly CMFD mesh \\
+    -use mesh only over fissile zones??
+  -linear source to reduce number of spatial zones \\
+  -vectorize transport solver over energy groups \\
+  -3D \ac{MOC}
+-speed up OpenMC:
+  -particle tracking times in Tab.~\ref{table:chap11-openmc-rates} were 3$\times$ slower w/ tallies
+  -numerous lingering issues, including: 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Improved Methods to Generate MGXS with MC}
+\label{subsec:chap12-improve-mc-methods}
+
+first paragraph: motivation
+-recall that relatively little work to date to use \ac{MC} to generate \ac{MGXS} for fine-mesh transport codes as compared to coarse mesh diffusion codes
+-methods lie along two axes:
+  -improve tally efficiency (first one)
+  -improve equivalence b/w \ac{MC} and multi-group deterministic codes (last three)
+-Sec.~\ref{subsubsec:tally-estimators} to improve tally estimators
+-Sec.~\ref{subsubsec:transport-mgxs} to model anisotropic scattering
+-Sec.~\ref{subsubsec:angular-dependent-mgxs} equivalence method for scalar flux-weighted \ac{MGXS}
+-Sec.~\ref{subsubsec:multi-physics-mgxs} multi-physics feedback in \ac{MGXS}
 
 Future work should also consider employing \textit{i}MGXS in calculations with thermal-hydraulic feedback and nuclide depletion where the moderator density, fuel temperature and burnup will be needed as features to predict MGXS clustering. In addition, new methods must be developed to compute transport-corrected MGXS with MC which appropriately account for anisotropic scattering, thereby eliminating the isotropic in lab scattering approximations used throughout this work. Finally, this thesis may serve as inspiration to employ machine learning algorithms to automate the time-consuming process of selecting reduced energy group structures and their optimal energy group boundaries for MGXS.
 
-%evaluate \textit{i}MGXS scheme:
-%-add anisotropic scattering to OpenMOC to enable solution of the ``correct'' problem
-%-systematic study of featues -- ones actually matter? \\
-%-systematic study to understand impact of dimensionality reduction \\
-%-systematic study to understand impact of clustering algorithms \\
-%-more research into model selection schemes -- none of them robustly works for my case studies! \\
-%-evaluate \textit{i}MGXS with clustering ``on-the-fly'' with noisy MC tally data \\
-%-can \textit{i}MGXS reduce the number of necessary energy groups?? \\
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Improved Reaction Rate Tally Estimators}
+\label{subsubsec:chap12-tally-estimators}
 
-%reach goals:\\
+first paragraph: motivate and outline problem
+-recall mixture of analog and track-length tally estimators employed to generate \ac{MGXS} with OpenMC in Sec.~\ref{subsubsec:chap3-tally-types-summary}
+  -analog estimators used for group constants which depend on the outgoing energy
+    -i.e., scattering matrix and fission spectrum
+  -all other constants use more efficient track-length tally estimators
+-recall separation between eigenvalues in Sec.~\ref{subsec:chap11-eigenvalue-converge} for few particle histories
+  -all clustering algorithms eventually converge with enough particle histories
+  -hypothesize that gap due to rxn rate imbalance (not preserved) due to mixture of tally estimators  
+  -improved estimator may improve convergence to identical eigenvlaue
+
+second paragraph: possible solutions
+-cite Nelson NDPP~\cite{nelson2014improved} as one option
+-simple heuristics may be employed for hydrogeneous systems to greatly improve tallying efficiency
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Account for Anisotropic Scattering}
+\label{subsubsec:chap12-transport-mgxs}
+
+first paragraph: motivate and outline problem
+-recall use of OpenMC's iso-in-lab scattering feature in Sec.~\ref{subsec:chap4-iso-in-lab}
+  -enable ``apples-to-apples'' comparisons between OpenMC and OpenMOC
+-recall impact on pin-wise reaction rates
+  -compare pin-wise fission and U-238 capture rate distributions:
+    -with iso-in-lab scattering: Figs.~\ref{fig:chap7-fiss-rates-full-core} and~\ref{fig:chap7-capt-rates-full-core}
+    -with anisotropic scattering: Fig.~\ref{fig:benchmarks-beavrs-aniso}
+  -iso-in-lab approx. causes fission rates to peak at approx. 2.3 -- 2.9 as compared to 1.5 -- 1.6
+    -due to artificial scattering of neutrons from reflector back into core
+    -reaction rates peak in assemblies near corners of the core nearest to the reflector
+-need to model anisotropic scattering in multi-group deterministic code to solve ``correct'' or physical problem
+
+second paragraph: possible solutions
+-use full anisotropic scattering matrices in MOC
+  -unclear what expansion order is necessary
+  -this is the most theoretically rigorous approach
+  -downside is that this is computationally expensive
+    -more expensive to 1) compute scattering source and 2) tally flux moments
+  -cite Nelson's work???
+-improved transport cross sections
+  -recall Sec.~\ref{subsec:chap2-transport-corr}
+  -modify the total cross section in an attempt to produce an equivalent solution 
+  -advantage is that the computational burden is no larger than it is currently
+  -cite Liu's work???
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Equivalence Method for Angular-Dependent MGXS}
+\label{subsubsec:chap12-angular-dependent-mgxs}
+
+first paragraph: motivate and outline problem
+-recall eigenvalue bias in simple 1D slab and 2D fuel pin benchmarks in Chap.~\ref{chap:biases}
+-shown to be the result of errors in U-238 capture resonance groups
+  -over-predicts capture by up to 2\% in group 27/70 which contains the 6.67 eV resonance 
+  -trend was exacerbated for smaller energy groups
+-cite nate's thesis~\cite{gibson2016thesis}
+  -effect is the result of using the scalar rather than the angular flux to collapse \ac{MGXS}
+-recall use of \ac{SPH} factors to correct this in Chap.~\ref{chap:sph}
+
+second paragraph: possible solutions
+-recall \ac{SPH} factors
+  -equivalence factor use to preserve reaction rates in fissile zones given a fixed source in each region
+  -\ac{SPH} factors are intrinsically coupled to spatial discretization
+  -\ac{SPH} factors does not distinguish between sources of approximation error, and simply tries to preserve a reference reaction rate solution
+    -all errors are indiscriminately treated with \ac{SPH}
+      -angular, spatial, energy discretization, scattering kernel, etc. 
+  -why it is challenging: 
+    -requires knowledge of the fixed sources
+    -is iterative and hence computationally expensive
+  -possible changes: may be able to tabulate a set of \ac{SPH} factors for a specific energy group structure and spatial discretization
+  -unclear how much the factors depend on enrichment, spatial discretization, etc.
+-Consistent-P or BHS~\cite{bell1967transport}
+  -expand collision term with Legendre moments, transfer to scattering kernel
+-angular-dependent \ac{MGXS}
+  -separate \ac{MGXS} for different angles in deterministic code
+  -angular dependence is intrinsically coupled to spatial discretization
+  -why it is challenging:
+    -burdensome to track extra data in deterministic code
+    -burdensome to tally extra data in \ac{MC}
+    -must \textit{a priori} know or approximate angular dependence and its relationship with spatial mesh
+  -possible changes: ``jump'' conditions, i.e. coarse angular discretization
+    -still requires some knowledge of spatial discretization mesh
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Account for Multi-Physics Feedback in MGXS}
+\label{subsubsec:chap12-multi-physics-mgxs}
+
+first paragraph: motivate and outline problem
+-all calculations here were for steady-state scenarios with fresh \ac{PWR} fuel without T-H feedback
+-\ac{MC} calculations used to generate \ac{MGXS} in future may:
+  -model temperature-dependent cross sections (i.e., multipole)
+  -model moderator density and/or temperature gradients
+  -model fuel burnup with unique appropriate isotopic vectors in each fuel pin
+
+second paragraph: possible solutions
+-may be possible to use new features to model fuel burnup
+  -i.e., fuel temperature, density of nearby moderator (T-H calcs), fuel burnup (depletion calcs)
+-may be able to train machine learning regression models to predict \ac{MGXS} with these features
+  -i.e., decision tree or support vector regression
+  -challenging since this will not necessarily preserve global reactivity
+    -must use integrated flux and reaction rates within fuel pin of interest rather than predicted \ac{MGXS} itself
+
 %-multi-physics applications: moderator density, fuel temperature, burnup, etc. as features \\
-%-machine learning to optimize energy group structures \\
 
-%-speed up OpenMOC full core: \\
-%  -find a way use quarter assembly CMFD mesh \\
-%  -linear source to reduce number of spatial zones \\
-%  -vectorize transport solver over energy groups \\
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Inspiration for New Research Directions}
+\label{subsec:chap12-inspiration}
+
+first paragraph: research may inspire new areas of research
+-ML might be useful in other simulation application areas
+  -large scale parameter selection for simulations
+  -replace engineering / human judgement with data-informed decision-making
+    -more flexible/extensible and accurate for parameter regimes (i.e., reactor designs) for which there may be little prior experience / heuristics
+-could be closely related topics, such as choosing energy group boundaries
+  -machine learning to optimize energy group structures \\
+    -can \textit{i}MGXS reduce the number of necessary energy groups?? \\
+-or could be in very different disciplines where a similar tradeoffs are made between simulation accuracy and speed
