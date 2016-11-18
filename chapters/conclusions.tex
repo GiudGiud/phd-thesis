@@ -141,7 +141,7 @@ This thesis identified several issues which must be investigated in the future t
 \subsection{Further Evaluation of the \textit{i}MGXS Scheme}
 \label{subsec:chap12-further-imgxs}
 
-This thesis identified several issues which must be investigated in the future in order for \textit{i}\ac{MGXS} to be useful in a production code setting. Sec.~\ref{subsubsec:chap12-imgxs-noisy-mc-data} discusses the need for future studies to determine how many particle histories each scheme requires to accurately identify \ac{MGXS} clusters from ``noisy'' \ac{MC} tally data. Sec.~\ref{subsubsec:chap12-optimize-imgxs} outlines the many remaining challenges to optimize the various stages of the \textit{i}\ac{MGXS} data processing pipeline. Sec.~\ref{subsubsec:chap12-optimize-simulation-triad} highlights a few issues which must be addressed to enable fast and reliable full-core calculations with the simulation triad of OpenMC, OpenMOC and OpenCG.
+This thesis identified several issues which must be investigated in the future in order for \textit{i}\ac{MGXS} to be useful in a production code setting. Sec.~\ref{subsubsec:chap12-imgxs-noisy-mc-data} discusses the need for future studies to determine the number of particle histories required to accurately identify \ac{MGXS} clusters from ``noisy'' \ac{MC} tally data. Sec.~\ref{subsubsec:chap12-optimize-imgxs} outlines the many remaining challenges to optimize the various stages of the \textit{i}\ac{MGXS} data processing pipeline. Sec.~\ref{subsubsec:chap12-optimize-simulation-triad} highlights issues which must be resolved to enable fast and reliable full-core calculations with the simulation triad of OpenMC, OpenMOC and OpenCG.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Evaluate \textit{i}MGXS Scheme with Noisy Tally Data}
@@ -165,32 +165,20 @@ There is a plethora of opportunities to optimize the performance of the \textit{
 \subsubsection{Optimize Computational Performance of Simulation Triad}
 \label{subsubsec:chap12-optimize-simulation-triad}
 
-first paragraph:
--speed up OpenMOC full core: \\
-  -find a way use quarter assembly CMFD mesh \\
-    -use mesh only over fissile zones??
-  -linear source to reduce number of spatial zones \\
-  -vectorize transport solver over energy groups \\
-  -3D \ac{MOC}
--speed up OpenMC:
-  -particle tracking times in Tab.~\ref{table:chap11-openmc-rates} were 3$\times$ slower w/ tallies
-  -numerous lingering issues, including: 
+The analysis of the quarter core \ac{BEAVRS} model in Chaps.~\Crefrange{chap:quantify}{chap:results} was limited by some computational bottlenecks that must be resolved to enable practical and reliable full-core calculations with the simulation triad (Chap.~\ref{chap:workflow}). First and foremost, a quarter pin mesh was required to guarantee stable solutions for the \ac{BEAVRS} model with OpenMOC's implementation of Coarse Mesh Finite Difference (CMFD) acceleration, which greatly increased the runtime of each simulation. Future work should improve the stability of \ac{CMFD} in OpenMOC for coarser meshes (\textit{e.g.}, quarter assembly meshes) and optimize the computational efficiency of the \ac{CMFD} implementation overall. A linear source approximation (instead of a flat source approximation) would greatly reduce the number of discretized spatial zones, likewise reducing both the runtime and memory footprint the runtime for OpenMOC simulations. Furthermore, the computational efficiency of the transport solver in OpenMOC would be greatly improved with the use of Single Instruction, Multiple Data (SIMD) vectorization over energy groups. In addition to improving OpenMOC's computational efficiency, the performance of the OpenMC code may be improved in the future. As noted in Tab.~\ref{table:chap11-openmc-rates}, the per-core particle tracking rates for OpenMC were 3 -- 4$\times$ slower with tallies. This performance degradation may be mitigated in the future with spatial domain decomposition~\cite{horelik2014dd}, tally servers~\cite{romano2013servers}, and/or SIMD vectorization of the tallying algorithms in OpenMC.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Improved Methods to Generate MGXS with MC}
 \label{subsec:chap12-improve-mc-methods}
 
-first paragraph: motivation
--recall that relatively little work to date to use \ac{MC} to generate \ac{MGXS} for fine-mesh transport codes as compared to coarse mesh diffusion codes
--methods lie along two axes:
-  -improve tally efficiency (first one)
-  -improve equivalence b/w \ac{MC} and multi-group deterministic codes (last three)
--Sec.~\ref{subsubsec:tally-estimators} to improve tally estimators
--Sec.~\ref{subsubsec:transport-mgxs} to model anisotropic scattering
--Sec.~\ref{subsubsec:angular-dependent-mgxs} equivalence method for scalar flux-weighted \ac{MGXS}
--Sec.~\ref{subsubsec:multi-physics-mgxs} multi-physics feedback in \ac{MGXS}
+This thesis identified several areas which must be addressed in order to make \ac{MC}-based \ac{MGXS} generation methods practical for fine-mesh transport codes. Sec.~\ref{subsubsec:chap12-tally-estimators} presents the need for new statistical estimators to improve the tally efficiency of multi-group scattering matrices. As discussed in Sec.~\ref{subsubsec:chap12-transport-mgxs}, new methods must be developed to compute transport-corrected \ac{MGXS} with \ac{MC} which account for anisotropic scattering, thereby eliminating the isotropic-in-lab scattering approximations used throughout this thesis. Sec.~\ref{subsubsec:chap12-angular-dependent-mgxs} motivates the need for an equivalence method to enforce reaction rate preservation between continuous energy \ac{MC} and multi-group deterministic methods with scalar flux-weighted \ac{MGXS}. Finally, future work should consider employing \ac{MC} to generate \ac{MGXS} for multi-physics applications as highlighted in Sec.~\ref{subsubsec:chap12-multi-physics-mgxs}.
 
-Future work should also consider employing \textit{i}MGXS in calculations with thermal-hydraulic feedback and nuclide depletion where the moderator density, fuel temperature and burnup will be needed as features to predict MGXS clustering. In addition, new methods must be developed to compute transport-corrected MGXS with MC which appropriately account for anisotropic scattering, thereby eliminating the isotropic in lab scattering approximations used throughout this work. Finally, this thesis may serve as inspiration to employ machine learning algorithms to automate the time-consuming process of selecting reduced energy group structures and their optimal energy group boundaries for MGXS.
+%The deficiencies which should be addressed may be measured along two primary dimensions:
+
+%\begin{itemize}[noitemsep]
+%\item Improve the Monte Carlo tallying efficiency of multi-group cross sections
+%\item Reduce approximation error between continuous energy \ac{MC} and multi-group deterministic methods
+%\end{itemize}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Improved Reaction Rate Tally Estimators}
@@ -279,6 +267,8 @@ second paragraph: possible solutions
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Account for Multi-Physics Feedback in MGXS}
 \label{subsubsec:chap12-multi-physics-mgxs}
+
+%Future work should also consider employing \textit{i}MGXS in calculations with thermal-hydraulic feedback and nuclide depletion where the moderator density, fuel temperature and burnup will be needed as features to predict MGXS clustering.  Finally, this thesis may serve as inspiration to employ machine learning algorithms to automate the time-consuming process of selecting reduced energy group structures and their optimal energy group boundaries for MGXS.
 
 first paragraph: motivate and outline problem
 -all calculations here were for steady-state scenarios with fresh \ac{PWR} fuel without T-H feedback
