@@ -135,54 +135,31 @@ These results demonstrate a path forward to generate \ac{MGXS} with reactor agno
 \section{Future Work}
 \label{sec:chap12-future-work}
 
-This thesis identified several issues which must be investigated in the future to position single-step \ac{MC} simulations as a practical alternative to traditional multi-level \ac{MGXS} generation techniques. The following sections itemize the author's assessment of the most important outstanding issues and the order in which they should be addressed. Sec.~\ref{subsec:chap12-further-imgxs} discusses case studies which should be performed to optimize and further evaluate the performance of the \ac{LNS} and \textit{i}\ac{MGXS} spatial homogenization schemes. Sec.~\ref{subsec:chap12-improve-mc-methods} highlights several key shortcomings in the present approach to generate \ac{MGXS} with \ac{MC} which must be confronted to resolve lingering sources of approximation error between continuous energy \ac{MC} and deterministic multi-group methods.
+This thesis identified several issues which must be investigated in the future to position single-step \ac{MC} simulations as a practical alternative to traditional multi-level \ac{MGXS} generation techniques. The following sections itemize the author's assessment of the most important outstanding issues and the order in which they should be addressed. Sec.~\ref{subsec:chap12-further-imgxs} discusses case studies which should be performed to optimize and evaluate the performance of the \textit{i}\ac{MGXS} spatial homogenization scheme. Sec.~\ref{subsec:chap12-improve-mc-methods} highlights several key shortcomings in the present approach to generate \ac{MGXS} with \ac{MC} which must be confronted to resolve lingering sources of approximation error between continuous energy \ac{MC} and deterministic multi-group methods.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Further Evaluation of the \textit{i}MGXS Scheme}
 \label{subsec:chap12-further-imgxs}
 
-%\textit{i}MGXS to be useful in a production code setting. First, a systematic evaluation of the types of features, as well as algorithms for dimensionality reduction and clustering, which may be used in \textit{i}MGXS should be performed to better understand their impact on the resulting clustered geometry. A future study should also score each configuration of the \textit{i}MGXS data processing pipeline based on how many MC particle histories each scheme requires to accurately identify MGXS clusters from ``noisy'' MC tally data. 
-
-%-focus on model selection criteria in future work section
-
-first paragraph: motivate and outline
--this work only scratched the surface of what is possible
--Sec.~\ref{subsubsec:imgxs-noisy-mc-data} should consider using 
--Sec.~\ref{subsubsec:optimize-imgxs} investigate various configurations of the \textit{i}MGXS scheme
--Sec.~\ref{subsubsec:optimize-simulation-triad} speeding up the various components of the simulation triad
+This thesis identified several issues which must be investigated in the future in order for \textit{i}\ac{MGXS} to be useful in a production code setting. Sec.~\ref{subsubsec:chap12-imgxs-noisy-mc-data} discusses the need for future studies to determine how many particle histories each scheme requires to accurately identify \ac{MGXS} clusters from ``noisy'' \ac{MC} tally data. Sec.~\ref{subsubsec:chap12-optimize-imgxs} outlines the many remaining challenges to optimize the various stages of the \textit{i}\ac{MGXS} data processing pipeline. Sec.~\ref{subsubsec:chap12-optimize-simulation-triad} highlights a few issues which must be addressed to enable fast and reliable full-core calculations with the simulation triad of OpenMC, OpenMOC and OpenCG.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Evaluate \textit{i}MGXS Scheme with Noisy Tally Data}
 \label{subsubsec:chap12-imgxs-noisy-mc-data}
 
-first paragraph: 
--recall that convergence results in Sec.~\ref{sec:chap11-converge} used ``fully converged'' MC tally data
-  -gave an upper bound for how quickly results converge in best case scenario
--what: repeat convergence studies with noisy ``MC'' tally data from statepoints at each batch
--why:  need to determine how quickly OpenMOC results stabilize 
--what would we expect??
-  -errors will likely be larger for fewer batches
-    -fuel pins more likely to be assigned to the wrong clusters
-  -eventually errors will asympotically approach those shown for the upper bound
-  -studies needed to determine how quickly the clustering predictions converge
--this would revise our estimates for the expected runtime in Sec.~\ref{subsec:chap11-runtimes}
-  -wouldn't reduce but could potentially increase the runtime estimates
-  -also possible that clustering predictions ``converge'' or ``stabilize'' before the OpenMOC solutions
--should also perform convergence studies with BEAVRS full core
--Score iMGXS configurations by number of MC histories needed to accurately identify MGXS clusters from ``noisy'' MC tally data
+The case studies in Sec.~\ref{sec:chap11-converge} investigated the number of \ac{MC} particle histories required to sufficiently converge \ac{MGXS} tallied by OpenMC for stable deterministic solutions with OpenMOC. Each of the studies used ``fully converged'' \ac{MC} tally data to train a clustering model, which was then repeatedly used to cluster fuel pins for spatial homogenization with ``noisier'' \ac{MC} tally data. This was a useful exercise since it provided an upper bound on how quickly \ac{MGXS} would converge if a formulation of the \textit{i}\ac{MGXS} pipeline is devised in the future that can accurately identify clusters from ``noisy'' \ac{MC} tally data. However, these results did not adequately gauge the number of \ac{MC} particle histories required to stabilize the OpenMOC solutions with \textit{i}\ac{MGXS} in a production-like setting.
+
+Future convergence studies should train clustering models with the noisy ``MC'' tally data for each statepoint from an OpenMC simulation to determine how quickly the clustering predictions converge. Based on this author's preliminary studies, a larger fraction of fuel pins are assigned to the ``wrong'' \ac{MGXS} clusters when the clustering models are trained with ``noisy'' \ac{MC} tally data. As a result, it is reasonable to expect that the approximation error between OpenMOC and the reference OpenMC solutions will be larger than that observed in Sec.~\ref{sec:chap11-converge} when relatively few particle histories are used to generate \ac{MGXS}. However, given enough particle histories, the approximation errors should approach the converged values presented in Sec.~\ref{sec:chap11-converge}. The results from Future convergence studies should be used to improve the estimates for the expected runtimes for OpenMOC simulations with \textit{i}\ac{MGXS} in Sec.~\ref{subsec:chap11-runtimes}.
+
+%  -wouldn't reduce but could potentially increase the runtime estimates
+%  -also possible that clustering predictions ``converge'' or ``stabilize'' before the OpenMOC solutions
+%-should also perform convergence studies with BEAVRS full core
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Optimize the \textit{i}MGXS Data Processing Pipeline}
 \label{subsubsec:chap12-optimize-imgxs}
 
-first paragraph: 
--Systematically evaluate various configurations of the iMGXS data processing pipeline:
--Feature extraction – Engineer new, better features?
--Feature selection – Develop techniques to select “best” features?
--Dimensionality reduction – Use fewer features for clustering?
--Clustering models – Which use the fewest clusters to reduce errors?
--Model selection – Which method best correlates with error reduction? none of them robustly works for my case studies!
--evaluate each with respect to score with noisy data Sec.~\ref{subsubsec:imgxs-noisy-mc-data}
+There is a plethora of opportunities to optimize the performance of the \textit{i}\ac{MGXS} spatial homogenization scheme. This thesis tested only but a few of the many different possible machine learning algorithms that may be interchangeably used within the \textit{i}\ac{MGXS} data processing pipeline. Future work should systematically evaluate various configurations of the pipeline and score each by the number of \ac{MC} histories needed to accurately identify \ac{MGXS} clusters from ``noisy'' \ac{MC} tally data. The feature extraction stage (Sec.~\ref{sec:chap10-feature-extract}) may be improved with the development of new \ac{MC} tallies, or combinations of tallies, to be used as features which may indicate the existence of \ac{MGXS} clustering with fewer particle histories than the features introduced in this thesis. New techniques should be evaluated for the feature selection stage (Sec.~\ref{sec:chap10-feature-select}) to identify those features most useful for clustering analysis. The dimensionality reduction stage (Sec.~\ref{sec:chap10-dimension-reduce}) should be a key focal point of future work to determine how to extract latent information from highly correlated features and to reduce the number of features used in clustering analysis\footnote{Although the clustered geometries produced with three different dimensionsionality are briefly compared in App.~\ref{sec:clustering-with-dimension-reduce}, dimensionality reduction was not used by the \textit{i}\ac{MGXS} pipeline for the simulation results presented in Chap.~\ref{chap:results}.}. Future efforts may explore different clustering algorithms -- and optimize the parameters for each with cross-validation -- for the predictor training stage (Sec.~\ref{sec:chap10-train-predictor}). The performance of each clustering algorithm should be scored according to the number of clusters required to reduce the U-238 capture rate errors in OpenMOC. Finally, future work should identify one or more heuristics to reliably determine the most appropriate number of clusters\footnote{None of the model selection techniques evaluated in Sec.~\ref{sec:chap11-model-select} performed as expected except for the Bayesian Information Criterion, which showed some promise as a means to select the number of components for Gaussian Mixture Models.} for the model selection stage (Sec.~\ref{sec:chap10-model-select}).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Optimize Computational Performance of Simulation Triad}
