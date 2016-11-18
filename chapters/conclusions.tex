@@ -184,36 +184,20 @@ This thesis identified several areas which must be addressed in order to make \a
 \subsubsection{Improve the Statistical Efficiency of Tally Estimators}
 \label{subsubsec:chap12-tally-estimators}
 
-This thesis generated \ac{MGXS} using a mixture of track-length and analog tally estimators as described in Sec.~\ref{subsubsec:chap3-tally-types-summary}. Track-length tally estimators were use for reaction rate and flux tallies which depend on the incoming neutron energy (\textit{e.g.}, total, fission, capture), while the less efficient analog estimators were necessary for tallies with an outgoing energy dependence, including those used to compute multi-group scattering matrices and fission emission spectra. Although the expectation of analog and track-length statistical estimates are identical, the variance is typically much larger for the analog estimates for a given number of particle histories. As a result, the \ac{MGXS} tallied with a mixture of track-length and analog estimators will not preserve neutron balance without a sufficient number of particle histories. This was observed in Sec.~\ref{subsec:chap11-eigenvalue-converge} where the eigenvalue estimates for different pin-wise spatial homogenization schemes only converged to the same value with 10$^{7}$ -- 10$^{8}$ particle histories (for the benchmarks considered here). The separation between the eigenvalues for each scheme with few simulated particle histories is likely due to the mixture of track-length and analog tally estimators. Future work may rectify this by designing a more statistically efficient tally estimator for multi-group scattering matrices and fission spectra. Nelson developed a theoretically rigorous methodology for this purpose in~\cite{nelson2014improved}, though a relatively simple heuristic that tallies to multiple possible outgoing energy bins in scattering collisions may be sufficient for highly hydrogeneous reactor systems.
+This thesis generated \ac{MGXS} using a mixture of track-length and analog tally estimators as described in Sec.~\ref{subsubsec:chap3-tally-types-summary}. Track-length tally estimators were used for reaction rate and flux tallies which depend on the incoming neutron energy (\textit{e.g.}, total, fission), while less efficient analog estimators were necessary for tallies with an outgoing energy dependence, including those used to compute multi-group scattering matrices and fission emission spectra. Although the expectation of track-length and analog statistical estimates are identical, the variance is typically much larger for the analog estimates for a given number of particle histories. As a result, the \ac{MGXS} tallied with a mixture of track-length and analog estimators will not preserve neutron balance without a sufficient number of particle histories. This was observed in Sec.~\ref{subsec:chap11-eigenvalue-converge} where the eigenvalue estimates for different pin-wise spatial homogenization schemes only converged to the same value after 10$^{7}$ -- 10$^{8}$ particle histories were simulated. Future work may rectify this by designing a more statistically efficient tally estimator for multi-group scattering matrices and fission spectra. Nelson developed a theoretically rigorous methodology for this purpose in~\cite{nelson2014improved}, though a relatively simple heuristic that tallies to multiple possible outgoing energy bins in scattering collisions may be sufficient for highly hydrogeneous reactor systems.
+
+%The separation between the eigenvalues for each scheme with few simulated particle histories is likely due to the mixture of track-length and analog tally estimators. 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Develop a Tally Estimator for Transport Corrected MGXS}
 \label{subsubsec:chap12-transport-mgxs}
 
-first paragraph: motivate and outline problem
--recall use of OpenMC's iso-in-lab scattering feature in Sec.~\ref{subsec:chap4-iso-in-lab}
-  -enable ``apples-to-apples'' comparisons between OpenMC and OpenMOC
--recall impact on pin-wise reaction rates
-  -compare pin-wise fission and U-238 capture rate distributions:
-    -with iso-in-lab scattering: Figs.~\ref{fig:chap7-fiss-rates-full-core} and~\ref{fig:chap7-capt-rates-full-core}
-    -with anisotropic scattering: Fig.~\ref{fig:benchmarks-beavrs-aniso}
-  -iso-in-lab approx. causes fission rates to peak at approx. 2.3 -- 2.9 as compared to 1.5 -- 1.6
-    -due to artificial scattering of neutrons from reflector back into core
-    -reaction rates peak in assemblies near corners of the core nearest to the reflector
--need to model anisotropic scattering in multi-group deterministic code to solve ``correct'' or physical problem
+This thesis implemented a feature to use isotropic-in-lab (\textit{i.e.}, ``iso-in-lab'') scattering in OpenMC to enable direct comparisons with OpenMOC which uses an isotropic scattering source. Isotropic scattering is generally not a valid approximation for nuclear reactors as is vividly evident by comparing the pin-wise fission and U-238 capture rates for \ac{BEAVRS} modeled in OpenMC with iso-in-lab scattering (Figs.~\ref{fig:chap7-fiss-rates-full-core} and~\ref{fig:chap7-capt-rates-full-core}) and anisotropic scattering (Fig.~\ref{fig:benchmarks-beavrs-aniso})\footnote{The fission and capture rates are much more highly peaked in the assemblies near the periphery of the core since more neutrons scatter back into the reactor from the reflector with the iso-in-lab approximation rather. The reaction rate distributions are flatter when modeled with anisotropic scattering since more neutons leak from the core.}. Future work should account for anisotropic scattering in deterministic multi-group calculations with \ac{MGXS} generated by \ac{MC}. The most theoretically rigorous approach would model a truncated form of the Legendre moment expansion of the scattering kernel (Sec.~\ref{subsec:chap2-scatt-src}) as is done in many deterministic transport codes today. This approach requires the use of multi-group scattering matrix Legendre moments which may be computed using the \texttt{openc.mgxs} module. However, a model of the scattering moments does increase the computational complexity for deterministic codes. An common alternative is to use a transport correction to the total \ac{MGXS} and scattering matrix (Sec.~\ref{subsec:chap2-transport-corr}). Future work may aim to develop and validate methods to model transport corrections for \ac{MGXS} generated from \ac{MC} tallies. The work by Liu~\cite{liuphysor2016} to tally diffusion coefficients without approximation in \ac{MC} may be extended to develop a reliable method to tally transport-corrected \ac{MGXS} in \ac{MC}.
 
-second paragraph: possible solutions
--use full anisotropic scattering matrices in MOC
-  -unclear what expansion order is necessary
-  -this is the most theoretically rigorous approach
-  -downside is that this is computationally expensive
-    -more expensive to 1) compute scattering source and 2) tally flux moments
-  -cite Nelson's work???
--improved transport cross sections
-  -recall Sec.~\ref{subsec:chap2-transport-corr}
-  -modify the total cross section in an attempt to produce an equivalent solution 
-  -advantage is that the computational burden is no larger than it is currently
-  -cite Liu's work???
+%-unclear what expansion order is necessary
+% -more expensive to 1) compute scattering source and 2) tally flux moments
+% -modify the total cross section in an attempt to produce an equivalent solution 
+%  -advantage is that the computational burden is no larger than it is currently
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Devise an Equivalence Method for Angular-Dependent MGXS}
