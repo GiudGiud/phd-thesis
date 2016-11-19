@@ -226,28 +226,13 @@ As a result, new equivalence schemes should be explored in the future to specifi
 \subsubsection{Account for Multi-Physics Feedback in MGXS}
 \label{subsubsec:chap12-multi-physics-mgxs}
 
-%Future work should also consider employing \textit{i}MGXS in calculations with thermal-hydraulic feedback and nuclide depletion where the moderator density, fuel temperature and burnup will be needed as features to predict MGXS clustering.  Finally, this thesis may serve as inspiration to employ machine learning algorithms to automate the time-consuming process of selecting reduced energy group structures and their optimal energy group boundaries for MGXS.
-
-first paragraph: motivate and outline problem
--all calculations here were for steady-state scenarios with fresh \ac{PWR} fuel without T-H feedback
--\ac{MC} calculations used to generate \ac{MGXS} in future may:
-  -model temperature-dependent cross sections (i.e., multipole)
-  -model moderator density and/or temperature gradients
-  -model fuel burnup with unique appropriate isotopic vectors in each fuel pin
-
-second paragraph: possible solutions
--may be possible to use new features to model fuel burnup
-  -i.e., fuel temperature, density of nearby moderator (T-H calcs), fuel burnup (depletion calcs)
--may be able to train machine learning regression models to predict \ac{MGXS} with these features
-  -i.e., decision tree or support vector regression
-  -challenging since this will not necessarily preserve global reactivity
-    -must use integrated flux and reaction rates within fuel pin of interest rather than predicted \ac{MGXS} itself
-
-%-multi-physics applications: moderator density, fuel temperature, burnup, etc. as features \\
+This thesis performed steady-state calculations of \ac{PWR} benchmarks with fresh fuel at hot zero power conditions. Future work should build upon the progress made in this thesis to generate \ac{MGXS} with \ac{MC} for multi-physics applications. Future work may develop a methodology to account for thermal-hydraulic feedback in which fuel temperature and moderator density gradients are modeled in \ac{MC} calculations for \ac{MGXS} generation. For example, \ac{MC} calculations performed using Doppler broadened cross sections sampled on-the-fly with the windowed multipole method in OpenMC~\cite{forget2014direct} to generate \ac{MGXS} which accurately reflect the distribution of fuel temperatures across a reactor core. In addition, \ac{MC} may be used to generate \ac{MGXS} for deterministic codes at each burnup step in a depletion calculation with the appropriate isotopic vectors modeled in each fuel pin. Furthermore, future work should consider using the \textit{i}\ac{MGXS} scheme in calculations with thermal-hydraulic feedback and nuclide depletion where the moderator density, fuel temperature and burnup may be used as features to predict MGXS clustering. Indeed, it may be valuable to expand upon this thesis' dependence on clustering algorithms and instead use multivariate regression models (\textit{e.g.}, decision tree regressors) to predict continously varying \ac{MGXS} based on features such as fuel temperature and burnup\footnote{Regression models may pose a challenge since continuously varying \ac{MGXS} predictions will not preserve global reactivity, which is guaranteed by simple(r) discrete predictions from clustering models used in this thesis in conjunction to compute track density-weighted average \ac{MGXS} (Sec.~\ref{subsec:chap9-lns-math}).}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Inspiration for New Research Directions}
 \label{subsec:chap12-inspiration}
+
+%Finally, this thesis may serve as inspiration to employ machine learning algorithms to automate the time-consuming process of selecting reduced energy group structures and their optimal energy group boundaries for MGXS.
 
 first paragraph: research may inspire new areas of research
 -ML might be useful in other simulation application areas
