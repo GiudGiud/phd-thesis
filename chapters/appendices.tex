@@ -824,71 +824,71 @@ Fig.~\ref{fig:quantify-reflector-capt-err-abs} shows the U-238 capture rate abso
 \clearpage
 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\chapter{Comparing Homogenization Schemes}
-\label{sec:compare-schemes}
-
-It is challenging to validate the OpenMOC reaction rates for the quarter core \ac{BEAVRS} model since the ``reference'' solution from OpenMC includes the non-negligible effects of inter-cycle correlations between fission source sites. These correlations result in uneven ``clustering'' of source sites between batches which induce apparent tilts in the tallied reaction rate spatial distributions. As a result, it is challenging to derive any general conclusions about the effectiveness of the various spatial homogenization schemes for the quarter core model. However, it can be useful to directly compare the reaction rates from two different OpenMOC simulations with different spatial homogenization schemes to better understand the impact of \ac{MGXS} clustering for whole core simulations. Figs.~\Crefrange{fig:null-to-inf-full-core-dev}{fig:null-to-lns-full-core-dev} illustrate the percent relative deviation of the OpenMOC reaction rate distributions between the infinite, degenerate and \ac{LNS} spatial homogenization schemes (see Secs.~\ref{subsec:chap8-infinite},~\ref{subsec:chap8-degenerate} and~\ref{subsec:chap9-lns-overview}) with respect to the null scheme (see Sec.~\ref{subsec:chap8-null}). The results illustrate the deviations for both fission and U-238 capture rates computed with 70-group \ac{MGXS} libraries.
-
-\begin{figure}[h!]
-\centering
-\begin{subfigure}{0.78\textwidth}
-  \centering
-  \includegraphics[width=\linewidth]{figures/patterns/appendix/compare-full-core/null-to-infinite/fiss-comp}  	 
-  \caption{}
-  \label{fig:compare-null-inf-fiss}
-\end{subfigure}
-\begin{subfigure}{0.78\textwidth}
-  \centering
-  \includegraphics[width=\linewidth]{figures/patterns/appendix/compare-full-core/null-to-infinite/capt-comp}  	 
-  \caption{}
-  \label{fig:compare-null-inf-capt}
-\end{subfigure}
-\caption[U-238 capture rate null-to-infinite relative deviation]{The percent deviation between the OpenMOC fission (a) and U-238 capture (b) rates with null and infinite homogenization for the quarter core \ac{BEAVRS} model.}
-\label{fig:null-to-inf-full-core-dev}
-\end{figure}
-
-\clearpage
-
-\begin{figure}[h!]
-\centering
-\begin{subfigure}{0.78\textwidth}
-  \centering
-  \includegraphics[width=\linewidth]{figures/patterns/appendix/compare-full-core/null-to-degenerate/fiss-comp}  	 
-  \caption{}
-  \label{fig:compare-null-degen-fiss}
-\end{subfigure}
-\begin{subfigure}{0.78\textwidth}
-  \centering
-  \includegraphics[width=\linewidth]{figures/patterns/appendix/compare-full-core/null-to-degenerate/capt-comp}  	 
-  \caption{}
-  \label{fig:compare-null-degen-capt}
-\end{subfigure}
-\caption[U-238 capture rate null-to-degenerate relative deviation]{The percent deviation between the OpenMOC fission (a) and U-238 capture (b) rates with null and degenerate homogenization for the quarter core \ac{BEAVRS} model.}
-\label{fig:null-to-degenerate-full-core-dev}
-\end{figure}
-
-\clearpage
-
-\begin{figure}[h!]
-\centering
-\begin{subfigure}{0.78\textwidth}
-  \centering
-  \includegraphics[width=\linewidth]{figures/patterns/appendix/compare-full-core/null-to-lns/fiss-comp}  	 
-  \caption{}
-  \label{fig:compare-null-lns-fiss}
-\end{subfigure}
-\begin{subfigure}{0.78\textwidth}
-  \centering
-  \includegraphics[width=\linewidth]{figures/patterns/appendix/compare-full-core/null-to-lns/capt-comp}  	
-  \caption{}
-  \label{fig:compare-null-lns-capt}
-\end{subfigure}
-\caption[U-238 capture rate null-to-LNS relative deviation]{The percent deviation between the OpenMOC fission (a) and U-238 capture (b) rates with null and \ac{LNS} homogenization for the quarter core \ac{BEAVRS} model.}
-\label{fig:null-to-lns-full-core-dev}
-\end{figure}
-
-\clearpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\chapter{Comparing Homogenization Schemes}
+%\label{sec:compare-schemes}
+%
+%It is challenging to validate the OpenMOC reaction rates for the quarter core \ac{BEAVRS} model since the ``reference'' solution from OpenMC includes the non-negligible effects of inter-cycle correlations between fission source sites. These correlations result in uneven ``clustering'' of source sites between batches which induce apparent tilts in the tallied reaction rate spatial distributions. As a result, it is challenging to derive any general conclusions about the effectiveness of the various spatial homogenization schemes for the quarter core model. However, it can be useful to directly compare the reaction rates from two different OpenMOC simulations with different spatial homogenization schemes to better understand the impact of \ac{MGXS} clustering for whole core simulations. Figs.~\Crefrange{fig:null-to-inf-full-core-dev}{fig:null-to-lns-full-core-dev} illustrate the percent relative deviation of the OpenMOC reaction rate distributions between the infinite, degenerate and \ac{LNS} spatial homogenization schemes (see Secs.~\ref{subsec:chap8-infinite},~\ref{subsec:chap8-degenerate} and~\ref{subsec:chap9-lns-overview}) with respect to the null scheme (see Sec.~\ref{subsec:chap8-null}). The results illustrate the deviations for both fission and U-238 capture rates computed with 70-group \ac{MGXS} libraries.
+%
+%\begin{figure}[h!]
+%\centering
+%\begin{subfigure}{0.78\textwidth}
+%  \centering
+%  \includegraphics[width=\linewidth]{figures/patterns/appendix/compare-full-core/null-to-infinite/fiss-comp}  	 
+%  \caption{}
+%  \label{fig:compare-null-inf-fiss}
+%\end{subfigure}
+%\begin{subfigure}{0.78\textwidth}
+%  \centering
+%  \includegraphics[width=\linewidth]{figures/patterns/appendix/compare-full-core/null-to-infinite/capt-comp}  	 
+%  \caption{}
+%  \label{fig:compare-null-inf-capt}
+%\end{subfigure}
+%\caption[U-238 capture rate null-to-infinite relative deviation]{The percent deviation between the OpenMOC fission (a) and U-238 capture (b) rates with null and infinite homogenization for the quarter core \ac{BEAVRS} model.}
+%\label{fig:null-to-inf-full-core-dev}
+%\end{figure}
+%
+%\clearpage
+%
+%\begin{figure}[h!]
+%\centering
+%\begin{subfigure}{0.78\textwidth}
+%  \centering
+%  \includegraphics[width=\linewidth]{figures/patterns/appendix/compare-full-core/null-to-degenerate/fiss-comp}  	 
+%  \caption{}
+%  \label{fig:compare-null-degen-fiss}
+%\end{subfigure}
+%\begin{subfigure}{0.78\textwidth}
+%  \centering
+%  \includegraphics[width=\linewidth]{figures/patterns/appendix/compare-full-core/null-to-degenerate/capt-comp}  	 
+%  \caption{}
+%  \label{fig:compare-null-degen-capt}
+%\end{subfigure}
+%\caption[U-238 capture rate null-to-degenerate relative deviation]{The percent deviation between the OpenMOC fission (a) and U-238 capture (b) rates with null and degenerate homogenization for the quarter core \ac{BEAVRS} model.}
+%\label{fig:null-to-degenerate-full-core-dev}
+%\end{figure}
+%
+%\clearpage
+%
+%\begin{figure}[h!]
+%\centering
+%\begin{subfigure}{0.78\textwidth}
+%  \centering
+%  \includegraphics[width=\linewidth]{figures/patterns/appendix/compare-full-core/null-to-lns/fiss-comp}  	 
+%  \caption{}
+%  \label{fig:compare-null-lns-fiss}
+%\end{subfigure}
+%\begin{subfigure}{0.78\textwidth}
+%  \centering
+%  \includegraphics[width=\linewidth]{figures/patterns/appendix/compare-full-core/null-to-lns/capt-comp}  	
+%  \caption{}
+%  \label{fig:compare-null-lns-capt}
+%\end{subfigure}
+%\caption[U-238 capture rate null-to-LNS relative deviation]{The percent deviation between the OpenMOC fission (a) and U-238 capture (b) rates with null and \ac{LNS} homogenization for the quarter core \ac{BEAVRS} model.}
+%\label{fig:null-to-lns-full-core-dev}
+%\end{figure}
+%
+%\clearpage
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
