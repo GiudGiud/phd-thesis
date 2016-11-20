@@ -500,14 +500,14 @@ Finally, it should be noted that the observations made here are specific to the 
 \subsubsection{Spatial Distributions of Capture-to-Fission Errors}
 \label{subsec:chap11-imgxs-capt-to-fiss-errors}
 
-\begin{figure}[h!]
+The U-238 capture rate errors for the quarter core \ac{BEAVRS} model shown in Figs.~\ref{fig:chap11-full-core-capt-err-a} and~\ref{fig:chap11-full-core-capt-err-b} exhibit a tilt which peaks near the top center of the core. It is unclear why this tilt is present in the OpenMOC solution, but it may be related to issues encountered with the Coarse Mesh Finite Difference (CMFD) acceleration scheme in OpenMOC for this benchmark\footnote{The \ac{CMFD} acceleration scheme exhibited some instabilities for the \ac{BEAVRS} model, and as a result, it was necessary to use a quarter pin-wise \ac{CMFD} mesh in OpenMOC (Sec.~\ref{subsec:chap8-fsr-discretizations}) in order to stabilize the scheme. Even still, it is possible that the \ac{CMFD} scheme was insufficiently converged for the \ac{BEAVRS} model, and the presence of a higher order eigenmode may have tilted the flux across the core.}. The ratio of the energy-integrated U-238 capture rates to the total fission rates in each fuel pin is an alternative metric to compare OpenMC and OpenMOC solutions. The spatial distributions of the capture-to-fission ratio errors are plotted as heatmaps for the null homogenization scheme in Fig.~\ref{fig:chap11-full-core-capt-to-fiss-err-null}, and in Figs.\ref{fig:chap11-full-core-capt-to-fiss-err-a} and~\ref{fig:chap11-full-core-capt-to-fiss-err-b} for the \ac{LNS}, degenerate and \textit{i}\ac{MGXS} spatial homogenization schemes. The capture-to-fission ratio is a useful metric since it is insensitive to the magnitude of the flux in each fuel pin, which is distorted by the tilt observed for \ac{BEAVRS}. Instead, the capture-to-fission ratio indicates whether the shape of the flux in energy is consistent between OpenMC and OpenMOC in each fuel pin\footnote{Most U-238 capture occurs in the resonance range, while most fission occurs at thermal energies.}. Thus, the capture-to-fission ratio may signify whether localized spatial self-shielding spectral effects are adequately modeled with each pin-wise spatial homogenization scheme.
+
+\begin{figure}[hb!]
 \centering
 \includegraphics[width=0.65\linewidth]{figures/results/capt-to-fiss/spatial/full-core/capt-to-fiss-err-null}
 \caption[Capture-to-fission rate error spatial distributions]{Percent relative errors on the U-238 capture to total fission rate ratio for the quarter core \ac{BEAVRS} model with null spatial homogenization.}
 \label{fig:chap11-full-core-capt-to-fiss-err-null}
 \end{figure}
-
-\clearpage
 
 \begin{figure}[h!]
 \centering
@@ -527,8 +527,6 @@ Finally, it should be noted that the observations made here are specific to the 
 \label{fig:chap11-full-core-capt-to-fiss-err-a}
 \end{figure}
 
-\clearpage
-
 \begin{figure}[h!]
 \centering
 \begin{subfigure}{0.9\textwidth}
@@ -547,7 +545,7 @@ Finally, it should be noted that the observations made here are specific to the 
 \label{fig:chap11-full-core-capt-to-fiss-err-b}
 \end{figure}
 
-\clearpage
+The figures clearly illustrate that the capture-to-fission ratio errors do not exhibit an asymmetric tilt as do the U-238 capture rate errors. The figures also clearly demonstrate that the errors are significantly reduced by modeling \ac{MGXS} clustering. The errors for the null scheme are largest for the single row of fuel pins adjacent to the baffle and peak in magnitude at -4.5\% for the four pins at the corners of the baffle (Fig.~\ref{fig:chap11-full-core-capt-to-fiss-err-null}). In addition, the null scheme leads to systematically positive errors for fuel pins adjacent to \acp{CRGT} and along assembly-assembly interfaces. The degenerate scheme largely resolves the systematic errors along the inter-assembly and assembly-baffle interfaces (Fig.~\ref{fig:chap11-full-core-capt-to-fiss-err-degenerate}), reducing the magnitude of the errors from -4.5\% -- 1.7\% to -1.7\% -- 1.2\%. The \ac{LNS} scheme also eliminates much of the systematic error distribution (Fig.~\ref{fig:chap11-full-core-capt-to-fiss-err-lns}), and the error distribution is more smoothly varying than the relatively ``noisy'' distribution observed for degenerate homogenization\footnote{The ``noisy'' error distribution in Fig.~\ref{fig:chap11-full-core-capt-to-fiss-err-degenerate} is likely due in part to the non-negligible \ac{MC} statistical uncertainties for the \ac{MGXS} in each fuel pin for degenerate homogenization.}. However, the fuel pins adjacent to the baffle still have errors as large as -3.5\% with the \ac{LNS} scheme since it neglects to distinguish their \ac{MGXS} from those pins on the interior boundaries of each assembly. The use of only four clusters with \textit{i}\ac{MGXS} largely reduces the errors for many of the interior fuel pins, and greatly reduces the errors for the pins adjacent to the baffle, but fails to fully distinguish the fuel pins at the corners of the baffle (Fig.~\ref{fig:chap11-full-core-capt-to-fiss-err-birch-4}). When the \textit{i}\ac{MGXS} scheme is employed with more (\textit{i.e.}, 20) clusters, the fuel pins along the inter-assembly interfaces, and those pins at the corners of the baffle, are distinguished into unique clusters, reducing the errors for all pins to within 1.2\% -- 1.2\% (Fig.~\ref{fig:chap11-full-core-capt-to-fiss-err-birch-20}).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{A Comparison of OpenMOC Solutions}
