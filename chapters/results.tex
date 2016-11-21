@@ -8,7 +8,7 @@ The preceding chapter introduced a methodology for \textit{inferential multi-gro
 \item Approach the \ac{MC} \textbf{convergence} of \textit{null} spatial homogenization (Sec.~\ref{subsec:chap8-null})
 \end{itemize}
 
-\noindent Furthermore, the \textit{i}\ac{MGXS} scheme seeks to address the shortcomings of the Local Neighbor Symmetry (\ac{LNS}) spatial homogenization scheme (Sec.~\ref{sec:chap9-lns-homogenize}) -- namely, its inability to flexibly distinguish \ac{MGXS} clusters in arbitrary geometries (\textit{e.g.}, pins along assembly-assembly and assembly-reflector interfaces) and its poor scalability for large geometries -- and represent a pathway for reactor agnostic \ac{MGXS} generation.
+\noindent Furthermore, the \textit{i}\ac{MGXS} scheme seeks to address the shortcomings of the Local Neighbor Symmetry (\ac{LNS}) spatial homogenization scheme (Sec.~\ref{sec:chap9-lns-homogenize}) -- namely, its inability to flexibly distinguish \ac{MGXS} clusters in arbitrary geometries (\textit{e.g.}, pins along assembly-assembly and assembly-reflector interfaces) and its poor scalability for large geometries -- and represents a pathway for reactor agnostic \ac{MGXS} generation.
 
 The results presented in this chapter reflect the key observations made in Chaps.~\ref{chap:quantify} and~\ref{chap:spatial} for the null, degenerate and \ac{LNS} homogenization schemes. First, it was observed that pin-wise homogenization with track density-weighted \ac{MGXS} (Sec.~\ref{subsec:chap8-fiss-rates}) has no impact on the resultant eigenvalue since all schemes preserve global reactivity. In addition, it was shown that pin-wise \ac{MGXS} clustering must be accounted for to accurately predict pin-wise U-238 capture rates, but it is much less consequential for accurate fission rate predictions. These results inform the results and analysis presented in this chapter.
 
@@ -52,7 +52,7 @@ The OpenMOC eigenvalues were compared to the reference OpenMC eigenvalues from T
   \multicolumn{1}{c}{\cellcolor{lightgray} \bf 8} &
   \multicolumn{1}{c}{\cellcolor{lightgray} \bf 16} &
 %  \multicolumn{1}{c}{\cellcolor{lightgray} \bf \# pins\footnotemark} \\
-  \multicolumn{1}{c}{\cellcolor{lightgray} \bf Degenerate} \\
+  \multicolumn{1}{c}{\cellcolor{lightgray} \bf Degen.} \\
   \midrule
 \multirow{4}{*}{\parbox{2.5cm}{1.6\% Assm}} & Agglomerative & \multirow{4}{*}{-168} & -168 & -168 & -168 & -168 & \multirow{4}{*}{-168} \\
 & BIRCH & & -168 & -168 & -168 & -168 & \\
@@ -293,7 +293,7 @@ Since the tables simply represent a subset of the data illustrated in Figs.~\Cre
   \multicolumn{1}{c}{\cellcolor{lightgray} \bf 8} &
   \multicolumn{1}{c}{\cellcolor{lightgray} \bf 16} &
 %  \multicolumn{1}{c}{\cellcolor{lightgray} \bf \# pins\textsuperscript{\ref{degenerate}}} \\
-  \multicolumn{1}{c}{\cellcolor{lightgray} \bf Degenerate} \\
+  \multicolumn{1}{c}{\cellcolor{lightgray} \bf Degen.} \\
   \midrule
 \multirow{4}{*}{\parbox{2.5cm}{1.6\% Assm}} & Agglomerative & \multirow{4}{*}{-1.10} & 0.95 & -0.53 & -0.46 & -0.44 & \multirow{4}{*}{0.38} \\
 & BIRCH & & 0.95 & -0.54 & -0.44 & -0.44 & \\
@@ -349,7 +349,7 @@ Since the tables simply represent a subset of the data illustrated in Figs.~\Cre
   \multicolumn{1}{c}{\cellcolor{lightgray} \bf 8} &
   \multicolumn{1}{c}{\cellcolor{lightgray} \bf 16} &
 %  \multicolumn{1}{c}{\cellcolor{lightgray} \bf \# pins\textsuperscript{\ref{degenerate}}} \\
-  \multicolumn{1}{c}{\cellcolor{lightgray} \bf Degenerate} \\
+  \multicolumn{1}{c}{\cellcolor{lightgray} \bf Degen.} \\
   \midrule
 \multirow{4}{*}{\parbox{2.5cm}{1.6\% Assm}} & Agglomerative & \multirow{4}{*}{0.48} & 0.35 & 0.14 & 0.11 & 0.08 & \multirow{4}{*}{0.08} \\
 & BIRCH & & 0.35 & 0.15 & 0.11 & 0.08 & \\
@@ -546,6 +546,8 @@ The U-238 capture rate errors for the quarter core \ac{BEAVRS} model shown in Fi
 \end{figure}
 
 The figures clearly illustrate that the capture-to-fission ratio errors do not exhibit an asymmetric tilt as do the U-238 capture rate errors. The figures also clearly demonstrate that the errors are significantly reduced by modeling \ac{MGXS} clustering. The errors for the null scheme are largest for the single row of fuel pins adjacent to the baffle and peak in magnitude at -4.5\% for the four pins at the corners of the baffle (Fig.~\ref{fig:chap11-full-core-capt-to-fiss-err-null}). In addition, the null scheme leads to systematically positive errors for fuel pins adjacent to \acp{CRGT} and along assembly-assembly interfaces. The degenerate scheme largely resolves the systematic errors along the inter-assembly and assembly-baffle interfaces (Fig.~\ref{fig:chap11-full-core-capt-to-fiss-err-degenerate}), reducing the magnitude of the errors from -4.5\% -- 1.7\% to -1.7\% -- 1.2\%. The \ac{LNS} scheme also eliminates much of the systematic error distribution (Fig.~\ref{fig:chap11-full-core-capt-to-fiss-err-lns}), and the error distribution is more smoothly varying than the relatively ``noisy'' distribution observed for degenerate homogenization\footnote{The ``noisy'' error distribution in Fig.~\ref{fig:chap11-full-core-capt-to-fiss-err-degenerate} is likely due in part to the non-negligible \ac{MC} statistical uncertainties for the \ac{MGXS} in each fuel pin for degenerate homogenization.}. However, the fuel pins adjacent to the baffle still have errors as large as -3.5\% with the \ac{LNS} scheme since it neglects to distinguish their \ac{MGXS} from those pins on the interior boundaries of each assembly. The use of only four clusters with \textit{i}\ac{MGXS} largely reduces the errors for many of the interior fuel pins, and greatly reduces the errors for the pins adjacent to the baffle, but fails to fully distinguish the fuel pins at the corners of the baffle (Fig.~\ref{fig:chap11-full-core-capt-to-fiss-err-birch-4}). When the \textit{i}\ac{MGXS} scheme is employed with more (\textit{i.e.}, 20) clusters, the fuel pins along the inter-assembly interfaces, and those pins at the corners of the baffle, are distinguished into unique clusters, reducing the errors for all pins to within -1.2\% -- 1.2\% (Fig.~\ref{fig:chap11-full-core-capt-to-fiss-err-birch-20}).
+
+\clearpage
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{A Comparison of OpenMOC Solutions}
@@ -1221,6 +1223,8 @@ The number of particle histories and runtimes for each of the assembly, colorset
   \multicolumn{1}{c}{\bf Histories} &
   \multicolumn{1}{c}{\bf Runtime [core-hours]} \\
   \toprule
+  \multicolumn{4}{c}{\bf Multi-Level Approach} \\
+  \midrule
 Assemblies & \multicolumn{1}{S[table-format=2.1]}{6} & \multicolumn{1}{r}{120,000} & \multicolumn{1}{S[table-format=3.1]}{30} \\
 %\midrule
 Reflected Assembly & \multicolumn{1}{S[table-format=2.1]}{1} & \multicolumn{1}{r}{40,000,000} & \multicolumn{1}{S[table-format=3.1]}{10} \\
@@ -1229,6 +1233,8 @@ Corner Assemblies & \multicolumn{1}{S[table-format=2.1]}{2} & \multicolumn{1}{r}
 %  \midrule
 TOTAL & \multicolumn{1}{S[table-format=2.1]}{9} & \multicolumn{1}{r}{420,000,000} & \multicolumn{1}{S[table-format=3.1]}{110} \\
 %  \specialrule{1.5pt}{1pt}{1pt}
+  \midrule
+  \multicolumn{4}{c}{\bf Single \a{MC} Calculation Approach} \\
   \midrule
 Quarter Core \ac{BEAVRS} & \multicolumn{1}{S[table-format=2.1]}{1} & \multicolumn{1}{r}{970,000,000} & \multicolumn{1}{S[table-format=3.1]}{250} \\
   \bottomrule
@@ -1241,7 +1247,7 @@ Quarter Core \ac{BEAVRS} & \multicolumn{1}{S[table-format=2.1]}{1} & \multicolum
 %  -how much slower is this than if we were to employ the same scheme for various sub-components??
 %    -and then re-use those \ac{MGXS} in a full core scheme
 
-The estimated runtime to generate \ac{MGXS} with a single \ac{MC} simulation of the quarter core \ac{BEAVRS} model is only about twice that required to generate \ac{MGXS} for each sub-component. This is a relatively minor price to pay for the accuracy afforded by the \ac{MGXS} collapsed with ``true'' \ac{MC} flux from a single \ac{MC} simulation of the complete heterogeneous geometry. In addition, the software infrastructure required to generate and use \ac{MGXS} for each of the sub-components in a core model would be greater than that needed to generate \ac{MGXS} from a single \ac{MC} simulation of the complete geometry. This analysis provides a rough estimate of the relative runtimes and is subject to several key assumptions. Nevertheless, it points to the potential for advanced pin-wise spatial homogenization schemes -- such as those introduced in this thesis -- to harness \ac{MC} to efficiently generate accurate \ac{MGXS} for deterministic transport codes.
+The estimated runtime to generate \ac{MGXS} with a single \ac{MC} simulation of the quarter core \ac{BEAVRS} model is only about twice that required to generate \ac{MGXS} for each sub-component. This is a relatively minor price to pay for the accuracy afforded by the \ac{MGXS} collapsed with ``true'' \ac{MC} flux from a single \ac{MC} simulation of the complete heterogeneous geometry. Furthermore, the \ac{MGXS} generated with a single \ac{MC} calculation will accurately account for the effects of inter-assembly and and assembly-baffle/reflector interfaces and leakage on the flux. In addition, the software infrastructure required to generate and use \ac{MGXS} for each of the sub-components in a core model would be greater than that needed to generate \ac{MGXS} from a single \ac{MC} simulation of the complete geometry. This analysis provides a rough estimate of the relative runtimes and is subject to several key assumptions. Nevertheless, it points to the potential for advanced pin-wise spatial homogenization schemes -- such as those introduced in this thesis -- to harness \ac{MC} to efficiently generate accurate \ac{MGXS} for deterministic transport codes.
 
 \clearpage
 
