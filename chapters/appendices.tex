@@ -569,12 +569,13 @@ The geometric pin cell parameters for the \ac{PWR} benchmark models in Part IV w
 \end{tabular}
 \end{table}
 
+\clearpage
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{BEAVRS Reaction Rates}
 \label{sec:beavrs-rxn-rates}
 
-The \ac{BEAVRS} reference reaction rate distributions used in Chap.~\ref{sec:chap7-motivate} were computed using isotropic in lab scattering in OpenMC to enable comparisons between OpenMC and OpenMOC. The fission and U-238 capture rate spatial distributions are highly skewed with this approximation. In particular, the distributions are significantly more peaked in assemblies the corner reflectors since the preferential streaming and leakage of neutrons through the reflector due to anisotropic scattering in water is not modeled. The ``true'' fission and U-238 capture rate spatial distributions computed using normal anisotropic scattering in OpenMC are illustrated below for comparison purpose, and as a reminder of the necessity for accurate models of higher order scattering in high-fidelity whole-core deterministic transport calculations.
+The \ac{BEAVRS} reference reaction rate distributions used in Chap.~\ref{sec:chap7-motivate} were computed using isotropic in lab scattering in OpenMC to enable comparisons between OpenMC and OpenMOC. The fission and U-238 capture rate spatial distributions are highly skewed with this approximation. In particular, the distributions are significantly more peaked in the assemblies near the corner reflectors since the isotropic-in-lab scattering approximation does not model the preferential streaming and leakage of neutrons through the reflector due to anisotropic scattering in water. The ``true'' fission and U-238 capture rate spatial distributions computed using normal anisotropic scattering in OpenMC are illustrated below for comparison purpose, and as a reminder of the necessity for accurate models of higher order scattering in high-fidelity full-core deterministic transport calculations.
 
 \begin{figure}[h!]
 \begin{subfigure}{\textwidth}
@@ -599,7 +600,7 @@ The \ac{BEAVRS} reference reaction rate distributions used in Chap.~\ref{sec:cha
 \chapter{Quantification of Spatial Self-Shielding Effects}
 \label{app:quantify-mgxs-shielding}
 
-This section provides figures illustrating the impacts of the infinite, null and spatial homogenization as an addendum to Chap.~\ref{chap:quantify}. The percent relative fission and U-238 capture rate errors between OpenMC and OpenMOC for each homogenization scheme and benchmark for 2, 8 and 70 energy groups are illustrated in Sec.~\ref{sec:quantify-fiss-rates} and Sec.~\ref{sec:quantify-capt-rates}, respectively. Sec.~\ref{sec:quantify-capt-rates-absolute} illustrates the U-238 capture rate absolute errors for benchmarks with vacuum \acp{BC}.
+This section provides figures illustrating the impacts of the infinite, null and spatial homogenization as an addendum to Chap.~\ref{chap:quantify}. The percent relative fission and U-238 capture rate errors between OpenMC and OpenMOC for each homogenization scheme and benchmark for 2, 8 and 70 energy groups are illustrated in Sec.~\ref{sec:quantify-fiss-rates} and Sec.~\ref{sec:quantify-capt-rates}, respectively. Sec.~\ref{sec:quantify-capt-rates-absolute} illustrates the U-238 capture rate absolute errors for the 2$\times$2 colorset with reflector and quarter core \ac{BEAVRS} benchmarks.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Fission Rate Relative Errors}
@@ -738,40 +739,40 @@ The percent relative U-238 capture rate errors between OpenMC and OpenMOC for ea
 \section{Capture Rate Absolute Errors}
 \label{sec:quantify-capt-rates-absolute}
 
-The fission and U-238 reaction rates vary much more across pins for benchmarks with leakage due to vacuum boundary conditions, such as the 2$\times$2 colorset and quarter core \ac{BEAVRS} models. In these models, it can be useful to investigate the absolute reaction rate error in addition to the percent relative error (as shown in the preceding sections). The reason for this is that it is important to reduce the error in those pins in which the reaction rates are largest and hence the most limiting to reactor performance (\textit{i.e.}, the hottest fuel pins). The absolute error spatial distributions better illustrate improved reaction rate predictions in the pins that matter most in these benchmark models.
+The fission and U-238 reaction rates vary much more across pins for benchmarks with leakage due to vacuum boundary conditions (BCs), such as the 2$\times$2 colorset and quarter core \ac{BEAVRS} models. In these models, it can be useful to investigate the absolute reaction rate error in addition to the percent relative error. The reason for this is that it is important to reduce the error in those pins in which the reaction rates are largest and hence the most limiting to reactor performance (\textit{i.e.}, the hottest fuel pins). The absolute error spatial distributions better illustrate improved reaction rate predictions in the pins that matter most in these benchmark models.
 
-Fig.~\ref{fig:quantify-reflector-capt-err-abs} shows the U-238 capture rate absolute errors between OpenMC and OpenMOC for the null and degenerate spatial homogenizations for 8 and 70 energy groups. Fig.~\ref{fig:quantify-full-core-capt-err-abs} shows the U-238 capture rate absolute errors for the null and degenerate schemes for 40 energy groups. These heatmaps complement the percent relative errors in Figs.~\Crefrange{fig:chap8-reflector-capt-err}{fig:chap8-full-core-capt-err}. The absolute errors are not shown for the four benchmark models with all reflective \acp{BC} since they very closely mirror the percent relative error distributions.
+Figs.~\ref{fig:lns-2x2-capt-err-abs} and~\ref{fig:lns-reflector-capt-err-abs} show the U-238 capture rate absolute errors between OpenMC and OpenMOC for the null and degenerate spatial homogenizations with 8 and 70 energy groups for the 2$\times$2 colorset benchmarks. Figs.~\Crefrange{fig:null-full-core-capt-err-abs}{fig:lns-full-core-capt-err-abs} show the U-238 capture rate absolute errors for the null, degenerate and \ac{LNS} schemes for 70 energy groups. These heatmaps complement the percent relative errors in Figs.~\Crefrange{fig:chap8-reflector-capt-err}{fig:chap8-full-core-capt-err}. The absolute errors are not shown for the benchmarks with all reflective \acp{BC} since they very closely mirror the percent relative error distributions.
 
-\begin{figure}[h!]
-\centering
-\includegraphics[width=\linewidth]{figures/quantification/appendix/magnitude/reflector/capt-err}
-\vspace{2mm}
-\caption[U-238 capture rate absolute errors for a 2$\times$2 colorset with a reflector]{U-238 capture rate absolute errors for a 2$\times$2 colorset with a reflector corresponding to the reference in Fig.~\ref{fig:chap7-capt-rates-reflector}.}
-\label{fig:quantify-reflector-capt-err-abs}
-\end{figure}
+%\begin{figure}[h!]
+%\centering
+%\includegraphics[width=\linewidth]{figures/quantification/appendix/magnitude/reflector/capt-err}
+%\vspace{2mm}
+%\caption[U-238 capture rate absolute errors for a 2$\times$2 colorset with a reflector]{U-238 capture rate absolute errors for a 2$\times$2 colorset with a reflector corresponding to the reference in Fig.~\ref{fig:chap7-capt-rates-reflector}.}
+%\label{fig:quantify-reflector-capt-err-abs}
+%\end{figure}
 
-\clearpage
+%\clearpage
 
-\begin{figure}[h!]
-\centering
-\begin{subfigure}{\textwidth}
-  \centering
-  \includegraphics[width=0.6\linewidth]{figures/quantification/appendix/magnitude/full-core/capt-err-null-magnitude}
-  \caption{}
-  \label{fig:quantify-full-core-fiss-err-null-abs}
-\end{subfigure}
-\vspace{4mm}
-\begin{subfigure}{\textwidth}
-  \centering
-  \includegraphics[width=0.6\linewidth]{figures/quantification/appendix/magnitude/full-core/capt-err-degenerate-magnitude}
-  \caption{}
-  \label{fig:quantify-full-core-fiss-err-degenerate-abs}
-\end{subfigure}
-\caption[U-238 capture rate absolute errors for BEAVRS]{U-238 capture rate absolute errors for the quarter core \ac{BEAVRS} model with null (a) and degenerate (b) homogenization corresponding to the reference in Fig.~\ref{fig:chap7-capt-rates-full-core}.}
-\label{fig:quantify-full-core-capt-err-abs}
-\end{figure}
+%\begin{figure}[h!]
+%\centering
+%\begin{subfigure}{\textwidth}
+%  \centering
+%  \includegraphics[width=0.6\linewidth]{figures/quantification/appendix/magnitude/full-core/capt-err-null-magnitude}
+%  \caption{}
+%  \label{fig:quantify-full-core-fiss-err-null-abs}
+%\end{subfigure}
+%\vspace{4mm}
+%\begin{subfigure}{\textwidth}
+%  \centering
+%  \includegraphics[width=0.6\linewidth]{figures/quantification/appendix/magnitude/full-core/capt-err-degenerate-magnitude}
+%  \caption{}
+%  \label{fig:quantify-full-core-fiss-err-degenerate-abs}
+%\end{subfigure}
+%\caption[U-238 capture rate absolute errors for BEAVRS]{U-238 capture rate absolute errors for the quarter core \ac{BEAVRS} model with null (a) and degenerate (b) homogenization corresponding to the reference in Fig.~\ref{fig:chap7-capt-rates-full-core}.}
+%\label{fig:quantify-full-core-capt-err-abs}
+%\end{figure}
 
-\clearpage
+%\clearpage
 
 \begin{figure}[h!]
 \centering
@@ -895,18 +896,18 @@ Fig.~\ref{fig:quantify-reflector-capt-err-abs} shows the U-238 capture rate abso
 \chapter{Clustered Geometries with \textit{i}MGXS Spatial Homogenization}
 \label{sec:clustered-geometries}
 
-The \textit{i}\ac{MGXS} spatial homogenization scheme is presented in Chap.~\ref{chap:unsupervised}, and a number of example ``clustered geometries'' generated with the scheme are highlighted in Sec.~\ref{sec:chap10-cluster-geometries}. The \textit{i}\ac{MGXS} scheme is highly configurable, and various methods may be employed for feature extraction, feature selection and dimensionality reduction which greatly impact the resultant materials configuration found by a clustering algorithm. The geometries in Sec.~\ref{sec:chap10-cluster-geometries} were generated using the agglomerative clustering algorithm (Sec.~\ref{subsec:chap10-agglomerative}) with datasets filtered by pinch and litmus-only feature selection (Secs.~\ref{subsec:chap10-pinch-selection} and~\ref{sec:chap10-cluster-geometries}). The importance of using non-\ac{MGXS} features is illustrated in Sec.~\ref{sec:clustering-without-features}, while Sec.~\ref{sec:clustering-with-dimension-reduce} demonstrates the impact of using dimensionality reduction techniques.
+The \textit{i}\ac{MGXS} spatial homogenization scheme is presented in Chap.~\ref{chap:unsupervised} and a number of example ``clustered geometries'' generated with the scheme are highlighted in Sec.~\ref{sec:chap10-cluster-geometries}. The \textit{i}\ac{MGXS} scheme is highly configurable, and various methods may be employed for feature extraction, feature selection and dimensionality reduction which greatly impact the resultant materials configuration found by a clustering algorithm. The geometries in Sec.~\ref{sec:chap10-cluster-geometries} were generated using the agglomerative clustering algorithm (Sec.~\ref{subsec:chap10-agglomerative}) with datasets filtered by pinch and litmus-only feature selection (Secs.~\ref{subsec:chap10-pinch-selection} and~\ref{sec:chap10-cluster-geometries}). The importance of using non-\ac{MGXS} features is illustrated in Sec.~\ref{sec:clustering-without-features}, while Sec.~\ref{sec:clustering-with-dimension-reduce} demonstrates the impact of using dimensionality reduction techniques.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Clustering without Features}
 \label{sec:clustering-without-features}
 
-The different types of features considered in this thesis are presented in Sec.~\ref{sec:chap10-feature-extract}. Since the objective of using unsupervised clustering algorithms in the \textit{i}\ac{MGXS} scheme is to identify the clustering of pin-wise \ac{MGXS} -- and to apply this information in the spatial homogenization process -- it may be useful to consider whether the non-\ac{MGXS} features\footnote{The fractional reactivities (Sec.~\ref{subsec:chap10-frac-reactivity}), spectral indices (Sec.~\ref{subsec:chap10-spec-index}) and reaction fractions (Sec.~\ref{subsec:chap10-reaction-frac})} are necessary or whether the \ac{MGXS} can simply be clustered by themselves. The clustered geometries presented in Sec.~\ref{sec:chap10-cluster-geometries} were found by clustering both \ac{MGXS} and non-\ac{MGXS} features. This section illustrates the geometries that are found when only the pin-wise \ac{MGXS} means and uncertainties are considered by the \textit{i}\ac{MGXS} data processing pipeline.
+The different types of features considered in this thesis are presented in Sec.~\ref{sec:chap10-feature-extract}. Since the objective of using unsupervised clustering algorithms in the \textit{i}\ac{MGXS} scheme is to identify the clustering of pin-wise \ac{MGXS} -- and to apply this information in the spatial homogenization process -- it may be useful to consider whether the non-\ac{MGXS} features\footnote{The fractional reactivities (Sec.~\ref{subsec:chap10-frac-reactivity}), spectral indices (Sec.~\ref{subsec:chap10-spec-index}) and reaction fractions (Sec.~\ref{subsec:chap10-reaction-frac}) are examples of non-\ac{MGXS} features.} are necessary or whether the \ac{MGXS} can simply be clustered by themselves. The clustered geometries presented in Sec.~\ref{sec:chap10-cluster-geometries} were found by clustering both \ac{MGXS} and non-\ac{MGXS} features. This section illustrates the geometries that are found when only the pin-wise \ac{MGXS} means and uncertainties are selected as features by the \textit{i}\ac{MGXS} data processing pipeline.
 
 The clustered geometries for the individual fuel assembly and 2$\times$2 colorset benchmarks are shown in Figs.~\Crefrange{fig:no-features-assm-16-geometries}{fig:no-features-reflector-geometries}. Likewise, Figs.~\Crefrange{fig:no-features-full-core-geometries-8}{fig:no-features-full-core-geometries-64} highlight the clustered geometries for the quarter core \ac{BEAVRS} model. Similar to the analysis in Sec.~\ref{sec:chap10-cluster-geometries}, the agglomerative clustering algorithm (Sec.~\ref{subsec:chap10-agglomerative}) is employed with the same 2-group \ac{MC} tally datasets used in Sec.~\ref{sec:chap10-cluster-geometries}. Both pinch and litmus-only feature selection techniques were used to select the ``best'' reaction type for each pair of nuclides and energy groups, for each nuclide in the fuel and both energy groups. No dimensionality reduction techniques (Sec.~\ref{sec:chap10-dimension-reduce}) were applied to the selected features.
 
-The most important insight that can be drawn from the figures is that the clustering models are much ``noisier'' than those found when the non-\ac{MGXS} features are considered in Sec.~\ref{sec:chap10-cluster-geometries}. This illustrates the importance of using some features which may better reveal the effects of clustering in \ac{MC} tally data due to spatial self-shielding effects than the pin-wise \ac{MGXS} themselves. In addition, some of the non-\ac{MGXS} features are energy-integrated and/or summed across nuclides (\textit{e.g.}, fractional reactivities) and will necessarily be more converged tally estimators than microscopic \ac{MGXS}\footnote{Although this is true in general, it should not make a difference here since the \ac{MC} tally data used in this analysis was very highly converged.}.
+The most important insight that can be drawn from the figures is that the clustering models are much ``noisier'' than those found when the non-\ac{MGXS} features are considered in Sec.~\ref{sec:chap10-cluster-geometries}. This illustrates the importance of using some features which may better reveal the effects of clustering in \ac{MC} tally data due to spatial self-shielding effects than the pin-wise \ac{MGXS} themselves. In addition, some of the non-\ac{MGXS} features are energy-integrated and/or summed across nuclides (\textit{e.g.}, fractional reactivities) and will necessarily have smaller statistical uncertainties than microscopic \ac{MGXS}\footnote{Although this is true in general, it should not make a difference here since the \ac{MC} tally data used in this analysis was very highly converged.}.
 
 \begin{figure}[h!]
 \centering
@@ -1078,7 +1079,7 @@ The most important insight that can be drawn from the figures is that the cluste
   \caption{}
   \label{fig:no-features-reflector-combined-8}
 \end{subfigure}
-\caption[Clustered geometries without non-MGXS features]{Materials for the 2$\times$ colorset with water reflector with \textit{i}\ac{MGXS} homogenization without non-\ac{MGXS} features. The materials for 2, 4, and 8 clusters are illustrated in (a), (c) and (e) for pinch feature selection, and in (b), (d) and (f) for litmus-only feature selection, respectively.}
+\caption[Clustered geometries without non-MGXS features]{Materials for the 2$\times$2 colorset with water reflector with \textit{i}\ac{MGXS} homogenization without non-\ac{MGXS} features. The materials for 2, 4, and 8 clusters are illustrated in (a), (c) and (e) for pinch feature selection, and in (b), (d) and (f) for litmus-only feature selection, respectively.}
 \label{fig:no-features-reflector-geometries}
 \end{figure}
 
