@@ -320,7 +320,7 @@ Since the tables simply represent a subset of the data illustrated in Figs.~\Cre
 & \ac{GMM} & & -2.00 & -1.77 & 1.50 & 1.07 & \\
 & $k$-means & & -1.82 & -1.69 & 1.35 & -1.26 & \\
   \midrule
-\multirow{4}{*}{\parbox{2.5cm}{BEAVRS Quarter Core}} & Agglomerative & \multirow{4}{*}{-4.78} & -4.36 & -3.51 & -3.44 & -3.43 & \multirow{4}{*}{-3.03} \\
+\multirow{4}{*}{\parbox{2.5cm}{BEAVRS Quarter Core}} & Agglomerative & \multirow{4}{*}{-4.69} & -4.36 & -3.51 & -3.44 & -3.43 & \multirow{4}{*}{-2.29} \\
 & BIRCH & & -4.44 & -3.37 & -2.60 & -2.27 & \\
 & \ac{GMM} & & -4.63 & -3.50 & -3.57 & -3.88 & \\
 & $k$-means & & -4.38 & -3.81 & -3.49 & -3.46 & \\
@@ -376,7 +376,7 @@ Since the tables simply represent a subset of the data illustrated in Figs.~\Cre
 & \ac{GMM} & & 0.48 & 0.37 & 0.29 & 0.24 & \\
 & $k$-means & & 0.47 & 0.37 & 0.27 & 0.22 & \\
   \midrule
-\multirow{4}{*}{\parbox{2.5cm}{BEAVRS Quarter Core}} & Agglomerative & \multirow{4}{*}{0.49} & 0.54 & 0.42 & 0.40 & 0.36 & \multirow{4}{*}{0.39} \\
+\multirow{4}{*}{\parbox{2.5cm}{BEAVRS Quarter Core}} & Agglomerative & \multirow{4}{*}{0.55} & 0.54 & 0.42 & 0.40 & 0.36 & \multirow{4}{*}{0.43} \\
 & BIRCH & & 0.53 & 0.55 & 0.52 & 0.47 & \\
 & \ac{GMM} & & 0.56 & 0.47 & 0.44 & 0.44 & \\
 & $k$-means & & 0.53 & 0.48 & 0.43 & 0.43 & \\
@@ -560,7 +560,7 @@ This section directly compares the reaction rates from two different OpenMOC sim
 \Delta_{k}^{\mathrm{\textit{i}MGXS}} \;\; [\%] \;\; = \;\; \frac{\left[\displaystyle\sum\limits_{g=1}^{G} \hat{\Sigma}^{238}_{\gamma,k,g}\phi_{k,g}\right]^{\mathrm{\textit{i}MGXS}} - \left[\displaystyle\sum\limits_{g=1}^{G} \hat{\Sigma}^{238}_{\gamma,k,g}\phi_{k,g}\right]^{\mathrm{Null}}}{\left[\displaystyle\sum\limits_{g=1}^{G} \hat{\Sigma}^{238}_{\gamma,k,g}\phi_{k,g}\right]^{\mathrm{Null}}} \times 100
 \end{equation}
 
-\noindent Unlike the U-238 capture rate error distributions, the relative deviations are not sensitive to the statistical uncertainties of the OpenMC reference solutions. As a result, it is easier to visualize the impact of clusters on the U-238 capture rate predictions. Figs.~\Crefrange{fig:chap11-assm-1.6-capt-rates-comp}{fig:chap11-refl-capt-rates-comp} present the percent relative deviations for the individual assembly and 2$\times$2 colorset benchmarks for BIRCH clustering of 2, 4, 8 and 16 clusters. Likewise, Figs.~\Crefrange{fig:chap11-full-core-capt-rates-kmeans-comp}{fig:chap11-full-core-capt-rates-birch-comp} illustrate the deviations for the quarter core \ac{BEAVRS} model with $k$-means, \ac{GMM} and BIRCH clustering of 4, 8, 16 and 20 clusters, respectively.
+\noindent Unlike the U-238 capture rate error distributions, the relative deviations are not sensitive to the statistical uncertainties of the OpenMC reference solutions. As a result, it is easier to visualize the impact of clusters on the U-238 capture rate predictions. Figs.~\Crefrange{fig:chap11-assm-1.6-capt-rates-comp}{fig:chap11-refl-capt-rates-comp} present the percent relative deviations for the individual assembly and 2$\times$2 colorset benchmarks for BIRCH clustering of 2, 4, 8 and 16 clusters. Likewise, Figs.~\Crefrange{fig:chap11-full-core-capt-rates-kmeans-comp}{fig:chap11-full-core-capt-rates-birch-comp} illustrate the deviations for the quarter core \ac{BEAVRS} model with $k$-means, \ac{GMM}, agglomerative and BIRCH clustering of 4, 8, 16 and 20 clusters, respectively.
 
 The figures illustrate the hierarchical nature of \ac{MGXS} clustering by discriminating fuel pins with different spatial self-shielding effects that occur in different regimes. For example, the first 2 clusters used for the individual assemblies distinguishes fuel pins which are adjacent (or nearly adjacent) to \acp{CRGT}, \acp{BP} or instrument tubes from those which are only surrounded by other fuel pins. The introduction of more clusters further refines these clusters to identify fuel pins with neighbors which have similar spatial self-shielding effects. For example, as the \textit{i}\ac{MGXS} scheme transitions between 8 -- 16 clusters for the 3.1\% enriched fuel assembly with 20 \acp{BP} (Fig.~\ref{fig:chap11-assm-31-20BPs-capt-rates-comp}), the fuel pins that are facially and diagonally adjacent to two \acp{CRGT} are separated into their own cluster. As a result, these eight fuel pins have the largest relative deviation from null homogenization since they experience the largest amount of moderation from the two \acp{CRGT}. Similarly, the first 2 -- 4 clusters in the colorset with a reflector (Fig.~\ref{fig:chap11-refl-capt-rates-comp}) discriminate pins along the assembly-assembly and assembly-reflector interfaces. As more clusters are introduced, they are increasingly customized to model the more local spatial self-shielding effects affecting the pins within the interior of each assembly due to the presence of \acp{CRGT} and \acp{BP}.
 
@@ -578,7 +578,7 @@ The figures illustrate the hierarchical nature of \ac{MGXS} clustering by discri
 \centering
 \includegraphics[width=0.9\linewidth]{figures/results/compare/assm-16/compare-capt}
 \vspace{2mm}
-\caption[U-238 capture rate \textit{i}MGXS-to-null relative deviations]{The percent relative deviation of U-238 capture rate spatial distributions for \textit{i}\ac{MGXS} and null homogenization for a 1.6\% enriched assembly.}
+\caption[U-238 capture rate \textit{i}MGXS-to-null relative deviations]{The percent relative deviation of U-238 capture rate spatial distributions for \textit{i}\ac{MGXS} (with BIRCH clustering) and null homogenization for a 1.6\% enriched assembly.}
 \label{fig:chap11-assm-1.6-capt-rates-comp}
 \end{figure}
 
@@ -588,7 +588,7 @@ The figures illustrate the hierarchical nature of \ac{MGXS} clustering by discri
 \centering
 \includegraphics[width=0.9\linewidth]{figures/results/compare/assm-31/compare-capt}
 \vspace{2mm}
-\caption[U-238 capture rate \textit{i}MGXS-to-null relative deviations]{The percent relative deviation of U-238 capture rate spatial distributions for \textit{i}\ac{MGXS} and null homogenization for a 3.1\% enriched assembly.}
+\caption[U-238 capture rate \textit{i}MGXS-to-null relative deviations]{The percent relative deviation of U-238 capture rate spatial distributions for \textit{i}\ac{MGXS} (with BIRCH clustering) and null homogenization for a 3.1\% enriched assembly.}
 \label{fig:chap11-assm-3.1-capt-rates-comp}
 \end{figure}
 
@@ -598,7 +598,7 @@ The figures illustrate the hierarchical nature of \ac{MGXS} clustering by discri
 \centering
 \includegraphics[width=0.9\linewidth]{figures/results/compare/assm-31-20BPs/compare-capt}
 \vspace{2mm}
-\caption[U-238 capture rate \textit{i}MGXS-to-null relative deviations]{The percent relative deviation of U-238 capture rate spatial distributions for \textit{i}\ac{MGXS} and null homogenization for a 3.1\% enriched assembly with 20 \acp{BP}.}
+\caption[U-238 capture rate \textit{i}MGXS-to-null relative deviations]{The percent relative deviation of U-238 capture rate spatial distributions for \textit{i}\ac{MGXS} (with BIRCH clustering) and null homogenization for a 3.1\% enriched assembly with 20 \acp{BP}.}
 \label{fig:chap11-assm-31-20BPs-capt-rates-comp}
 \end{figure}
 	
@@ -608,7 +608,7 @@ The figures illustrate the hierarchical nature of \ac{MGXS} clustering by discri
 \centering
 \includegraphics[width=0.9\linewidth]{figures/results/compare/2x2/compare-capt}
 \vspace{2mm}
-\caption[U-238 capture rate \textit{i}MGXS-to-null relative deviations]{The percent relative deviation of U-238 capture rate spatial distributions for \textit{i}\ac{MGXS} and null homogenization for a 2$\times$2 colorset.}
+\caption[U-238 capture rate \textit{i}MGXS-to-null relative deviations]{The percent relative deviation of U-238 capture rate spatial distributions for \textit{i}\ac{MGXS} (with BIRCH clustering) and null homogenization for a 2$\times$2 colorset.}
 \label{fig:chap11-2x2-capt-rates-comp}
 \end{figure}
 
@@ -618,7 +618,7 @@ The figures illustrate the hierarchical nature of \ac{MGXS} clustering by discri
 \centering
 \includegraphics[width=0.9\linewidth]{figures/results/compare/reflector/compare-capt}
 \vspace{2mm}
-\caption[U-238 capture rate \textit{i}MGXS-to-null relative deviations]{The percent relative deviation of U-238 capture rate spatial distributions for \textit{i}\ac{MGXS} and null homogenization for a 2$\times$2 colorset with a water reflector.}
+\caption[U-238 capture rate \textit{i}MGXS-to-null relative deviations]{The percent relative deviation of U-238 capture rate spatial distributions for \textit{i}\ac{MGXS} (with BIRCH clustering) and null homogenization for a 2$\times$2 colorset with a water reflector.}
 \label{fig:chap11-refl-capt-rates-comp}
 \end{figure}
 
@@ -628,7 +628,7 @@ The figures illustrate the hierarchical nature of \ac{MGXS} clustering by discri
 \centering
 \includegraphics[width=0.9\linewidth]{figures/results/compare/full-core/compare-capt-kmeans}
 \vspace{2mm}
-\caption[U-238 capture rate \textit{i}MGXS-to-null relative deviations]{The percent relative deviation of U-238 capture rate spatial distributions for \textit{i}\ac{MGXS} (\textit{with $k$-means}) and null homogenization for the quarter core BEAVRS model.}
+\caption[U-238 capture rate \textit{i}MGXS-to-null relative deviations]{The percent relative deviation of U-238 capture rate spatial distributions for \textit{i}\ac{MGXS} (with $k$-means clustering) and null homogenization for the quarter core BEAVRS model.}
 \label{fig:chap11-full-core-capt-rates-kmeans-comp}
 \end{figure}
 
@@ -638,8 +638,18 @@ The figures illustrate the hierarchical nature of \ac{MGXS} clustering by discri
 \centering
 \includegraphics[width=0.9\linewidth]{figures/results/compare/full-core/compare-capt-gmm}
 \vspace{2mm}
-\caption[U-238 capture rate \textit{i}MGXS-to-null relative deviations]{The percent relative deviation of U-238 capture rate spatial distributions for \textit{i}\ac{MGXS} (\textit{with \ac{GMM}}) and null homogenization for the quarter core BEAVRS model.}
+\caption[U-238 capture rate \textit{i}MGXS-to-null relative deviations]{The percent relative deviation of U-238 capture rate spatial distributions for \textit{i}\ac{MGXS} (with \ac{GMM} clustering) and null homogenization for the quarter core BEAVRS model.}
 \label{fig:chap11-full-core-capt-rates-gmm-comp}
+\end{figure}
+
+\clearpage
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.9\linewidth]{figures/results/compare/full-core/compare-capt-agglomerative}
+\vspace{2mm}
+\caption[U-238 capture rate \textit{i}MGXS-to-null relative deviations]{The percent relative deviation of U-238 capture rate spatial distributions for \textit{i}\ac{MGXS} (with agglomerative clustering) and null homogenization for the quarter core BEAVRS model.}
+\label{fig:chap11-full-core-capt-rates-agglomerative-comp}
 \end{figure}
 
 \clearpage
@@ -648,7 +658,7 @@ The figures illustrate the hierarchical nature of \ac{MGXS} clustering by discri
 \centering
 \includegraphics[width=0.9\linewidth]{figures/results/compare/full-core/compare-capt-birch}
 \vspace{2mm}
-\caption[U-238 capture rate \textit{i}MGXS-to-null relative deviations]{The percent relative deviation of U-238 capture rate spatial distributions for \textit{i}\ac{MGXS} (\textit{with BIRCH}) and null homogenization for the quarter core BEAVRS model.}
+\caption[U-238 capture rate \textit{i}MGXS-to-null relative deviations]{The percent relative deviation of U-238 capture rate spatial distributions for \textit{i}\ac{MGXS} (with BIRCH clustering) and null homogenization for the quarter core BEAVRS model.}
 \label{fig:chap11-full-core-capt-rates-birch-comp}
 \end{figure}
 
@@ -1260,8 +1270,8 @@ The estimated runtime to generate \ac{MGXS} with a single \ac{MC} simulation of 
   \item The \textit{i}\ac{MGXS} scheme requires more clusters to achieve the same error as the \ac{LNS} scheme for all benchmarks except the colorset with a water reflector.
   \item \textit{i}\ac{MGXS} outperforms \ac{LNS} for the reflected colorset since it distinguishes fuel pins along assembly-assembly and assembly-reflector interfaces.
 %  \item The convergence rates of the U-238 capture rate errors with null, degenerate, \ac{LNS} and \textit{i}\ac{MGXS} spatial homogenization were evaluated with respect to the number of \ac{MC} histories used to generate \ac{MGXS}.
-  \item Approximately 10$\times$ fewer histories are required to converge the errors for \textit{i}\ac{MGXS} than for degenerate homogenization or a reference \ac{MC} calculation.
-  \item The total runtime for the entire simulation workflow with \textit{i}\ac{MGXS} homogenization is 5 -- 10$\times$ faster than that for the degenerate scheme, and 1.5 -- 4$\times$ faster than a reference \ac{MC} calculation.
+  \item Approximately 5 -- 30$\times$ fewer histories are required to converge the errors for \textit{i}\ac{MGXS} than for degenerate homogenization or a reference \ac{MC} calculation.
+  \item The total runtime for the entire simulation workflow with \textit{i}\ac{MGXS} homogenization is 4 -- 30$\times$ faster than that for the degenerate scheme, and 2 -- 10$\times$ faster than a reference \ac{MC} calculation.
   \item The results in this chapter point to the potential for \textit{i}\ac{MGXS} as a means to efficiently generate \ac{MGXS} with reactor agnostic \ac{MC} calculations of the complete heterogeneous geometry in a single step.
 \end{itemize}
 \end{highlightsbox}

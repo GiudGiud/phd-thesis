@@ -24,7 +24,7 @@ This section quantifies and visualizes the impact of heterogeneities on pin-wise
 \subsection{Pin-Wise MGXS Statistical Uncertainty}
 \label{subsec:chap9-mgxs-uncertainty}
 
-Before investigating \ac{MGXS} clustering, it is important to first quantify the statistical uncertainties of the tallied pin-wise \ac{MGXS} for each benchmark. The max and mean relative uncertainties\footnote{The \textit{relative uncertainty} as used here is defined as the standard deviation of the sample mean divided by the sample mean.} of the pin-wise U-238 capture and U-235 fission \ac{MGXS} for an infinite lattice and each of the heterogeneous benchmarks are presented in Tab.~\ref{table:chap9-std-dev-mgxs}. The standard deviations were computed by propagating the standard deviations of the reaction rate and flux tallies (Eqn.~\ref{eqn:chap3-variance-mean}) as discussed in Sec.~\ref{subsec:chap3-uncertainty-prop}. The standard deviations were computed for all of the pins in each benchmark, and the max and mean values were selected for the table. The table highlights the standard deviations for both 1.6\% and 3.1\% enriched fuel pins\footnote{Although the \ac{BEAVRS} model includes 2.4\% enriched fuel pins, they were not included in this analysis.}. The \ac{MGXS} data was computed in two energy groups. The U-238 capture \ac{MGXS} is analyzed for the first (fast) energy group since it encompasses the resonance region which is most sensitive to spatial self-shielding effects. The U-235 fission \ac{MGXS} is analyzed for the second (thermal) energy group since it encompasses thermal energies which drives the majority of fission in \acp{LWR}.
+Before investigating \ac{MGXS} clustering, it is important to first quantify the statistical uncertainties of the tallied pin-wise \ac{MGXS} for each benchmark. The max and mean relative uncertainties\footnote{The \textit{relative uncertainty} is the standard deviation of the sample mean divided by the sample mean.} of the pin-wise U-238 capture and U-235 fission \ac{MGXS} for an infinite lattice and each of the heterogeneous benchmarks are presented in Tab.~\ref{table:chap9-std-dev-mgxs}. The standard deviations were computed by propagating the standard deviations of the reaction rate and flux tallies (Eqn.~\ref{eqn:chap3-variance-mean}) as discussed in Sec.~\ref{subsec:chap3-uncertainty-prop}. The standard deviations were computed for all of the pins in each benchmark, and the max and mean values were selected for the table. The table highlights the standard deviations for both 1.6\% and 3.1\% enriched fuel pins\footnote{Although the \ac{BEAVRS} model includes 2.4\% enriched fuel pins, they were not included in this analysis.}. The \ac{MGXS} data was computed in two energy groups. The U-238 capture \ac{MGXS} is analyzed for the first (fast) energy group since it encompasses the resonance region which is most sensitive to spatial self-shielding effects. The U-235 fission \ac{MGXS} is analyzed for the second (thermal) energy group since it encompasses thermal energies which drives the majority of fission in \acp{LWR}.
 
 There are a few key observations which can be made from the statistical uncertainties. First, the statistical uncertainties for both \ac{MGXS} are relatively small with respect to the means. In particular, the relative uncertainties are 0.1 -- 0.75\% and 0.05 -- 0.25\% for the U-238 capture and U-235 fission \ac{MGXS}, respectively. Furthermore, the reported standard deviations are likely overestimates since the reaction rate and flux tallies used to compute each \ac{MGXS} are positively correlated (see Sec.~\ref{table:chap9-std-dev-mgxs}). Therefore, the clustering of \ac{MGXS} demonstrated in the following sections results from variation in \ac{MC} sampling distributions with spatial heterogeneities rather than poor \ac{MC} sample statistics.
 
@@ -746,7 +746,7 @@ The OpenMOC eigenvalues were compared to the reference OpenMC eigenvalues from T
 3.1\% Assm w/ 20 BPs & -158 & -161 & -248 \\
 2$\times$2 Colorset & 12 & -93 & -194 \\
 2$\times$2 Colorset w/ Reflector & 1797 & 481 & -138 \\
-BEAVRS Full Core & 2168 & 401 & -129 \\
+BEAVRS Full Core & 2168 & 401 & -118 \\
   \bottomrule
 \end{tabular}
 \end{table}
@@ -851,8 +851,8 @@ The OpenMOC energy-integrated pin-wise U-238 capture rates were compared to the 
 \multirow{2}{*}{\parbox{2.2cm}{2$\times$2 Colorset w/ Reflector}} & Max & 10.201 & 3.031 & -1.964 & -0.783 \\
 & Mean & 3.482 & 0.604 & 0.236 & 0.165 \\
 \midrule
-\multirow{2}{*}{\parbox{2.2cm}{BEAVRS Quarter Core}} & Max & -84.556 & -30.671 & -2.854 & -2.067 \\
-& Mean & 39.308 & 10.017 & 0.304 & 0.345 \\
+\multirow{2}{*}{\parbox{2.2cm}{BEAVRS Quarter Core}} & Max & -84.556 & -30.671 & -3.915 & -2.292 \\
+& Mean & 39.308 & 10.017 & 0.371 & 0.434 \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -917,7 +917,7 @@ A couple of key conclusions can be drawn from these results. First, \ac{LNS} eff
 \centering
 \includegraphics[width=\linewidth]{figures/patterns/lns/reflector/capt-err}
 \vspace{2mm}
-\caption[U-238 capture rate errors for a 2$\times$2 colorset with a reflector]{U-238 capture percent relative errors rate errors for a 2$\times$2 colorset with null, \ac{LNS} and degenerate spatial homogenization.}
+\caption[U-238 capture rate errors for a 2$\times$2 colorset with a reflector]{U-238 capture percent relative errors rate errors for a 2$\times$2 colorset with a water reflector with null, \ac{LNS} and degenerate spatial homogenization.}
 \label{fig:chap9-reflector-lns-capt-err}
 \end{figure}
 
