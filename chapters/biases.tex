@@ -569,8 +569,6 @@ The second case study investigated the variation of the OpenMOC eigenvalue with 
 
 As was demonstrated for the 1D slab, the results for the fuel pin indicate a strong interaction between the energy and spatial discretization. The eigenvalue bias exhibits a swing of $\sim$350 \ac{pcm} between energy and spatial meshes. The bias exceeds 200 \ac{pcm} for all scattering approximations. The application of the transport correction only reduces the bias by up to 25 \ac{pcm} depending on the energy group structure. The use of the iso-in-lab scattering feature reduces the bias by roughly $\nicefrac{1}{3}$ or 100 pcm. As was observed for the 1D slab, the converged bias is negative for all scattering approximations. 
 
-\clearpage
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Spatial Homogenization and FSR Discretization}
 \label{subsubsec:chap5-pin-space}
@@ -668,7 +666,7 @@ The emergence of a negative systematic bias in the eigenvalue with fine energy a
 \subsection{Energy-Dependent Flux Error}
 \label{subsec:chap5-diagnosis-energy}
 
-Upon further inspection, it was noted that OpenMOC's flux exhibited large errors with respect to the reference OpenMC flux in those energy groups which isolate large U-238 capture resonances. The error in the 70-group flux is illustrated in Fig.~\ref{fig:chap5-rel-err-energy} for the \ac{FSR}s nearest and furthest from the moderator, along with the average error across all \ac{FSR}s in the fuel. These plots were generated for the benchmark models with a 16$\times$ \ac{FSR} discretization with \ac{MGXS} tallied on the \ac{FSR} mesh. The plots correspond to the case studies in Tables~\ref{table:chap5-slab-space} and~\ref{table:chap5-pin-space} with iso-in-lab scattering.
+Upon further inspection, it was noted that OpenMOC's flux exhibited large errors with respect to the reference OpenMC flux in those energy groups which isolate large U-238 capture resonances. The error in the 70-group flux is illustrated in Fig.~\ref{fig:chap5-rel-err-energy} for the \ac{FSR}s nearest and furthest from the moderator, along with the average error across all \ac{FSR}s in the fuel. These plots were generated for the benchmark models with a 16$\times$ \ac{FSR} discretization with \ac{MGXS} tallied on the \ac{FSR} mesh. The plots correspond to the case studies in Tabs.~\ref{table:chap5-slab-space} and~\ref{table:chap5-pin-space} with iso-in-lab scattering.
 
 \begin{figure}[h!]
 \begin{subfigure}{.9\textwidth}
@@ -681,7 +679,7 @@ Upon further inspection, it was noted that OpenMOC's flux exhibited large errors
   \includegraphics[width=\linewidth]{figures/biases/pin-cell/rel-err-inner-outer}
   \caption{}
 \end{subfigure}
-\caption[Flux relative error by energy group]{The energy-dependent relative error of the OpenMOC scalar flux with respect to the reference OpenMC flux in a 1D slab (a) and 2D fuel pin (b) for the innermost, outermost and all \ac{FSR}s. The results correspond to the case studies presented in Tables~\ref{table:chap5-slab-space} and~\ref{table:chap5-pin-space}.}
+\caption[Flux relative error by energy group]{The energy-dependent relative error of the OpenMOC scalar flux with respect to the reference OpenMC flux in a 1D slab (a) and 2D fuel pin (b) for the innermost, outermost and all \ac{FSR}s. The results correspond to the case studies presented in Tabs.~\ref{table:chap5-slab-space} and~\ref{table:chap5-pin-space}.}
 \label{fig:chap5-rel-err-energy}
 \end{figure}
 
@@ -705,7 +703,7 @@ The results presented in Fig.~\ref{fig:chap5-rel-err-energy} indicate significan
 \end{itemize}
 \vspace{-0.15cm}
 
-Fig.~\ref{fig:chap5-rel-err-space} highlights the spatial dependence of the error across the fuel for each energy range. These plots were generated for the benchmark models with a 16$\times$ \ac{FSR} discretization with \ac{MGXS} tallied on the \ac{FSR} mesh. The plots correspond to the case studies in Tables~\ref{table:chap5-slab-space} and~\ref{table:chap5-pin-space} with iso-in-lab scattering.
+Fig.~\ref{fig:chap5-rel-err-space} highlights the spatial dependence of the error across the fuel for each energy range. These plots were generated for the benchmark models with a 16$\times$ \ac{FSR} discretization with \ac{MGXS} tallied on the \ac{FSR} mesh. The plots correspond to the case studies in Tabs.~\ref{table:chap5-slab-space} and~\ref{table:chap5-pin-space} with iso-in-lab scattering.
 
 The range A error in the slab monotonically decreases from a maximum of nearly 1.5\% to a minimum of $\sim$-0.5\% in those \ac{FSR}s furthest and nearest the moderator, with a similar trend observed for the fuel pin. Furthermore,  the trend accelerates in outermost 3 -- 4 \ac{FSR}s nearest the moderator, where the error drops by nearly half of its value at the center of the slab and pin. The error profiles for energy ranges B and C exhibit the same decreasing trend from the inside to the outside of the slab and pin, but the error magnitude never exceeds 0.5\% in magnitude. The systematic error trends in energy and space imply that the negative eigenvalue bias is driven by a poor prediction of the reaction rates in resonance groups, as investigated in the following section.
 
@@ -720,7 +718,7 @@ The range A error in the slab monotonically decreases from a maximum of nearly 1
   \includegraphics[width=0.8\linewidth]{figures/biases/pin-cell/rel-err-fuel-fsrs}
   \caption{}
 \end{subfigure}
-\caption[Flux relative error by FSR]{The spatially-varying relative error of the OpenMOC scalar flux with respect to the reference OpenMC flux for a 1D slab (a) and 2D fuel pin (b) in energy Ranges A, B, and C. The results correspond to Tables~\ref{table:chap5-slab-space} and~\ref{table:chap5-pin-space}.}
+\caption[Flux relative error by FSR]{The spatially-varying relative error of the OpenMOC scalar flux with respect to the reference OpenMC flux for a 1D slab (a) and 2D fuel pin (b) in energy Ranges A, B, and C. The results correspond to Tabs.~\ref{table:chap5-slab-space} and~\ref{table:chap5-pin-space}.}
 \label{fig:chap5-rel-err-space}
 \end{figure}
 
@@ -730,7 +728,7 @@ Fig.~\ref{fig:chap5-u238-capture-space} illustrates the spatial dependence of th
   \centering
   \includegraphics[width=0.8\linewidth]{figures/biases/u238-capt-rates-fuel-fsrs}
   \caption{}
-\caption[U-238 capture rates by FSR]{The normalized spatially-varying U-238 capture rates tallied by OpenMC for a 1D slab 2D fuel pin in Range A. The results correspond to Tables~\ref{table:chap5-slab-space} and~\ref{table:chap5-pin-space}.}
+\caption[U-238 capture rates by FSR]{The normalized spatially-varying U-238 capture rates tallied by OpenMC for a 1D slab 2D fuel pin in Range A. The results correspond to Tabs.~\ref{table:chap5-slab-space} and~\ref{table:chap5-pin-space}.}
 \label{fig:chap5-u238-capture-space}
 \end{figure}
 
@@ -763,7 +761,7 @@ As illustrated in the table, the U-238 capture and total absorption rate errors 
 {\setlength{\extrarowheight}{-5pt}
 \begin{table}[H]
   \centering
-  \caption[Reaction rate relative errors]{The volume-integrated U-238 capture and total absorption rate percent relative errors. The errors correspond to the results in Tables~\ref{table:chap5-slab-space} and \ref{table:chap5-pin-space}.}
+  \caption[Reaction rate relative errors]{The volume-integrated U-238 capture and total absorption rate percent relative errors. The errors correspond to the results in Tabs.~\ref{table:chap5-slab-space} and \ref{table:chap5-pin-space}.}
   \small
   \label{table:chap5-rxn-rate-errors} 
   \vspace{6pt}
@@ -819,7 +817,7 @@ These results indicate that spatial self-shielding effects in resonance groups i
 \begin{highlightsbox}[frametitle=Highlights]
 \begin{itemize}
   \item OpenMOC calculations were performed using \ac{MGXS} generated by OpenMC to compare eigenvalues for simple benchmarks.
-  \item The eigenvalues closely agreed for homogeneous infinite media. The eigenvalues exhibited a bias of -200 to -300 \ac{pcm} for heterogeneous geometries, including a 1D slab and 2D fuel pin.
+  \item The eigenvalues closely agreed for homogeneous infinite media. The eigenvalues exhibited a bias of -200 to -300 \ac{pcm} for heterogeneous 1D slab and 2D fuel pin benchmarks.
   \item A series of case studies demonstrated the dependence of the bias with:
   \begin{itemize}
 %    \item \textit{\ac{FSR} discretization} -- The bias was jointly-dependent with energy group structure.
