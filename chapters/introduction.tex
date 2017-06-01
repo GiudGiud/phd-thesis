@@ -12,18 +12,215 @@
 %-based on empirical models\\
 %-need to account for angular dependence of neutron flux (e.g. "transport" methods)\\
 
-Numerical simulation has long played an important role in nuclear reactor physics and engineering. The nuclear industry relies on computational modeling of the neutron physics in reactors to predict core reactivity, power distributions, fuel depletion, and transient behavior to ensure the safety and reliability of the current fleet of Light Water Reactors (LWRs). Predictive simulations are necessary to evaluate innovations which seek to improve reactor safety and fuel cycle economics, such as reduced safety margins, accident-tolerant fuels, and extended cycle lengths. In addition, simulation is used to assess the technical competencies of advanced reactor technologies such as Small Modular Reactors (SMRs), Sodium Fast Reactors (SFRs), Molten Salt Reactors (MSRs), High Temperature Gas Reactors (HTGRs), among other proposed designs. 
+Numerical simulation of neutron physics inside a nuclear reactor is fundamental to the design and operation of nuclear power plants. Neutron physics simulations are necessary for determining core reactivity, power distributions, isotopic depletion, and transient behavior. Accurate and predictive simulations can improve the operation of current nuclear reactors by reducing safety margins, incorporating accident tolerant fuels, and extending to longer operating cycle lengths. In addition, predictive neutron physics simulations are critical to the evalulation of advanced reactor designs, many of which operate in very different physics regimes than currently operating reactors. 
 
-Many Generation III+ reactors, such as the Westinghouse AP1000\texttrademark \ac{PWR}, optimize performance with complicated core designs. A variety of reactivity control mechanisms -- including partially-inserted control rods, ``grey'' control poisons, Integral Fuel Burnable Absorbers (IFBA), soluble boron, etc. -- along with axial enrichment zoning are used to improve performance metrics such as power peaking factors. The reactor analysis methods in widespread use today assume a ``smoothly'' varying flux distribution, and are not well-suited to model highly localized flux gradients which result from these complex core configurations. New high-fidelity simulation tools are needed to accurately capture neutron physics in advanced reactor designs.
+Current generation nuclear reactor designs, such as the Westinghouse AP 1000\texttrademark \ac{PWR}, employ much greater geometric and material complexity than previous generations. These new complexities such as axial enrichment zoning and partial length \ac{BP}s allow for greater efficiency and longer cycle lengths by reducing power peaking. These additional features introduce much greater axial hetergeneity compared with previous designs.
 
-The development and deployment of neutron physics simulations is governed by tradeoffs between accuracy and speed. High-fidelity simulations are accurate and flexible since they make few approximations, but require significant computational time and resources. On the other hand, the assumptions and approximations made by low-fidelity methods reduce the number of variables which greatly improves the time-to-solution. However, low-fidelity models are designed for specific applications and lose their predictive power when employed in settings outside of the scope for which they were intended. As a result, it is common to employ a mix of high- and low-fidelity tools for reactor analysis -- for example, high-fidelity tools are frequently used to inform and benchmark low-fidelity models for use within a narrow envelope of design parameters. This thesis develops a new approach within the same vein by employing continuous energy Monte Carlo neutron transport simulations to generate accurate multi-group cross sections for computationally efficient fine-mesh deterministic transport methods.
+Nodal diffusion methods are commonly used to simulate neutron phsyics inside modern reactors. These methods are very fast and efficient but have difficulty capturing localized gradients. While higher fidelity methods are capable of resolving these gradients, they are often significantly slower. This can be prohibitive in reactor analysis where many simulations are required in a relatively short time frame. The goal of high fidelty modeling in this realm is to create a tool that can benchmark and inform the development of nodal diffusion solvers. 
 
+Even as a benchmark tool, high fidelity neutron physics simulations can be too computationally intense to be useful. Therefore there is a need for high fidelity neutron physics simulations that are accurate and reliable but also compuataionally efficient. Due to the axial hetergeneity of modern reactor designs, these high fidelity models should be capable of resolving gradients not only in the radial plane but also in the axial direction. This thesis develops a high fidelity 3D \ac{MOC} solver capable of forming benchmark solutions in reasonable computational time.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Background}
 \label{sec:chap1-background}
 
 A key trend in recent years has been the steady progress towards full-core neutron transport-based reactor analysis tools. The standard methods used for reactor analysis today continue to be based on diffusion theory, which enables orders of magnitude computational performance improvements with respect to transport methods. Diffusion-based methods coupled with accurately modeled cross section data have proven to be sufficiently accurate for software tools used by reactor analysts, designers and regulators in industry and academia. However, these techniques rely on a number of assumptions and approximations which are not valid for all reactor types. For example, some Generation IV reactor design concepts are significantly more challenging to model than \ac{LWR} designs due to the high degree of spectral coupling between geometrically disparate zones within the core. Although the computational requirements for full-core transport-based simulations have precluded their widespread deployment, the continuing growth of cheap parallel processing power has made the prospects for such tools increasingly feasible.
+
+% % FIXME MOVE
+
+\begin{equation}
+\begin{split}
+\frac{1}{v(E)} \frac{\partial \psi(\mathbf{r},\mathbf{\Omega},E,t)}{\partial t} & + \mathbf{\Omega} \cdot \nabla \psi(\mathbf{r},\mathbf{\Omega},E,t) \, + \, \Sigma_{t}(\mathbf{r},E, t)\psi(\mathbf{r},\mathbf{\Omega},E) = \\
+& \phantom{+} \, \chi_p(\mathbf{r}, \mathbf{\Omega}, E,t) \int\displaylimits_{0}^{\infty} dE' \, \int\displaylimits_{4\pi} d\mathbf{\Omega'} \, \nu_p(\mathbf{r},\mathbf{\Omega'}E', t) \Sigma_f(\mathbf{r},\mathbf{\Omega'}, E') \psi(\mathbf{r},\mathbf{\Omega'}, E',t )\\
+& + \, \int\displaylimits_{0}^{\infty} dE' \, \int\displaylimits_{4\pi} \, d\mathbf{\Omega'} \Sigma_{s}(\mathbf{r}, \mathbf{\Omega'}\rightarrow \mathbf{\Omega},{E'\rightarrow E},t) \psi(\mathbf{r}, \mathbf{\Omega'},E', t) \\ 
+& + \, S(\mathbf{r}, \mathbf{\Omega}, E, t) + D(\mathbf{r}, \mathbf{\Omega}, E, t)
+\end{split}
+\end{equation}
+
+Steady state
+\begin{equation}
+\begin{split}
+\mathbf{\Omega} \cdot \nabla \psi(\mathbf{r},\mathbf{\Omega},E) \, + & \, \Sigma_{t}(\mathbf{r},E)\psi(\mathbf{r},\mathbf{\Omega},E) = \\
+& \phantom{+} \, \chi(\mathbf{r}, \mathbf{\Omega}, E) \int\displaylimits_{0}^{\infty} dE' \, \int\displaylimits_{4\pi} d\mathbf{\Omega'} \, \nu(\mathbf{r},\mathbf{\Omega'}E') \Sigma_f(\mathbf{r},\mathbf{\Omega'}, E') \psi(\mathbf{r},\mathbf{\Omega'}, E')\\
+& + \, \int\displaylimits_{0}^{\infty} dE' \, \int\displaylimits_{4\pi} \, d\mathbf{\Omega'} \Sigma_{s}(\mathbf{r}, \mathbf{\Omega'}\rightarrow \mathbf{\Omega},{E'\rightarrow E}) \psi(\mathbf{r}, \mathbf{\Omega'},E') \\ 
+& + \, S(\mathbf{r}, \mathbf{\Omega}, E)
+\end{split}
+\end{equation}
+
+
+Eigenvalue
+\begin{equation}
+\begin{split}
+\mathbf{\Omega} \cdot \nabla \psi(\mathbf{r},\mathbf{\Omega},E) \, + & \, \Sigma_{t}(\mathbf{r},E)\psi(\mathbf{r},\mathbf{\Omega},E) = \\
+& \phantom{+} \, \frac{\chi(\mathbf{r}, \mathbf{\Omega}, E)}{k} \int\displaylimits_{0}^{\infty} dE' \, \int\displaylimits_{4\pi} d\mathbf{\Omega'} \, \nu(\mathbf{r},\mathbf{\Omega'}E') \Sigma_f(\mathbf{r},\mathbf{\Omega'}, E') \psi(\mathbf{r},\mathbf{\Omega'}, E')\\
+& + \, \int\displaylimits_{0}^{\infty} dE' \, \int\displaylimits_{4\pi} \, d\mathbf{\Omega'} \Sigma_{s}(\mathbf{r}, \mathbf{\Omega'}\rightarrow \mathbf{\Omega},{E'\rightarrow E}) \psi(\mathbf{r}, \mathbf{\Omega'},E') \\ 
+& + \, S(\mathbf{r}, \mathbf{\Omega}, E)
+\end{split}
+\end{equation}
+
+Angle independent emission
+\begin{equation}
+\begin{split}
+\mathbf{\Omega} \cdot \nabla \psi(\mathbf{r},\mathbf{\Omega},E) \, + & \, \Sigma_{t}(\mathbf{r},E)\psi(\mathbf{r},\mathbf{\Omega},E) = \\
+& \phantom{+} \, \frac{\chi(\mathbf{r},E)}{4\pi k} \int\displaylimits_{0}^{\infty} dE' \, \int\displaylimits_{4\pi} d\mathbf{\Omega'} \, \nu(\mathbf{r},\mathbf{\Omega'},E') \Sigma_f(\mathbf{r},\mathbf{\Omega'}, E') \psi(\mathbf{r},\mathbf{\Omega'}, E')\\
+& + \, \int\displaylimits_{0}^{\infty} dE' \, \int\displaylimits_{4\pi} \, d\mathbf{\Omega'} \Sigma_{s}(\mathbf{r}, \mathbf{\Omega'}\rightarrow \mathbf{\Omega},{E'\rightarrow E}) \psi(\mathbf{r}, \mathbf{\Omega'},E') \\ 
+& + \, S(\mathbf{r}, \mathbf{\Omega}, E)
+\end{split}
+\end{equation}
+
+Angle independent nu and sigma-t and sigma-f
+\begin{equation}
+\begin{split}
+\mathbf{\Omega} \cdot \nabla \psi(\mathbf{r},\mathbf{\Omega},E) \, + & \, \Sigma_{t}(\mathbf{r},E)\psi(\mathbf{r},\mathbf{\Omega},E) = \\
+& \phantom{+} \, \frac{\chi(\mathbf{r},E)}{4\pi k} \int\displaylimits_{0}^{\infty} dE' \, \nu(\mathbf{r},E') \Sigma_f(\mathbf{r}, E') \int\displaylimits_{4\pi} d\mathbf{\Omega'} \,  \psi(\mathbf{r},\mathbf{\Omega'}, E')\\
+& + \, \int\displaylimits_{0}^{\infty} dE' \, \int\displaylimits_{4\pi} \, d\mathbf{\Omega'} \Sigma_{s}(\mathbf{r}, \mathbf{\Omega'}\rightarrow \mathbf{\Omega},{E'\rightarrow E}) \psi(\mathbf{r}, \mathbf{\Omega'},E') \\ 
+& + \, S(\mathbf{r}, \mathbf{\Omega}, E)
+\end{split}
+\end{equation}
+
+Scalar flux def
+\begin{equation}
+\label{eqn:chap2-transport-ce-2}
+\begin{split}
+\mathbf{\Omega} \cdot \nabla \psi(\mathbf{r},\mathbf{\Omega},E) \, + & \, \Sigma_{t}(\mathbf{r},E)\psi(\mathbf{r},\mathbf{\Omega},E) = \\
+& \phantom{+} \, \frac{\chi(\mathbf{r},E)}{4\pi k} \int\displaylimits_{0}^{\infty} dE' \, \nu(\mathbf{r},E') \Sigma_f(\mathbf{r}, E') \phi(\mathbf{r}, E')\\
+& + \, \int\displaylimits_{0}^{\infty} dE' \, \int\displaylimits_{4\pi} \, d\mathbf{\Omega'} \Sigma_{s}(\mathbf{r}, \mathbf{\Omega'}\rightarrow \mathbf{\Omega},{E'\rightarrow E}) \psi(\mathbf{r}, \mathbf{\Omega'},E') \\ 
+& + \, S(\mathbf{r}, \mathbf{\Omega}, E)
+\end{split}
+\end{equation}
+
+No external sources:
+\begin{equation}
+\begin{split}
+\mathbf{\Omega} \cdot \nabla \psi(\mathbf{r},\mathbf{\Omega},E) \, + & \, \Sigma_{t}(\mathbf{r},E)\psi(\mathbf{r},\mathbf{\Omega},E) = \\
+& \phantom{+} \, \frac{\chi(\mathbf{r},E)}{4\pi k} \int\displaylimits_{0}^{\infty} dE' \, \nu(\mathbf{r},E') \Sigma_f(\mathbf{r}, E') \phi(\mathbf{r}, E')\\
+& + \, \int\displaylimits_{0}^{\infty} dE' \, \int\displaylimits_{4\pi} \, d\mathbf{\Omega'}  \Sigma_{s}(\mathbf{r},\mathbf{\Omega'}\rightarrow \mathbf{\Omega},{E'\rightarrow E}) \psi(\mathbf{r}, \mathbf{\Omega'},E')
+\end{split}
+\end{equation}
+
+Isotpropic approx:
+\begin{equation}
+\begin{split}
+\mathbf{\Omega} \cdot \nabla \psi(\mathbf{r},\mathbf{\Omega},E) \, + & \, \Sigma_{t}(\mathbf{r},E)\psi(\mathbf{r},\mathbf{\Omega},E) = \\
+& \phantom{+} \, \frac{\chi(\mathbf{r},E)}{4\pi k} \int\displaylimits_{0}^{\infty} dE' \, \nu(\mathbf{r},E') \Sigma_f(\mathbf{r}, E') \phi(\mathbf{r}, E')\\
+& + \, \int\displaylimits_{0}^{\infty} dE' \,  \frac{\Sigma_{s}(\mathbf{r}, \mathbf{\Omega},{E'\rightarrow E})}{4\pi}\int\displaylimits_{4\pi} \, d\mathbf{\Omega'} \psi(\mathbf{r}, \mathbf{\Omega'},E')
+\end{split}
+\end{equation}
+
+Scalar flux def:
+\begin{equation}
+\begin{split}
+\mathbf{\Omega} \cdot \nabla \psi(\mathbf{r},\mathbf{\Omega},E) \, + & \, \Sigma_{t}(\mathbf{r},E)\psi(\mathbf{r},\mathbf{\Omega},E) = \\
+& \phantom{+} \, \frac{\chi(\mathbf{r},E)}{4\pi k} \int\displaylimits_{0}^{\infty} dE' \, \nu(\mathbf{r},E') \Sigma_f(\mathbf{r}, E') \phi(\mathbf{r}, E')\\
+& + \, \int\displaylimits_{0}^{\infty} dE' \,  \frac{\Sigma_{s}(\mathbf{r}, \mathbf{\Omega},{E'\rightarrow E})}{4\pi} \phi(\mathbf{r}, E')
+\end{split}
+\end{equation}
+
+Source condensation:
+\begin{dmath}
+\mathbf{\Omega} \cdot \nabla \psi(\mathbf{r},\mathbf{\Omega},E) \, + \, \Sigma_{t}(\mathbf{r},E)\psi(\mathbf{r},\mathbf{\Omega},E) = q(\mathbf{r}, E)
+\end{dmath}
+
+MOC transform:
+\begin{dmath}
+	\mathbf{\Omega} \cdot \nabla \psi(\mathbf{r_0} + s\mathbf{\Omega},\mathbf{\Omega},E) \, + \, \Sigma_{t}(\mathbf{r_0} + s\mathbf{\Omega},E)\psi(\mathbf{r_0} + s\mathbf{\Omega},\mathbf{\Omega},E) = q(\mathbf{r_0} + s\mathbf{\Omega}, E)
+\end{dmath}
+
+Deiv transform:
+\begin{dmath}
+	\frac{d\psi(\mathbf{r_0} + s\mathbf{\Omega},\mathbf{\Omega},E)}{ds} \, + \, \Sigma_{t}(\mathbf{r_0} + s\mathbf{\Omega},E)\psi(\mathbf{r_0} + s\mathbf{\Omega},\mathbf{\Omega},E) = q(\mathbf{r_0} + s\mathbf{\Omega}, E)
+\end{dmath}
+
+Begin deriv:
+\begin{dmath}
+	\frac{d\psi(\mathbf{r_0} + s\mathbf{\Omega},\mathbf{\Omega},E)}{ds} \, + \, \Sigma_{t}^i(E)\psi(\mathbf{r_0} + s\mathbf{\Omega},\mathbf{\Omega},E) = q(\mathbf{r_0} + s\mathbf{\Omega}, E)
+\end{dmath}
+
+\begin{dmath}
+	e^{\Sigma_{t}^i(E) s}\frac{d\psi(\mathbf{r_0} + s\mathbf{\Omega},\mathbf{\Omega},E)}{ds} \, + \, e^{\Sigma_{t}^i(E) s}\Sigma_{t}^i(E)\psi(\mathbf{r_0} + s\mathbf{\Omega},\mathbf{\Omega},E) = e^{\Sigma_{t}^i(E) s}q(\mathbf{r_0} + s\mathbf{\Omega}, E)
+\end{dmath}
+
+\begin{dmath}
+	\frac{d\left[e^{\Sigma_{t}^i(E) s} \psi(\mathbf{r_0} + s\mathbf{\Omega},\mathbf{\Omega},E)\right]}{ds} = e^{\Sigma_{t}^i(E) s}q(\mathbf{r_0} + s\mathbf{\Omega}, E)
+\end{dmath}
+
+\begin{dmath}
+\int\displaylimits_{s=0}^{s=\ell} d\left[e^{\Sigma_{t}^i(E) s} \psi(\mathbf{r_0} + s\mathbf{\Omega},\mathbf{\Omega},E)\right] = \int\displaylimits_{s=0}^{s=\ell} ds \, e^{\Sigma_{t}^i(E) s}q(\mathbf{r_0} + s\mathbf{\Omega}, E)
+\end{dmath}
+
+\begin{dmath}
+	e^{\Sigma_{t}^i(E) \ell} \psi(\mathbf{r_0} + \ell \mathbf{\Omega},\mathbf{\Omega},E) - \psi(\mathbf{r_0},\mathbf{\Omega},E) = \int\displaylimits_{0}^{\ell} ds \, e^{\Sigma_{t}^i(E) s}q(\mathbf{r_0} + s\mathbf{\Omega}, E)
+\end{dmath}
+
+End deriv:
+\begin{dmath}
+	\psi(\mathbf{r_0} + \ell \mathbf{\Omega},\mathbf{\Omega},E) = \psi(\mathbf{r_0},\mathbf{\Omega},E) e^{-\Sigma_{t}^i(E) \ell} + \int\displaylimits_{0}^{\ell} ds \, e^{-\Sigma_{t}^i(E) (\ell-s)}q(\mathbf{r_0} + s\mathbf{\Omega}, E)
+\end{dmath}
+
+
+After multi-group approximation:
+\begin{dmath}
+	\psi_g(\mathbf{r_0} + \ell \mathbf{\Omega},\mathbf{\Omega}) = \psi_g(\mathbf{r_0},\mathbf{\Omega}) e^{-\Sigma_{t}^{i,g} \ell} + \int\displaylimits_{0}^{\ell} ds \, e^{-\Sigma_{t}^{i,g} (\ell-s)}q_g(\mathbf{r_0} + s\mathbf{\Omega})
+\end{dmath}
+
+After linear source approximation:
+\begin{dmath}
+	\psi_g(\mathbf{r_0} + \ell \mathbf{\Omega},\mathbf{\Omega}) = \psi_g(\mathbf{r_0},\mathbf{\Omega}) e^{-\Sigma_{t}^{i,g} \ell} + \int\displaylimits_{0}^{\ell} ds \, e^{-\Sigma_{t}^{i,g} (\ell-s)} (q^0_{i,g} + q^1_{i,g}(s-\ell/2))
+\end{dmath}
+
+Begin:
+\begin{dmath}
+	\psi_g(\mathbf{r_0} + \ell \mathbf{\Omega},\mathbf{\Omega}) = \psi_g(\mathbf{r_0},\mathbf{\Omega}) e^{-\Sigma_{t}^{i,g} \ell} + q^0_{i,g} \left( \frac{1-e^{-\Sigma_{t}^{i,g} \ell}}{\Sigma_{t}^{i,g}} \right) + q^1_{i,g} \int\displaylimits_{0}^{\ell} ds \, (s-\ell/2) e^{-\Sigma_{t}^{i,g} (\ell-s)} 
+\end{dmath}
+
+\begin{dmath}
+	\psi_g(\mathbf{r_0} + \ell \mathbf{\Omega},\mathbf{\Omega}) = \psi_g(\mathbf{r_0},\mathbf{\Omega}) e^{-\Sigma_{t}^{i,g} \ell} + q^0_{i,g} \left( \frac{1-e^{-\Sigma_{t}^{i,g} \ell}}{\Sigma_{t}^{i,g}} \right) + q^1_{i,g} \left( \left(\frac{(s - \ell/2) e^{-\Sigma_{t}^{i,g} (\ell-s)}}{\Sigma_{t}^{i,g}}\right)\Bigg|_{s=0}^{s=\ell} - \int\displaylimits_{0}^{\ell} ds \, \frac{e^{-\Sigma_{t}^{i,g} (\ell-s)}}{\Sigma_{t}^{i,g}} \right)
+\end{dmath}
+
+
+\begin{dmath}
+	\psi_g(\mathbf{r_0} + \ell \mathbf{\Omega},\mathbf{\Omega}) = \psi_g(\mathbf{r_0},\mathbf{\Omega}) e^{-\Sigma_{t}^{i,g} \ell} + q^0_{i,g} \left( \frac{1-e^{-\Sigma_{t}^{i,g} \ell}}{\Sigma_{t}^{i,g}} \right) + q^1_{i,g} 
+	\left( \frac{\ell \left(1+e^{-\Sigma_{t}^{i,g} \ell}\right)}{2\Sigma_{t}^{i,g}} - \int\displaylimits_{0}^{\ell} ds \, \frac{e^{-\Sigma_{t}^{i,g} (\ell-s)}}{\Sigma_{t}^{i,g}} \right)
+\end{dmath}
+
+\begin{dmath}
+	\psi_g(\mathbf{r_0} + \ell \mathbf{\Omega},\mathbf{\Omega}) = \psi_g(\mathbf{r_0},\mathbf{\Omega}) e^{-\Sigma_{t}^{i,g} \ell} + q^0_{i,g} \left( \frac{1-e^{-\Sigma_{t}^{i,g} \ell}}{\Sigma_{t}^{i,g}} \right) \\ + q^1_{i,g}	\left( \frac{\ell \left(1+e^{-\Sigma_{t}^{i,g} \ell}\right)}{2\Sigma_{t}^{i,g}} - \frac{e^{-\Sigma_{t}^{i,g} (\ell-s)}}{\left(\Sigma_{t}^{i,g}\right)^2} \Bigg|_{s=0}^{s=\ell} \right)
+\end{dmath}
+
+
+\begin{dmath}
+	\psi_g(\mathbf{r_0} + \ell \mathbf{\Omega},\mathbf{\Omega}) = \psi_g(\mathbf{r_0},\mathbf{\Omega}) e^{-\Sigma_{t}^{i,g} \ell} + q^0_{i,g} \left( \frac{1-e^{-\Sigma_{t}^{i,g} \ell}}{\Sigma_{t}^{i,g}} \right) + q^1_{i,g} \left( \frac{\ell \left(1+e^{-\Sigma_{t}^{i,g} \ell}\right)}{2\Sigma_{t}^{i,g}} - \frac{1 - e^{-\Sigma_{t}^{i,g}\ell}}{\left(\Sigma_{t}^{i,g}\right)^2} \right)
+\end{dmath}
+
+\begin{dmath}
+	\psi_g(\mathbf{r_0} + \ell \mathbf{\Omega},\mathbf{\Omega}) = \psi_g(\mathbf{r_0},\mathbf{\Omega}) e^{-\Sigma_{t}^{i,g} \ell} + q^0_{i,g} \left( \frac{1-e^{-\Sigma_{t}^{i,g} \ell}}{\Sigma_{t}^{i,g}} \right) + \frac{q^1_{i,g}}{2\left(\Sigma_{t}^{i,g}\right)^2} \left( \left(\Sigma_{t}^{i,g} \ell \right) \left(1+e^{-\Sigma_{t}^{i,g} \ell}\right) - 2\left(1 - e^{-\Sigma_{t}^{i,g}\ell}\right) \right)
+\end{dmath}
+
+\begin{dmath}
+	\psi_g(\mathbf{r_0} + \ell \mathbf{\Omega},\mathbf{\Omega}) = \psi_g(\mathbf{r_0},\mathbf{\Omega}) e^{-\Sigma_{t}^{i,g} \ell} + q^0_{i,g} \left( \frac{1-e^{-\Sigma_{t}^{i,g} \ell}}{\Sigma_{t}^{i,g}} \right) + \frac{q^1_{i,g}}{2\left(\Sigma_{t}^{i,g}\right)^2} \left( \left(\Sigma_{t}^{i,g} \ell \right) \left(2 - \left(1 - e^{-\Sigma_{t}^{i,g} \ell}\right)\right) - 2\left(1 - e^{-\Sigma_{t}^{i,g}\ell}\right) \right)
+\end{dmath}
+
+
+\begin{dmath}
+	\psi_g(\mathbf{r_0} + \ell \mathbf{\Omega},\mathbf{\Omega}) = \psi_g(\mathbf{r_0},\mathbf{\Omega}) e^{-\Sigma_{t}^{i,g} \ell} + q^0_{i,g} \left( \frac{F_1\left(\Sigma_{t}^{i,g} \ell\right)}{\Sigma_{t}^{i,g}} \right) + \frac{q^1_{i,g}}{2\left(\Sigma_{t}^{i,g}\right)^2} \left( \left(\Sigma_{t}^{i,g} \ell \right) \left(2 - F_1 \left(\Sigma_{t}^{i,g} \ell \right) \right) - 2 F_1\left( \Sigma_{t}^{i,g} \ell \right) \right)
+\end{dmath}
+
+\begin{dmath}
+	\psi_g(\mathbf{r_0} + \ell \mathbf{\Omega},\mathbf{\Omega}) = \psi_g(\mathbf{r_0},\mathbf{\Omega}) e^{-\Sigma_{t}^{i,g} \ell} + q^0_{i,g} \left( \frac{F_1\left(\Sigma_{t}^{i,g} \ell\right)}{\Sigma_{t}^{i,g}} \right) + \frac{q^1_{i,g}}{2\left(\Sigma_{t}^{i,g}\right)^2} \left(2 \left[ \left(\Sigma_{t}^{i,g} \ell \right) - F_1 \left(\Sigma_{t}^{i,g} \ell \right) \right] - \left(\Sigma_{t}^{i,g} \ell \right) F_1 \left(\Sigma_{t}^{i,g} \ell \right) \right)
+\end{dmath}
+
+
+\begin{dmath}
+	\psi_g(\mathbf{r_0} + \ell \mathbf{\Omega},\mathbf{\Omega}) = \psi_g(\mathbf{r_0},\mathbf{\Omega}) e^{-\Sigma_{t}^{i,g} \ell} + q^0_{i,g} \left( \frac{F_1\left(\Sigma_{t}^{i,g} \ell\right)}{\Sigma_{t}^{i,g}} \right) + q^1_{i,g} \left(\frac{F_2\left(\Sigma_{t}^{i,g} \ell\right)}{2\left(\Sigma_{t}^{i,g}\right)^2}\right)
+\end{dmath}
+
+
+FINAL:
+\begin{dmath}
+	\psi_g(\mathbf{r_0} + \ell \mathbf{\Omega},\mathbf{\Omega}) = \psi_g(\mathbf{r_0},\mathbf{\Omega}) + \left( \frac{q^0_{i,g}}{\Sigma_{t}^{i,g}} - \psi_g(\mathbf{r_0},\mathbf{\Omega}) \right) F_1\left(\Sigma_{t}^{i,g} \ell\right) + \left(\frac{q^1_{i,g}}{2\left(\Sigma_{t}^{i,g}\right)^2}\right) F_2\left(\Sigma_{t}^{i,g} \ell\right)
+\end{dmath}
+% % END FIXME
+
 
 %Transport-based methods would enable more accurate core power distributions to be calculated without the approximations needed for today’s tools based upon diffusion theory.
 
