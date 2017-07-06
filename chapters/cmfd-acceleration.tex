@@ -1,0 +1,214 @@
+\chapter{CMFD Acceleration}
+\label{chap:cmfd}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Overview of Monte Carlo Methods}
+\label{sec:chap3-mc-overview}
+
+Recall the transport equation
+\begin{equation}
+	\begin{split}
+		\mathbf{\Omega} \cdot \nabla \psi(\mathbf{r},\mathbf{\Omega},E) \, + & \, \Sigma_{t}(\mathbf{r},E)\psi(\mathbf{r},\mathbf{\Omega},E) = \\
+		& \phantom{+} \, \frac{\chi(\mathbf{r},E)}{4\pi k} \int\displaylimits_{0}^{\infty} dE' \, \nu(\mathbf{r},E') \Sigma_f(\mathbf{r}, E') \phi(\mathbf{r}, E')\\
+		& + \, \int\displaylimits_{0}^{\infty} dE' \,  \frac{\Sigma_{s}(\mathbf{r}, \mathbf{\Omega},{E'\rightarrow E})}{4\pi} \phi(\mathbf{r}, E')
+	\end{split}
+\end{equation}
+
+Introduce multigroup approximation:
+
+\begin{equation}
+	\mathbf{\Omega} \cdot \nabla \psi_{g}(\mathbf{r},\mathbf{\Omega}) + \Sigma_t^{g}(\mathbf{r}) \psi_{g}(\mathbf{r},\mathbf{\Omega}) = \frac{1}{4 \pi} \left( \frac{\chi_{g}\left(\mathbf{r}\right)}{k} \sum_{g'=1}^{G} \nu_{g'}\left(\mathbf{r}\right) \Sigma_f^{g'}\left(\mathbf{r}\right) \phi_{g'}\left(\mathbf{r}\right) + \, \sum_{g'=1}^G \,  \Sigma_{s}^{g' \rightarrow g}\left(\mathbf{r}\right) \phi_{g'}(\mathbf{r}) \right)
+\end{equation}
+
+Integrate angular space
+\begin{equation}
+	\int\displaylimits_{4 \pi} d\mathbf{\Omega} \,\mathbf{\Omega} \cdot \nabla \psi_{g}(\mathbf{r},\mathbf{\Omega}) + \Sigma_t^{g}\left(\mathbf{r}\right) \phi_{g}(\mathbf{r}) = \frac{\chi_{g}\left(\mathbf{r}\right)}{k} \sum_{g'=1}^{G} \nu_{g'}\left(\mathbf{r}\right) \Sigma_f^{g'}\left(\mathbf{r}\right) \phi_{g'}(\mathbf{r}) + \, \sum_{g'=1}^G \,  \Sigma_{s}^{g' \rightarrow g}\left(\mathbf{r}\right) \phi_{g'}(\mathbf{r})
+\end{equation}
+
+Noting streaming term only has spatial dependence on the angular flux
+Integrate angular space
+\begin{equation}
+	\nabla \cdot \int\displaylimits_{4 \pi} d\mathbf{\Omega} \,\mathbf{\Omega} \psi_{g}(\mathbf{r},\mathbf{\Omega}) + \Sigma_t^{g}\left(\mathbf{r}\right) \phi_{g}(\mathbf{r}) = \frac{\chi_{g}\left(\mathbf{r}\right)}{k} \sum_{g'=1}^{G} \nu_{g'}\left(\mathbf{r}\right) \Sigma_f^{g'}\left(\mathbf{r}\right) \phi_{g'}(\mathbf{r}) + \, \sum_{g'=1}^G \,  \Sigma_{s}^{g' \rightarrow g}\left(\mathbf{r}\right) \phi_{g'}(\mathbf{r})
+\end{equation}
+
+Define net current $J_g$
+\begin{equation}
+	\nabla \cdot J_g\left(\mathbf{r}\right) + \Sigma_t^{g}\left(\mathbf{r}\right) \phi_{g}(\mathbf{r}) = \frac{\chi_{g}\left(\mathbf{r}\right)}{k} \sum_{g'=1}^{G} \nu_{g'}\left(\mathbf{r}\right) \Sigma_f^{g'}\left(\mathbf{r}\right) \phi_{g'}(\mathbf{r}) + \, \sum_{g'=1}^G \,  \Sigma_{s}^{g' \rightarrow g}\left(\mathbf{r}\right) \phi_{g'}(\mathbf{r})
+\end{equation}
+
+Volume integral
+\begin{equation}
+	\int\displaylimits_{V} d\mathbf{r} \,\nabla \cdot J_g\left(\mathbf{r}\right) + \int\displaylimits_{V} d\mathbf{r} \, \Sigma_t^{g}\left(\mathbf{r}\right) \phi_{g}(\mathbf{r}) = \int\displaylimits_{V} d\mathbf{r} \, \left( \frac{\chi_{g}\left(\mathbf{r}\right)}{k} \sum_{g'=1}^{G} \nu_{g'}\left(\mathbf{r}\right) \Sigma_f^{g'}\left(\mathbf{r}\right) \phi_{g'}(\mathbf{r}) + \, \sum_{g'=1}^G \,  \Sigma_{s}^{g' \rightarrow g}\left(\mathbf{r}\right) \phi_{g'}(\mathbf{r}) \right)
+\end{equation}
+
+Constant XS regions contained in CMFD cell and fill up entire volume
+\begin{equation}
+	\int\displaylimits_{V_j} d\mathbf{r} \,\nabla \cdot J_g\left(\mathbf{r}\right) + \sum_{i \in j} \int\displaylimits_{V_i} d\mathbf{r} \, \Sigma_t^{i,g} \phi_{g}(\mathbf{r}) = \sum_{i \in j} \int\displaylimits_{V_i} d\mathbf{r} \, \left( \frac{\chi_{i,g}}{k} \sum_{g'=1}^{G} \nu_{i, g'} \Sigma_f^{i,g'} \phi_{g'}(\mathbf{r}) + \sum_{g'=1}^G  \Sigma_{s}^{i, g' \rightarrow g} \phi_{g'}(\mathbf{r}) \right)
+\end{equation}
+
+Defining average flux $\overline{\phi_{i,g}}$
+\begin{equation}
+	\int\displaylimits_{V_j} d\mathbf{r} \,\nabla \cdot J_g\left(\mathbf{r}\right) + \sum_{i \in j} \Sigma_t^{i,g} \overline{\phi_{i,g}} V_i = \sum_{i \in j} \left( \frac{\chi_{i,g}}{k} \sum_{g'=1}^{G} \nu_{i, g'} \Sigma_f^{i,g'} \overline{\phi_{i,g'}} V_i + \sum_{g'=1}^G   \Sigma_{s}^{i, g' \rightarrow g}\overline{\phi_{i,g'}} V_i \right)
+\end{equation}
+
+Gauss divergence theorm, define $\mathbf{n}$
+\begin{equation}
+	\int\displaylimits_{S \in S_j} dS \, J_g\left(\mathbf{r}\right) \cdot \mathbf{n} + \sum_{i \in j} \Sigma_t^{i,g} \overline{\phi_{i,g}} V_i = \sum_{i \in j} \left( \frac{\chi_{i,g}}{k} \sum_{g'=1}^{G} \nu_{i, g'} \Sigma_f^{i,g'} \overline{\phi_{i,g'}} V_i + \sum_{g'=1}^G   \Sigma_{s}^{i, g' \rightarrow g}\overline{\phi_{i,g'}} V_i \right)
+\end{equation}
+
+
+Group collapse
+\begin{equation}
+	\sum_{g \in e} \left( \int\displaylimits_{S \in S_j} dS \, J_g\left(\mathbf{r}\right) \cdot \mathbf{n} + \sum_{i \in j} \Sigma_t^{i,g} \overline{\phi_{i,g}} V_i \right) = \sum_{g \in e} \sum_{i \in j} \left( \frac{\chi_{i,g}}{k} \sum_{g'=1}^{G} \nu_{i, g'} \Sigma_f^{i,g'} \overline{\phi_{i,g'}} V_i + \sum_{g'=1}^G   \Sigma_{s}^{i, g' \rightarrow g}\overline{\phi_{i,g'}} V_i \right)
+\end{equation}
+
+
+...
+\begin{equation}
+	\sum_{g \in e} \left( \int\displaylimits_{S \in S_j} dS \, J_g\left(\mathbf{r}\right) \cdot \mathbf{n} + \sum_{i \in j} \Sigma_t^{i,g} \overline{\phi_{i,g}} V_i \right) = \sum_{i \in j} \left( \frac{\sum_{g \in e} \chi_{i,g}}{k} \sum_{g'=1}^{G} \nu_{i, g'} \Sigma_f^{i,g'} \overline{\phi_{i,g'}} V_i + \sum_{g'=1}^G \left(\sum_{g \in e} \Sigma_{s}^{i, g' \rightarrow g} \right) \overline{\phi_{i,g'}} V_i \right)
+\end{equation}
+
+Definitions
+\begin{equation}
+	\chi_C^{j,e} = \frac{\sum_{i \in j} \left[ \left(\sum_{g \in e} \chi_{i,g} \right) \left(\sum_{g'=1}^{G} \nu_{i, g'} \Sigma_f^{i,g'} \overline{\phi_{i,g'}} V_i \right)\right]}{\sum_{i \in j} \sum_{g=1}^{G} \nu_{i, g} \Sigma_f^{i,g} \overline{\phi_{i,g}} V_i}
+\end{equation}
+
+
+\begin{equation}
+	\nu_C^{j,e} \, \Sigma_{C,f}^{j,e} = \frac{\sum_{i \in j} \sum_{g \in e} \nu_{i, g} \Sigma_f^{i,g} \overline{\phi_{i,g}} V_i}{\sum_{i \in j} \sum_{g \in e} \overline{\phi_{i,g}} V_i}
+\end{equation}
+
+\begin{equation}
+	\Sigma_{C,s}^{j, e' \rightarrow e} = \frac{\sum_{i \in j} \sum_{g'\in e'} \left(\sum_{g \in e} \Sigma_{s}^{i, g' \rightarrow g} \right) \overline{\phi_{i,g'}} V_i}{\sum_{i \in j} \sum_{g\in e} \overline{\phi_{i,g}} V_i}
+\end{equation}
+
+\begin{equation}
+	\Sigma_{C,t}^{j, e} = \frac{\sum_{i \in j} \sum_{g \in e} \Sigma_{t}^{i, g} \overline{\phi_{i,g}} V_i}{\sum_{i \in j} \sum_{g\in e} \overline{\phi_{i,g}} V_i}
+\end{equation}
+
+\begin{equation}
+	\phi_C^{j,e} = \frac{\sum_{i \in j} \sum_{g \in e} \overline{\phi_{i,g}} V_i}{\sum_{i \in j} V_i}
+\end{equation}
+
+\begin{equation}
+	V_C^j = \sum_{i \in j} V_i
+\end{equation}
+
+After definitions
+\begin{equation}
+	\frac{1}{V_C^j} \sum_{g \in e} \left( \int\displaylimits_{S \in S_j} dS \, J_g\left(\mathbf{r}\right) \cdot \mathbf{n} \right) + \Sigma_{C,t}^{j,e} \phi_C^{j,e} = \frac{\chi_C^{j,e}}{k} \sum_{e'=1}^{E} \nu_C^{j, e'} \Sigma_{C,f}^{j,e'} \phi_C^{j,e'} + \sum_{e'=1}^E  \Sigma_{C,s}^{i, e' \rightarrow e} \phi_C^{j,e'}
+\end{equation}
+
+\begin{equation}
+	\frac{1}{V_C^j} \sum_{g \in e} \sum_{h=1}^H \left( \int\displaylimits_{S \in S_{j,h}} dS \, J_g\left(\mathbf{r}\right) \cdot \mathbf{n} \right) + \Sigma_{C,t}^{j,e} \phi_C^{j,e} = \frac{\chi_C^{j,e}}{k} \sum_{e'=1}^{E} \nu_C^{j, e'} \Sigma_{C,f}^{j,e'} \phi_C^{j,e'} + \sum_{e'=1}^E  \Sigma_{C,s}^{i, e' \rightarrow e} \phi_C^{j,e'}
+\end{equation}
+
+\begin{equation}
+	\frac{1}{V_C^j} \sum_{g \in e} \sum_{h=1}^H \left( \int\displaylimits_{S \in S_{j,h}} dS \, J_g\left(\mathbf{r}\right) \cdot \mathbf{n} \right) + \Sigma_{C,t}^{j,e} \phi_C^{j,e} = \frac{\chi_C^{j,e}}{k} \sum_{e'=1}^{E} \nu_C^{j, e'} \Sigma_{C,f}^{j,e'} \phi_C^{j,e'} + \sum_{e'=1}^E  \Sigma_{C,s}^{i, e' \rightarrow e} \phi_C^{j,e'}
+\end{equation}
+
+\begin{equation}
+	\int\displaylimits_{S \in S_{j,h}} dS \, J_g\left(\mathbf{r}\right) \cdot \mathbf{n} =  \int\displaylimits_{S \in S_{j,h}} dS \, \int\displaylimits_{4 \pi} d\mathbf{\Omega} \, \psi_{g}(\mathbf{r},\mathbf{\Omega}) \left(\mathbf{\Omega} \cdot \mathbf{n} \right)
+\end{equation}
+
+Note the relationship between area penetrated on surface $S_{j,h}$ and area encompased in track length $\delta A_{i,t}$ (with picture)
+\begin{equation}
+	\int\displaylimits_{S \in S_{j,h}} dS \, J_g\left(\mathbf{r}\right) \cdot \mathbf{n} =  \sum_{(t,s) \in S_{j,h}} \frac{\delta A_{i,t}}{\mathbf{\Omega} \cdot \mathbf{n}} \psi_{g}^{t,s}(s_{j,h}) \left(\mathbf{\Omega} \cdot \mathbf{n} \right)
+\end{equation}
+
+Final equation
+\begin{equation}
+	\int\displaylimits_{S \in S_{j,h}} dS \, J_g\left(\mathbf{r}\right) \cdot \mathbf{n} =  \sum_{(t,s) \in S_{j,h}} \delta A_{i,t} \psi_{g}^{t,s}(s_{j,h})
+\end{equation}
+
+Mention approximation of using currents from an iteration of MOC, but how it's not an approximation at convergence
+
+\begin{equation}
+	\tilde{J}_{j,h,e} = \sum_{g \in e} \sum_{(t,s) \in S_{j,h}} \delta A_{i,t} \psi_{g}^{t,s}(s_{j,h})
+\end{equation}
+
+\begin{equation}
+	\frac{1}{V_C^j} \sum_{h=1}^H \tilde{J}_{j,h,e} + \Sigma_{C,t}^{j,e} \phi_C^{j,e} = \frac{\chi_C^{j,e}}{k} \sum_{e'=1}^{E} \nu_C^{j, e'} \Sigma_{C,f}^{j,e'} \phi_C^{j,e'} + \sum_{e'=1}^E  \Sigma_{C,s}^{i, e' \rightarrow e} \phi_C^{j,e'}
+\end{equation}
+
+TODO: bring in equations relating to net current $J$
+
+Define net current out as begin related to fluxes. Note nonlinear term. Figure out whats up with $u(h)$.
+\begin{equation}
+	\frac{\tilde{J}_{j,h,e}}{A_{j,h}} = - u(h) \hat{D}_{j,e} \left(\phi_C^{I(j,h),e} - \phi_C^{j,e}\right) - \tilde{D}_{j,h,e} \left(\phi_C^{I(j,h),e} + \phi_C^{j,e}\right)
+\end{equation}
+
+Uniform grid assumption
+\begin{equation}
+	\hat{D}_{j,h,e} = \frac{2 D_{j,e} D_{I(j,h),e}}{\Delta \mathbf{r}_h \left( D_{j,e} + D_{I(j,h),e} \right)}
+\end{equation}
+
+where we define the diffusion coefficient as:
+\begin{equation}
+	D_{j,e} = \frac{\sum_{i \in j} \sum_{g \in e} \frac{1}{3\Sigma_{t}^{i, g}} \overline{\phi_{i,g}} V_i}{\sum_{i \in j} \sum_{g \in e} \overline{\phi_{i,g}} V_i}
+\end{equation}
+
+Without any loss of accuracy ... preserve continuity with MOC
+\begin{equation}
+	\tilde{D}_{j,h,e} = \frac{-u(h) \hat{D}_{j,h,e} \left(\phi_C^{I(j,h),e} - \phi_C^{j,e}\right) - \frac{\tilde{J}_{j,h,e}}{A_{j,h}}}{\phi_C^{I(j,h),e} + \phi_C^{j,e}}
+\end{equation}
+
+Approximate with fluxes at the beginning of the CMFD sweep ... $\tilde{\phi}_C^{j,e}$ ... no approximation at convergence
+
+\begin{equation}
+	\tilde{D}_{j,h,e} \approx \frac{-u(h) \hat{D}_{j,h,e} \left(\tilde{\phi}_C^{I(j,h),e} - \tilde{\phi}_C^{j,e}\right) - \frac{\tilde{J}_{j,h,e}}{A_{j,h}}}{\tilde{\phi}_C^{I(j,h),e} + \tilde{\phi}_C^{j,e}}
+\end{equation}
+
+Returning to balance equation ...
+\begin{equation}
+	\frac{1}{V_C^j} \sum_{h=1}^H A_{j,h} \left( - u(h) \hat{D}_{j,e} \left(\phi_C^{I(j,h),e} - \phi_C^{j,e}\right) - \tilde{D}_{j,h,e} \left(\phi_C^{I(j,h),e} + \phi_C^{j,e}\right) \right) + \Sigma_{C,t}^{j,e} \phi_C^{j,e} = \frac{\chi_C^{j,e}}{k} \sum_{e'=1}^{E} \nu_C^{j, e'} \Sigma_{C,f}^{j,e'} \phi_C^{j,e'} + \sum_{e'=1}^E  \Sigma_{C,s}^{i, e' \rightarrow e} \phi_C^{j,e'}
+\end{equation}
+
+Grouping terms
+\begin{equation}
+	\frac{1}{V_C^j} \sum_{h=1}^H A_{j,h} \left(u(h) \hat{D}_{j,e} -  \tilde{D}_{j,h,e} \right) \phi_C^{j,e} - \frac{1}{V_C^j} \sum_{h=1}^H \left( \tilde{D}_{j,h,e} + u(h) \hat{D}_{j,e} \right) \phi_C^{I(j,h),e} + \Sigma_{C,t}^{j,e} \phi_C^{j,e} = \frac{\chi_C^{j,e}}{k} \sum_{e'=1}^{E} \nu_C^{j, e'} \Sigma_{C,f}^{j,e'} \phi_C^{j,e'} + \sum_{e'=1}^E  \Sigma_{C,s}^{i, e' \rightarrow e} \phi_C^{j,e'}
+\end{equation}
+
+...
+\begin{equation}
+	\left[\Sigma_{C,t}^{j,e} + \frac{\sum_{h=1}^H A_{j,h} \left(u(h) \hat{D}_{j,e} - \tilde{D}_{j,h,e} \right)}{V_C^j} \right] \phi_C^{j,e} - \frac{\sum_{h=1}^H A_{j,h} \left( \tilde{D}_{j,h,e} + u(h) \hat{D}_{j,e} \right)}{V_C^j} \phi_C^{I(j,h),e} = \frac{\chi_C^{j,e}}{k} \sum_{e'=1}^{E} \nu_C^{j, e'} \Sigma_{C,f}^{j,e'} \phi_C^{j,e'} + \sum_{e'=1}^E  \Sigma_{C,s}^{i, e' \rightarrow e} \phi_C^{j,e'}
+\end{equation}
+
+...
+\begin{equation}
+	\left[\Sigma_{C,t}^{j,e} + \frac{\sum_{h=1}^H A_{j,h} \left(u(h) \hat{D}_{j,e} - \tilde{D}_{j,h,e} \right)}{V_C^j} \right] \phi_C^{j,e} - \frac{\sum_{h=1}^H A_{j,h} \left( \tilde{D}_{j,h,e} + u(h) \hat{D}_{j,e} \right)}{V_C^j} \phi_C^{I(j,h),e} - \sum_{e'=1}^E  \Sigma_{C,s}^{i, e' \rightarrow e} \phi_C^{j,e'} = \frac{\chi_C^{j,e}}{k} \sum_{e'=1}^{E} \nu_C^{j, e'} \Sigma_{C,f}^{j,e'} \phi_C^{j,e'}
+\end{equation}
+
+...
+\begin{equation}
+	\begin{split}
+		\left[\Sigma_{C,t}^{j,e} V_C^j + \sum_{h=1}^H A_{j,h} \left(u(h) \hat{D}_{j,e} - \tilde{D}_{j,h,e} \right) \right] \phi_C^{j,e} - \sum_{h=1}^H A_{j,h} \left( \tilde{D}_{j,h,e} + u(h) \hat{D}_{j,e} \right) \phi_C^{I(j,h),e} & \\ - \sum_{e'=1}^E  \Sigma_{C,s}^{i, e' \rightarrow e} V_C^j \phi_C^{j,e'} =
+		\frac{\chi_C^{j,e}}{k} \sum_{e'=1}^{E} \nu_C^{j, e'} \Sigma_{C,f}^{j,e'} V_C^j \phi_C^{j,e'} & \\
+	\end{split}
+\end{equation}
+
+
+\begin{equation}
+	A \Phi_C = \frac{1}{k} M \Phi_C
+\end{equation}
+
+
+\begin{equation}
+	A^{-1} M \Phi_C = k \Phi_C
+\end{equation}
+
+\begin{equation}
+	\Phi_C \leftarrow A^{-1} M \Phi_C
+\end{equation}
+
+
+Insert flow diagram:
+Guess initial scalar flux distribution and boundary angular fluxes
+->
+Compute sources
+Solve MOC equations for the source distribution
+Collapse cross sections, currents, form CMFD equations
+Solve CMFD equations
+Update scalar fluxes, k
+<-

@@ -1,0 +1,280 @@
+\chapter{The Method of Characteristics}
+\label{chap:moc}
+
+In the previous chapter, numerous approximations are made in generation of multi-group cross-sections. Standard Method of Characteristics (MOC) solvers, such as the one developed and discussed in this thesis, rely on multi-group cross-sections as input. Once the cross-sections are generated, MOC is capable of computing reaction rates across the reactor geometry.
+
+First, the MOC equations will be derived from the multi-group neuton transport equation. Then ...
+
+%and Sec.~\ref{sec:chap3-mgxs-gen} outlines the necessary computation needed to generate \ac{MGXS} with \ac{MC}. Sec.~\ref{sec:chap3-lit-review} discusses past work to apply \ac{MC} for \ac{MGXS} generation, while Sec.~\ref{sec:chap3-latent-variables} introduces a new approach based on a latent variable model for spatial self-shielding.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Derivation of Continuous Angle MOC Equations}
+\label{sec:chap3-mc-overview}
+
+Starting, from the multi-group neutron transport equation given in Eq.~\ref{eqn:multi-group-transport}, the neutron source $q_g(\mathbf{r})$ is defined to be
+\begin{equation}
+q_g(\mathbf{r}) = \frac{1}{4 \pi} \left( \frac{\chi_{g}\left(\mathbf{r}\right)}{k} \sum_{g'=1}^{G} \nu_{g'}\left(\mathbf{r}\right) \Sigma_f^{g'}\left(\mathbf{r}\right) \phi_{g'}\left(\mathbf{r}\right) + \, \sum_{g'=1}^G \,  \Sigma_{s}^{g' \rightarrow g}\left(\mathbf{r}\right) \phi_{g'}(\mathbf{r}) \right)
+\label{eqn:source}
+\end{equation}
+which leads to a new form for the neutron balance equation:
+\begin{dmath}
+	\mathbf{\Omega} \cdot \nabla \psi_g(\mathbf{r},\mathbf{\Omega}) \, + \, \Sigma_{t}^{g}(\mathbf{r})\psi_g(\mathbf{r},\mathbf{\Omega}) = q_g(\mathbf{r})
+\end{dmath}
+Next, a coordinate transformation is performed, casting the position as a displacement from an origin $\mathbf{r_0}$ along the direction of travel $\mathbf{\Omega}$ as $\mathbf{r} = \mathbf{r_0} + s\mathbf{\Omega}$. Under this transformation, the new balance equation becomes:
+\begin{dmath}
+	\mathbf{\Omega} \cdot \nabla \psi_g(\mathbf{r_0} + s\mathbf{\Omega},\mathbf{\Omega}) \, + \, \Sigma_{t}^{i,g}(\mathbf{r_0} + s\mathbf{\Omega})\psi_g(\mathbf{r_0} + s\mathbf{\Omega},\mathbf{\Omega}) = q_g(\mathbf{r_0} + s\mathbf{\Omega})
+\end{dmath}
+In this new form, the gradient reduces to a simple derivative by the distance $s$ traveled from the origin $\mathbf{r_0}$ as:
+\begin{dmath}
+	\frac{d\psi_g(\mathbf{r_0} + s\mathbf{\Omega},\mathbf{\Omega})}{ds} \, + \, \Sigma_{t}^{g}(\mathbf{r_0} + s\mathbf{\Omega})\psi(\mathbf{r_0} + s\mathbf{\Omega},\mathbf{\Omega}) = q_g(\mathbf{r_0} + s\mathbf{\Omega})
+\end{dmath}
+Considering a region $i$ with constant total cross-section $\Sigma_{t}^{i,g}$, the angular flux a distance $\ell$ from the origin can be calculated using Eq.~\ref{eqn:moc-source-int}. The interested reader can find a simple derivation in Appendix~\ref{deriv:moc-source-int}.
+\begin{dmath}
+	\psi_g(\mathbf{r_0} + \ell \mathbf{\Omega},\mathbf{\Omega}) = \psi_g(\mathbf{r_0},\mathbf{\Omega}) e^{-\Sigma_{t}^{i,g} \ell} + \int\displaylimits_{0}^{\ell} ds \, e^{-\Sigma_{t}^{i,g} (\ell-s)}q_g(\mathbf{r_0} + s\mathbf{\Omega})
+	\label{eqn:moc-source-int}
+\end{dmath}
+
+Eq.~\ref{eqn:moc-source-int} reveals an important relationship. For a region of constant total cross-section with known source distribution $q_g(\mathbf{r})$ and angular flux at a single point $\psi_g(\mathbf{r_0},\mathbf{\Omega})$, the angular flux for all points along the direction of travel $\mathbf{\Omega})$ can be calculated. Therefore an enclosing boundary defining the relationship of impinging angular fluxes is sufficient for the calculation of all angular fluxes within the region.
+
+An example of one such boundary condition is the vacuum boundary condition where it is assumed that zero angular flux is impingent on the region for all angles. This is often used for full core problems since there are virtually no neutron sources outside the problem domain.
+
+If the problem domain can be represented (or approximated) as the composition of a finite number of regions over which the total cross-section is finite and the neutron source $q_g(\mathbf{r})$ takes some known distribution, the calculation of all angular fluxes throughout the problem is possible.
+
+Realistically, the source distribution is not known before solving the problem, since it depends on the solution. However, if the problem domain is sufficiently discretized, a low order approximation of the shape of the neutron source within the regions can be made with little impact on solution accuracy. An example of problem discretization is shown in Fig.~\ref{fig:pin-discretization} where a fuel pin is discretized radially. The image on the left shows a radial view of the fuel pin geometry, colored by (constant cross-section) material region. The image on the right shows a discretized form of that geometry, colored by source region over which the neutron source is assumed to have some low-order form.
+
+FIGURE
+
+One common low order approximation for the neutron source is the flat source approximation. This approximation assumes the neutron source for a given energy group $q_g(\mathbf{r})$ is constant over each source region. A linear source approximation will be introduced later in Section~\ref{sec:linear-source}, allowing for a coarser discretization of the geometry. However, the flat source approximation is first presented in the explaination of MOC as it is less mathematically cumbersome than the linear source approximation and arrives at a very similar form and solution method as the linear source version. The flat source approximation is also the most fequently used approximation in standard MOC solvers~\cite{other-moc-flat-source-solvers}. Under this approximation the angular flux relationship given in Eq.~\ref{eqn:moc-source-int} reduces to
+\begin{dmath}
+	\psi_g(\mathbf{r_0} + \ell \mathbf{\Omega},\mathbf{\Omega}) = \psi_g(\mathbf{r_0},\mathbf{\Omega}) e^{-\Sigma_{t}^{i,g} \ell} + \int\displaylimits_{0}^{\ell} ds \, q^0_{i,g} e^{-\Sigma_{t}^{i,g} (\ell-s)}
+\end{dmath}
+with region $i$ having constant neutron source $q^0_{i,g}$. The integral can be analytically solved, leading to the final form given in Eq.~\ref{eqn:angular-flux-var}.
+\begin{dmath}
+	\psi_g(\mathbf{r_0} + \ell \mathbf{\Omega},\mathbf{\Omega}) = \psi_g(\mathbf{r_0},\mathbf{\Omega}) e^{-\Sigma_{t}^{i,g} \ell} + \frac{q^0_{i,g}}{\Sigma_{t}^{i,g}} F_1 \left(\Sigma_{t}^{i,g} \ell\right)
+	\label{eqn:angular-flux-var}
+\end{dmath}
+where
+\begin{equation}
+F_1(\tau) = \left(1 - e^{-\tau}\right).
+\end{equation}
+
+This equation allows for the computation of all necessary angular fluxes from a known neutron source $q^0_{i,g}$. With the flat source approximation we were able to impose some form for the source, but we do not know its value. Therefore, the only task remaining is determining the value of the source in each region, $q^0_{i,g}$.
+
+In addition to assuming a constant source over the region, it is likewise assumed that the scalar flux is constant over each region. From the definition of the neutron source in Eq.~\ref{eqn:source}, the constant neutron source $q^0_{i,g}$ in the region $i$ can be computed as
+\begin{equation}
+q^0_{i,g} = \frac{1}{4 \pi} \left( \frac{\chi_{g}\left(\mathbf{r}\right)}{k} \sum_{g'=1}^{G} \nu_{g'}\left(\mathbf{r}\right) \Sigma_f^{g'}\left(\mathbf{r}\right) \overline{\phi_{i,g'}} + \, \sum_{g'=1}^G \,  \Sigma_{s}^{g' \rightarrow g}\left(\mathbf{r}\right) \overline{\phi_{i,g'}} \right)
+\end{equation}
+where $\overline{\phi_{i,g}}$ is the average scalar flux in the region. Recall from Eq.~\ref{eqn:scalar-flux} and integrating over region $i$ that the average scalar flux can be computed as:
+\begin{dmath}
+	\overline{\phi_{i,g}} = \frac{1}{V}\int_V dV \, \int_{4\pi} d\Omega \, \psi_g(\mathbf{r},\mathbf{\Omega})
+\end{dmath}
+
+This form is relatively un-useful since our relationship only for a given direction. Tracks laid down. Introduce track-laydown.
+
+\subsection{Continuity of tracks + track laydown + linking}
+
+For bulk
+\begin{dmath}
+	\psi_g^{t,s} = \psi_g^{t,s-1}
+\end{dmath}
+
+For boundaries, we have problems ... some approxmination is needed ... or linking tracks. Note that $S(c)$ is the last index of segment track $c$ containing $S(c) + 1$ segments.
+\begin{dmath}
+	\psi_g^{t,0} = \psi_g^{c(t),S(c)}
+\end{dmath}
+
+Lagged iteration approx (maybe move later)
+\begin{dmath}
+	\psi_g^{t,0} = \widetilde{\psi}_g^{c(t),S(c)}
+\end{dmath}
+Explain + pictures
+
+\section{Derivation of the Track Discretized MOC Equations}
+
+Angular flux attenuation
+\begin{dmath}
+	\psi_g^{t,s}(s) = \psi^{t,s}_g(0) + \left( \frac{q^0_{i,g}}{\Sigma_{t}^{i,g}} - \psi_g^{t,s}(0) \right) F_1\left(\Sigma_{t}^{i,g} s \right)
+\end{dmath}
+
+Average flux:
+\begin{dmath}
+	\overline{\phi_{i,g}} = \frac{1}{V_i} \sum_{(t,s) \in V_i} \delta A_{i,t} \int_{0}^{\ell_{t,s}} ds \, \psi^{t,s}_g(s)
+\end{dmath}
+
+Begin:
+\begin{dmath}
+	\overline{\phi_{i,g}} = \frac{1}{V_i} \sum_{(t,s) \in V_i} \delta A_{i,t} \int_{0}^{\ell_{t,s}} ds \,  \left(\psi^{t,s}_g(0) + \left( \frac{q^0_{i,g}}{\Sigma_{t}^{i,g}} - \psi_g^{t,s}(0) \right) F_1\left(\Sigma_{t}^{i,g} s \right) \right)
+\end{dmath}
+
+\begin{dmath}
+	\overline{\phi_{i,g}} = \frac{1}{V_i} \sum_{(t,s) \in V_i} \delta A_{i,t} \left( \psi^{t,s}_g(0) \ell_{t,s} + \left( \frac{q^0_{i,g}}{\Sigma_{t}^{i,g}} - \psi_g^{t,s}(0) \right) \left( \ell_{t,s} - \int_{0}^{\ell_{t,s}} ds \, e^{-\Sigma_{t}^{i,g} s} \right) \right)
+\end{dmath}
+
+\begin{dmath}
+	\overline{\phi_{i,g}} = \frac{1}{V_i} \sum_{(t,s) \in V_i} \delta A_{i,t} \left( \psi^{t,s}_g(0) \ell_{t,s} + \left( \frac{q^0_{i,g}}{\Sigma_{t}^{i,g}} - \psi_g^{t,s}(0) \right) \left( \ell_{t,s} + \frac{1}{\Sigma_{t}^{i,g}} \left( e^{-\Sigma_{t}^{i,g} \ell_{t,s}} - 1\right) \right) \right)
+\end{dmath}
+
+\begin{dmath}
+	\overline{\phi_{i,g}} = \frac{1}{V_i} \sum_{(t,s) \in V_i} \delta A_{i,t} \left( \frac{q^0_{i,g} \ell_{t,s}}{\Sigma_{t}^{i,g}} + \frac{1}{\Sigma_{t}^{i,g}} \left( \frac{q^0_{i,g}}{\Sigma_{t}^{i,g}} - \psi_g^{t,s}(0) \right) \left( e^{-\Sigma_{t}^{i,g} \ell_{t,s}} - 1\right) \right)
+\end{dmath}
+
+\begin{dmath}
+	\overline{\phi_{i,g}} = \frac{q^0_{i,g}}{\Sigma_{t}^{i,g}} + \frac{1}{V_i} \sum_{(t,s) \in V_i} \frac{\delta A_{i,t}}{\Sigma_{t}^{i,g}} \left( \frac{q^0_{i,g}}{\Sigma_{t}^{i,g}} - \psi_g^{t,s}(0) \right) \left( e^{-\Sigma_{t}^{i,g} \ell_{t,s}} - 1\right)
+\end{dmath}
+
+\begin{dmath}
+	\overline{\phi_{i,g}} = \frac{q^0_{i,g}}{\Sigma_{t}^{i,g}} - \frac{1}{\Sigma_{t}^{i,g} V_i} \sum_{(t,s) \in V_i} \delta A_{i,t} \left( \frac{q^0_{i,g}}{\Sigma_{t}^{i,g}} - \psi_g^{t,s}(0) \right) F_1\left(\Sigma_{t}^{i,g} \ell_{t,s} \right)
+\end{dmath}
+
+\begin{dmath}
+	\overline{\phi_{i,g}} = \frac{q^0_{i,g}}{\Sigma_{t}^{i,g}} + \frac{1}{\Sigma_{t}^{i,g} V_i} \sum_{(t,s) \in V_i} \delta A_{i,t} \left(\psi_g^{t,s}(0) - \psi_g^{t,s}(s) \right)
+\end{dmath}
+
+\begin{dmath}
+	\overline{\phi_{i,g}} = \frac{q^0_{i,g}}{\Sigma_{t}^{i,g}} + \frac{1}{\Sigma_{t}^{i,g} V_i} \sum_{(t,s) \in V_i} \delta A_{i,t} \Delta \psi_g^{t,s}
+\end{dmath}
+
+
+\subsection{Solving the MOC System of Equations}
+
+Normally presented in terms of physics and mechanics of source iteration. The purpose here is to demonstrate that MOC can be cast as a simple matrix problem but computationally infeasible.
+
+More general
+\begin{dmath}
+	\overline{\phi_{i,g}} = \frac{1}{\Sigma_{t}^{i,g} V_i} \sum_{(t,s) \in V_i} \delta A_{i,t} \left( q^0_{i,g} \ell_{t,s} + \Delta \psi_g^{t,s} \right)
+\end{dmath}
+
+
+USING: (remove)
+\begin{dmath}
+	\psi_g^{t,s}(s) = \psi^{t,s}_g(0) + \left( \frac{q^0_{i,g}}{\Sigma_{t}^{i,g}} - \psi_g^{t,s}(0) \right) F_1\left(\Sigma_{t}^{i,g} s \right)
+\end{dmath}
+
+
+Solving for source given all angular fluxes known along a track:
+\begin{dmath}
+	q^0_{i,g} = \Sigma_{t}^{i,g} \left( \psi_g^{t,s}(0) - \frac{\Delta \psi_g^{t,s}}{F_1\left(\Sigma_{t}^{i,g} \ell_{t,s} \right)}  \right) 
+\end{dmath}
+
+Substituting into general equation
+\begin{dmath}
+	\overline{\phi_{i,g}} = \frac{1}{\Sigma_{t}^{i,g} V_i} \sum_{(t,s) \in V_i} \delta A_{i,t} \left( \left( \Sigma_{t}^{i,g} \ell_{t,s} \right) \left( \psi_g^{t,s}(0) - \frac{\Delta \psi_g^{t,s}}{F_1\left(\Sigma_{t}^{i,g} \ell_{t,s} \right)}  \right) + \Delta \psi_g^{t,s} \right)
+\end{dmath}
+
+Using continuity
+\begin{dmath}
+	\overline{\phi_{i,g}} = \frac{1}{\Sigma_{t}^{i,g} V_i} \sum_{(t,s) \in V_i} \delta A_{i,t} \left( \left( \Sigma_{t}^{i,g} \ell_{t,s} \right) \left( \psi_g^{t,s-1} - \frac{\psi_g^{t,s-1} - \psi_g^{t,s}}{F_1\left(\Sigma_{t}^{i,g} \ell_{t,s} \right)}  \right) + \psi_g^{t,s-1} - \psi_g^{t,s} \right)
+\end{dmath}
+
+
+This is an equation linear in the unknown angular fluxes. Note dimensionality
+
+\begin{dmath}
+	\Phi = W \Psi
+\end{dmath}
+
+From the scalar fluxes, we can calculate sources ... (give equations for source calculation)
+
+Matrix form
+
+\begin{dmath}
+	Q = \frac{1}{k} F \Phi + S \Phi
+\end{dmath}
+
+
+Similarly, the angular fluxes are calculated as
+
+\begin{dmath}
+	\frac{q^0_{i,g}}{\Sigma_{t}^{i,g}} = \left( \psi_g^{t,s}(0) - \frac{\Delta \psi_g^{t,s}}{F_1\left(\Sigma_{t}^{i,g} \ell_{t,s} \right)} \right) 
+\end{dmath}
+
+Fundamental equations
+\begin{dmath}
+	HQ = T \Psi
+\end{dmath}
+
+In terms of the scalar fluxes
+\begin{dmath}
+	H\left(\frac{1}{k} F \Phi + S \Phi\right) = T \Psi
+\end{dmath}
+
+Calculating scalar flux from angular fluxes
+\begin{dmath}
+	H\left(\frac{1}{k} F W\Psi + S W \Psi\right) = T \Psi
+\end{dmath}
+
+...
+\begin{dmath}
+	\frac{1}{k} H F W\Psi = \left(T - H S W \right)\Psi
+\end{dmath}
+
+...
+
+
+In general eigenvalue form:
+\begin{dmath}
+	H F W\Psi =  k \left(T - H S W \right) \Psi
+\end{dmath}
+
+Which is just like
+\begin{dmath}
+	\left(T - H S W \right)^{-1} H F W\Psi =  k\Psi
+\end{dmath}
+
+
+However, we only care about $\Phi$ since it is sufficient and necessary to compute reaction rates. Therefore, we're only interested in the much smaller vector $\Phi = W \Psi$. This is problematic for standard eigenvalue solvers.
+
+Talk about structure. While H matrix is sparse it has no discernable structure. (Before this say assumption that randomly distributed source regions).
+
+Source iteration: fixed point process with guess of $k$ and $\Psi$, first compute source
+\begin{dmath}
+	Q \leftarrow \left(\frac{1}{k} F + S \right) \Phi
+\end{dmath}
+
+Then, the scalar flux vector can be compmuted as
+\begin{dmath}
+	\Phi \leftarrow W T^{-1} H Q
+\end{dmath}
+
+After each iteration, we arrive at a new estimate of $\phi$ and from this updated estimate it is possible to compute a new value for $k$. The new value of $k$ is computed by forcing
+
+\begin{dmath}
+	\frac{1}{k} F \Phi \mathbb{1}^T = C
+\end{dmath}
+where $C$ is some constant and $\mathbb{1}$ is the vector of ones. Therefore at each iteration $k$ is updated by taking
+
+\begin{dmath}
+	k_{\text{new}} \leftarrow k_{\text{old}} \frac{F \Phi_{\text{new}} \mathbb{1}^T}{F \Phi_{\text{old}} \mathbb{1}^T}
+\end{dmath}
+
+
+Physically, this is taking the eigenvalue $k$ to be the ratio of fission sources between iterations. The process continues iteratively until a stationary point is reached and the eigenvalue problem is converged.
+
+
+DERIV: MOC derivation of integral eq
+Begin deriv:
+\begin{dmath}
+	\frac{d\psi_g(\mathbf{r_0} + s\mathbf{\Omega},\mathbf{\Omega})}{ds} \, + \, \Sigma_{t}^{i,g}\psi_g(\mathbf{r_0} + s\mathbf{\Omega},\mathbf{\Omega}) = q_g(\mathbf{r_0} + s\mathbf{\Omega})
+\end{dmath}
+
+\begin{dmath}
+	e^{\Sigma_{t}^{i,g} s}\frac{d\psi_g(\mathbf{r_0} + s\mathbf{\Omega},\mathbf{\Omega})}{ds} \, + \, e^{\Sigma_{t}^{i,g} s}\Sigma_{t}^{i,g}\psi_g(\mathbf{r_0} + s\mathbf{\Omega},\mathbf{\Omega}) = e^{\Sigma_{t}^{i,g} s}q_g(\mathbf{r_0} + s\mathbf{\Omega})
+\end{dmath}
+
+\begin{dmath}
+	\frac{d\left[e^{\Sigma_{t}^{i,g} s} \psi_g(\mathbf{r_0} + s\mathbf{\Omega},\mathbf{\Omega})\right]}{ds} = e^{\Sigma_{t}^{i,g} s}q_g(\mathbf{r_0} + s\mathbf{\Omega})
+\end{dmath}
+
+\begin{dmath}
+	\int\displaylimits_{s=0}^{s=\ell} d\left[e^{\Sigma_{t}^{i,g} s} \psi_g(\mathbf{r_0} + s\mathbf{\Omega},\mathbf{\Omega})\right] = \int\displaylimits_{s=0}^{s=\ell} ds \, e^{\Sigma_{t}^{i,g} s}q_g(\mathbf{r_0} + s\mathbf{\Omega})
+\end{dmath}
+
+\begin{dmath}
+	e^{\Sigma_{t}^{i,g} \ell} \psi_g(\mathbf{r_0} + \ell \mathbf{\Omega},\mathbf{\Omega}) - \psi_g(\mathbf{r_0},\mathbf{\Omega}) = \int\displaylimits_{0}^{\ell} ds \, e^{\Sigma_{t}^{i,g} s}q_g(\mathbf{r_0} + s\mathbf{\Omega})
+\end{dmath}
+
+End deriv:
+\begin{dmath}
+	\psi_g(\mathbf{r_0} + \ell \mathbf{\Omega},\mathbf{\Omega}) = \psi_g(\mathbf{r_0},\mathbf{\Omega}) e^{-\Sigma_{t}^{i,g} \ell} + \int\displaylimits_{0}^{\ell} ds \, e^{-\Sigma_{t}^{i,g} (\ell-s)}q_g(\mathbf{r_0} + s\mathbf{\Omega})
+\end{dmath}
