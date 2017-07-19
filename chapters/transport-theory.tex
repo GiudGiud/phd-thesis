@@ -195,13 +195,66 @@ With this definition, the balance equation can be written more sucinctly as:
 		& \phantom{+} \, \frac{\chi(\mathbf{r},E)}{4\pi k} \int\displaylimits_{0}^{\infty} dE' \, \nu(\mathbf{r},E') \Sigma_f(\mathbf{r}, E') \phi(\mathbf{r}, E')\\
 		& + \, \int\displaylimits_{0}^{\infty} dE' \,  \frac{\Sigma_{s}(\mathbf{r}, \mathbf{\Omega},{E'\rightarrow E})}{4\pi} \phi(\mathbf{r}, E')
 	\end{split}
+	\label{eqn:pre-multigroup}
 \end{equation}
 
-Lastly, all cross-sections and material properties are assumed to have an energy dependecne that is pieceise constant. The energy range $[0, \infty)$ is divided into a finite number of energy ranges or \textit{groups} over which the cross-sections are constant in energy. This is termed the 
-\textit{multi-group approximation}. In reality this is far from the case. However, with careful choice of multi-group cross-sections, high accuracy can be obtained. The formation of these multi-group cross-sections will be the subject of the next section. With this approximation, we arrive at the multi-group transport equation. The calculation of solutions to which are the subject of this thesis. The subscript / superscript $g$ denotes group-wise quantities. Integrate over energy bounds of $g$ ....
+Next, the equation is integrated over an energy interval $g$ with range $[E_{g-1}, E_{g})$ which leads to
+\begin{equation}
+\begin{split}
+\mathbf{\Omega} \cdot \nabla \psi_g(\mathbf{r},\mathbf{\Omega}) \, + & \, \int_{E_{g-1}}^{E_{g}} dE \, \Sigma_{t}(\mathbf{r},E)\psi(\mathbf{r},\mathbf{\Omega},E) = \\
+& \phantom{+} \, \int_{E_{g-1}}^{E_g} dE \, \frac{\chi(\mathbf{r},E)}{4\pi k} \int\displaylimits_{0}^{\infty} dE' \, \nu(\mathbf{r},E') \Sigma_f(\mathbf{r}, E') \phi(\mathbf{r}, E')\\
+& + \, \int_{E_{g-1}}^{E_g} dE \, \int\displaylimits_{0}^{\infty} dE' \,  \frac{\Sigma_{s}(\mathbf{r}, \mathbf{\Omega},{E'\rightarrow E})}{4\pi} \phi(\mathbf{r}, E')
+\end{split}
+\end{equation}
+where the multi-group angular flux $\psi_g(\mathbf{r},\mathbf{\Omega})$ is defined as
+\begin{equation}
+\psi_g(\mathbf{r},\mathbf{\Omega}) = \int_{E_{g-1}}^{E_g} dE \, \psi(\mathbf{r},\mathbf{\Omega},E).
+\end{equation}
+If the entire energy $[0, \infty)$ range is split into $G$ non-overlapping energy intervals, yielding $G+1$ energy boundaries, then integrals over the entire range can be cast as the sum of integrals over each energy interval as
+\begin{equation}
+\begin{split}
+\mathbf{\Omega} \cdot \nabla \psi_g(\mathbf{r},\mathbf{\Omega}) \, + & \, \int_{E_{g-1}}^{E_g} dE \, \Sigma_{t}(\mathbf{r},E)\psi(\mathbf{r},\mathbf{\Omega},E) = \\
+& \phantom{+} \, \int_{E_{g-1}}^{E_g} dE \, \frac{\chi(\mathbf{r},E)}{4\pi k} \sum_{g'=1}^G \left( \int\displaylimits_{E_{g'-1}}^{E_{g'}} dE' \, \nu(\mathbf{r},E') \Sigma_f(\mathbf{r}, E') \phi(\mathbf{r}, E') \right)\\
+& + \, \int_{E_{g-1}}^{E_g} dE \, \sum_{g'=1}^G \left( \int\displaylimits_{E_{g'-1}}^{E_{g'}} dE' \,  \frac{\Sigma_{s}(\mathbf{r}, \mathbf{\Omega},{E'\rightarrow E})}{4\pi} \phi(\mathbf{r}, E') \right).
+\end{split}
+\end{equation}
+The group-wise scalar flux $\phi_g(\mathbf{r})$ is defined as
+\begin{equation}
+\phi_g(\mathbf{r}) = \int_{E_{g-1}}^{E_g} dE \, \phi(\mathbf{r},E)
+\end{equation}
+and \textit{multi-group cross-sections} are defined as
+\begin{eqnarray}
+\Sigma_{t}^g(\mathbf{r},\mathbf{\Omega}) = \frac{\int_{E_{g-1}}^{E_g} dE \, \Sigma_{t}(\mathbf{r},E)\psi(\mathbf{r},\mathbf{\Omega},E)}{\int_{E_{g-1}}^{E_g} dE \, \psi(\mathbf{r},\mathbf{\Omega},E)} \\
+\nu \Sigma_f^g\left(\mathbf{r}\right) = \frac{\int\displaylimits_{E_{g'-1}}^{E_{g'}} dE \, \nu(\mathbf{r},E) \Sigma_f(\mathbf{r}, E) \phi(\mathbf{r}, E)}{\int\displaylimits_{E_{g'-1}}^{E_{g'}} dE \, \phi(\mathbf{r}, E)} \\
+\chi_g\left(\mathbf{r}\right) = \frac{\int\displaylimits_{E_{g'-1}}^{E_{g'}} dE \, \chi(\mathbf{r},E) \sum_{g'=1}^G \nu \Sigma_f^{g'}(\mathbf{r}) \phi_{g'}(\mathbf{r})}{\sum_{g=1}^G \nu \Sigma_f^{g}(\mathbf{r}) \phi_{g}(\mathbf{r})}
+\end{eqnarray}
+\begin{equation}
+\begin{split}
+\Sigma_{s}^{g' \rightarrow g}\left(\mathbf{r}\right) = \frac{\int_{E_{g-1}}^{E_g} dE \, \sum_{g''=1}^G \left( \int\displaylimits_{E_{g''-1}}^{E_{g''}} dE'' \, \Sigma_{s}(\mathbf{r}, \mathbf{\Omega},{E''\rightarrow E}) \phi(\mathbf{r}, E'') \right)}{\phi_{g'}(\mathbf{r})} \\
+	 \, - \, \frac{\sum_{g''\neq g'} \Sigma_{s}^{g'' \rightarrow g}\left(\mathbf{r}\right) \phi_{g''}(\mathbf{r})}{\phi_{g'}(\mathbf{r})}
+\end{split}
+\end{equation}
+Incorporating these definitions into the transport equation yields the \textit{multi-group transport equation} given in Eq.~\ref{eqn:full-multi-group-transport}.
+\begin{equation}
+\mathbf{\Omega} \cdot \nabla \psi_{g}(\mathbf{r},\mathbf{\Omega}) + \Sigma_t^{g}(\mathbf{r},\mathbf{\Omega}) \psi_{g}(\mathbf{r},\mathbf{\Omega}) = \frac{1}{4 \pi} \left( \frac{\chi_{g}\left(\mathbf{r}\right)}{k} \sum_{g'=1}^{G} \nu_{g'}\left(\mathbf{r}\right) \Sigma_f^{g'}\left(\mathbf{r}\right) \phi_{g'}\left(\mathbf{r}\right) + \, \sum_{g'=1}^G \,  \Sigma_{s}^{g' \rightarrow g}\left(\mathbf{r}\right) \phi_{g'}(\mathbf{r}) \right)
+\label{eqn:full-multi-group-transport}
+\end{equation}
+It is important to note that no assumptions were needed from Eq.~\ref{eqn:pre-multigroup} to arrive at Eq.~\ref{eqn:full-multi-group-transport}. However, the expressions for multi-group cross-sections were depenedent on the scalar flux $\phi(\mathbf{r}, E)$ or the angular flux $\psi(\mathbf{r},\mathbf{\Omega},E)$ which are generally unknown. Besides, the purpose of solving the neutron transport equation is to determine the scalar flux for use in calculating reaction rates. Therefore, approximations need to be made in order to determine the values for multi-group cross-sections. This will be the subject of Chapter~\ref{chap:multi-group}.
 
 
+
+SAVE FOR MULTI-GROUP DISCUSSION
 \begin{equation}
 \mathbf{\Omega} \cdot \nabla \psi_{g}(\mathbf{r},\mathbf{\Omega}) + \Sigma_t^{g}(\mathbf{r}) \psi_{g}(\mathbf{r},\mathbf{\Omega}) = \frac{1}{4 \pi} \left( \frac{\chi_{g}\left(\mathbf{r}\right)}{k} \sum_{g'=1}^{G} \nu_{g'}\left(\mathbf{r}\right) \Sigma_f^{g'}\left(\mathbf{r}\right) \phi_{g'}\left(\mathbf{r}\right) + \, \sum_{g'=1}^G \,  \Sigma_{s}^{g' \rightarrow g}\left(\mathbf{r}\right) \phi_{g'}(\mathbf{r}) \right)
 \label{eqn:multi-group-transport}
+\end{equation}
+
+all cross-sections and material properties are assumed to have an energy dependecne that is pieceise constant. The energy range $[0, \infty)$ is divided into a finite number of energy ranges or \textit{groups} over which the cross-sections are constant in energy. This is termed the 
+\textit{multi-group approximation}. In reality this is far from the case. However, with careful choice of multi-group cross-sections, high accuracy can be obtained. The formation of these multi-group cross-sections will be the subject of the next section. With this approximation, we arrive at the multi-group transport equation. The calculation of solutions to which are the subject of this thesis. The subscript / superscript $g$ denotes group-wise quantities. Integrate over energy bounds of $g$ ....
+\begin{equation}
+	\begin{split}
+		\mathbf{\Omega} \cdot \nabla \psi(\mathbf{r},\mathbf{\Omega},E) \, + & \, \Sigma_{t}(\mathbf{r},E)\psi(\mathbf{r},\mathbf{\Omega},E) = \\
+		& \phantom{+} \, \frac{\chi(\mathbf{r},E)}{4\pi k} \int\displaylimits_{0}^{\infty} dE' \, \nu(\mathbf{r},E') \Sigma_f(\mathbf{r}, E') \phi(\mathbf{r}, E')\\
+		& + \, \int\displaylimits_{0}^{\infty} dE' \,  \frac{\Sigma_{s}(\mathbf{r}, \mathbf{\Omega},{E'\rightarrow E})}{4\pi} \phi(\mathbf{r}, E')
+	\end{split}
 \end{equation}
