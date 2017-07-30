@@ -4,6 +4,23 @@
 This chapter presents an overview of some of the approximations made by methods which solve the multi-group form of the neutron transport equation. This chapter begins by reviewing the continuous energy steady-state neutron transport equation in Sec.~\ref{sec:chap2-background}. The following sections present simplifications to the angular (Sec.~\ref{sec:chap2-approx-angle}), energy (Sec.~\ref{sec:chap2-approx-energy}) and spatial dependence (Sec.~\ref{sec:chap2-approx-space}) of the equation. The approximations are not specific to a particular approach for solving the transport equation and may be employed by either stochastic or deterministic methods. Sec.~\ref{sec:chap2-mgxs-lib} concludes with a discussion of how these approximations present challenges for accurate \ac{MGXS} generation.
 
 
+
+SAVE FOR MULTI-GROUP DISCUSSION
+\begin{equation}
+\mathbf{\Omega} \cdot \nabla \psi_{g}(\mathbf{r},\mathbf{\Omega}) + \Sigma_t^{g}(\mathbf{r}) \psi_{g}(\mathbf{r},\mathbf{\Omega}) = \frac{1}{4 \pi} \left( \frac{\chi_{g}\left(\mathbf{r}\right)}{k} \sum_{g'=1}^{G} \nu_{g'}\left(\mathbf{r}\right) \Sigma_f^{g'}\left(\mathbf{r}\right) \phi_{g'}\left(\mathbf{r}\right) + \, \sum_{g'=1}^G \,  \Sigma_{s}^{g' \rightarrow g}\left(\mathbf{r}\right) \phi_{g'}(\mathbf{r}) \right)
+\label{eqn:multi-group-transport}
+\end{equation}
+
+all cross-sections and material properties are assumed to have an energy dependecne that is pieceise constant. The energy range $[0, \infty)$ is divided into a finite number of energy ranges or \textit{groups} over which the cross-sections are constant in energy. This is termed the 
+\textit{multi-group approximation}. In reality this is far from the case. However, with careful choice of multi-group cross-sections, high accuracy can be obtained. The formation of these multi-group cross-sections will be the subject of the next section. With this approximation, we arrive at the multi-group transport equation. The calculation of solutions to which are the subject of this thesis. The subscript / superscript $g$ denotes group-wise quantities. Integrate over energy bounds of $g$ ....
+\begin{equation}
+\begin{split}
+\mathbf{\Omega} \cdot \nabla \psi(\mathbf{r},\mathbf{\Omega},E) \, + & \, \Sigma_{t}(\mathbf{r},E)\psi(\mathbf{r},\mathbf{\Omega},E) = \\
+& \phantom{+} \, \frac{\chi(\mathbf{r},E)}{4\pi k} \int\displaylimits_{0}^{\infty} dE' \, \nu(\mathbf{r},E') \Sigma_f(\mathbf{r}, E') \phi(\mathbf{r}, E')\\
+& + \, \int\displaylimits_{0}^{\infty} dE' \,  \frac{\Sigma_{s}(\mathbf{r}, \mathbf{\Omega},{E'\rightarrow E})}{4\pi} \phi(\mathbf{r}, E')
+\end{split}
+\end{equation}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Background}
 \label{sec:chap2-background}

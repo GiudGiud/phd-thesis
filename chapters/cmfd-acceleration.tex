@@ -80,7 +80,26 @@ Notice that these cross-sections involve a weighting over the MOC fluxes. Theref
 \phi_C^{j,e} = \frac{\sum_{i \in j} \sum_{g \in e} \overline{\phi_{i,g}} V_i}{\sum_{i \in j} V_i}
 \label{eqn:cmfd_scalar_fluxes}
 \end{equation}
-These definitions, along with the CMFD cross-section definitons, form the basis of the restriction component of CMFD acceleration. With these definitions, the CMFD transport equation looks very similar to the original mulit-group transport equation and is given in Eq.~\ref{eqn:cmfd_transport}.
+These definitions, along with the CMFD cross-section definitons, form the basis of the restriction component of CMFD acceleration. It is important to note that the CMFD mesh is significantly coarser - both in space and energy -- than the MOC mesh. A comparison of the spatial mesh is given in Figure~\ref{fig:cmfd-mesh} with the MOC mesh on the left. The depicted mesh are the actual mesh sizes used in the final results for this thesis. The MOC mesh is quite coarser than typical MOC mesh due to the use of a linear source approximation. The CMFD calculations use pin-cell sized mesh. Even with the coarse MOC mesh, the CMFD mesh is significantly coarser.
+\begin{figure}[h!]
+	\centering
+	\begin{subfigure}{0.45\textwidth}
+		\centering
+		\includegraphics[width=\linewidth]{figures/moc_mesh.PNG}
+		\caption{}
+		\label{fig:cmfd-mesh-a}
+	\end{subfigure}
+	\begin{subfigure}{0.45\textwidth}
+		\centering
+		\includegraphics[width=\linewidth]{figures/cmfd_mesh.PNG}
+		\caption{}
+		\label{fig:cmfd-mesh-b}
+	\end{subfigure}
+	\caption[]{A depiction of the spatial mesh used in MOC (a) and CMFD (b) solvers. The mesh refinements correspond to those used in the final results for this thesis.}
+	\label{fig:cmfd-mesh}
+\end{figure}
+
+For the energy condensation, the MOC calculations in this thesis use 70 energy groups whereas the CMFD solver uses 25 or less energy groups. The combination of coarse spatial mesh and coarse energy groups causes the CMFD problem size to be incredibly small in comparison with the MOC problem size. With the collapsed cross-sections on the coarse mesh, the CMFD transport equation looks very similar to the original mulit-group transport equation and is given in Eq.~\ref{eqn:cmfd_transport}.
 \begin{equation}
 	\frac{1}{V_C^j} \sum_{g \in e} \left( \int\displaylimits_{S \in S_j} dS \, J_g\left(\mathbf{r}\right) \cdot \mathbf{n} \right) + \Sigma_{C,t}^{j,e} \phi_C^{j,e} = \frac{\chi_C^{j,e}}{k} \sum_{e'=1}^{E} \nu_C^{j, e'} \Sigma_{C,f}^{j,e'} \phi_C^{j,e'} + \sum_{e'=1}^E  \Sigma_{C,s}^{i, e' \rightarrow e} \phi_C^{j,e'}
 	\label{eqn:cmfd_transport}
@@ -95,21 +114,24 @@ The integrated net current over each interfacial surface for an MOC group $g$ ca
 	\int\displaylimits_{S_{j,h}} dS \, J_g\left(\mathbf{r}\right) \cdot \mathbf{n} =  \int\displaylimits_{S \in S_{j,h}} dS \, \int\displaylimits_{4 \pi} d\mathbf{\Omega} \, \psi_{g}(\mathbf{r},\mathbf{\Omega}) \left(\mathbf{\Omega} \cdot \mathbf{n} \right)
 	\label{eqn:interfacial_current_def}
 \end{equation}
-Figure XXX shows the geometric relationship between a given MOC track and CMFD surfaces. This shows that the surface area penetrated on surface $S_{j,h}$ by track $t$ combined with angular weights can be calculated as $\delta A_{t} / \left(\mathbf{\Omega} \cdot \mathbf{n}\right)$.
-
-FIGURE XXX
-
-With this geometric relationship in mind, the integrated net current over the interfacial surface can be calculated using Eq.~\ref{eqn:moc_net_current_calc}.
+Figure~\ref{fig:cmfd-contact-surface} shows the geometric relationship between a given MOC track and CMFD surfaces. This shows that the surface area penetrated on surface $S_{j,h}$ by track $t$ can be calculated as $\delta A_{t} / \left(\mathbf{\Omega} \cdot \mathbf{n}\right)$.
+\begin{figure}[h!]
+	\centering
+	\includegraphics[width=0.5\linewidth]{figures/cmfd-contact-surface.PNG}
+	\caption[]{A depiction of a CMFD surface with normal vector $\mathbf{n}$ being penetrated by a track with cross-sectional area $\delta A_{t}$ traveling in direction $\mathbf{\Omega}$. The area of the penetrated surface area is $\delta A_{t} / \left(\mathbf{\Omega} \cdot \mathbf{n}\right)$.}
+	\label{fig:cmfd-contact-surface}
+\end{figure}
+With this geometric relationship in mind and factoring in angular weights from Eq.~\ref{eqn:weight-def}, the integrated net current over the interfacial surface can be calculated using Eq.~\ref{eqn:moc_net_current_calc}.
 %\begin{equation}
-%	\int\displaylimits_{S_{j,h}} dS \, J_g\left(\mathbf{r}\right) \cdot \mathbf{n} =  \sum_{(t,s) \in S_{j,h}} \frac{\delta A_{t}}{\mathbf{\Omega} \cdot \mathbf{n}} \psi_{g}^{t,s}(s_{j,h}) \left(\mathbf{\Omega} \cdot \mathbf{n} \right)
+%	\int\displaylimits_{S_{j,h}} dS \, J_g\left(\mathbf{r}\right) \cdot \mathbf{n} =  \sum_{(t,s) \in S_{j,h}} \frac{w_{t}}{\mathbf{\Omega} \cdot \mathbf{n}} \psi_{g}^{t,s}(s_{j,h}) \left(\mathbf{\Omega} \cdot \mathbf{n} \right)
 %\end{equation}
 \begin{equation}
-	\int\displaylimits_{S \in S_{j,h}} dS \, J_g\left(\mathbf{r}\right) \cdot \mathbf{n} =  \sum_{(t,s) \in S_{j,h}} \delta A_{i,t} \psi_{g}^{t,s}(s_{j,h})
+	\int\displaylimits_{S \in S_{j,h}} dS \, J_g\left(\mathbf{r}\right) \cdot \mathbf{n} =  \sum_{(t,s) \in S_{j,h}} w_{i,t} \psi_{g}^{t,s}(s_{j,h})
 	\label{eqn:moc_net_current_calc}
 \end{equation}
 Similar to the CMFD cross-sections, these currents are formed from the MOC calculation so are only approximate until convergence. Summing over all MOC groups $g$ within CMFD group $e$ gives a representation for the net current $\tilde{J}_{j,h,e}$ accross surface $h$ of cell $j$ for CMFD group $3$ in Eq.~\ref{eqn:cmfd_partial_current}.
 \begin{equation}
-	\tilde{J}_{j,h,e} = \sum_{g \in e} \sum_{(t,s) \in S_{j,h}} \delta A_{i,t} \psi_{g}^{t,s}(s_{j,h})
+	\tilde{J}_{j,h,e} = \sum_{g \in e} \sum_{(t,s) \in S_{j,h}} w_t \psi_{g}^{t,s}(s_{j,h})
 	\label{eqn:cmfd_partial_current}
 \end{equation}
 It is important to note that these estimates rely on angular fluxes. Since the entire angular flux vector is not stored explicitly, as discussed in Section~\ref{sec:moc-solve}, when a CMFD surface is encountered during the MOC transport sweep, the contribution of angular fluxes along the track to the net current on the CMFD surface must be tallied. This is usually a relatively cheap operation, not adding much work to the transport sweep. With these calculated currents, the new transport equation is given in Eq.~\ref{eqn:transport_partial_current_1}.
@@ -125,6 +147,7 @@ With this new representation of the transport equation, it is possible to solve 
 The function $u(j,h)$ is the \textit{sense} of the surface $h$ on cell $j$, $A_{j,h}$ is the area of surface $S_{j,h}$, $\hat{D}_{j,e}$ is the surface diffusion coefficient, and $\tilde{D}_{j,h,e}$ is the nonlinear corrected diffusion coefficient. The inspiration first term involving $\hat{D}_{j,e}$ comes from diffusion theory. Specifically it can be calculated using Eq.~\ref{eqn:surf_diff_coef} under a CMFD uniform mesh assumption
 \begin{equation}
 	\hat{D}_{j,h,e} = \frac{2 D_{j,e} D_{I(j,h),e}}{\Delta \mathbf{r}_h \left( D_{j,e} + D_{I(j,h),e} \right)}
+	\label{eqn:surf_diff_coef}
 \end{equation}
 where $\Delta \mathbf{r}_h$ is the distance between the CMFD cell and the interfacial surface $h$, the function $I(j,h)$ yields the neighboring CMFD cell of $j$ on surface $h$, and $D_{j,e}$ is the bulk diffusion coefficient of cell $j$ in group $e$. Due to the uniform mesh assumption, the distance between the centroid of cell $j$ and surface $h$ is the same as that of the neighboring cell $I(j,h)$. The bulk diffusion coefficients are deined in Eq.~\ref{eqn:cmfd_diff_coef}, with motivation from how diffusion coefficients are calculated in common nodal diffusion theory.
 \begin{equation}

@@ -3,31 +3,31 @@
 
 In the previous chapter, numerous approximations are made in generation of multi-group cross-sections. Standard Method of Characteristics (MOC) solvers, such as the one developed and discussed in this thesis, rely on multi-group cross-sections as input. Once the cross-sections are generated, MOC is capable of computing reaction rates across the reactor geometry.
 
-First, the MOC equations will be derived from the multi-group neuton transport equation. Then ...
-
-%and Sec.~\ref{sec:chap3-mgxs-gen} outlines the necessary computation needed to generate \ac{MGXS} with \ac{MC}. Sec.~\ref{sec:chap3-lit-review} discusses past work to apply \ac{MC} for \ac{MGXS} generation, while Sec.~\ref{sec:chap3-latent-variables} introduces a new approach based on a latent variable model for spatial self-shielding.
+First, the MOC equations will be derived from the multi-group neuton transport equation. Then, the track discretization with be introduced, forming a system of equations involving discrete variables. Finally, the solution of the system of equations will be discussed. Discussions of solution techniques to the MOC system of equations normally are centered around the underlying physics with little mention of the system as a linear algebra problem. Instead, this discussion casts the system of equations as simply a general eigenvalue problem. Then discussion of matrix structure motivates the use of an uncommon solution techinque. Physical reasoning for the structure is mentioned throughout the discussion. The properties of the chosen solution technique are discussed, motivating the need for an acceleration scheme to mitigate its weaknesses.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Derivation of Continuous Angle MOC Equations}
 \label{sec:chap3-mc-overview}
 
-Starting from the multi-group neutron transport equation given in Eq.~\ref{eqn:multi-group-transport}, the neutron source $q_g(\mathbf{r})$ is defined to be
+Starting from the multi-group neutron transport equation given in Eq.~\ref{eqn:multi-group-transport}, the neutron source $q_g(\mathbf{r})$ is defined in Eq.~\ref{eqn:source},
 \begin{equation}
 q_g(\mathbf{r}) = \frac{1}{4 \pi} \left( \frac{\chi_{g}\left(\mathbf{r}\right)}{k} \sum_{g'=1}^{G} \nu_{g'}\left(\mathbf{r}\right) \Sigma_f^{g'}\left(\mathbf{r}\right) \phi_{g'}\left(\mathbf{r}\right) + \, \sum_{g'=1}^G \,  \Sigma_{s}^{g' \rightarrow g}\left(\mathbf{r}\right) \phi_{g'}(\mathbf{r}) \right)
 \label{eqn:source}
 \end{equation}
-which leads to a new form for the neutron balance equation:
+which leads to a new form for the neutron balance equation in Eq.~\ref{eqn:source-balance}.
 \begin{dmath}
 	\mathbf{\Omega} \cdot \nabla \psi_g(\mathbf{r},\mathbf{\Omega}) \, + \, \Sigma_{t}^{g}(\mathbf{r})\psi_g(\mathbf{r},\mathbf{\Omega}) = q_g(\mathbf{r})
+	\label{eqn:source-balance}
 \end{dmath}
 Next, a coordinate transformation is performed, casting the position as a displacement from an origin $\mathbf{r_0}$ along the direction of travel $\mathbf{\Omega}$ as $\mathbf{r} = \mathbf{r_0} + s\mathbf{\Omega}$. Under this transformation, the new balance equation becomes:
 \begin{dmath}
 	\mathbf{\Omega} \cdot \nabla \psi_g(\mathbf{r_0} + s\mathbf{\Omega},\mathbf{\Omega}) \, + \, \Sigma_{t}^{i,g}(\mathbf{r_0} + s\mathbf{\Omega})\psi_g(\mathbf{r_0} + s\mathbf{\Omega},\mathbf{\Omega}) = q_g(\mathbf{r_0} + s\mathbf{\Omega})
 \end{dmath}
-In this new form, the gradient reduces to a simple derivative by the distance $s$ traveled from the origin $\mathbf{r_0}$ as:
+In this new form, the gradient reduces to a simple derivative by the distance $s$ traveled from the origin $\mathbf{r_0}$ in Eq.~\ref{eqn:moc-transform}.
 \begin{dmath}
 	\frac{d\psi_g(\mathbf{r_0} + s\mathbf{\Omega},\mathbf{\Omega})}{ds} \, + \, \Sigma_{t}^{g}(\mathbf{r_0} + s\mathbf{\Omega})\psi(\mathbf{r_0} + s\mathbf{\Omega},\mathbf{\Omega}) = q_g(\mathbf{r_0} + s\mathbf{\Omega})
+	\label{eqn:moc-transform}
 \end{dmath}
 Considering a region $i$ with constant total cross-section $\Sigma_{t}^{i,g}$, the angular flux a distance $\ell$ from the origin can be calculated using Eq.~\ref{eqn:moc-source-int}. The interested reader can find a simple derivation in Appendix~\ref{deriv:moc-source-int}.
 \begin{dmath}
@@ -35,33 +35,47 @@ Considering a region $i$ with constant total cross-section $\Sigma_{t}^{i,g}$, t
 	\label{eqn:moc-source-int}
 \end{dmath}
 
-Eq.~\ref{eqn:moc-source-int} reveals an important relationship. For a region of constant total cross-section with known source distribution $q_g(\mathbf{r})$ and angular flux at a single point $\psi_g(\mathbf{r_0},\mathbf{\Omega})$, the angular flux for all points along the direction of travel $\mathbf{\Omega})$ can be calculated. Therefore an enclosing boundary defining the relationship of impinging angular fluxes is sufficient for the calculation of all angular fluxes within the region.
+Eq.~\ref{eqn:moc-source-int} reveals an important relationship. For a region of constant total cross-section with known source distribution $q_g(\mathbf{r})$ and angular flux at a single point $\psi_g(\mathbf{r_0},\mathbf{\Omega})$, the angular flux for all points along the direction of travel $\mathbf{\Omega}$ can be calculated. Therefore an enclosing boundary defining the relationship of impinging angular fluxes is sufficient for the calculation of all angular fluxes within the region.
 
 An example of one such boundary condition is the vacuum boundary condition where it is assumed that zero angular flux is impingent on the region for all angles. This is often used for full core problems since there are virtually no neutron sources outside the problem domain.
 
-If the problem domain can be represented (or approximated) as the composition of a finite number of regions over which the total cross-section is finite and the neutron source $q_g(\mathbf{r})$ takes some known distribution, the calculation of all angular fluxes throughout the problem is possible.
+If the problem domain can be represented (or approximated) as the composition of a finite number of regions over which the total cross-section is constant and the neutron source $q_g(\mathbf{r})$ takes some known distribution, the calculation of all angular fluxes throughout the problem is straightforward.
 
-Realistically, the source distribution is not known before solving the problem, since it depends on the solution. However, if the problem domain is sufficiently discretized, a low order approximation of the shape of the neutron source within the regions can be made with little impact on solution accuracy. An example of problem discretization is shown in Fig.~\ref{fig:pin-discretization} where a fuel pin is discretized radially. The image on the left shows a radial view of the fuel pin geometry, colored by (constant cross-section) material region. The image on the right shows a discretized form of that geometry, colored by source region over which the neutron source is assumed to have some low-order form.
+Realistically, the source distribution is not known before solving the neutron transport equation, since it depends on the scalar fluxes. However, if the geometry is sufficiently discretized, a low order approximation of the \textit{shape} of the neutron source within the regions can be made with little impact on solution accuracy. An example of geometry discretization is shown in Fig.~\ref{fig:pin-discretization} where a fuel pin is discretized radially. The image on the left shows a radial view of the fuel pin geometry, colored by (constant cross-section) material region. The image on the right shows a discretized form of that geometry, colored by source region over which the neutron source is assumed to have some low-order form.
 
-FIGURE
+\begin{figure}[h!]
+	\centering
+	\begin{subfigure}{0.45\textwidth}
+		\centering
+		\includegraphics[width=\linewidth]{figures/pin_1.PNG}
+		\caption{}
+		\label{fig:pin-discretization-a}
+	\end{subfigure}
+	\begin{subfigure}{0.45\textwidth}
+		\centering
+		\includegraphics[width=\linewidth]{figures/pin_1_discretized.PNG}
+		\caption{}
+		\label{fig:pin-discretization-b}
+	\end{subfigure}
+	\caption[]{A description of source region discretization and mesh refinement. The geometry is shown (a) colored by material and (b) colored by source region.}
+	\label{fig:pin-discretization}
+\end{figure}
 
-One common low order approximation for the neutron source is the flat source approximation. This approximation assumes the neutron source for a given energy group $q_g(\mathbf{r})$ is constant over each source region. A linear source approximation will be introduced later in Section~\ref{sec:linear-source}, allowing for a coarser discretization of the geometry. However, the flat source approximation is first presented in the explaination of MOC as it is less mathematically cumbersome than the linear source approximation and arrives at a very similar form and solution method as the linear source version. The flat source approximation is also the most fequently used approximation in standard MOC solvers~\cite{other-moc-flat-source-solvers}. Under this approximation the angular flux relationship given in Eq.~\ref{eqn:moc-source-int} reduces to
+One common low order approximation for the neutron source is the flat source approximation. This approximation assumes the neutron source for a given energy group $q_g(\mathbf{r})$ is constant over each source region. A linear source approximation will be introduced later in Section~\ref{sec:linear-source}, allowing for a coarser discretization of the geometry. However, the flat source approximation is first presented in this descritpion of MOC as it is less mathematically cumbersome than the linear source approximation while arriving at a very similar form and solution method as the linear source version. The flat source approximation is also the most fequently used approximation in standard MOC solvers~\cite{other-moc-flat-source-solvers}. Under this approximation the angular flux relationship given in Eq.~\ref{eqn:moc-source-int} reduces to
 \begin{dmath}
 	\psi_g(\mathbf{r_0} + \ell \mathbf{\Omega},\mathbf{\Omega}) = \psi_g(\mathbf{r_0},\mathbf{\Omega}) e^{-\Sigma_{t}^{i,g} \ell} + \int\displaylimits_{0}^{\ell} ds \, q^0_{i,g} e^{-\Sigma_{t}^{i,g} (\ell-s)}
 \end{dmath}
-with region $i$ having constant neutron source $q^0_{i,g}$. The integral can be analytically solved, leading to the final form given in Eq.~\ref{eqn:angular-flux-var}.
+with region $i$ having constant neutron source $q^0_{i,g}$. The integral can be analytically solved, leading to the final form given in Eq.~\ref{eqn:angular-flux-var}
 \begin{dmath}
 	\psi_g(\mathbf{r_0} + \ell \mathbf{\Omega},\mathbf{\Omega}) = \psi_g(\mathbf{r_0},\mathbf{\Omega}) e^{-\Sigma_{t}^{i,g} \ell} + \frac{q^0_{i,g}}{\Sigma_{t}^{i,g}} F_1 \left(\Sigma_{t}^{i,g} \ell\right)
 	\label{eqn:angular-flux-var}
 \end{dmath}
 where
 \begin{equation}
-F_1(\tau) = \left(1 - e^{-\tau}\right).
+F_1(\tau) = 1 - e^{-\tau}.
 \end{equation}
 
-This equation allows for the computation of all necessary angular fluxes from a known neutron source $q^0_{i,g}$. With the flat source approximation we were able to impose some form for the source, but we do not know its value. Therefore, the only task remaining is determining the value of the source in each region, $q^0_{i,g}$.
-
-In addition to assuming a constant source over the region, it is likewise assumed that the scalar flux is constant over each region. From the definition of the neutron source in Eq.~\ref{eqn:source}, the constant neutron source $q^0_{i,g}$ in the region $i$ can be computed as
+This equation allows for the computation of all necessary angular fluxes withint a region of neutron source $q^0_{i,g}$. In addition to assuming a constant source over the region, it is likewise assumed that the scalar flux is constant over each region. From the definition of the neutron source in Eq.~\ref{eqn:source}, the constant neutron source $q^0_{i,g}$ in the region $i$ can be computed as
 \begin{equation}
 q^0_{i,g} = \frac{1}{4 \pi} \left( \frac{\chi_{i,g}}{k} \sum_{g'=1}^{G} \nu_{i,g'} \Sigma_f^{i,g'} \overline{\phi_{i,g'}} + \, \sum_{g'=1}^G \,  \Sigma_{s}^{i,g' \rightarrow g} \overline{\phi_{i,g'}} \right)
 \label{eqn:source-discr}
@@ -72,19 +86,46 @@ where $\overline{\phi_{i,g}}$ is the average scalar flux in the region and the c
 	\label{eqn:avg-flux-theory}
 \end{dmath}
 
-This form is relatively un-useful since the relationship presented in Eq.~\ref{eqn:angular-flux-var} only applies for a specific direction. Therefore, the angular space is discretized into a finite number of directions. With the angular space discretized, the integral could turn into a weighted sum over the discrete directions.
+This form is relatively un-useful since the relationship presented in Eq.~\ref{eqn:angular-flux-var} only applies for a specific direction. Therefore, the angular space is discretized into a finite number of directions. With the angular space discretized, the integral could be transformed into a weighted sum over the discrete directions.
 
-\subsection{Track Laydown Introduction}
+\section{Track Discretization of the MOC Equations}
 
-MOC discretizes the angular space by choosing a finite number of directions to lay down \textit{tracks} across the geometry. For each direction, tracks stretch the entire length of the geometry, from one boundary to another, and completely fill the geometry. This collection of tracks is termed the \textit{track laydown}. A radial view of a coarse track laydown for a simple pin-cell geometry is shown in Figure~\ref{fig:track-laydown}. The left image shows the geometry, colored by material region, namely water, clad, and fuel. The middle image shows the track laydown across the geometry for one direction. The right image shows complete track laydown for four azimuthal directions.
+MOC discretizes the angular space by choosing a finite number of directions to lay down \textit{tracks} across the geometry. For each direction, tracks stretch the entire length of the geometry, from one boundary to another, and completely fill the geometry. This collection of tracks is termed the \textit{track laydown}. A radial view of a coarse track laydown for a simple pin-cell geometry is shown in Figure~\ref{fig:track-laydown}. The left image shows the geometry, colored by material region; namely water, clad, and fuel. The middle image shows the track laydown across the geometry for one direction. The right image shows complete track laydown for four azimuthal directions.
 
-FIGURE: TRACK LAYDOWN
+\begin{figure}[h!]
+	\centering
+	\begin{subfigure}{0.3\textwidth}
+		\centering
+		\includegraphics[width=\linewidth]{figures/pin_1.PNG}
+		\caption{}
+		\label{fig:track-laydown-a}
+	\end{subfigure}
+	\begin{subfigure}{0.3\textwidth}
+		\centering
+		\includegraphics[width=\linewidth]{figures/pin_2.PNG}
+		\caption{}
+		\label{fig:track-laydown-b}
+	\end{subfigure}
+	\begin{subfigure}{0.3\textwidth}
+		\centering
+		\includegraphics[width=\linewidth]{figures/pin_3.PNG}
+		\caption{}
+		\label{fig:track-laydown-c}
+	\end{subfigure}
+	\caption[]{A description of the track laydown process. The geometry (a) is shown followed by the track laydown (b) for one particular direction. Finally the entire track laydown for 4 azimuthal angles is shown (c) with arrows showing that each track is traversed both forward and backward. Note that the track laydowns shown here are significantly coarser than usual track laydowns for illustration purposes.}
+	\label{fig:track-laydown}
+\end{figure}
 
-Across each track crossing a given constant cross-section material region, the variation of angular flux follows Eq.~\ref{eqn:angular-flux-var}. Therefore, each track is discretized into \textit{segments}, in which each segment is the portion of the track that crosses a particular material region. Across the entire length of each segment Eq.~\ref{eqn:angular-flux-var} applies. An illustration of the segmentation process for the simple pin-cell geometry is shown in Figure~\ref{fig:segmentation}. The presented track, with the geometry drawn along its direction of travel is discretized into segments by material region. This process would treat all tracks shown in the track laydwon (eg. Figure~\ref{fig:track-laydown}) in a similar manner.
+Across each track crossing a given constant cross-section source region, the variation of angular flux follows Eq.~\ref{eqn:angular-flux-var}. Therefore, each track is discretized into \textit{segments}, in which each segment is the portion of the track that crosses a particular source region. Across the entire length of each segment Eq.~\ref{eqn:angular-flux-var} applies. An illustration of the segmentation process for the simple pin-cell geometry is shown in Figure~\ref{fig:segmentation}. The presented track, with the geometry drawn along its direction of travel is discretized into segments by material region. For simplicity, this illustration does not discretize the geometry further than material boundaries. A real segmentation process would discretize segments over the domain shown in Figure~\ref{fig:pin-discretization-b}. This process would treat all tracks shown in the track laydown (eg. Figure~\ref{fig:track-laydown}) in a similar manner.
 
-FIGURE: SEGMENTATION
+\begin{figure}[h!]
+	\centering
+	\includegraphics[width=0.6\linewidth]{figures/segmentation.PNG}
+	\caption[]{The segmentation of a track horrizonatally traversing a pin-cell domain with coarse source discetization wherein the boundaries of source regions are no finer than their material region. The formed segments are colored by material region. For illustration purposes, the geometry is not shown to scale.}
+	\label{fig:segmentation}
+\end{figure}
 
-All of these images showed track laydown and segmentation in just the radial plane, but the same methodology applies for dealing with full three dimensional geometries. Now that tracks have been segmetned, a system of equations can be formed governing the variation of angular flux thorough each region as presented in Eq.~\ref{eqn:angular-flux-var}. However, this has a dependence on the incoming angular flux. For angular fluxes originating in the bulk of the geometry, we enforce continuity of angular flux. The outgoing flux of the preceding segment in the track provides the incoming flux of the segment. Specifically, the position-dependent angular flux $\psi_{p,g}^{t,s}(\mathbf{r})$ in group $g$ along track $t$ and segment $s$ can be expressed as the angular flux of the preceding segment $s-1$ at the interface point $\mathbf{r_{\textbf{int}}}$ where the segments meet as
+All of these images showed track laydown and segmentation in just the radial plane, but the same methodology applies for dealing with full three dimensional geometries. Now that tracks have been segmetned, a system of equations can be formed governing the variation of angular flux thorough each region as presented in Eq.~\ref{eqn:angular-flux-var}. However, this has a dependence on the incoming angular flux. For segments originating in the bulk of the geometry, continuity of angular flux is enforced. The outgoing flux of the preceding segment in the track provides the incoming flux of the segment. Specifically, the position-dependent angular flux $\psi_{p,g}^{t,s}(\mathbf{r})$ in group $g$ along track $t$ and segment $s$ can be expressed as the angular flux of the preceding segment $s-1$ at the interface point $\mathbf{r_{\textbf{int}}}$ where the segments meet as
 \begin{dmath}
 	\psi_{p,g}^{t,s}(\mathbf{r_{\textbf{int}}}) = \psi_{p,g}^{t,s-1}(\mathbf{r_{\textbf{int}}}).
 \end{dmath}
@@ -95,44 +136,46 @@ Defining the angular flux along a segment in terms of distance traveled along th
 \end{dmath}
 where $\ell_{t,s}$ refers to the length of segment $s$ along track $t$. For angular fluxes originating at the geometry boundary, the boundary condition provides the relationship for the angular flux. For vacuum boundary conditions, it is assumed that there is no impinging angular flux, so the incoming angular flux is simply taken to be zero at the boundary. 
 
-For reflective boundary conditions, the incoming angular flux is equal to the outgoing angular flux at the reflecting angle. This requires that a track be present with the correct reflecting angle, meeting at precisely the same point on the boundary. During track laydown, this is enforced. If only vacuum boundary conditions were present, this restriction on track laydown would not be necessary. Similar treatments are possible for periodic and rotational boundary conditions if the track laydown allows it. 
+For reflective boundary conditions, the incoming angular flux is equal to the outgoing angular flux at the reflecting angle. This requires that a track be present with the correct reflecting angle, meeting at precisely the same point on the boundary. During track laydown, this is enforced. If only vacuum boundary conditions were present, this restriction on track laydown would not be necessary. Similar treatments are possible for periodic and rotational boundary conditions if allowed by the track laydown.  A more complete discussion of track laydown is given in Chapter~\ref{chap:track-laydown}. For instance, the conditions required to link tracks at geometric boundaries will be discussed at length.
 
-More precisely, tracks are defined to originate at one boundary and stretch across the geometry until they terminate at another. The segments of a track are ordered in the direction of the track so that only the first segment is affected by a boundary condition. Track $t$ is defined to have $S(t)+1$ segments. For vacuum boundaries,
+Precise definitions are needed in order to dicuss the relation of these tracks to the MOC equations. Tracks are defined to originate at one boundary and stretch across the geometry until they terminate at another. The segments of a track are ordered in the direction of the track so that only the first segment is affected by a boundary condition. Track $t$ is defined to have $S(t)$ segments. For vacuum boundaries,
 \begin{dmath}
-	\psi_g^{t,0} = 0
+	\psi_g^{t,1}(0) = 0
 \end{dmath}
 For boundary conditions (such as reflective, periodic, and rotational) that connect with another track, the fucntion $C$ is defined which defines the linking track. For instance, the incoming angular flux of track $t$ would connect with the outgoing angular flux of track $C(t)$ as
 \begin{dmath}
-	\psi_g^{t,0} = \psi_g^{C(t),S(C(t))}
+	\psi_g^{t,1}(0) = \psi_g^{C(t),S(C(t))}(\ell_{C(t),S(C(t))})
 	\label{eqn:linking-bc}
 \end{dmath}
 
-Now that the angular space has been discretized and all track connections have been defined, all relevant angular fluxes can be calculated from a given source distribution. This section focused on the general concept of a track laydown. A more complete discussion is given in Chapter~\ref{chap:track-laydown}. For instance, how to enforce linking tracks at geometric boundaries will be discussed at length.
+Now that the angular space has been discretized and all track connections have been defined, all relevant angular fluxes can be calculated from a given source distribution.
 
-\section{Derivation of the Track Discretized MOC Equations}
-
-In the previous section, it was noted that the track laydown and connecting of angular fluxes provided a framework to calculate all relevant angular fluxes. More precisely, using Eq.~\ref{eqn:angular-flux-var}, this relationship can be presented as:
+With the angular and spatial discretization from the track laydown, the angular flux relationship along a characteristic path given in Eq.~\ref{eqn:angular-flux-var} can be presented in terms of the discretized track segments in Eq.~\ref{eqn:angular-flux-var-disc}.
 \begin{dmath}
 	\psi_g^{t,s}(s) = \psi^{t,s}_g(0) + \left( \frac{q^0_{i,g}}{\Sigma_{t}^{i,g}} - \psi_g^{t,s}(0) \right) F_1\left(\Sigma_{t}^{i,g} s \right)
 	\label{eqn:angular-flux-var-disc}
 \end{dmath}
-
-To determine the average scalar, Eq.~\ref{eqn:avg-flux-theory} is transformed to reflect the track discretization in Eq.~\ref{eqn:avg-flux-init}. The weighting parameter $\delta A_{t}$ includes the cross-sectional area belonging to track $t$ as well as the angular weights of track $t$.
+To determine the average scalar, Eq.~\ref{eqn:avg-flux-theory} is transformed to reflect the track discretization in Eq.~\ref{eqn:average-flux-disc}.
 \begin{dmath}
-	\overline{\phi_{i,g}} = \frac{1}{V_i} \sum_{(t,s) \in V_i} \delta A_{t} \int_{0}^{\ell_{t,s}} ds \, \psi^{t,s}_g(s)
+	\overline{\phi_{i,g}} = \frac{1}{V_i} \sum_{(t,s) \in V_i} w_{t} \int_{0}^{\ell_{t,s}} ds \, \psi^{t,s}_g(s)
 	\label{eqn:average-flux-disc}
 \end{dmath}
+The weighting parameter $w_t$ includes the cross-sectional area $\delta A_{t}$ belonging to track $t$ as well as the angular weights $\alpha_t$ of track $t$. This relationship is shown in Eq.~\ref{eqn:weight-def}.
+\begin{equation}
+ w_{t} = \delta A_{t} \alpha_t
+ \label{eqn:weight-def}
+\end{equation}
 Combining Eq.~\ref{eqn:average-flux-disc} with Eq.~\ref{eqn:angular-flux-var-disc}, the scalar flux can be calculated using the relatinship in Eq.~\ref{eqn:average-flux}. A proof is given in Appendix~\ref{deriv:avg-flux} for the interested reader.
 \begin{dmath}
-	\overline{\phi_{i,g}} = \frac{q^0_{i,g}}{\Sigma_{t}^{i,g}} + \frac{1}{\Sigma_{t}^{i,g} V_i} \sum_{(t,s) \in V_i} \delta A_{t} \Delta \psi_g^{t,s}
+	\overline{\phi_{i,g}} = \frac{q^0_{i,g}}{\Sigma_{t}^{i,g}} + \frac{1}{\Sigma_{t}^{i,g} V_i} \sum_{(t,s) \in V_i} w_{t} \Delta \psi_g^{t,s}
 	\label{eqn:average-flux}
 \end{dmath}
-This relationship along with Eq.~\ref{eqn:source-discr} can be used to compute the sources $q^0_{i,g}$ for each region $i$ and each energy group $g$.
+The difference in angular flux $\Delta \psi_g^{t,s}$ is equal to $\psi_g^{t,s}(0) - \psi_g^{t,s}(\ell_{t,s})$. This relationship along with Eq.~\ref{eqn:source-discr} can be used to compute the sources $q^0_{i,g}$ for each region $i$ and each energy group $g$.
 
 
 \section{Solving the MOC System of Equations}
 
-In the previous section Eq.~\ref{eqn:angular-flux-var-disc} and Eq.~\ref{eqn:average-flux} provided ways to calculate the angular fluxes and scalar fluxes, respectively. This forms a system of equations that can be solved to determine the neutron distribution inside a nuclear reactor core. Normally, the solution of the MOC equations is presented in terms of a physics perspective, following neutrons along trajectories, and repeatedly solving for the neutron source. Physical intuition usually guides this discussion.
+In the previous section Eq.~\ref{eqn:angular-flux-var-disc} and Eq.~\ref{eqn:average-flux} provided ways to calculate the angular fluxes and scalar fluxes, respectively. The source can be computed from the scalar fluxes with Eq.~\ref{eqn:source-discr}. This forms a system of equations that can be solved to determine the neutron distribution inside a nuclear reactor core. Normally, the solution of the MOC equations is presented in terms of a physics perspective, following neutrons along trajectories, and repeatedly solving for the neutron source. Physical intuition usually guides this discussion.
 
 The discussion presented here will be more broad. Instead of solely focusing on the physics, the problem will instead be cast as a simple set of matrix equations that could theoretically be solved with common linear algebra packages. However, this discussion will show that blindly solving the system of equations with a general linear algebra package is computationally infeasible since it loses sight of inherent structure that the physics-based approach naturally captures.
 
@@ -141,7 +184,7 @@ The system of equations to be solved is formed by Eq.~\ref{eqn:source-discr}, Eq
 Q = \frac{1}{k} F \Phi + S \Phi
 \label{eqn:matrix-source-calc}
 \end{equation}
-where $Q$ is a vector of size $M$ containing all neutron sources and $\Phi$ is a vector of size $M$ containing all scalar fluxes. Since there must be a neutron source and scalar flux for every source region and every energy group, $M = L \times G$ where $L$ is the number of source regions and $G$ is the number of groups. The scalar fluxes $\Phi$ as well as the sources $Q$ are ordered such that they are contiguous in group with the index calculated as $i \times G + g$. In the context of this discussion, elements relating to region quantities are indexed by region $i$ and group $g$, yielding the following defintions for the fission matrix $F$ and scattering matrix $S$ as
+where $Q$ is a vector of size $M$ containing all neutron sources and $\Phi$ is a vector of size $M$ containing all scalar fluxes. Since there must be a neutron source and scalar flux for every source region and every energy group, $M = L G$ where $L$ is the number of source regions and $G$ is the number of groups. The scalar fluxes $\Phi$ as well as the sources $Q$ are ordered such that they are contiguous in group with the index calculated as $i G + g$. In the context of this discussion, elements relating to region quantities are indexed by region $i$ and group $g$, yielding the following defintions for the fission matrix $F$ and scattering matrix $S$ as
 \begin{eqnarray}
 F_{\left(i, g\right), \, \left(i, g'\right)} = \frac{1}{4\pi} \chi_{i,g} \nu \Sigma_f^{i,g'}
 \end{eqnarray}
@@ -149,19 +192,18 @@ and
 \begin{eqnarray}
 S_{\left(i, g\right), \, \left(i, g'\right)} = \frac{1}{4\pi} \Sigma_s^{i,g' \rightarrow g}
 \end{eqnarray}
-where all other un-specified matrix elements are zero. Both of these matrixes are of size $M \times M$.
+where all other unspecified matrix elements are zero. Both of these matrices are of size $M \times M$ and sparse since there are no inter-regional terms.
 
-Similarly Eq.~\ref{eqn:angular-flux-var-disc} can be turned into matrix form by definting an angular flux vector $\Psi$ that contains all outgoing angular fluxes. This is represented by an angular flux transport matrix $T$ defining relationships between angular fluxes, a source selection matrix $H$ which selects the source of the region being traversed, and a diagonal matrix $D$ containing the total cross-sections which scale the source appropriately to match the relationship in Eq.~\ref{eqn:angular-flux-var-disc}.
+Similarly Eq.~\ref{eqn:angular-flux-var-disc} can be turned into matrix form by definting an angular flux vector $\Psi$ that contains all outgoing angular fluxes. This is represented in Eq.~\ref{eqn:matrix-attn} by an angular flux transport matrix $T$ defining relationships between angular fluxes, a source selection matrix $H$ which selects the source of the region being traversed, and a diagonal matrix $D$ containing the total cross-sections which scale the source appropriately to match the relationship in Eq.~\ref{eqn:angular-flux-var-disc}.
 \begin{equation}
 T \Psi = H D^{-1} Q
 \label{eqn:matrix-attn}
 \end{equation}
-The number of angular fluxes is $N = \beta \times L \times G$ where $\beta$ is the average number of track crossings per source region. Since there must be a significant number of track crossings per region for convergence we expect $N >> M$. $T$ is size $N \times N$ as it defines relationships between angular fluxes, the size of $H$ is $N \times M$ since for each angular flux pair it must pick out the appropriate source region, and the size of $D$ is $M \times M$ since it relates only to the source regions. The elements relating to angular flux quantities are indexed by track $t$, segment $s$, and group $g$. The source selection matrix $H$ can therefore be defined as
+The number of angular fluxes is $N = \beta L G$ where $\beta$ is the average number of track crossings per source region. Since there must be a significant number of track crossings per region for convergence we expect $N >> M$. $T$ is size $N \times N$ as it defines relationships between angular fluxes, the size of $H$ is $N \times M$ since for each angular flux pair it must pick out the appropriate source region, and the size of $D$ is $M \times M$ since it relates only to the source regions. The elements relating to angular flux quantities are indexed by track $t$, segment $s$, and group $g$. The source selection matrix $H$ can therefore be defined as
 \begin{equation}
 H_{\left(t,s,g\right), \, \left(R(t,s), g\right)} = 1
 \end{equation}
-where the function $R$ yields the region traversed by track $t$ and segment $s$. This matrix therefore, has only one non-zero value per row, indicating which region is being traversed, relating track-based quantities such as angular fluxes to region based quantites such as the scalar fluxes. Its transpose similarly relates the regions to the tracks traversing the region. The matrix $H^T H$ is a $M \times M$ diagonal matrix with each diagonal element tallying the number of tracks that traverse the region multiplied by the number of groups. Since it is diagonal, it is easily invertible, which will be important in the later discussion.
-
+where the function $R$ yields the region traversed by track $t$ and segment $s$. This matrix therefore, has only one non-zero value per row, indicating which region is being traversed, relating track-based quantities such as angular fluxes to region based quantites such as the scalar fluxes. Its transpose similarly relates the regions to the tracks traversing the region. The matrix $H^T H$ is a $M \times M$ diagonal matrix with each diagonal element representing the number of tracks that traverse the region multiplied by the number of groups. Since it is diagonal, it is easily invertible, which will be important in the later discussion.
 The diagonal matrix $D$ containing the total cross-sections is defined by
 \begin{equation}
 D_{\left(i, g\right), \, \left(i, g\right)} = \Sigma_t^{i,g}.
@@ -180,12 +222,12 @@ T_{\left(t,s,g\right), \, \left(t, s-1, g\right)} = \frac{F_1(\tau_{t,s,g}) - 1}
 \end{equation}
 Again, all non-specified quantities are taken to be zero.
 
-Lastly, Eq.~\ref{eqn:average-flux} describes how the scalar flux can is calculated in terms of both a weigted sum of angular fluxes and the neutron source. Specifically, if we define an angular flux weighting matrix $W$ of size $M \times N$ such that
+Lastly, Eq.~\ref{eqn:average-flux} describes how the scalar flux can is calculated in terms of both a weigted sum of angular fluxes and the neutron source. Specifically, an angular flux weighting matrix $W$ of size $M \times N$ is defined such that
 \begin{equation}
 \Phi = D^{-1}Q + D^{-1} W \Psi.
 \label{eqn:matrix-flux-calc}
 \end{equation}
-Similar to the angular flux transport matrix $T$, $W$ is expressed as a multiplication of matrices
+In order to expose its structure, $W$ is expressed as a multiplication of matrices
 \begin{equation}
 W = V^{-1} H^T \tilde{W}
 \end{equation}
@@ -195,13 +237,13 @@ V_{\left(i, g\right), \, \left(i, g\right)} = V_i
 \end{equation}
 and $\tilde{W}$ is an $N \times N$ matrix defined by
 \begin{equation}
-\tilde{W}_{\left(t,s,g\right), \, \left(t, s, g\right)} = -\delta A_{t}
+\tilde{W}_{\left(t,s,g\right), \, \left(t, s, g\right)} = -w_{t}
 \end{equation}
 and
 \begin{equation}
-\tilde{W}_{\left(t,s,g\right), \, \left(t, s-1, g\right)} = \delta A_{t}
+\tilde{W}_{\left(t,s,g\right), \, \left(t, s-1, g\right)} = w_{t}
 \end{equation}
-with all other elements being zero. Now that all matrix elements have been defined, we turn to solving the system of equations. Combining Eq.~\ref{eqn:matrix-source-calc} and Eq.~\ref{eqn:matrix-flux-calc} yields
+with all other elements being zero. Now that all matrix elements have been defined, it can be written as a matrix eigenvalue problem. Combining Eq.~\ref{eqn:matrix-source-calc} and Eq.~\ref{eqn:matrix-flux-calc} yields
 \begin{equation}
 Q = \left(I - \frac{1}{k} D^{-1} F - D^{-1} S \right)^{-1} \left(\frac{1}{k} F + S \right) D^{-1} W \Psi
 \end{equation}
@@ -209,11 +251,11 @@ which combined with Eq.~\ref{eqn:matrix-attn} yields
 \begin{equation}
 H^T T \Psi = H^T H D^{-1} \left(I - \frac{1}{k} D^{-1} F - D^{-1} S \right)^{-1} \left(\frac{1}{k} F + S \right) D^{-1} W \Psi
 \end{equation}
-where $I$ is the identity matrix of dimension $M \times M$. Since $H$ is rectangular, it cannot be simply inverted. But since it is of full rank, $H^T H$ can be inverted. Therefore we define the left inverse of $H$ to be
+where $I$ is the identity matrix of dimension $M \times M$. Since $H$ is rectangular, it cannot be simply inverted. But since it is of full rank, $H^T H$ can be inverted. From the previous discussion of $H$, recall that $H^T H$ is diagonal so its inversion is simple. Therefore the left inverse $H_{\text{left}}^{-1}$ of matrix $H$ is defined to be
 \begin{equation}
 H_{\text{left}}^{-1} = \left(H^T H\right)^{-1} H^T.
 \end{equation}
-This results in the generalized eigenvalue equation given in Eq.~\ref{chap:moc}.
+This results in the generalized eigenvalue equation given in Eq.~\ref{eqn:gen-eig}
 \begin{equation}
 A \Psi = k B \Psi
 \label{eqn:gen-eig}
@@ -231,9 +273,9 @@ This can of course be turned into a regular eigenvalue problem by explicitly tak
 B^{-1}A \Psi = k \Psi.
 \label{eqn:eig}
 \end{equation}
-At this point, the matrix $B^{-1}A$ could be explicitly calculated then input into any standard eigenvalue solver. However, taking matrix inverses is very computationally intense, especially due to the large $N \times N$ size of these matrics. Therefore, doing this would be very unwise. Even if a generalized eigenvalue solver is available capable of solving equations of the form given in Eq.~\ref{eqn:gen-eig}, the problem would still rely on matrices of size $N \times N$, making them again computationally intense. It is clear that the steady-state neutron transport equation is an eigenvalue problem defined in terms of the angular fluxes. However, the reaction rates of interest are defined in terms of the scalar fluxes. From angular fluxes, it is simple to calculate the scalar fluxes but this is an indication that explicitly solving for the full vector of angular fluxes might be unnecessary.
+At this point, the matrix $B^{-1}A$ could be explicitly calculated and then input into any standard eigenvalue solver. However, taking matrix inverses is very computationally intense, especially due to the large $N \times N$ size of these matrics. Therefore, doing this would be very unwise. Even if a generalized eigenvalue solver is available capable of solving equations of the form given in Eq.~\ref{eqn:gen-eig}, the problem would still rely on matrices of size $N \times N$, making them again computationally intense. It is clear that the steady-state neutron transport equation is an eigenvalue problem defined in terms of the angular fluxes. However, the reaction rates of interest are defined in terms of the scalar fluxes. From angular fluxes, it is simple to calculate the scalar fluxes. This structure is an indication that explicitly solving for the full vector of angular fluxes might be unnecessary.
 
-Therefore, instead of using a common eigenvalue solution technique, a variation of fixed point iteration termed \textit{source iteration} is chosen to solve the equation. In this procedure, we revert to Eq.~\ref{eqn:matrix-source-calc}, Eq.~\ref{eqn:matrix-attn}, and Eq.~\ref{eqn:matrix-flux-calc} which were combined to form the eigenvalue equation given in Eq.~\ref{eqn:eig}. First, an initial flux distribution is guessed along with a value for the eigenvalue $k$. At the start of each iteration, the source distribution $Q$ is calcualted using Eq.~\ref{eqn:matrix-source-calc} from the current guess of scalar fluxes $\Phi$ and eigenvalue $k$. Then, during the \textit{transport sweep}, new angular fluxes are computed as
+Therefore, instead of using a common eigenvalue solution technique, a variation of fixed point iteration termed \textit{source iteration} is chosen to solve the system. In this procedure, recall Eq.~\ref{eqn:matrix-source-calc}, Eq.~\ref{eqn:matrix-attn}, and Eq.~\ref{eqn:matrix-flux-calc} which were combined to form the eigenvalue equation given in Eq.~\ref{eqn:eig}. First, an initial flux distribution is guessed along with a value for the eigenvalue $k$. At the start of each iteration, the source distribution $Q$ is calcualted using Eq.~\ref{eqn:matrix-source-calc} from the current guess of scalar fluxes $\Phi$ and eigenvalue $k$. Then, during the \textit{transport sweep}, new angular fluxes are computed as
 \begin{equation}
 \Psi = T^{-1} H D^{-1} Q.
 \end{equation}
@@ -243,13 +285,13 @@ Due to the simple structure of $T$, solving its implicit inversion is rather sim
 
 To alleviate this issue, the angular fluxes at boundaries are approximated by the calculated angular flux at the boundary from the previous iteration. Specifically, the relationship in Eq.~\ref{eqn:angular_flux_boundary} relating connecting angular fluxes at the start of a track is approximated by
 \begin{dmath}
-	\psi_g^{t,0} = \widetilde{\psi}_g^{C(t),S(C(t))}
+	\psi_g^{t,1}(0) = \widetilde{\psi}_g^{C(t),S(C(t))}(\ell_{C(t),S(C(t))})
 \end{dmath}
 where $\widetilde{\psi}$ represents the calculated angular fluxes from the previous iteration so that $\widetilde{\psi}_g^{C(t),S(C(t))}$ is the angular flux of the connecting track from the previous iteration. This transformation allows the inversion of $T$ to be calculated using an altered matrix $\tilde{T}$ which lacks dependency between different tracks, then adding the contribution of the previous iteration angular fluxes, if applicable. The structure of $\tilde{T}$ is block-diagonal and within each block the matrix is upper triangular. Physically this means that all tracks can be caclulated independently of each other during an iteration. For each track, the angular flxues can be solved sequentially by segment. This is where the ``transport sweep'' owes its name as the algorithm simply sweeps over segments. Since each row has at most two elements, very little calculation is required for each angular flux. 
 
-During this process, it is noted that only the boundary angular fluxes along with the neutron source are needed to determine all angular fluxes. Therefore, non-boundary angular fluxes are computed on-the-fly. Since the computation of the scalar fluxes $\Phi$ relies on a weighted sum of the full angular flux vector $\Psi$, once an angular flux is computed its contribution to the scalar fluxes is tallied before it is discarded.
+During this process, it is noted that only the boundary angular fluxes along with the neutron source are needed to determine all angular fluxes. Therefore, non-boundary angular fluxes are computed on-the-fly. Furhtermore, the elements of $T$ are re-computed on-the-fly. Since the computation of the scalar fluxes $\Phi$ relies on a weighted sum of the full angular flux vector $\Psi$, once an angular flux is computed its contribution to the scalar fluxes is tallied before it is discarded.
 
-After the transport sweep, the scource is added to the scalar flux tally, consistent with Eq.~\ref{eqn:matrix-flux-calc}, to produce a new estimate of the scalar fluxes $\Phi$. To form a new estimate of $\Phi$, note that
+After the transport sweep, the scource is added to the scalar flux tally, consistent with Eq.~\ref{eqn:matrix-flux-calc}, to produce a new estimate of the scalar fluxes $\Phi$. To form a new estimate of $k$, note that
 \begin{equation}
 T \Psi = \frac{1}{k} H D^{-1} F \Phi + H D^{-1} S \Phi
 \end{equation}
@@ -274,66 +316,3 @@ where $\mathbb{1}_M^T F \Phi$ refers to the fission rate, $\mathbb{1}_M^T \left(
 Notice that each source iteration relies on simply taking the inverse of the transport matrix $T$ rather than the full $B$ matrix, as would normally be taken during an eigenvalue solver, e.g. power iteration. While this choice does ease the computational burden of each iteration, it also requires many more iterations to converge to the correct solution as each iteration does little work in resolving the angular fluxes as the scattering matrix is not included in the inversion. Physically, this relates to not treating the scattering source as directly coupled to the total neutron source. Therefore, un-accelerated MOC is inherently plagued by slow convergence. 
 
 Next, in Chapter~\ref{chap:cmfd}, Course Mesh Finite Difference (CMFD) acceleration is introduced which resolves the issue of slow convergence for source iteration. This allows for the computational burden of each iteration to be eased without giving up anything in terms of convergence rate by iteration.
-
-DERIV: MOC derivation of integral eq
-Begin deriv:
-\begin{dmath}
-	\frac{d\psi_g(\mathbf{r_0} + s\mathbf{\Omega},\mathbf{\Omega})}{ds} \, + \, \Sigma_{t}^{i,g}\psi_g(\mathbf{r_0} + s\mathbf{\Omega},\mathbf{\Omega}) = q_g(\mathbf{r_0} + s\mathbf{\Omega})
-\end{dmath}
-
-\begin{dmath}
-	e^{\Sigma_{t}^{i,g} s}\frac{d\psi_g(\mathbf{r_0} + s\mathbf{\Omega},\mathbf{\Omega})}{ds} \, + \, e^{\Sigma_{t}^{i,g} s}\Sigma_{t}^{i,g}\psi_g(\mathbf{r_0} + s\mathbf{\Omega},\mathbf{\Omega}) = e^{\Sigma_{t}^{i,g} s}q_g(\mathbf{r_0} + s\mathbf{\Omega})
-\end{dmath}
-
-\begin{dmath}
-	\frac{d\left[e^{\Sigma_{t}^{i,g} s} \psi_g(\mathbf{r_0} + s\mathbf{\Omega},\mathbf{\Omega})\right]}{ds} = e^{\Sigma_{t}^{i,g} s}q_g(\mathbf{r_0} + s\mathbf{\Omega})
-\end{dmath}
-
-\begin{dmath}
-	\int\displaylimits_{s=0}^{s=\ell} d\left[e^{\Sigma_{t}^{i,g} s} \psi_g(\mathbf{r_0} + s\mathbf{\Omega},\mathbf{\Omega})\right] = \int\displaylimits_{s=0}^{s=\ell} ds \, e^{\Sigma_{t}^{i,g} s}q_g(\mathbf{r_0} + s\mathbf{\Omega})
-\end{dmath}
-
-\begin{dmath}
-	e^{\Sigma_{t}^{i,g} \ell} \psi_g(\mathbf{r_0} + \ell \mathbf{\Omega},\mathbf{\Omega}) - \psi_g(\mathbf{r_0},\mathbf{\Omega}) = \int\displaylimits_{0}^{\ell} ds \, e^{\Sigma_{t}^{i,g} s}q_g(\mathbf{r_0} + s\mathbf{\Omega})
-\end{dmath}
-
-End deriv:
-\begin{dmath}
-	\psi_g(\mathbf{r_0} + \ell \mathbf{\Omega},\mathbf{\Omega}) = \psi_g(\mathbf{r_0},\mathbf{\Omega}) e^{-\Sigma_{t}^{i,g} \ell} + \int\displaylimits_{0}^{\ell} ds \, e^{-\Sigma_{t}^{i,g} (\ell-s)}q_g(\mathbf{r_0} + s\mathbf{\Omega})
-\end{dmath}
-
-DRIV AVG FLUX
-
-Begin:
-\begin{dmath}
-	\overline{\phi_{i,g}} = \frac{1}{V_i} \sum_{(t,s) \in V_i} \delta A_{i,t} \int_{0}^{\ell_{t,s}} ds \,  \left(\psi^{t,s}_g(0) + \left( \frac{q^0_{i,g}}{\Sigma_{t}^{i,g}} - \psi_g^{t,s}(0) \right) F_1\left(\Sigma_{t}^{i,g} s \right) \right)
-\end{dmath}
-
-\begin{dmath}
-	\overline{\phi_{i,g}} = \frac{1}{V_i} \sum_{(t,s) \in V_i} \delta A_{i,t} \left( \psi^{t,s}_g(0) \ell_{t,s} + \left( \frac{q^0_{i,g}}{\Sigma_{t}^{i,g}} - \psi_g^{t,s}(0) \right) \left( \ell_{t,s} - \int_{0}^{\ell_{t,s}} ds \, e^{-\Sigma_{t}^{i,g} s} \right) \right)
-\end{dmath}
-
-\begin{dmath}
-	\overline{\phi_{i,g}} = \frac{1}{V_i} \sum_{(t,s) \in V_i} \delta A_{i,t} \left( \psi^{t,s}_g(0) \ell_{t,s} + \left( \frac{q^0_{i,g}}{\Sigma_{t}^{i,g}} - \psi_g^{t,s}(0) \right) \left( \ell_{t,s} + \frac{1}{\Sigma_{t}^{i,g}} \left( e^{-\Sigma_{t}^{i,g} \ell_{t,s}} - 1\right) \right) \right)
-\end{dmath}
-
-\begin{dmath}
-	\overline{\phi_{i,g}} = \frac{1}{V_i} \sum_{(t,s) \in V_i} \delta A_{i,t} \left( \frac{q^0_{i,g} \ell_{t,s}}{\Sigma_{t}^{i,g}} + \frac{1}{\Sigma_{t}^{i,g}} \left( \frac{q^0_{i,g}}{\Sigma_{t}^{i,g}} - \psi_g^{t,s}(0) \right) \left( e^{-\Sigma_{t}^{i,g} \ell_{t,s}} - 1\right) \right)
-\end{dmath}
-
-\begin{dmath}
-	\overline{\phi_{i,g}} = \frac{q^0_{i,g}}{\Sigma_{t}^{i,g}} + \frac{1}{V_i} \sum_{(t,s) \in V_i} \frac{\delta A_{i,t}}{\Sigma_{t}^{i,g}} \left( \frac{q^0_{i,g}}{\Sigma_{t}^{i,g}} - \psi_g^{t,s}(0) \right) \left( e^{-\Sigma_{t}^{i,g} \ell_{t,s}} - 1\right)
-\end{dmath}
-
-\begin{dmath}
-	\overline{\phi_{i,g}} = \frac{q^0_{i,g}}{\Sigma_{t}^{i,g}} - \frac{1}{\Sigma_{t}^{i,g} V_i} \sum_{(t,s) \in V_i} \delta A_{i,t} \left( \frac{q^0_{i,g}}{\Sigma_{t}^{i,g}} - \psi_g^{t,s}(0) \right) F_1\left(\Sigma_{t}^{i,g} \ell_{t,s} \right)
-\end{dmath}
-
-\begin{dmath}
-	\overline{\phi_{i,g}} = \frac{q^0_{i,g}}{\Sigma_{t}^{i,g}} + \frac{1}{\Sigma_{t}^{i,g} V_i} \sum_{(t,s) \in V_i} \delta A_{i,t} \left(\psi_g^{t,s}(0) - \psi_g^{t,s}(s) \right)
-\end{dmath}
-
-END
-\begin{dmath}
-	\overline{\phi_{i,g}} = \frac{q^0_{i,g}}{\Sigma_{t}^{i,g}} + \frac{1}{\Sigma_{t}^{i,g} V_i} \sum_{(t,s) \in V_i} \delta A_{i,t} \Delta \psi_g^{t,s}
-\end{dmath}
