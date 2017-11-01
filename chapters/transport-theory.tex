@@ -1,7 +1,7 @@
 \chapter{Transport Theory}
 \label{chap:transport}
 
-This chapter briefly introduces the fundamentals of neutron interactions in order to understand the origins of the neutron transport equation. First, neturon reactions are discussed in Section~\ref{sec:transport-fundamentals}, leading to a concise formula for their calculation in terms of the neutron population. Then, in Section~\ref{sec:transport-eq}, the sources and sinks of neutrons are identified in order to determine a general balance equation for the neutron population. Assumptions are then introduced and identified, leading finally to the multi-group transport equation, whose solution is the subject of this thesis.
+This chapter briefly introduces the fundamentals of neutron interactions in order to understand the origins of the neutron transport equation. First, neutron reactions are discussed in Section~\ref{sec:transport-fundamentals}, leading to a concise formula for their calculation in terms of the neutron population. Then, in Section~\ref{sec:transport-eq}, the sources and sinks of neutrons are identified in order to determine a general balance equation for the neutron population. Assumptions are then introduced and identified, leading finally to the multi-group transport equation, whose solution is the subject of this thesis. The emphasis in this description is identifying approximations and discussing their impact on solution accuracy. Other more traditional discussions of the neutron transport equation can be found throughout the literature, but many leave large gaps in derivations~\cite{henry, duderstadt, duderstadt-martin, bell1967transport, hebert2009applied}. This thesis aims to form a cohesive description of steady-state neutron transport from fundamentals, mentioning all non-trivial approximations.
 
 \section{Neutron Reactions}
 \label{sec:transport-fundamentals}
@@ -14,23 +14,23 @@ E = \frac{1}{2} m_n v^2
 \end{equation}
 where $m_n$ is the mass of the neutron. Therefore, in the context of neutron transport, neutron velocity is nearly synonymous with neutron energy.
 
-The reaction rate $R_X(\mathbf{r}, \mathbf{\Omega}, E, t)$ of type $X$ induced by neutrons of density $n(\mathbf{r}, \mathbf{\Omega}, E, t)$ striking target nuclei of density $N_A(\mathbf{r}, t)$ can be calculated as
+The reaction rate $R_X(\mathbf{r}, \mathbf{\Omega}, E, t)$ of type $X$ induced by neutrons of density $n(\mathbf{r}, \mathbf{\Omega}, E, t)$ striking a target material composed of $K$ isotopes, indexed by $k$, each with a number density of $\rho_k(\mathbf{r}, t)$ can be calculated as
 \begin{equation}
-R_X(\mathbf{r}, \mathbf{\Omega}, E, t) = \sigma_X(\mathbf{r}, \mathbf{\Omega}, E, t) N_A(\mathbf{r}, t) n(\mathbf{r}, \mathbf{\Omega}, E, t) v(E) 
+R_X(\mathbf{r}, \mathbf{\Omega}, E, t) = \sum_{k=1}^K \sigma_{k,X}(\mathbf{r}, \mathbf{\Omega}, E, t) \rho_k(\mathbf{r}, t) n(\mathbf{r}, \mathbf{\Omega}, E, t) v(E) 
 \label{eqn:rr_fundamental}
 \end{equation}
-where $\sigma_X(\mathbf{r}, \mathbf{\Omega}, E, t)$ is the microscopic nuclear cross-section. This is a fundamentally important quantity in nuclear engineering that is often interpreted as the probability of a neutron interacting with the target material. This particularly interesting material attribute is discussed further in Chapter~\ref{chap:mgxs}. For the purposes of this discussion on neutron transport, it is necessary to calculate reaction rates -- the goal of neutron transport calculations.
+where $\sigma_{k,X}(\mathbf{r}, \mathbf{\Omega}, E, t)$ is the microscopic nuclear cross-section of isotope $k$\cite{duderstadt}. The nuclear cross-section is a fundamentally important quantity in nuclear engineering that is often interpreted as the probability of a neutron interacting with the target nuclei. This particularly interesting material attribute is discussed further in Chapter~\ref{chap:mgxs}. For the purposes of this discussion on neutron transport, it is necessary to calculate reaction rates -- the goal of neutron transport calculations.
 
 Notice that of the four components in Eq.~\ref{eqn:rr_fundamental}, the first two relate to the target material and the last two relate to the impinging neutrons. These terms are therefore grouped into the macroscopic nuclear cross-section $\Sigma_X(\mathbf{r}, \mathbf{\Omega}, E, t)$ defined as
 \begin{equation}
-\Sigma_X(\mathbf{r}, \mathbf{\Omega}, E, t) = \sigma_X(\mathbf{r}, \mathbf{\Omega}, E, t) N_A(\mathbf{r}, t)
+\Sigma_X(\mathbf{r}, \mathbf{\Omega}, E, t) \equiv \sum_{k=1}^K \sigma_{k,X}(\mathbf{r}, \mathbf{\Omega}, E, t) \rho_k(\mathbf{r}, t)
 \end{equation} 
 and the neutron angular flux $\psi(\mathbf{r}, \mathbf{\Omega}, E, t)$ defined as
 \begin{equation}
-\psi(\mathbf{r}, \mathbf{\Omega}, E, t) = n(\mathbf{r}, \mathbf{\Omega}, E, t) v(E).
+\psi(\mathbf{r}, \mathbf{\Omega}, E, t) \equiv n(\mathbf{r}, \mathbf{\Omega}, E, t) v(E).
 \label{eqn:angular_neutron_flux}
 \end{equation}
-With these defnitions, the reaction rates can be calculated simply as the product of macroscopic cross-section and angular neutron flux:
+With these definitions, the reaction rates can be calculated simply as the product of macroscopic cross-section and angular neutron flux:
 \begin{equation}
 R_X(\mathbf{r}, \mathbf{\Omega}, E, t) = \Sigma_X(\mathbf{r}, \mathbf{\Omega}, E, t) \psi(\mathbf{r}, \mathbf{\Omega}, E, t).
 \label{eqn:rr_differential}
@@ -63,18 +63,18 @@ Now, all the relevant neutron sources and neutron sinks must be identified. With
 \text{sources} = \text{prompt fission} \, + \, & \text{in-scattering} \, +  \, \text{neutron influx} \, + \\ & \text{delayed neutron emission} \, + \, \text{external sources} \\
 \end{split}
 \end{equation}
-The prompt fission term refers to neutrons that are emitted during fission reactions. During the fission process, the inpingent neutron of direction $\mathbf{\Omega'}$ and energy $E'$ is modeled as briefly being joined with the target nucleus to form a \textit{compound nucleus}. Then, the compound nucleus breaks into several pieces, including fission products but also releasing some additional neutrons. The number of additional neutrons follows a stochastic process. In deterministic transport, only the mean is modeled so the average number of neutrons released from the fission process $\nu_p(\mathbf{r},\mathbf{\Omega'}, E', t)$ is assumed for every fission event. Due to quantum mechanical considerations~\cite{compound-nucleus} and the high energy of fission reactions, it is possible to assume that the direction and energy of released fission neutrons follow a prompt emission spectrum $\chi_p(\mathbf{r},\mathbf{\Omega}, E,t)$ that is independent of the impingent neutron direction and energy. Therefore, the overall fission rate at each location can be calculated by integrating the product of fission cross-section $\Sigma_f(\mathbf{r},\mathbf{\Omega'}, E', t)$  and angular flux over all incoming directions and energies. The prompt emission spectrum is then applied to determine the density of neutrons emitted at direction $\mathbf{\Omega}$ and energy $E$ as
+The prompt fission term refers to neutrons that are emitted during fission reactions. During the fission process, the impingent neutron of direction $\mathbf{\Omega}$ and energy $E$ is modeled as briefly being joined with the target nucleus to form a \textit{compound nucleus}. Then, the compound nucleus breaks into several pieces, including fission products but also releasing some additional neutrons. The number of additional neutrons follows a stochastic process. In deterministic transport, only the mean is modeled so the average number of neutrons released from the fission process. This is nuclide-dependent but in order to model the transport through materials rather individual isotopes, an average number of neutrons released from fission in the material $\nu_p(\mathbf{r},\mathbf{\Omega}, E, t)$ is assumed for every fission event. Due to the compound nucleus model from quantum mechanics~\cite{compound-nucleus}, it is possible to assume that the direction and energy of released fission neutrons follow a prompt emission spectrum $\chi_p(\mathbf{r},\mathbf{\Omega}, E,t)$ that is independent of the impingent neutron direction and energy. Therefore, the overall fission rate at each location can be calculated by integrating the product of fission cross-section $\Sigma_f(\mathbf{r},\mathbf{\Omega}, E, t)$  and angular flux over all incoming directions and energies. The prompt emission spectrum is then applied to determine the rate of neutrons emitted at direction $\mathbf{\Omega}$ and energy $E$ as
 \begin{equation}
 \begin{split}
 \text{prompt } & \text{fission} =  \\
  \int_V d\mathbf{r} \, & \chi_p(\mathbf{r}, \mathbf{\Omega}, E,t) \int\displaylimits_{0}^{\infty} dE' \, \int\displaylimits_{4\pi} d\mathbf{\Omega'} \, \nu_p(\mathbf{r},\mathbf{\Omega'}, E', t) \Sigma_f(\mathbf{r},\mathbf{\Omega'}, E', t) \psi(\mathbf{r},\mathbf{\Omega'}, E',t)
 \end{split}
 \end{equation}
-The in-scattering term refers to neutrons that collide with a target nucleus and scatter into direction $\mathbf{\Omega}$ and energy $E$ from another direction and energy pair $\mathbf{\Omega'}$ and $E'$, respectively. Unlike the prompt fission source, the incoming neutron direction and energy cannot be decoupled from the outgoing direction and energy. This is because the scattering angle ($\mathbf{\Omega} \cdot \mathbf{\Omega'}$) is highly dependent on the incoming neutron energy. For instance, a high energy neutron is likely to be deflected far less than a low energy neutron due to conservation of momentum \cite{kinematics}. Additionally, high energy neutrons are unlikely to scatter to higher energies. Therefore, a scattering macroscopic cross-section governing the probability of this scattering process is defined in terms of both incoming and outgoing neutron directions and energies as $\Sigma_{s}(\mathbf{r}, \mathbf{\Omega'}\rightarrow \mathbf{\Omega},{E'\rightarrow E},t)$. Integrating over all possible incoming neutron directions and energies yields the in-scattering source term:
+In-scattering refers to neutrons that collide with a target nucleus and scatter into direction $\mathbf{\Omega}$ and energy $E$ from another direction and energy pair $\mathbf{\Omega'}$ and $E'$, respectively. Unlike the prompt fission source, the outgoing neutron direction and energy cannot be decoupled from the incoming direction and energy. This is because the scattering magnitude ($\mathbf{\Omega} \cdot \mathbf{\Omega'}$) is highly dependent on the incoming neutron energy. For instance, a neutron is likely to be deflected far less from a light target than a heavier target due to conservation of momentum \cite{duderstadt}. Additionally, high energy neutrons are unlikely to scatter to higher energies. Therefore, a scattering macroscopic cross-section governing the probability of this scattering process is defined in terms of both incoming and outgoing neutron directions and energies as $\Sigma_{s}(\mathbf{r}, \mathbf{\Omega'}\rightarrow \mathbf{\Omega},{E'\rightarrow E},t)$. Integrating over all possible incoming neutron directions and energies yields the in-scattering source term:
 \begin{equation}
 \text{in-scattering} = \int_V d\mathbf{r} \, \int\displaylimits_{0}^{\infty} dE' \, \int\displaylimits_{4\pi} \, d\mathbf{\Omega'} \Sigma_{s}(\mathbf{r}, \mathbf{\Omega'}\rightarrow \mathbf{\Omega},{E'\rightarrow E},t) \psi(\mathbf{r}, \mathbf{\Omega'},E', t)
 \end{equation}
-The neutron influx term refers to neutrons entering the volume $V$ from outside its boundary. A surface $S$ is defined that bounds the the volume $V$ and has a normal vector $\mathbf{n}$. In this way, all neutrons impingent on the surface $S$ with their direction pointed towards the volume ($\mathbf{\Omega} \cdot \mathbf{n} < 0$) contribute to the neutron influx. This is defined by
+The neutron influx term refers to the rate of neutrons entering the volume $V$ from outside its boundary. A surface $S$ is defined that bounds the volume $V$ and has a surface normal vector $\mathbf{n}$. In this way, all neutrons impingent on the surface $S$ with their direction pointed towards the volume ($\mathbf{\Omega} \cdot \mathbf{n} < 0$) contribute to the neutron influx. In addition, since the rate depends on the velocity of neutrons across the surface, but our definition of angular neutron flux encompasses the neutron velocity in the direction of travel $\mathbf{\Omega}$, the dot product must be taken with the surface normal $\mathbf{n}$. This leads to the definition of the neutron influx as:
 \begin{equation}
 \text{neutron influx} = - \int_{S \cap \left(\mathbf{\Omega} \cdot \mathbf{n} < 0 \right)} dS \, \left(\mathbf{\Omega} \cdot \mathbf{n} \right) \psi(\mathbf{r}, \mathbf{\Omega}, E, t)
 \label{eqn:neutron-influx}
@@ -89,7 +89,7 @@ Lastly, neutrons can be released from external sources found within the reactor 
 \begin{equation}
 \text{external sources} = \int_V d\mathbf{r} \, S(\mathbf{r}, \mathbf{\Omega}, E, t)
 \end{equation}
-Now that all of the relevant sources have been identified, it is time to identify the neutron sinks. Again, with no non-trivial exceptions, the sinks are identified as:
+Now that all of the relevant sources have been identified, it is time to identify the neutron sinks. With few exceptions, the sinks are identified as:
 \begin{equation}
 \text{sinks} = \text{neutron leakage} \, + \, \text{all neutron interactions}
 \end{equation}
@@ -134,7 +134,7 @@ Since the volume $V$ was defined arbitrarily and all terms are integrated over t
 	\end{split}
 	\label{eqn:first-diff-balance}
 \end{equation}
-This is the time-dependent neutron transport equation. However, this form is far too general. In the context of this thesis, only steady-state problems will be analyzed, removing any temporal dependence. Therefore all time-dependence should be eliminated from Eq.~\ref{eqn:first-diff-balance}. When this happens, the delayed neutron emission is encompassed by the fission emission term, yielding a new fission emission spectrum $\chi(\mathbf{r}, \mathbf{\Omega}, E)$ and a new average number of neutrons per fission $\nu(\mathbf{r}, \mathbf{\Omega}, E)$ in Eq~\ref{eqn:first-time-independent-balance}.
+This is the time-dependent neutron transport equation. In the context of this thesis, only steady-state problems will be analyzed, removing any temporal dependence. Therefore all time-dependence can be eliminated from Eq.~\ref{eqn:first-diff-balance}. In doing so, the delayed neutron emission is encompassed by the fission emission term, yielding a new fission emission spectrum $\chi(\mathbf{r}, \mathbf{\Omega}, E)$ and a new average number of neutrons per fission $\nu(\mathbf{r}, \mathbf{\Omega}, E)$ in Eq~\ref{eqn:first-time-independent-balance}.
 \begin{equation}
 \begin{split}
 \mathbf{\Omega} \cdot \nabla \psi(\mathbf{r},\mathbf{\Omega},E) \, + & \, \Sigma_{t}(\mathbf{r},\mathbf{\Omega},E)\psi(\mathbf{r},\mathbf{\Omega},E) = \\
@@ -145,9 +145,9 @@ This is the time-dependent neutron transport equation. However, this form is far
 \label{eqn:first-time-independent-balance}
 \end{equation}
 
-Next, external sources are assumed to be trivial. During full power operation of a nuclear power reactor, this is indeed true. The fission source overwhelms any external neutron source. Once the external sources are removed it is clear that the trivial solution $\psi(\mathbf{r},\mathbf{\Omega},E) = 0$ is a solution, and might indeed be the only solution that solves the problem for fixed cross-sections. 
+Next, external sources are often assumed to be trivial. During full power operation of a nuclear power reactor, this is indeed true. The fission source overwhelms any external neutron source. Once the external sources are removed it is clear that the trivial solution $\psi(\mathbf{r},\mathbf{\Omega},E) = 0$ is a solution, and might indeed be the only solution that solves the problem for the provided cross-sections. 
 
-In reality, the cross-sections are far from fixed. Instead, there are feedback mechanisms that force them to vary based on the neutron population. For instance, an increase in neutron population would likely lead to an increase in temperature that often causes neutron absorption to increase. Since cross-sections at steady-state operation are not precisely known, there is numerical difficulty in demanding equilibrium between sinks and sources. Therefore, a scaling factor $k$ is introduced in Eq.~\ref{eqn:k-indroduction} that dampens the fission source. This additional degree of freedom allows for solutions of the neutron transport equation were the unscaled sources do not exactly match the sinks.
+In reality, the cross-sections are far from known. Instead, there are feedback mechanisms that force them to vary based on the neutron population. For instance, an increase in neutron population would likely lead to an increase in temperature that often causes neutron absorption to increase. Since cross-sections at steady-state operation are not precisely known, there is numerical difficulty in demanding equilibrium between sinks and sources. Therefore, a scaling factor $k$ is introduced in Eq.~\ref{eqn:k-indroduction} that modifies the fission source. This additional degree of freedom allows for solutions of the neutron transport equation were the unscaled sources do not exactly match the sinks.
 \begin{equation}
 	\begin{split}
 		\mathbf{\Omega} \cdot \nabla \psi(\mathbf{r},\mathbf{\Omega},E) \, + & \, \Sigma_{t}(\mathbf{r},\mathbf{\Omega},E)\psi(\mathbf{r},\mathbf{\Omega},E) = \\
@@ -156,9 +156,11 @@ In reality, the cross-sections are far from fixed. Instead, there are feedback m
 	\end{split}
 	\label{eqn:k-indroduction}
 \end{equation}
-A closer examination of the scaling factor $k$ shows it is an eigenvalue of the system. This will become more obvious when a system of equations is formed to solve the neutron transport equation. In simulating steady state behavior, the dominant mode is often desired. The eigenvalue $k$ relating to that dominant mode is termed the criticality of the reactor. If this mode corresponds to $k>1$, then the reactor is termed to be super-critical, meaning that sources overpower the sinks for the provided reactor configuration and cross-sections. A value of $k = 1$ implies the reactor is operating at perfect steady-state conditions, and the reactor is termed to be critical. For a value of $k < 1$ the reactor is termed to be sub-critical.
+A closer examination of the scaling factor $k$ shows it is an eigenvalue of the system. This will become more obvious when a system of equations is formed to solve the neutron transport equation. In simulating steady state behavior, the dominant mode is often desired. The eigenvalue $k$ relating to that dominant mode is termed the criticality of the reactor. Only an eigenvalue $k=1$ indicates that the reactor is \textit{critical} -- that neutron sources exactly match sinks. However, due to imperfect knowledge of the system and its constituent material cross-sections the eigenvalue is never exactly $k=1$ in practical applications.
 
-In the fission source term, $\chi(\mathbf{r}, \mathbf{\Omega}, E)$ dictates how neutrons are emitted from fission events. Since the energy of emitted neutrons is so large in comparison with typical neutron energies causing neutron emission, there is virtually no dependence on angle. Therefore, the emission is assumed to be isotropic, as presented in Eq.~\ref{eqn:tr-isotropic-emission}.
+%If this mode corresponds to $k>1$, then the reactor is termed to be super-critical, meaning that sources overpower the sinks for the provided reactor configuration and cross-sections. A value of $k = 1$ implies the reactor is operating at perfect steady-state conditions, and the reactor is termed to be critical. For a value of $k < 1$ the reactor is termed to be sub-critical.
+
+In the fission source term, the fission emission spectrum $\chi(\mathbf{r}, \mathbf{\Omega}, E)$ dictates how neutrons are emitted from fission events. Since the energy of emitted neutrons is so large in comparison with typical neutron energies causing neutron emission, as well as compound nucleus creation, there is virtually no dependence on angle. Therefore, the emission is assumed to be isotropic, as presented in Eq.~\ref{eqn:tr-isotropic-emission}.
 \begin{equation}
 	\begin{split}
 		\mathbf{\Omega} \cdot \nabla \psi(\mathbf{r},\mathbf{\Omega},E) \, + & \, \Sigma_{t}(\mathbf{r},\mathbf{\Omega},E)\psi(\mathbf{r},\mathbf{\Omega},E) = \\
@@ -168,7 +170,7 @@ In the fission source term, $\chi(\mathbf{r}, \mathbf{\Omega}, E)$ dictates how 
 	\label{eqn:tr-isotropic-emission}
 \end{equation}
 
-Next, angular dependence is removed from non-scattering cross-sections, as well as the mean number of neutrons released by fission $\nu(\mathbf{r},\mathbf{\Omega},E')$ in Eq.~\ref{eqn:xs-angular-dependence-removal}. Since materials with strong orientation structures (eg. a crystalline structure) are uncommon in common reactor configurations, this assumption introduces virtually no bias.
+Next, angular dependence is removed from non-scattering cross-sections, as well as the mean number of neutrons released by fission $\nu(\mathbf{r},\mathbf{\Omega},E')$ in Eq.~\ref{eqn:xs-angular-dependence-removal}. Since materials with strong orientation structures (eg. a crystalline structure) are uncommon in typical reactor configurations, this assumption introduces virtually no bias.
 \begin{equation}
 	\begin{split}
 		\mathbf{\Omega} \cdot \nabla \psi(\mathbf{r},\mathbf{\Omega},E) \, + & \, \Sigma_{t}(\mathbf{r},E)\psi(\mathbf{r},\mathbf{\Omega},E) = \\
@@ -178,12 +180,14 @@ Next, angular dependence is removed from non-scattering cross-sections, as well 
 	\label{eqn:xs-angular-dependence-removal}
 \end{equation}
 
-For computational efficiency, the scattering is assumed to be isotropic. This assumption, unlike many of the others in this section, does indeed incorporate a measurable bias. Since significant hydrogen is present which observes reactions quite differently between center-of-mass and stationary observation perspectives, causing simulated scattering angles to be far less forward-peaked than reality. However, in Section~\ref{eqn:transport-correction}, an adjustment will be introduced to account for the discrepancy between isotropic and the real anisotropic scattering. With the isotropic assumption, all neutron sources can be simulated as equal in all directions, as presented in Eq.~\ref{eqn:transport-isotropic}.
+Many neutron transport methods rely on solving Eq.~\ref{eqn:xs-angular-dependence-removal} as it only incorporates very mild assumptions. For instance, many Monte Carlo solvers implicitly solve the neutron transport equation in this form~\cite{mcnpx2003manual, serpent2013manual, openmc2016manual, bucholz1982scale}. However, this form is too general for many deterministic solvers to be feasible. One of the added complexities comes from the angular dependence of the scattering source.
+
+For computational efficiency, the scattering is therefore assumed to be isotropic. This assumption, unlike many of the others in this section, does indeed incorporate a measurable bias. In typical LWRs, significant hydrogen is present which scatters neutrons preferentially in the forward direction, which is not captured with the isotropic scattering assumption. However, in Section~\ref{eqn:transport-correction}, an adjustment will be introduced to account for the discrepancy between isotropic and anisotropic scattering. With the isotropic scattering assumption, all neutron sources are be simulated as equal in all directions, as presented in Eq.~\ref{eqn:transport-isotropic}.
 \begin{equation}
 	\begin{split}
 		\mathbf{\Omega} \cdot \nabla \psi(\mathbf{r},\mathbf{\Omega},E) \, + & \, \Sigma_{t}(\mathbf{r},E)\psi(\mathbf{r},\mathbf{\Omega},E) = \\
 		& \phantom{+} \, \frac{\chi(\mathbf{r},E)}{4\pi k} \int\displaylimits_{0}^{\infty} dE' \, \nu(\mathbf{r},E') \Sigma_f(\mathbf{r}, E') \int\displaylimits_{4\pi} d\mathbf{\Omega'} \,  \psi(\mathbf{r},\mathbf{\Omega'}, E')\\
-		& + \, \int\displaylimits_{0}^{\infty} dE' \,  \frac{\Sigma_{s}(\mathbf{r}, \mathbf{\Omega},{E'\rightarrow E})}{4\pi}\int\displaylimits_{4\pi} \, d\mathbf{\Omega'} \psi(\mathbf{r}, \mathbf{\Omega'},E')
+		& + \, \int\displaylimits_{0}^{\infty} dE' \,  \frac{\Sigma_{s}(\mathbf{r},{E'\rightarrow E})}{4\pi}\int\displaylimits_{4\pi} \, d\mathbf{\Omega'} \psi(\mathbf{r}, \mathbf{\Omega'},E')
 	\end{split}
 	\label{eqn:transport-isotropic}
 \end{equation}
@@ -198,17 +202,21 @@ With this definition, the balance equation can be written more succinctly in Eq.
 	\begin{split}
 		\mathbf{\Omega} \cdot \nabla \psi(\mathbf{r},\mathbf{\Omega},E) \, + & \, \Sigma_{t}(\mathbf{r},E)\psi(\mathbf{r},\mathbf{\Omega},E) = \\
 		& \phantom{+} \, \frac{\chi(\mathbf{r},E)}{4\pi k} \int\displaylimits_{0}^{\infty} dE' \, \nu(\mathbf{r},E') \Sigma_f(\mathbf{r}, E') \phi(\mathbf{r}, E')\\
-		& + \, \int\displaylimits_{0}^{\infty} dE' \,  \frac{\Sigma_{s}(\mathbf{r}, \mathbf{\Omega},{E'\rightarrow E})}{4\pi} \phi(\mathbf{r}, E')
+		& + \, \int\displaylimits_{0}^{\infty} dE' \,  \frac{\Sigma_{s}(\mathbf{r},{E'\rightarrow E})}{4\pi} \phi(\mathbf{r}, E')
 	\end{split}
 	\label{eqn:pre-multigroup}
 \end{equation}
 
-To determine the neutron population within a given energy \textit{range}, Eq.~\ref{eqn:pre-multigroup} is integrated over an energy interval $g$ with minimum energy corresponding to $E_{g-1}$ and maximum energy corresponding to $E_{g}$ which leads to Eq.~\ref{eqn:energy-range-int-transport}.
+\section{Multi-Group Transport}
+
+Similar to how angular dependence of the scattering source causes increased computational complexity for deterministic methods, the continuous energy nature of the neutron transport equation \textit{greatly} increases computational complexity. Therefore, many deterministic methods rely on a multi-group form of the neutron transport equation in which neutron populations are grouped into energy intervals or \textit{groups}.
+
+To determine the neutron population within a given energy group $g$, Eq.~\ref{eqn:pre-multigroup} is integrated over the associated energy interval with minimum energy corresponding to $E_{g-1}$ and maximum energy corresponding to $E_{g}$ which leads to Eq.~\ref{eqn:energy-range-int-transport}.
 \begin{equation}
 \begin{split}
 \mathbf{\Omega} \cdot \nabla \psi_g(\mathbf{r},\mathbf{\Omega}) \, + & \, \int_{E_{g-1}}^{E_{g}} dE \, \Sigma_{t}(\mathbf{r},E)\psi(\mathbf{r},\mathbf{\Omega},E) = \\
 & \phantom{+} \, \int_{E_{g-1}}^{E_g} dE \, \frac{\chi(\mathbf{r},E)}{4\pi k} \int\displaylimits_{0}^{\infty} dE' \, \nu(\mathbf{r},E') \Sigma_f(\mathbf{r}, E') \phi(\mathbf{r}, E')\\
-& + \, \int_{E_{g-1}}^{E_g} dE \, \int\displaylimits_{0}^{\infty} dE' \,  \frac{\Sigma_{s}(\mathbf{r}, \mathbf{\Omega},{E'\rightarrow E})}{4\pi} \phi(\mathbf{r}, E')
+& + \, \int_{E_{g-1}}^{E_g} dE \, \int\displaylimits_{0}^{\infty} dE' \,  \frac{\Sigma_{s}(\mathbf{r},{E'\rightarrow E})}{4\pi} \phi(\mathbf{r}, E')
 \end{split}
 \label{eqn:energy-range-int-transport}
 \end{equation}
@@ -216,12 +224,12 @@ where the multi-group angular flux $\psi_g(\mathbf{r},\mathbf{\Omega})$ is defin
 \begin{equation}
 \psi_g(\mathbf{r},\mathbf{\Omega}) = \int_{E_{g-1}}^{E_g} dE \, \psi(\mathbf{r},\mathbf{\Omega},E).
 \end{equation}
-If the entire energy $[0, \infty)$ range is split into $G$ non-overlapping energy intervals, yielding $G+1$ energy boundaries, then integrals over the entire range can be cast as the sum of integrals over each energy interval. This is introduced in Eq.~\ref{eqn:transport-group-introduction}.
+If the entire energy range $[0, \infty)$ is partitioned into $G$ non-overlapping energy intervals, yielding $G+1$ energy boundaries, then integrals over the entire range can be cast as the sum of integrals over each energy interval. This is introduced in Eq.~\ref{eqn:transport-group-introduction}.
 \begin{equation}
 \begin{split}
 \mathbf{\Omega} \cdot \nabla \psi_g(\mathbf{r},\mathbf{\Omega}) \, + & \, \int_{E_{g-1}}^{E_g} dE \, \Sigma_{t}(\mathbf{r},E)\psi(\mathbf{r},\mathbf{\Omega},E) = \\
 & \phantom{+} \, \int_{E_{g-1}}^{E_g} dE \, \frac{\chi(\mathbf{r},E)}{4\pi k} \sum_{g'=1}^G \left( \int\displaylimits_{E_{g'-1}}^{E_{g'}} dE' \, \nu(\mathbf{r},E') \Sigma_f(\mathbf{r}, E') \phi(\mathbf{r}, E') \right)\\
-& + \, \int_{E_{g-1}}^{E_g} dE \, \sum_{g'=1}^G \left( \int\displaylimits_{E_{g'-1}}^{E_{g'}} dE' \,  \frac{\Sigma_{s}(\mathbf{r}, \mathbf{\Omega},{E'\rightarrow E})}{4\pi} \phi(\mathbf{r}, E') \right).
+& + \, \int_{E_{g-1}}^{E_g} dE \, \sum_{g'=1}^G \left( \int\displaylimits_{E_{g'-1}}^{E_{g'}} dE' \,  \frac{\Sigma_{s}(\mathbf{r},{E'\rightarrow E})}{4\pi} \phi(\mathbf{r}, E') \right).
 \end{split}
 \label{eqn:transport-group-introduction}
 \end{equation}
@@ -239,8 +247,7 @@ and \textit{multi-group cross-sections} are defined in Eq.~\ref{eqn:multi-group-
 \end{eqnarray}
 \begin{equation}
 \begin{split}
-\Sigma_{s}^{g' \rightarrow g}\left(\mathbf{r}\right) = \frac{\int_{E_{g-1}}^{E_g} dE \, \sum_{g''=1}^G \left( \int\displaylimits_{E_{g''-1}}^{E_{g''}} dE'' \, \Sigma_{s}(\mathbf{r}, \mathbf{\Omega},{E''\rightarrow E}) \phi(\mathbf{r}, E'') \right)}{\phi_{g'}(\mathbf{r})} \\
-	 \, - \, \frac{\sum_{g''\neq g'} \Sigma_{s}^{g'' \rightarrow g}\left(\mathbf{r}\right) \phi_{g''}(\mathbf{r})}{\phi_{g'}(\mathbf{r})}
+\Sigma_{s}^{g' \rightarrow g}\left(\mathbf{r}\right) = \frac{\int_{E_{g-1}}^{E_g} dE \, \int\displaylimits_{E_{g'-1}}^{E_{g'}} dE' \,  \Sigma_{s}(\mathbf{r},{E'\rightarrow E}) \phi(\mathbf{r}, E') }{\int_{E_{g-1}}^{E_g} dE \, \phi(\mathbf{r},E)}
 \end{split}
 \label{eqn:multi-group-xs-definitions-last}
 \end{equation}
@@ -252,7 +259,7 @@ Incorporating these definitions into the transport equation yields the \textit{m
 \end{split}
 \label{eqn:full-multi-group-transport}
 \end{equation}
-It is important to note that no assumptions were needed from the energy independent form in Eq.~\ref{eqn:pre-multigroup} to arrive at the multi-group transport equation in Eq.~\ref{eqn:full-multi-group-transport}. However, the expressions for multi-group cross-sections were dependent on the scalar flux $\phi(\mathbf{r}, E)$ or the angular flux $\psi(\mathbf{r},\mathbf{\Omega},E)$ which are generally unknown. Besides, the purpose of solving the neutron transport equation is to determine the scalar flux for use in calculating reaction rates. Therefore, approximations need to be made in order to determine appropriate values for multi-group cross-sections. This will be the subject of Chapter~\ref{chap:multi-group}.
+It is important to note that no assumptions were needed from the energy independent form in Eq.~\ref{eqn:pre-multigroup} to arrive at the multi-group transport equation in Eq.~\ref{eqn:full-multi-group-transport}. However, the expressions for multi-group cross-sections are dependent on either scalar flux $\phi(\mathbf{r}, E)$ or angular flux $\psi(\mathbf{r},\mathbf{\Omega},E)$ which are unknown. Therefore, approximations need to be made in order to determine appropriate values for multi-group cross-sections. This will be the subject of Chapter~\ref{chap:mgxs}.
 
 \newpage
 \vfill
@@ -261,9 +268,9 @@ It is important to note that no assumptions were needed from the energy independ
 		\item By properly identifying sources and sinks of neutrons, a balance equation can be derived from fundamentals.
 		\item After light approximations, sources are limited to scattering and fission. Sinks are limited to neutron interactions and net leakage.
 		\item In order to model reactors with imperfect knowledge of cross-sections, the eigenvalue $k$ is introduced which scales the fission source, forcing equilibrium between sources and sinks.
-		\item This multi-group transport equation removes the dependence on the continuous energy variable, producing a balance equation for each energy interval which are inter-dependent.
+		\item This multi-group transport equation removes dependence on the continuous energy variable, producing a balance equation for each energy interval which are inter-dependent.
 		\item The derivation of the multi-group transport equation from a continuous energy form involves no additional approximations, but relies on knowing the final solution in order to obtain accurate multi-group cross-section values.
-		\item For the purpose of this thesis, scattering is assumed to be isotropic which introduces significant bias. However, this bias is hoped to be overcome with an appropriate transport correction, discussed in Chapter~\ref{transport-correction}.
+		\item For the purpose of this thesis, scattering is assumed to be isotropic which introduces significant bias. However, this bias is hoped to be overcome with an appropriate transport correction, discussed in Chapter~\ref{chap:mgxs}.
 	\end{itemize}
 \end{highlightsbox}
 \vfill

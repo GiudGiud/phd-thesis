@@ -15,7 +15,7 @@ Multigrid methods can be structured in many different ways but they generally in
 	\item \textbf{Prolongation - } Using the coarse mesh solution to interpolate corrections to the fine mesh solution.
 \end{itemize}
 
-Multigrid methods in general can involve many layers of mesh. At each layer, restriction and prolongation are used to transfer to coarser and finer mesh layers, respectively. However, for CMFD acceleration only two layers of mesh are used: the fine MOC mesh and the coarse CMFD mesh. Figure~\ref{fig:multigrid-cmfd} illustrates the process of solving the MOC equations using CMFD acceleration.
+Multigrid methods in general can involve many layers of mesh. At each layer, restriction and prolongation are used to transfer to coarser and finer mesh layers, respectively. However, for the CMFD acceleration scheme implemented in this thesis, only two layers of mesh are used: the fine MOC mesh and the coarse CMFD mesh. Figure~\ref{fig:multigrid-cmfd} illustrates the process of solving the MOC equations using CMFD acceleration.
 \begin{figure}[h!] 
 	\centering 
 	\includegraphics[width=\linewidth]{figures/multigrid-cmfd.PNG}
@@ -23,13 +23,13 @@ Multigrid methods in general can involve many layers of mesh. At each layer, res
 	\label{fig:multigrid-cmfd}
 \end{figure}
 
-One important difference between usual multigrid approaches and CMFD is that the CMFD equations are solved using consistent but fundamentally different equations. Instead of solving the coarse mesh problem using the same MOC form of the neutron transport equation, where the angular space is discretized using tracks, the CMFD equations rely on diffusion theory. This alternate form of the transport equation relies strictly on cell averaged quantities rather than having a dependence on angular directions. To enforce consistency with the MOC solution, surface currents are tallied during the MOC solve. Section~\ref{sec:cmfd-derivation} details the derivation of the diffusion form of the neutron transport equation with edits from the MOC equations for consistency.
+One important difference between usual multigrid approaches and CMFD is that the CMFD equations are solved using consistent but fundamentally different equations. Instead of solving the coarse mesh problem using the same MOC form of the neutron transport equation, where the angular space is discretized using tracks, the CMFD equations rely on diffusion theory. This alternate form of the transport equation relies strictly on cell averaged quantities rather than having a dependence on angular directions. To enforce consistency with the MOC solution, surface currents are tallied during the MOC solve. Section~\ref{sec:cmfd-derivation} details the derivation of the diffusion form of the neutron transport equation with term definitions from the MOC equations for consistency.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Derivation of the CMFD Equations}
 \label{sec:cmfd-derivation}
 
-The CMFD equations can be derived from the fundamentals of multi-group transport. The general concept is to turn the transport equation, which is fundamentally based on angular fluxes into a diffusion problem which is fundamentally based on scalar fluxes averaged over some volume in the reactor. During this process, some approximations will be introduced. However, all of these approximations introduce no bias at convergence. Therefore they do not impact the solution accuracy. First recall the multigroup approximation given in Eq.~\ref{eqn:multi-group}:
+The CMFD equations can be derived from the fundamentals of multi-group transport. The general concept is to turn the transport equation, which is fundamentally based on angular fluxes into a diffusion problem which is fundamentally based on scalar fluxes averaged over some volume in the reactor. During this process, some approximations will be introduced. However, all of these approximations introduce no bias at convergence. Therefore they do not impact solution accuracy. First recall the multigroup approximation given in Eq.~\ref{eqn:multi-group-transport}:
 \begin{equation}
 	\mathbf{\Omega} \cdot \nabla \psi_{g}(\mathbf{r},\mathbf{\Omega}) + \Sigma_t^{g}(\mathbf{r}) \psi_{g}(\mathbf{r},\mathbf{\Omega}) = \frac{1}{4 \pi} \left( \frac{\chi_{g}\left(\mathbf{r}\right)}{k} \sum_{g'=1}^{G} \nu_{g'}\left(\mathbf{r}\right) \Sigma_f^{g'}\left(\mathbf{r}\right) \phi_{g'}\left(\mathbf{r}\right) + \, \sum_{g'=1}^G \,  \Sigma_{s}^{g' \rightarrow g}\left(\mathbf{r}\right) \phi_{g'}(\mathbf{r}) \right)
 \end{equation}
@@ -81,7 +81,7 @@ In order to make the CMFD problem even less computationally intense, the group s
 \end{split}
 	\label{eqn:cmfd_sum_groups}
 \end{equation}
-Similar to the process of forming multi-group cross-sections from continuous energy definitions in Chapter~\ref{chap:transport-theory}, CMFD cross-sections over coarse mesh and coarse group structures are defined in terms of the fine mesh MOC quantities. The CMFD cross-sections are given the subscript $C$ and their definitions are given in equations ~\ref{eqn:cmfd-xs-chi} -- ~\ref{eqn:cmfd-xs-total}. 
+Similar to the process of forming multi-group cross-sections from continuous energy definitions in Chapter~\ref{chap:transport}, CMFD cross-sections over coarse mesh and coarse group structures are defined in terms of the fine mesh MOC quantities. The CMFD cross-sections are given the subscript $C$ and their definitions are given in equations ~\ref{eqn:cmfd-xs-chi} -- ~\ref{eqn:cmfd-xs-total}. 
 \begin{equation}
 	\chi_C^{j,e} = \frac{\sum_{i \in j} \left[ \left(\sum_{g \in e} \chi_{i,g} \right) \left(\sum_{g'=1}^{G} \nu_{i, g'} \Sigma_f^{i,g'} \overline{\phi_{i,g'}} V_i \right)\right]}{\sum_{i \in j} \sum_{g=1}^{G} \nu_{i, g} \Sigma_f^{i,g} \overline{\phi_{i,g}} V_i}
 	\label{eqn:cmfd-xs-chi}
@@ -154,7 +154,7 @@ With this geometric relationship in mind and factoring in angular weights from E
 	\int\displaylimits_{S \in S_{j,h}} dS \, J_g\left(\mathbf{r}\right) \cdot \mathbf{n} =  \sum_{(t,s) \in S_{j,h}} w_{i,t} \psi_{g}^{t,s}(s_{j,h})
 	\label{eqn:moc_net_current_calc}
 \end{equation}
-Similar to the CMFD cross-sections, these currents are formed from the MOC calculation, so they are only approximate until convergence. Summing over all MOC groups $g$ within CMFD group $e$ gives a representation for the net current $\tilde{J}_{j,h,e}$ across surface $h$ of cell $j$ for CMFD group $3$ in Eq.~\ref{eqn:cmfd_partial_current}.
+Similar to the CMFD cross-sections, these currents are formed from the MOC calculation, so they are only approximate until convergence. Summing over all MOC groups $g$ within CMFD group $e$ gives a representation for the net current $\tilde{J}_{j,h,e}$ across surface $h$ of cell $j$ for CMFD group $e$ in Eq.~\ref{eqn:cmfd_partial_current}.
 \begin{equation}
 	\tilde{J}_{j,h,e} = \sum_{g \in e} \sum_{(t,s) \in S_{j,h}} w_t \psi_{g}^{t,s}(s_{j,h})
 	\label{eqn:cmfd_partial_current}
@@ -164,7 +164,7 @@ It is important to note that these estimates rely on angular fluxes. Since the e
 	\frac{1}{V_C^j} \sum_{h=1}^H \tilde{J}_{j,h,e} + \Sigma_{C,t}^{j,e} \phi_C^{j,e} = \frac{\chi_C^{j,e}}{k} \sum_{e'=1}^{E} \nu_C^{j, e'} \Sigma_{C,f}^{j,e'} \phi_C^{j,e'} + \sum_{e'=1}^E  \Sigma_{C,s}^{i, e' \rightarrow e} \phi_C^{j,e'}
 	\label{eqn:transport_partial_current_1}
 \end{equation}
-With this new representation of the transport equation, it is possible to solve for new scalar fluxes. However, this is not in the form of an eigenvalue problem since the streaming term has no dependence on the scalar flux. Physically, a relationship is indeed expected between the streaming term and scalar flux since high scalar flux indicates dense neutron population and hence more leakage out of the volume. This concept is very similar to diffusion theory. Therefore, new terms are introduced that relate the current to the scalar flux via diffusion coefficients. This is shown in Eq.~\ref{eqn:cmfd_current_repr}.
+With this new representation of neutron balance, it is possible to solve for new scalar fluxes. However, this is not in the form of an eigenvalue problem since the streaming term has no dependence on the scalar flux. Physically, a relationship is indeed expected between the streaming term and scalar flux since high scalar flux indicates dense neutron population and hence more leakage out of the volume. This concept is very similar to diffusion theory. Therefore, new terms are introduced that relate the current to the scalar flux via diffusion coefficients. This is shown in Eq.~\ref{eqn:cmfd_current_repr}.
 \begin{equation}
 	\frac{\tilde{J}_{j,h,e}}{A_{j,h}} = - u(j,h) \hat{D}_{j,e} \left(\phi_C^{I(j,h),e} - \phi_C^{j,e}\right) - \tilde{D}_{j,h,e} \left(\phi_C^{I(j,h),e} + \phi_C^{j,e}\right)
 	\label{eqn:cmfd_current_repr}
@@ -174,7 +174,7 @@ The function $u(j,h)$ is the \textit{sense} of the surface $h$ on cell $j$, $A_{
 	\hat{D}_{j,h,e} = \frac{D_{j,e} D_{I(j,h),e}}{\Delta \mathbf{r}_h \left( D_{j,e} + D_{I(j,h),e} \right)}
 	\label{eqn:surf_diff_coef}
 \end{equation}
-where $\Delta \mathbf{r}_h$ is the distance between the CMFD cell and the interfacial surface $h$, the function $I(j,h)$ computes the index of the neighboring CMFD cell of $j$ on surface $h$, and $D_{j,e}$ is the bulk diffusion coefficient of cell $j$ in group $e$. Due to the uniform mesh assumption, the distance between the centroid of cell $j$ and surface $h$ is the same as that of the neighboring cell $I(j,h)$. The bulk diffusion coefficients are denied in Eq.~\ref{eqn:cmfd_diff_coef}, with motivation from how diffusion coefficients are calculated in common nodal diffusion theory.
+where $\Delta \mathbf{r}_h$ is the distance between the CMFD cell and the interfacial surface $h$, the function $I(j,h)$ computes the index of the neighboring CMFD cell of $j$ on surface $h$, and $D_{j,e}$ is the bulk diffusion coefficient of cell $j$ in group $e$. Due to the uniform mesh assumption, the distance between the centroid of cell $j$ and surface $h$ is the same as that of the neighboring cell $I(j,h)$. In this thesis, the uniform mesh assumption is imposed, but a more general treatment is possible. The bulk diffusion coefficients are defined in Eq.~\ref{eqn:cmfd_diff_coef}, with motivation from how diffusion coefficients are calculated in common nodal diffusion theory.
 \begin{equation}
 	D_{j,e} = \frac{\sum_{i \in j} \sum_{g \in e} \frac{1}{3\Sigma_{t}^{i, g}} \overline{\phi_{i,g}} V_i}{\sum_{i \in j} \sum_{g \in e} \overline{\phi_{i,g}} V_i}
 	\label{eqn:cmfd_diff_coef}
@@ -184,7 +184,7 @@ The sense $u(j,h)$ is calculated by Eq.~\ref{eqn:sense} where $\mathbb{1}$ is ju
 u(j,h) = \frac{\mathbb{1} \cdot \mathbf{n}_{j,h}}{|\mathbb{1} \cdot \mathbf{n}_{j,h}|}
 \label{eqn:sense}
 \end{equation}
-Lastly, the corrected diffusion coefficients $\tilde{D}_{j,h,e}$ are computed based on the relationship in Eq.~\ref{eqn:cmfd_current_repr} for fluxes computed after the MOC transport sweep and before the CMFD solve. This makes the CMFD calculation consistent with the MOC calculation and accurate at convergence. The calculation of the corrected diffusion coefficients therefore follows Eq.~\ref{eqn:cmfd_corr_dif_coef} where $\tilde{\phi}_C^{j,e}$ are the CMFD cell-averaged scalar fluxes calculated from the MOC iteration with the tilde indicating the quantity comes from the MOC calculation and does not change throughout the CMFD iterations.
+Lastly, the corrected diffusion coefficients $\tilde{D}_{j,h,e}$ are computed based on the relationship in Eq.~\ref{eqn:cmfd_current_repr} for fluxes computed after the MOC transport sweep and before the CMFD solve. This makes the CMFD calculation consistent with the MOC calculation at convergence~\cite{smith1983cmfd}. The calculation of the corrected diffusion coefficients therefore follows Eq.~\ref{eqn:cmfd_corr_dif_coef} where $\tilde{\phi}_C^{j,e}$ are the CMFD cell-averaged scalar fluxes calculated from the MOC iteration with the tilde indicating the quantity comes from the MOC calculation and does not change throughout the CMFD iterations.
 \begin{equation}
 	\tilde{D}_{j,h,e} = \frac{-u(j, h) \hat{D}_{j,h,e} \left(\tilde{\phi}_C^{I(j,h),e} - \tilde{\phi}_C^{j,e}\right) - \frac{\tilde{J}_{j,h,e}}{A_{j,h}}}{\tilde{\phi}_C^{I(j,h),e} + \tilde{\phi}_C^{j,e}}
 	\label{eqn:cmfd_corr_dif_coef}
@@ -223,7 +223,7 @@ Once the CMFD equations are solved, the solution is used to update MOC fluxes, h
 \phi_{i,g}^{\text{new}} = \phi_{i,g}^{\text{old}} \, \frac{\phi_{C, \, \text{new}}^{j,e}}{\phi_{C, \, \text{old}}^{j,e}}
 \label{eqn:cmfd_simple_prolongation}
 \end{equation}
-where $\phi_{i,g}^{\text{new}}$ refers to the updated MOC flux after prolongation, $\phi_{i,g}^{\text{old}}$ refers to the MOC flux before prolongation, $\phi_{C, \, \text{old}}^{j,e'}$ refers to the CMFD cell-averaged flux at the start of the CMFD solution (calculated directly from the MOC fluxes), and $\phi_{C, \, \text{new}}^{j,e'}$ refers to the CMFD cell-averaged flux at convergence of the CMFD solution.
+where $\phi_{i,g}^{\text{new}}$ refers to the updated MOC flux after prolongation, $\phi_{i,g}^{\text{old}}$ refers to the MOC flux before prolongation, $\phi_{C, \, \text{old}}^{j,e'}$ refers to the CMFD cell-averaged flux at the start of the CMFD solution (calculated directly from the MOC fluxes), and $\phi_{C, \, \text{new}}^{j,e'}$ refers to the CMFD cell-averaged flux at convergence of the CMFD solution. It is important to ensure that both new and old scalar fluxes are normalized in the same manner.
 
 Updating the MOC fluxes with the CMFD solution allows convergence to be greatly accelerated, quickly capturing the flux shape over the coarse mesh. In addition, the computational cost of fully converging the CMFD solution is small in comparison with just one MOC transport sweep. Therefore, using the process laid out at the beginning of this chapter in Figure~\ref{fig:multigrid-cmfd}, the CMFD equations are formed and solved after every transport sweep. This process for solving the MOC neutron transport eigenvalue problem with CMFD acceleration is detailed in Alg.~\ref{alg:moc-cmfd-eigenvalue-solve}.
 
@@ -239,7 +239,7 @@ Updating the MOC fluxes with the CMFD solution allows convergence to be greatly 
 		\State $\boldsymbol{\phi} \gets \boldsymbol{\phi} \, / \, \left(\mathbb{1}^T F \boldsymbol{\phi}\right)$ \Comment{Normalize by total fission source}
 		\While{not converged}
 		\State $\mathbf{q} \gets \frac{1}{4\pi} \left(S \boldsymbol{\phi} + \frac{1}{k} F \boldsymbol{\phi} \right)$ \Comment{Compute neutron sources}
-		\State \parbox[t]{.3\linewidth}{$\boldsymbol{\psi} \gets T^{-1} H D^{-1} \mathbf{q}$ \\ $\mathbf{p} \gets W \boldsymbol{\psi}$} \Comment{\parbox[t]{.5\linewidth}{Transport Sweep: these equations are solved simultaneously for computational efficiency. Currents on CMFD surfaces are tallies. Only angular fluxes on the boundary are explicitly stored.}}
+		\State \parbox[t]{.3\linewidth}{$\boldsymbol{\psi} \gets T^{-1} H D^{-1} \mathbf{q}$ \\ $\mathbf{p} \gets W \boldsymbol{\psi}$} \Comment{\parbox[t]{.5\linewidth}{Transport Sweep: these equations are solved simultaneously for computational efficiency. Currents on CMFD surfaces are tallied. Only angular fluxes on the boundary are explicitly stored.}}
 		\State $\boldsymbol{\phi} \gets D^{-1}\mathbf{q} + D^{-1}
 		\mathbf{p}$ \Comment{Scalar fluxes computed from tally $\mathbf{p}$}
 		\State Form CMFD matrices $A$ and $M$ \Comment{\parbox[t]{.4\linewidth}{Defined by Eq.~\ref{eqn:cmfd_balance_grouped} and Eq.~\ref{eqn:cmfd_eigenvalue_problem} \\ (\textbf{restriction})}}
@@ -264,7 +264,7 @@ Updating the MOC fluxes with the CMFD solution allows convergence to be greatly 
 \begin{highlightsbox}[frametitle=Highlights]
 	\begin{itemize}
 		\item CMFD is a variant of multigrid methods, with a restriction step to reduce the problem size to a coarse CMFD mesh and a prolongation step to interpolate the coarse mesh CMFD solution onto the fine MOC mesh.
-		\item The CMFD equations are based in diffusion theory, with currents edited from the MOC solution to ensure consistency between the MOC and CMFD equations.
+		\item The CMFD equations are based in diffusion theory, with currents defined from the MOC solution to ensure consistency between the MOC and CMFD equations.
 		\item Solving the CMFD system equations is computationally cheap in comparison with the solution of the fine mesh MOC equations.
 		\item CMFD accelerates MOC convergence by being able to capture global behavior quickly on the coarse mesh.
 	\end{itemize}

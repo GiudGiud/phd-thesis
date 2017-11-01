@@ -1,758 +1,454 @@
-\chapter{Quantification of Spatial Self-Shielding Effects}
-\label{chap:quantify}
+\chapter{Track Laydown}
+\label{chap:track-laydown}
+
+The Method of Characteristics (MOC) has seen significant interest in the past several decades owing to the computational efficiency and flexibility of the method to model complex geometries. Several production neutronics codes utilize 2D MOC for lattice physics or full core neutronics calculations. Full core analysis using MOC has typically followed a 2D/1D approach \cite{ntracer, decart, 2d1d, CRX}. In this approach, 2D MOC is used in the radial direction while transport in the axial direction is modeled with a low order diffusion operator that uses transverse leakage to couple the radial planes. Recently, several codes has been written or extended to perform direct MOC calculations in 3D \cite{kochunas, MCI, 3D-MOC-annals}. Extending MOC to 3D comes with a wide array of challenges.
+
+One of the areas that has been investigated recently is the development of procedures to create 3D tracks. The modular ray tracing (MRT) method developed by Filippone \cite{orig-moc-rt} has seen wide adoption in codes including MPACT \cite{mpact, kochunas}, DeCART \cite{decart}, DRAGON \cite{MCI}, CRX \cite{3D-MOC-annals}, PEACH \cite{PEACH}, and nTRACER \cite{ntracer} as a way to reduce the memory and compute time required to generate tracks for a large 3D geometry. While simple in theory, MRT requires all domains to be the same size which can lead to load imbalance issues during segmentation if the minimum repeating domain is too large. Additionally, when certain simplifications are used, the z-spacing between 3D tracks can be limited for shallow polar angles \cite{kochunas}. This results in additional memory and compute requirements that could prove burdensome when trying to produce high fidelity solutions to full core PWR problems. Studies performed on 3D MOC often use pin cell domains during the MRT segmentation process when simplified problems such as the 3D C5G7 benchmark are solved \cite{kochunas}. With the small domain sizes, the load imbalance issues are trivial. However, in real PWR problems such as the BEAVRS benchmark \cite{beavrs}, the strict pin cell structure is no longer preserved due to the presence of the grid sleeve and inter-assembly water gap. Furthermore, the presence of grid spacers, flow nozzles, and the bottom support plate result in uneven axial zone heights in the geometry. These characteristics complicate MRT and suggest a more streamlined, global approach to generating tracks might be more practical. 
+
+In this paper, we describe the conditions required for cyclic ray tracing and present a new procedure for creating global 3D tracks that is independent of the domain decomposition scheme used. This new method, which we call 3D Global Tracking (3DGT), uses information about the 2D track cycles to perform a global fitting to ensure cyclic wrapping of 3D tracks. In order to highlight the benefits of this method, we present the number of tracks required for the MRT, simplified MRT, and 3DGT methods using anticipated parameters for a converged 3D MOC solution of a PWR core. 
+
+\section{2D Tracking}
+
+The Method of Characteristics is a widely used method for finding the solution of partial differential equations in which a two or three dimensional problem is approximated by solving the transport equation along constant angle tracks that traverse the geometry. While one dimensional, each track represents a particular three dimensional volume and angular subspace. The first step in setting up the MOC problem is creating tracks that span the spatial and angular space of the problem. In Fig. \ref{sample-tracks}, a sparse 2D and 3D track laydown for a homogeneous cube geometry is illustrated.
+
+% insert picture of 2D and 3D tracks
+\begin{figure}[H]
+	\vspace{-0.1in}
+	\centering
+	\includegraphics[width=4in]{figures/mc2015/sample-tracks-2.png}
+	\caption{Pictures illustrating 2D (a) and 3D (b) tracks for a homogeneous cube geometry.}
+	\label{sample-tracks}
+\end{figure}
+
+When creating the tracks, it is important to consider the boundary conditions as these determine whether the outgoing angular flux needs to be passed as the incoming flux to another track. In this study, we focus on generating tracks that are cyclic and can therefore be used for reflective or vacuum boundary conditions. While analysis of full-core problems typically involves only vacuum boundaries, it is helpful to have the option for reflective boundaries to compare the results of small-core benchmarks, such as the C5G7 benchmark, to other codes.
+
+In our discussion, it is important that we make clear the distinction between tracks and segments (sometimes referred to as intersections). Tracks are defined to span an entire geometry or geometry subdomain and pass through region boundaries. When setting up a problem, tracks are decomposed into segments that span only a single region. Fig. \ref{tracks-vs-segments} illustrates a fine track and segment laydown for a pin cell geometry. In this study, we focus only on the track generation procedure.
+%
+% insert picture of fine 2D tracks and segments for a BEAVRS pin cell.
+\begin{figure}[H]
+	\vspace{-0.25in}
+	\centering
+	\includegraphics[width=6.5in]{figures/mc2015/tracks-vs-segments.png}
+	\caption{Pictures illustrating the geometry (a), the geometry subdivided into source regions (b), a fine 2D track laydown (c), and the corresponding segment laydown colored by source region (d) for a 2D pin cell geometry containing fuel, gap, clad, and moderator materials.}
+	\label{tracks-vs-segments}
+	\vspace{-0.5in}
+\end{figure}
+
+Before discussing the methodology for 3D track generation, we discuss how global tracks are generated for 2D problems. Tracks for a 2D MOC problem are typically laid down using the cyclic tracking approach as illustrated in Fig. \ref{figure 3D tracks}. Users input a desired azimuthal track spacing, $\boldsymbol{\delta_\phi}$, and number of azimuthal angles, $n_{\phi}$, in 0 < $\phi$ < $2 \pi$. With this approach, azimuthal angles are created to evenly subdivide the angular space such that each azimuthal angle in 0 < $\phi$ < $\frac{\pi}{2}$ is paired with a complementary azimuthal angle,
+
+\begin{equation}
+\boldsymbol{\phi^i} = \frac{2 \pi}{n_\phi} (0.5 + i) \qquad \forall \qquad i = \Big[0,\frac{n_{\phi}}{2}\Big)
+\end{equation}
+%
+\begin{equation}
+\boldsymbol{\phi^{\frac{n_{\phi}}{2} - i - 1}} = \pi - \boldsymbol{\phi^i} \qquad \forall \qquad i= \Big[0,\frac{n_{\phi}}{4}\Big),
+\end{equation} 
+
+\noindent
+where $\boldsymbol{\phi^{\frac{n_{\phi}}{2} - i - 1}}$ is the complement of angle $\boldsymbol{\phi^i}$. Other valid angular quadrature sets have also been used \cite{3D-MOC-annals}. By tracking both forward and backward along a track, the full $2 \pi$ angular space is covered as shown in Fig. \ref{figure 3D tracks} for four azimuthal angles. Tracks are laid down such that they intersect with a complementary track at the boundaries. 
+
+% insert picture of cyclic tracking and backwards tracking
+\begin{figure}[H]
+	\vspace{-0.1in}
+	\centering
+	\includegraphics[width=4in]{figures/mc2015/fwd_bwd_tracking_2.png}
+	\caption{Pictures illustrating forward (a) and backward (b) tracking for 2D MOC track laydown. The geometry width $\Delta x$, geometry height $\Delta y$, and track angles and spacing (collectively $\phi^i$, $\phi^{\frac{n_{\phi}}{2} - i - 1}$, $\delta_{\phi}^i$, $\delta_x^i$, and $\delta_y^i$) have been denoted on the pictures.}
+	\label{figure 3D tracks}
+\end{figure}
+
+In order to guarantee cyclic wrapping of 2D tracks, there must be an integer number of tracks on x and y axes for a particular angle, $\boldsymbol{\phi^i}$,
+
+\begin{equation}
+\vspace{-0.1in}
+\delta_x^i = \frac{\Delta x}{n_x^i} \qquad \delta_y^i = \frac{\Delta y}{n_y^i}
+\label{eqn:3DGT-dx-dy}
+\end{equation}
+
+\noindent
+where $n_x^i$ is the integer number of tracks along the x axis for angle $\boldsymbol{\phi^i}$. The same notation applies to the y direction. Using the input value of $\boldsymbol{\delta_{\phi}}$, the integer number of tracks along the axes for a particular angle $\boldsymbol{\phi^i}$ are computed,
+
+\begin{equation}
+%n_x^i = \ceil*{\Bigg(\frac{\Delta x \cdot \text{sin} (\boldsymbol{\phi^i})}{\boldsymbol{\delta_{\phi}}}\Bigg)} \qquad n_y^i = \ceil*{\Bigg(\frac{\Delta y \cdot \text{cos} (\boldsymbol{\phi^i})}{\boldsymbol{\delta_{\phi}}}\Bigg)}
+FIXME
+\label{eqn:3DGT-nx-ny}
+\end{equation}
+
+\noindent
+where the ceiling is taken to ensure at least one track intersects with each axis. The azimuthal angle is then corrected,
+
+\begin{equation}
+\phi^i = \text{tan}^{-1} \bigg(\frac{\delta_y^i}{\delta_x^i}\bigg)
+\label{eqn:azi-correct}
+\end{equation}
+
+\noindent
+where $\phi_i$ is used to denote the corrected azimuthal angle. Using the corrected azimuthal angle, the azimuthal track spacing for each angle is also corrected,
+
+\begin{equation}
+\delta_{\phi}^i = \delta_x^i \cdot \text{sin} (\phi^i)
+\label{eqn:azi-space-correct}
+\end{equation}
+
+\noindent
+where $\delta_{\phi}^i$ is used to denote the corrected azimuthal track spacing. Using the corrected values, $\phi^i$ and $\delta_{\phi}^i$, the 2D tracks are laid down on the geometry. 
+
+\section{3D tracking}
+
+\subsection{Requirements for Cyclic Track Laydown in 3D}
+
+In generating 3D tracks, we assume that 3D tracks are laid down as z-stacked arrays of tracks that project down onto the 2D track layout. Before discussing the conditions required to generate cyclic tracks in 3D, we need to understand the concept of a reflective track cycle. Fig. \ref{figure 2} decomposes a sample 2D geometry into 2D reflective track cycles with $T_{R,k}^{i}$ denoting the $k^{th}$ reflective track cycle for azimuthal angle $\phi^i$. 
+
+% insert picture
+\begin{figure}[h]
+	\vspace{-0.05in}
+	\centering
+	\includegraphics[width=6.5in]{figures/mc2015/reflective-track-cycles-3.png}
+	\caption{Each plot highlights one of the 2D track cycles contained in a sample geometry. The reflective track cycles are labeled with $T_{R,k}^{i}$ denoting the $k^{th}$ track cycle for azimuthal angle $\phi^i$.}
+	\label{figure 2}
+\end{figure}
+
+\noindent
+To generate 3D tracks, users input a desired polar track spacing, $\boldsymbol{\delta_\theta}$, and number of polar angles, $n_{\theta}$, in 0 < $\theta$ < $\pi$ in addition to the parameters required to generate 2D tracks. With this approach, polar angles are created to evenly subdivide the angular space such that each polar angle in $0 < \theta < \frac{\pi}{2}$ is paired with a complementary polar angle,
+
+\begin{equation}
+\boldsymbol{\theta^{i,j}} = \frac{\pi}{n_{\theta}} \cdot (0.5 + j) \qquad \forall \qquad j = \Big[0,\frac{n_{\theta}}{2}\Big)
+\end{equation}
+
+\begin{equation}
+\boldsymbol{\theta^{i,n_{\theta} - j - 1}} = \pi - \boldsymbol{\theta^{i,j}} \qquad \forall \qquad j= \Big[0,\frac{n_{\theta}}{2}\Big),
+\end{equation} 
+
+\noindent
+where $\boldsymbol{\theta^{i,n_{\theta} - j - 1}}$ is the complement of angle $\boldsymbol{\theta^{i,j}}$. Note that the polar angles are initially defined to be independent of azimuthal angle index, $i$. Later, we use the azimuthal angle to correct the polar angle to ensure the tracks are cyclic. Following the same notation used to describe the azimuthal angles, the corrected polar angles will be denoted by $\theta^{i,j}$. By tracking both forward and backward along a track, the full $4 \pi$ angular space can be covered as shown in Fig. \ref{sample-tracks} for four azimuthal and two polar angles.
+
+Tracks are laid down such that they intersect with a complementary track at the boundaries. Selecting an arbitrary cycle, $T_{R,k}^{i}$, we follow a set of 3D tracks as they complete one 2D cycle. Fig. \ref{figure 3} highlights a particular 2D track cycle and a set of 3D tracks projected along that cycle.
+
+% insert picture
+\begin{figure}[h]
+	\vspace{-0.1in}
+	\centering
+	\includegraphics[width=4.5in]{figures/mc2015/track_cycles_3.png}
+	\caption{Illustration of an arbitrary 2D track cycle (a), $T_{R,k}^{i}$, and a set of 3D tracks projected along the 2D track cycle (b).}
+	\label{figure 3}
+\end{figure}
+
+\noindent
+To guarantee cyclic track wrapping of the 3D tracks, two conditions must be met:
+
+\begin{enumerate}
+	\item For each azimuthal angle, $\phi^i$, polar angle, $\theta^{i,j}$, and 2D track cycle, $T_{R,k}^{i}$, the distance between the beginning and end of a 3D track projection along a 2D track cycle must be an integer number of track spacings.
+	\item For each azimuthal angle, $\phi^i$, and polar angle, $\theta^{i,j}$, there must be an integer number of track spacings along the z axis over the depth of geometry, $\Delta z$.
+\end{enumerate}
+
+The first condition guarantees that a 3D track cycle wraps back onto another 3D track when the 2D reflective cycle is completed. The second condition guarantees that a 3D track cycle that contains a reflection off a top or bottom surface still reflects into an existing 3D track when the 2D cycle is completed. In the next two sections, we show how both the 3DGT and MRT methods comply with these conditions and what additional assumptions they make.
+
+\subsection{The 3D Global Tracking Method}
+
+The 3DGT method uses the conditions stated in the previous section for 3D cyclic ray tracing to generate tracks for a rectangular geometry independent of any domain decomposition scheme. After the 2D track information has been generated, the 3D track information can be computed using the requirements for 3D cyclic global ray tracing. First, we note that all 2D track cycles for a particular azimuthal angle index, $i$, have the same cycle length that can be computed,
+
+\begin{equation}
+L_R^i = \text{lcm}\bigg( 2 \cdot n_x^i,  \frac{2 \cdot \Delta y}{\text{tan} (\phi^i) \cdot \delta_x^i} \bigg) \cdot \frac{\delta_x^i}{\text{cos} (\phi^i)},
+\label{eqn:refl-cycle-len}
+\end{equation}
+
+\noindent
+where lcm is the least common multiple. There are several ways in which the 3D track information can be found given a user specified polar spacing and number of polar angles. The method we use below is well suited towards minimizing the correction to the desired polar angles while allowing the polar track spacing to change significantly. Using the reflective cycle length for each azimuthal angle, the integer number of track spacings between the beginning and end of a set of 3D tracks after one complete 2D cycle can be computed,
+
+\begin{equation}
+%n_l^{i} = \ceil*{L_R^i \cdot \text{cot} (\boldsymbol{\theta^{i,j}}) \cdot \frac{\text{sin} (\boldsymbol{\theta^{i,j})}}{\boldsymbol{\delta_{\theta}}}},
+FIXME
+\label{eqn:3DGT-nl}
+\end{equation}
+
+\noindent
+where $L_R^i \cdot \text{cot} (\boldsymbol{\theta^{i,j}})$ is the z distance between the start and end of the set of 3D tracks, $\frac{\text{sin} (\boldsymbol{\theta^{i,j}})}{\boldsymbol{\delta_{\theta}}}$ is the z distance between tracks, and the subscript $l$ is used to signify that $n_l^i$ is measured along the direction of a track cycle. Next, the number of track spacings along the z axis needs to be set to an integer number. The number of tracks on the z axis can be found by considering the relation between the number of track spacings in the z direction and the spacing along the length of the 2D track.
+
+\begin{equation}
+\text{tan} (\theta^{i,j}) = \frac{\delta_L^i}{\delta_z^{i,j}} = \frac{L_R^i}{n_l^i} \cdot \frac{n_z^{i,j}}{\Delta z}
+\end{equation}
+
+\noindent
+Rearranging and inserting our approximation for the polar angle, $\boldsymbol{\theta^{i,j}}$, this equation gives us an expression for the number of tracks on the z axis,
+
+\begin{equation}
+%n_z^{i,j} = \ceil*{\frac{\Delta z \cdot n_l^i \cdot \text{tan} (\boldsymbol{\theta^{i,j}})}{L_R^i}},
+FIXME
+\label{eqn:3DGT-nz}
+\end{equation}
+
+\noindent
+where we take the ceiling to ensure at least one track crossing on the z axis. The z-spacing between 3D tracks is shown in Eq. \ref{eqn:3DGT-delta-z}.
+
+\begin{equation}
+\delta_z^{i,j} = \frac{\Delta z}{n_z^{i,j}}
+\label{eqn:3DGT-delta-z}
+\end{equation}
+
+\noindent
+Using the 2D cycle length and number of track crossings on the z axis and along the length of the 2D cycle, the polar angle can be corrected using Eq. \ref{eqn:3DGT-theta-correct}.
+
+\begin{equation}
+\theta^{i,j} = \text{tan}^{-1} \bigg( \frac{L_R^i}{n_l^i \cdot \delta_z^{i,j}}\bigg)
+\label{eqn:3DGT-theta-correct}
+\end{equation}
+
+\noindent
+Similarly, the polar track spacing is corrected using Eq. \ref{eqn:3DGT-dtheta-correct}.
+
+\begin{equation}
+\delta_\theta^{i,j} = \delta_z^{i,j} \cdot \text{sin} (\theta^{i,j})
+\label{eqn:3DGT-dtheta-correct}
+\end{equation}
+
+\noindent
+In summary, the algorithm for generating tracks with the 3DGT method is described by Alg. \ref{alg:3DGT}.
+
+\begin{algorithm*}[!h]
+	\caption{3D track generation using the 3D Global Tracking Method}
+	\label{alg:3DGT}
+	%\begin{algorithmic}
+	%	\STATE User specifies $n_{\phi}$, $\boldsymbol{\delta_{\phi}}$, $n_{\theta}$, and $\boldsymbol{\delta_{\theta}}$. \hspace{\fill}
+%		\FORALL[Loop over azimuthal angles]{$i \in I$}
+%		\STATE Compute the \# of tracks in x and y for $\boldsymbol{\phi^i}$, $n_x^i$ and $n_y^i$, and distance between tracks in x and y, $\delta_x^i$ and $\delta_y^i$ (Eqs. \ref{eqn:3DGT-dx-dy} and \ref{eqn:3DGT-nx-ny}). \hspace{\fill}
+		
+%		\STATE Correct the azimuthal angle and azimuthal track spacing, $\phi^i$ and $\delta_{\phi}^i$ (Eqs. \ref{eqn:azi-correct} and \ref{eqn:azi-space-correct}).
+		
+%		\STATE Compute the length of the 2D reflective track cycles, $L_R^{i}$ (Eqs. \ref{eqn:refl-cycle-len}).
+		
+%		\FORALL[Loop over polar angles]{$j \in J$}
+		
+%		\STATE Compute the \# of track spacings after one complete 2D cycle, $n_l^{i,j}$ (Eq. \ref{eqn:3DGT-nl}).
+		
+%		\STATE Compute the \# of tracks on the z axis, $n_z^{i,j}$ (Eq. \ref{eqn:3DGT-nz}).
+		
+%		\STATE Compute the z distance between 3D tracks, $\delta_z^{i,j}$ (Eq. \ref{eqn:3DGT-delta-z}).
+		
+%		\STATE Correct the polar angle, $\theta^{i,j}$ (Eq. \ref{eqn:3DGT-theta-correct}).
+		
+%		\STATE Correct the polar track spacing, $\delta_{\theta}^{i,j}$ (Eq. \ref{eqn:3DGT-dtheta-correct}).
+		
+%		\ENDFOR
+%		\ENDFOR
+%	\end{algorithmic}
+FIXME
+\end{algorithm*}
+
+\subsection{The Modular Ray Tracing Method}
+
+Modular ray tracing relies on the principle that a geometry can be uniformly decomposed into a series of rectangular cuboids of equal size. Typically, the decomposition procedure is performed such that many of the cuboids have the same underlying geometry and therefore contain the same segment structure. This allows an identical set of tracks to be laid down on each domain and segmentation only performed on each unique domain type. Therefore, we only present the track generation procedure for a single domain. 
+
+The MRT method uses a procedure similar to that used in the 3DGT method for track generation. For a domain, the number of tracks and spacing between tracks in x and y are described in Eq. \ref{eqn:mrt-nx-ny} and Eq. \ref{eqn:mrt-dx-dy}, respectively,
+
+\begin{equation}
+%n_x^i = \ceil*{\Bigg(\frac{\Delta x \cdot \text{sin} (\boldsymbol{\phi^i})}{D_x \cdot \boldsymbol{\delta_{\phi}}}\Bigg)} \qquad n_y^i = \ceil*{\Bigg(\frac{\Delta y \cdot \text{cos} (\boldsymbol{\phi^i})}{D_y \cdot \boldsymbol{\delta_{\phi}}}\Bigg)}
+FIXME
+\label{eqn:mrt-nx-ny}
+\end{equation}
+
+\begin{equation}
+\delta_x^i = \frac{\Delta x}{D_x \cdot n_x^i} \qquad \delta_y^i = \frac{\Delta y}{D_y \cdot n_y^i},
+\label{eqn:mrt-dx-dy}
+\end{equation}
+
+\noindent
+where $D_x$ and $D_y$ are the integer number of domains in the x and y directions, respectively. This guarantees that an integer number of tracks lie along the x and y boundaries of each domain cell and that tracks on one surface line up with adjoining tracks in the neighbor domain cell. 
+
+When generating tracks using the MRT method, it is important to remember that a track crossing a domain interface needs to connect with another track on the neighboring domain. As we follow a series of tracks across the geometry, we notice that the series of tracks is periodic. A periodic track cycle is defined to be the series of domain tracks that repeats when a global track traverses a geometry. Fig. \ref{periodic cycles} shows the periodic track cycles for one azimuthal angle in our sample geometry when it is split into four domains.
+
+% insert picture
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=5in]{figures/mc2015/2d_periodic_track_cycles_2.png}
+	\caption{Each plot highlights one of the 2D periodic track cycles contained in a sample geometry split into four domains of equal size. The track cycles are labeled with $T_{P,k}^i$ denoting the $k^{th}$ periodic track cycle for azimuthal angle $\phi^i$.}
+	\label{periodic cycles}
+\end{figure}
+
+We can define the length of the periodic track cycles for each azimuthal angle to be $L_P^{i}$. For the MRT method, the periodic 2D track cycles for a particular azimuthal angle, $i$, have the same cycle length computed in Eq. \ref{eqn:period-cycle-len}.
+
+\begin{equation}
+L_P^i = \text{lcm} \bigg( n_x^i,  \frac{\Delta y}{D_y \cdot \text{tan} (\phi^i) \cdot \delta_x^i} \bigg) \cdot \frac{\delta_x^i}{\text{cos} (\phi^i)}
+\label{eqn:period-cycle-len}
+\end{equation}
 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Overview}
-\label{sec:chap8-overview}
+\noindent
+The procedure to find the corrected polar track spacing and corrected polar angles is identical to the procedure used in the 3DGT method, except that $L_R^i$ is replaced with $L_P^i$ and $\Delta z$ is replaced with $\frac{\Delta z}{D_z}$.
 
-The preceding chapter introduced six heterogeneous 2D \ac{PWR} benchmarks derived from the \ac{BEAVRS} model, along with reference metrics tallied by OpenMC. This chapter applies multi-group transport calculations to model the same benchmarks in OpenMOC with \ac{MGXS} generated by OpenMC. The objective is to identify the bias between OpenMC and OpenMOC for \ac{MGXS} libraries which account for spatial self-shielding effects\footnote{The effects of neighboring pins, burnable poisons, reflectors and the core baffle, barrel and vessel are all of interest in the context of spatial self-shielding in this and subsequent chapters.} to varying degrees. In particular, this chapter quantifies the difference in the approximation error between simulations in which the same \ac{MGXS} are used in each unique fuel pin (\textit{e.g.}, each fuel enrichment) and those in which unique \ac{MGXS} are used in each and every pin. The former case does little if anything to model spatial self-shielding effects, whereas the latter case ``fully'' resolves these effects, albeit at the expense of very large \ac{MGXS} libraries. This difference in approximation error motivates the development of a novel methodology in the following chapters which uses statistical clustering to capture spatial self-shielding effects in \ac{MGXS}.
+The procedure for identifying the periodic track cycles and finding the start and end points for all tracks using the MRT and 3DGT methods can seem a bit tedious, so others have simplified the MRT method by noticing that the lengths of all 2D tracks are an integer multiple of the shortest 2D track \cite{kochunas}. For example, the length of the first three 2D tracks, $t_1^i$, $t_2^i$, and $t_3^i$, for azimuthal angle $\phi^i$ are shown in Eqs. \ref{eqn:short-track}, \ref{eqn:short-track-2}, and \ref{eqn:short-track-3}.
 
-Three different schemes for spatial homogenization of pin-wise \ac{MGXS} are introduced in Sec.~\ref{sec:chap8-pinwise-space-homogenize} and are referred to as \textit{infinite}, \textit{null} and \textit{degenerate} spatial homogenization, respectively. The discretized models and runtime parameters used in the OpenMOC simulations are detailed in Sec.~\ref{sec:chap8-moc-params}. The bias between the OpenMOC simulations and the reference OpenMC results -- including eigenvalues, pin-wise fission rates and pin-wise U-238 capture rates -- are presented in Sec.~\ref{sec:chap8-mg-results}. The need for a new, more flexible and specialized approach to spatial homogenization which appropriately captures spatial self-shielding effects with minimal computational expense is discussed in Sec.~\ref{sec:chap8-motivate}.
+\begin{equation}
+l_1^i = \sqrt{\bigg[\frac{\delta_x^i}{2}\bigg]^2 + \bigg[\frac{\delta_y^i}{2}\bigg]^2} = \frac{1}{2} \sqrt{(\delta_x^i)^2 + (\delta_y^i)^2}
+\label{eqn:short-track}
+\end{equation}
 
+\begin{equation}
+l_2^i = \sqrt{\bigg[\frac{3 \delta_x^i}{2}\bigg]^2 + \bigg[\frac{3 \delta_y^i}{2}\bigg]^2} = \frac{3}{2} \sqrt{(\delta_x^i)^2 + (\delta_y^i)^2} = 3 l_1^i
+\label{eqn:short-track-2}
+\end{equation}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Pin-wise Spatial Homogenization Schemes}
-\label{sec:chap8-pinwise-space-homogenize}
+\begin{equation}
+l_3^i = \sqrt{\bigg[\frac{5 \delta_x^i}{2}\bigg]^2 + \bigg[\frac{5 \delta_y^i}{2}\bigg]^2} = \frac{5}{2} \sqrt{(\delta_x^i)^2 + (\delta_y^i)^2} = 5 l_1^i
+\label{eqn:short-track-3}
+\end{equation}
 
-This chapter employs three different spatial homogenization schemes to model spatial self-shielding effects in \ac{MGXS}. Although all spatial zones may experience spatial self-shielding, this chapter only models the impact of spatial self-shielding on \ac{MGXS} in fissile regions. The infinite, null and degenerate spatial homogenization schemes are introduced in Secs.~\Crefrange{subsec:chap8-infinite}{subsec:chap8-degenerate}. These schemes model spatial self-shielding for each fuel pin with increasing granularity and complexity. The total number of materials (\textit{i.e.}, \ac{MGXS}) used to model each benchmark with each homogenization scheme is given in Tab.~\ref{table:chap8-num-materials}. A fuel assembly, 2$\times$2 colorset and part of the quarter core \ac{BEAVRS} model are color-coded by material and illustrated in Fig.~\ref{fig:chap8-homogenization-schemes} for each homogenization scheme.
+Since the length of all 2D tracks is an integer number of lengths of the first track, $l_1^i$, any valid track laydown for the first track is also valid for all other tracks. Therefore, we can set the cycle length for an azimuthal angle, $L_P^i$, to the length of the shortest track, $l_1^i$. The algorithm for generating tracks for the MRT and simplified MRT (s-MRT) method can be described by Alg. \ref{alg:MRT}. 
 
-The \texttt{openmc.mgxs} module (see Sec.~\ref{subsec:chap4-mgxs}) was used to compute 70-group \ac{MGXS} with OpenMC for each of the six heterogeneous benchmarks introduced in Chap.~\ref{chap:benchmarks}. The tallied \ac{MGXS} data was condensed to coarse 2-group and 8-group structures with downstream data processing as necessary. The OpenMC simulations were performed with 1000 batches with 10$^{6}$ particle histories per batch for each benchmark. This was only one tenth of the 10$^7$ histories per batch used to tally the reference results in Chap.~\ref{chap:benchmarks} for practical computational reasons\footnote{The total runtime consumed by OpenMC scales with the number of tallied quantities. The number of tallies used to compute \ac{MGXS} was much larger than the three used to compute the reference solutions in Chap.~\ref{chap:benchmarks}. As a result, the simulation time per history was prohibitively slow to generate \ac{MGXS} with the same number of histories as was used to compute the reference solution.}. Stationarity of the fission source was obtained with 200 inactive batches for the quarter core \ac{BEAVRS} model, while 100 inactive batches were employed for the other five benchmarks (see Sec.~\ref{subsec:chap7-src-stationarity}). OpenMC's ``iso-in-lab'' feature (see Sec.~\ref{subsec:chap4-iso-in-lab}) was employed to enable consistent comparisons between OpenMC's reference results and OpenMOC's calculations with an isotropic in lab scattering source.
+\begin{algorithm*}[!h]
+	\caption{3D track generation using the Modular Ray Tracing Method}
+	\label{alg:MRT}
+	FIXME
+	%\begin{algorithmic}
+	%	\STATE User specifies $n_{\phi}$, $\boldsymbol{\delta_{\phi}}$, $n_{\theta}$, $\boldsymbol{\delta_{\theta}}$, $D_x$, $D_y$, and $D_z$. \hspace{\fill}
+	%	\FORALL[Loop over azimuthal angles]{$i \in I$}
+	%	\STATE Compute the \# of tracks in x and y for $\boldsymbol{\phi^i}$, $n_x^i$ and $n_y^i$, and distance between tracks in x and y, $\delta_x^i$ and $\delta_y^i$ (Eq. \ref{eqn:mrt-nx-ny} and \ref{eqn:mrt-dx-dy}). \hspace{\fill}
+		
+	%	\STATE Correct the azimuthal angle and azimuthal track spacing, $\phi^i$ and $\delta_{\phi}^i$ (Eqs. \ref{eqn:3DGT-dx-dy} and \ref{eqn:3DGT-nx-ny}).
+		
+	%	\IF{MRT}  
+	%	\STATE Compute the length of the 2D periodic track cycles, $L_P^{i}$ (Eq. \ref{eqn:period-cycle-len}).
+		
+	%	\ELSE 
+	%	\STATE Compute the length of the shortest track, $l_1^i$ (Eq. \ref{eqn:short-track}). 
+		
+	%	\ENDIF
+		
+	%	\FORALL[Loop over polar angles]{$j \in J$}
+		
+	%	\STATE Compute the \# of track spacings after one complete 2D cycle, $n_l^{i,j}$.
+		
+	%	\begin{equation}
+	%	n_l^{i} = \ceil*{L_P^i \cdot \text{cot} (\boldsymbol{\theta^{i,j}}) \cdot \frac{\text{sin} (\boldsymbol{\theta^{i,j}})}{\boldsymbol{\delta_{\theta}}}}
+	%	\nonumber
+	%	\end{equation}
+		
+	%	\STATE Compute the \# of tracks on the z axis, $n_z^{i,j}$.
+		
+	%	\begin{equation}
+	%	n_z^{i,j} = \ceil*{\frac{\Delta z \cdot n_l^i \cdot \text{tan} (\boldsymbol{\theta^{i,j}})}{D_z \cdot L_P^i}}
+	%	\nonumber
+	%	\end{equation}
+		
+	%	\STATE Compute the z-distance between 3D tracks, $\delta_z^{i,j}$.
+		
+	%	\begin{equation}
+	%	\delta_z^{i,j} = \frac{\Delta z}{D_z \cdot n_z^{i,j}}
+	%	\nonumber
+	%	\end{equation}
+		
+	%	\STATE Correct the polar angle, $\theta^{i,j}$.
+		
+	%	\begin{equation}
+	%	\theta^{i,j} = \text{tan}^{-1} \bigg( \frac{L_P^i}{n_l^i \cdot \delta_z^{i,j}}\bigg)
+	%	\nonumber
+	%	\end{equation}
+		
+	%	\STATE Correct the polar track spacing, $\delta_{\theta}^{i,j}$ (Eq. \ref{eqn:3DGT-dtheta-correct}).
+		
+	%	\ENDFOR
+	%	\ENDFOR
+	%\end{algorithmic}
+\end{algorithm*}
 
-\vspace{0.2in}
+It is important to note that the track generation procedure described in Alg. \ref{alg:MRT} favors correcting the polar track spacing over correcting the polar angle. Alternative algorithms could easily be designed to favor correcting the polar angle over the polar track spacing, but it is expected that correcting the polar track spacing is a more conservative procedure and this is in line with previous work on MRT \cite{kochunas}. When the periodic cycle length is small relative to the desired polar track spacing, the correction to the polar track spacing can be very large. This has significant implications for the s-MRT method where the periodic cycle length is always on the order of the azimuthal track spacing. For instance, if we consider the case of a shallow polar angle ($\boldsymbol{\theta}$ near $\frac{\pi}{2}$) where $\boldsymbol{\phi} = \frac{\pi}{4}$, $\boldsymbol{\theta} = 0.9 \cdot \frac{\pi}{2}$, $\boldsymbol{\delta_\phi} = 0.05$, and $\boldsymbol{\delta_\theta} = 0.25$ for an infinitely tall domain, the s-MRT method produces a corrected polar track spacing of $\delta_\theta^{i,j} \approx 0.0079$. This increases the number of tracks for this direction by a factor of $\sim$32 over the ideal case and in Sec. \ref{implications} we discuss the memory implications of this characteristic in more detail. 
 
-\begin{table}[h!]
-  \centering
-  \caption[Number of materials for each spatial homogenization scheme]{Number of materials modeled with unique \ac{MGXS} in each heterogeneous benchmark for each spatial homogenization scheme.}
-  \small
-  \label{table:chap8-num-materials}
-  \vspace{6pt}
-  \begin{tabular}{l r r r}
-  \toprule
-  \rowcolor{lightgray}
-  & \multicolumn{3}{c}{\cellcolor{lightgray} \bf \# Fuel Materials} \\
-  \multirow{-2}{*}{\cellcolor{lightgray} \bf Benchmark} &
-  \multicolumn{1}{c}{\cellcolor{lightgray} \bf Infinite} &
-  \multicolumn{1}{c}{\cellcolor{lightgray} \bf Null} &
-  \multicolumn{1}{c}{\cellcolor{lightgray} \bf Degenerate} \\
-  \midrule
-1.6\% Assm & 1 & 1 & 264 \\
-%1.6\% Assm & 5 & 5 & 268 \\
-  \midrule
-3.1\% Assm & 1 & 1 & 264 \\
-%3.1\% Assm & 5 & 5 & 268 \\
-  \midrule
-3.1\% Assm w/ 20 BPs & 1 & 1 & 264  \\
-%3.1\% Assm w/ 20 BPs & 7 & 7 & 270  \\
-  \midrule
-2$\times$2 Colorset & 2 & 2 & 1,056 \\
-%2$\times$2 Colorset & 8 & 8 & 1,062 \\
-  \midrule
-2$\times$2 Colorset w/ Reflector & 2 & 2 & 1,056 \\
-%2$\times$2 Colorset w/ Reflector & 8 & 8 & 1,062 \\
-  \midrule
-\ac{BEAVRS} Quarter Core & 3 & 3 & 12,993 \\ % 193 * 264 / 4. + 128 + 127 + 7 % 50,964
-%\ac{BEAVRS} Quarter Core & 10 & 10 & 13,000 \\ % 193 * 264 / 4. + 128 + 127 + 7 % 50,964
-  \bottomrule
-\end{tabular}
+Additionally, others have claimed that the MRT method must store all tracks in the unit sphere while the s-MRT method only requires tracks in half of the unit sphere \cite{kochunas}. Our algorithm for generating tracks using the MRT and s-MRT methods (Alg. \ref{alg:MRT}) satisfies the criteria for cyclic tracking and in practice we have been able to produce cyclic track laydowns for the MRT method that require storage of tracks over only half the unit sphere. It is suspected that the previous work did not consider the track cycles as a unit and instead generated the z-stacked arrays of 3D tracks independent of other tracks in the cycle.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Implications for 3D MOC}
+\label{implications}
+
+As a rough approximation, the required parameters to converge a full-core problem might be similar to those presented in Table~\ref{tab:full_core_reqs}. With the 3DGT method, these parameters lead to the generation of $5.66 \times 10^9$ tracks when no memory decomposition scheme is used. With this many tracks, the storage of the two 100-group angular flux vectors for each track with single precision would require 4.53 TB. This is much larger than the memory limit of current machines. For instance, the on-node memory of BlueGene/Q is constrained to 16 GB/node \cite{BGQ}.
+
+\begin{table}[h]
+	\centering
+	\caption{Anticipated parameters for a converged 3D MOC solution of a PWR core.}
+	\begin{tabular}{cc}
+		\toprule
+		\textbf{Parameter} & \textbf{Dimension} \\
+		\midrule
+		Height (z)                 & 455.444 cm \\
+		Width (x and y)            & 365.56188 cm*\\
+		Radial ray spacing         & 0.05 cm \\
+		Axial ray spacing          & 0.25 cm \\
+		Number of azimuthal angles & 64 \\
+		Number of polar angles     & 10 \\
+		\bottomrule
+		\multicolumn{2}{l}{*Width assumed to be 17 assemblies in each direction.}\\
+		\bottomrule
+	\end{tabular}
+	\label{tab:full_core_reqs}
 \end{table}
 
-\begin{figure}[h!]
-\centering
-\begin{subfigure}{.45\textwidth}
-  \centering
-  \includegraphics[width=0.87\linewidth]{figures/quantification/homogenization/assm-16-null-materials}
-  \caption{}
-  \label{fig:chap8-assm-16-null-materials}
-\end{subfigure}%
-\begin{subfigure}{.45\textwidth}
-  \centering
-  \includegraphics[width=0.87\linewidth]{figures/quantification/homogenization/assm-16-degenerate-materials}
-  \caption{}
-  \label{fig:chap8-assm-16-degenerate-materials}
-\end{subfigure}
-\begin{subfigure}{.45\textwidth}
-  \centering
-  \includegraphics[width=0.87\linewidth]{figures/quantification/homogenization/2x2-null-materials}
-  \caption{}
-  \label{fig:chap8-2x2-null-materials}
-\end{subfigure}%
-\begin{subfigure}{.45\textwidth}
-  \centering
-  \includegraphics[width=0.87\linewidth]{figures/quantification/homogenization/2x2-degenerate-materials}
-  \caption{}
-  \label{fig:chap8-2x2-degenerate-materials}
-\end{subfigure}
-\begin{subfigure}{.45\textwidth}
-  \centering
-  \includegraphics[width=0.87\linewidth]{figures/quantification/homogenization/full-core-null-materials}
-  \caption{}
-  \label{fig:chap8-full-core-null-materials}
-\end{subfigure}%
-\begin{subfigure}{.45\textwidth}
-  \centering
-  \includegraphics[width=0.87\linewidth]{figures/quantification/homogenization/full-core-degenerate-materials}
-  \caption{}
-  \label{fig:chap8-full-core-degenerate-materials}
-\end{subfigure}
-\caption[Depiction of spatial homogenization schemes]{OpenMOC materials for a single fuel assembly, a 2$\times$2 colorset and part of the 2D quarter core \ac{BEAVRS} model. The materials for the infinite and null schemes are depicted in (a), (c) and (e), and for the degenerate scheme in (b), (d) and (f), respectively. Each uniquely colored material represents a unique set of \ac{MGXS}.}
-\label{fig:chap8-homogenization-schemes}
-\end{figure}
+For any MOC implementation, iterations are performed in which the Boltzmann neutron transport equation is solved for every characteristic track. Therefore, the computational time associated with solving any problem directly scales with the number of tracks \cite{kochunas}. In addition, the on-node memory constraints are often dominated by the storage of boundary angular fluxes for each track \cite{gunow}. The number of tracks generated using the s-MRT, MRT, and 3DGT methods using the parameters in Table~\ref{tab:full_core_reqs} is presented in Table~\ref{tab:track_laydown_comparison}. 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Infinite Lattice Homogenization}
-\label{subsec:chap8-infinite}
-
-The \textit{infinite} spatial homogenization scheme is most reminiscent of the traditional multi-level schemes used to generate \ac{MGXS} (see Sec.~\ref{subsec:chap2-mgxs-lib-std-approach}), and is the simplest approach to model spatial self-shielding effects considered by this thesis. The infinite scheme employs multiple OpenMC simulations to compute \ac{MGXS} for each heterogeneous benchmark. The \ac{MGXS} for each type of fuel (\textit{e.g.}, enrichment) are generated by OpenMC simulations of each fuel pin type in an infinite, repeating array\footnote{An infinite, repeating array of fuel pins is modeled by a single fuel pin with reflective boundary conditions.}. The \ac{MGXS} for all other materials -- including borated water, zircaloy, helium, etc. -- are generated from OpenMC simulations of each heterogeneous benchmark where the reaction rates and fluxes are averaged across each geometry.
-
-The infinite scheme is designed to quantify the impact of using the ``true'' Monte Carlo flux from an infinite lattice calculation, rather than the ``true'' \ac{MC} flux from the true heterogeneous geometry, to collapse \ac{MGXS} in fissile zones. The scheme employs a single \ac{MGXS} in each instance of a material zone, such as a fuel pin replicated many times throughout a benchmark geometry. The \ac{MGXS} for each fissile zone is generated from an infinite lattice calculation with OpenMC. The \ac{MGXS} for all non-fissile zones are generated using the ``true''  flux distribution in space and energy for each of the heterogeneous benchmarks. The scheme does not account for spatial self-shielding effects experienced by different non-fissile spatial zones filled by the same material, and instead averages these effects across the entire geometry for each material.
-
-%-foonote: unable to run infinite pin cell calculations for non-fissile pin cells (CRGTs, BPs, instr tubes) since it's not a criticality calculation
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Null Homogenization}
-\label{subsec:chap8-null}
-
-The \textit{null} spatial homogenization scheme builds upon the infinite scheme, but uses the ``true'' heterogeneous flux to collapse \ac{MGXS} for fissile as well as non-fissile materials. The null scheme eliminates the infinite lattice calculation to generate \ac{MGXS} for fissile zones, and instead uses a single Monte Carlo calculation of the complete heterogeneous geometry to generate \ac{MGXS} for \textit{all} materials. In this way, the null scheme fully abandons the multi-level approach used by the infinite scheme and most traditional approaches to generate \ac{MGXS}. Unlike the infinite scheme, the spatially self-shielded flux is used to collapse the cross sections in the fuel. However, the null scheme does not account for spatial self-shielding effects experienced by different fuel pins filled by the same type of fuel, and instead averages these effects across the entire geometry. As with the infinite scheme, a single \ac{MGXS} is employed in each instance of a material zone, such as a fuel pin replicated many times throughout a benchmark geometry.
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Degenerate Homogenization}
-\label{subsec:chap8-degenerate}
-
-Unlike the infinite and null spatial homogenization schemes, the \textit{degenerate} scheme accounts for the different spatial self-shielding effects experienced by each instance of each fuel pin throughout a heterogeneous geometry. Like the null scheme, a single \ac{MC} calculation of the complete heterogeneous geometry is used to generate \ac{MGXS} for all materials. Unlike the null scheme, the \ac{MGXS} are tallied separately for each instance of fissile material zones. For example, if a heterogeneous benchmark includes $N$ fuel pins, then $N$ collections of \ac{MGXS} are separately tabulated for each fuel pin instance. The degenerate scheme tallies different \ac{MGXS} even if the isotopic compositions in the fuel pin instances are identical (\textit{e.g.}, fresh fuel at the beginning of life) since each instance may experience different spatial self-shielding effects and hence have different \ac{MGXS}.
-
-Multi-group transport calculations with \ac{MGXS} generated using infinite/null and degenerate schemes may be compared to quantify the impact of modeling spatial self-shielding effects in \ac{MGXS} for fissile zones in heterogeneous geometries. The degenerate scheme applies the finest granularity to pin-wise spatial homogenization of any of the schemes considered in this thesis since it best captures different spatial self-shielding effects in each fuel pin. As a result, the degenerate scheme is used to benchmark the efficacy of the new methodology for spatial homogenization based on statistical clustering developed in the following chapters. Like both the infinite and null schemes, the spatial self-shielding effects experienced by different non-fissile spatial zones are averaged across the entire geometry for each non-fissile material.
-
-The degenerate scheme generates \ac{MGXS} for each fuel pin instance using OpenMC's distributed cell tallies (see Sec.~\ref{subsec:chap4-distribcells}). The OpenCG region differentiation algorithm (see Sec.~\ref{sec:chap4-region-diff}) is used to build a new OpenMOC geometry with unique cells and materials for each fuel pin. The \ac{MGXS} are appropriately selected from OpenMC's distributed cell tallies to populate the \ac{MGXS} in the OpenMOC materials.
-
-\begin{emphbox}
-\textbf{The infinite, null and degenerate spatial homogenization schemes are used to quantify approximation errors made when neglecting spatial self-shielding due to neighboring pins, reflectors, etc. in heterogeneous \ac{PWR} benchmarks.}
-\end{emphbox}
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{OpenMOC Runtime Parameters}
-\label{sec:chap8-moc-params}
-
-The infinite, null and spatial homogenization schemes were used to prepare \ac{MGXS} libraries for OpenMOC simulations of each of the six heterogeneous \ac{PWR} benchmarks introduced in Chap.~\ref{chap:benchmarks}. This section briefly outlines the energy group structures and angular, spatial and \ac{CMFD} meshes used in the OpenMOC simulations. The total number of flat source regions, and \ac{MOC} tracks and segments are summarized for each benchmark in Tab.~\ref{table:chap8-num-fsrs-tracks-segments}. It was crucial to use an adequate discretization to accurately compare simulation results between the three spatial homogenization schemes, as well as to the reference OpenMC results.
-
-\begin{table}[h!]
-  \centering
-  \caption[Number of FSRs, tracks and segments for each benchmark]{The number of \ac{MOC} \ac{FSR}s, tracks and segments modeled in each benchmark.}
-  \small
-  \label{table:chap8-num-fsrs-tracks-segments}
-  \vspace{6pt}
-  \begin{tabular}{l r r r}
-  \toprule
-  \rowcolor{lightgray}
-  \textbf{Benchmark} &
-  \multicolumn{1}{c}{\cellcolor{lightgray} \textbf{\# \ac{FSR}s}} &
-  \multicolumn{1}{c}{\cellcolor{lightgray} \textbf{\# Tracks}} &
-  \multicolumn{1}{c}{\cellcolor{lightgray} \textbf{\# Segments}} \\
-  \midrule
-1.6\% Assm & 28,376 & 34,976 & 7,945,952 \\
-  \midrule
-3.1\% Assm & 28,376 & 34,976 & 7,945,952 \\
-  \midrule
-3.1\% Assm w/ 20 BPs & 29,496 & 34,976 & 8,110,192  \\
-  \midrule
-2$\times$2 Colorset & 115,744 & 69,892 & 32,097,936 \\
-  \midrule
-2$\times$2 Colorset w/ Reflector & 203,220 & 104,788 & 51,122,228 \\
-  \midrule
-%\ac{BEAVRS} Quarter Core & 2,512,384 & 201,620 & 427,683,579 \\
-\ac{BEAVRS} Quarter Core & 1,718,368 & 201,620 & 38,3785,515 \\
-  \bottomrule
-\end{tabular}
+\begin{table}[h]
+	\centering
+	\caption{Number of tracks generated using the three track generation methods applied to the parameters in Table~\ref{tab:full_core_reqs}.}
+	\begin{tabular}{cc}
+		\toprule
+		\textbf{Method} & \textbf{Number of tracks generated} \\
+		\midrule
+		s-MRT & $4.74 \times 10^{10}$ \\
+		MRT & $5.70 \times 10^9$ \\
+		3DGT & $5.66 \times 10^9$ \\
+		\bottomrule
+	\end{tabular}
+	\label{tab:track_laydown_comparison}
 \end{table}
 
-Each simulation was converged to 10$^{-5}$ on the root mean square of the energy-integrated fission source in each flat source region (FSR). It should be noted that a convergence criterion of 10$^{-7}$ was employed for the OpenMOC simulations of simple benchmarks without \ac{CMFD} acceleration (see Sec.~\ref{subsubsec:chap4-openmoc-cmfd}) in Chap.~\ref{chap:biases}, but a looser convergence criterion of 10$^{-5}$ may be used for calculations with \ac{CMFD}\footnote{The convergence criterion measures the residual between successive iterations, but should actually measure convergence to the asymptotic solution, which depends on both the residual between successive iterations and the dominance ratio. \ac{CMFD} significantly reduces the residual between successive iterations such that sufficient convergence to the asymptotic solution is achieved at a much lower successive iteration residual.}.
+Previous work has often used only one track spacing for both the desired azimuthal and polar track spacing \cite{kochunas, mpact}. However, due to the success of 2D/1D methods \cite{2d1d}, we anticipate that the required axial spacing will be far more coarse than the radial spacing. Fig. \ref{fig:tracks-comp} shows the number of tracks versus the ratio of desired polar to azimuthal track spacing for the parameters in Table~\ref{tab:full_core_reqs}. Both the MRT and 3DGT methods do not require large corrections on the polar track spacing due to the relatively large length of the cycle compared with the azimuthal spacing. With equal azimuthal and polar track spacing, the s-MRT method only requires $\sim$2.0 times more tracks than the 3DGT and MRT methods while for the expected parameters, the s-MRT method requires $\sim$8.4 times more tracks. This illustrates the inflexibility of the s-MRT method when applied to common reactor problems in which the radial complexity is much greater than the axial complexity and suggests that the s-MRT method should be avoided.
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Energy Group Structures}
-\label{subsec:chap8-energy-groups}
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=4in]{figures/mc2015/track_comparison_2.png}
+	\caption{Plot of the number of tracks versus the track polar spacing, $\boldsymbol{\delta_\theta}$, divided by the track azimuthal spacing, $\boldsymbol{\delta_\phi}$, for the specifications described in \ref{tab:full_core_reqs}. In order to change the ratio of desired polar to azimuthal spacing, the polar track spacing was modified while the desired azimuthal spacing was held constant at 0.05 cm.}
+	\label{fig:tracks-comp}
+\end{figure}
 
-Each assembly, colorset and quarter core benchmark was modeled with \ac{MGXS} in 2, 8 and 70 energy groups. The energy group structures were the same as those used in Chaps.~\ref{chap:biases} and~\ref{chap:sph} and are tabulated in App.~\ref{app:energy-groups}. The \ac{MOC} energy group structures were collapsed onto coarser group structures for \ac{CMFD} acceleration. The mapping from \ac{MOC} to \ac{CMFD} group structures is listed in Tab.~\ref{table:chap8-coarse-cmfd-groups}. The coarse \ac{CMFD} structures were derived to best approximate equal lethargy spacing between coarse \ac{CMFD} groups. The coarse \ac{CMFD} structures significantly improved the speed of the 70-group OpenMOC calculations.
+Incorporating a domain decomposition scheme will only increase the memory requirements further. For the 3D MOC problem presented in Table~\ref{tab:full_core_reqs}, we have assessed the memory requirements for two domain decomposition schemes with a variety of input parameters and presented the results in Table~\ref{tab:dom_dec_reqs}. The increase in storage requirements for the s-MRT method is due almost entirely to the increase in the $\boldsymbol{\delta_{\theta}}/\boldsymbol{\delta_{\phi}}$ ratio and not to the domain decomposition scheme. Reducing the number of polar angles did not have a large effect on the ratio of storage required by the s-MRT method to the storage required by the MRT and 3DGT methods either. At this point, it is unclear what the track spacing and number of azimuthal and polar angles will be to converge a full-core problem. The storage requirements for many cases in Table~\ref{tab:dom_dec_reqs} are close to or above the on-node storage of BlueGene/Q and the storage for the scalar fluxes and material cross sections has not even been taken into consideration. New machines will likely have different characteristics and it will be important to have a method this both minimizes the memory requirements and is flexible to different domain sizes.  
 
-\begin{table}[h!]
-  \centering
-  \caption[CMFD coarse energy group structures]{The coarse \ac{CMFD} group structures for each of the fine \ac{MOC} group structures.}
-  \small
-  \label{table:chap8-coarse-cmfd-groups}
-  \vspace{6pt}
-  \begin{tabular}{p{1.5cm} p{1.5cm} p{7.2cm}}
-  \toprule
-  \rowcolor{lightgray}
-  \multicolumn{1}{c}{\cellcolor{lightgray} \textbf{\# \ac{MOC} Groups}} &
-  \multicolumn{1}{c}{\cellcolor{lightgray} \textbf{\# \ac{CMFD} Groups}} &
-  \multicolumn{1}{c}{\cellcolor{lightgray} \textbf{\ac{CMFD} Fine-to-Coarse Group Mapping}} \\
-  \midrule
-  \multicolumn{1}{c}{2} & \multicolumn{1}{c}{2} & [1], [2] \\
-  \midrule
-  \multicolumn{1}{c}{8} & \multicolumn{1}{c}{4} & [1--2], [3], [4--5], [6--8] \\
-  \midrule
-%  \multicolumn{1}{c}{40} & \multicolumn{1}{c}{10} & [1--3], [4--7], [8], [9], [10], [11--13], \hspace{0.8cm} [14--16], [17--29], [30--36], [37--40] \\
-%  \midrule
-  \multicolumn{1}{c}{70} & \multicolumn{1}{c}{14} & [1--2], [3--6], [7--9], [10--12], [13--16], \hspace{0.6cm} [17--19], [20--21], [22--24], [25--27], [28--33], [34--53], [54--61], [62--68], [69--70] \\ 
-  \bottomrule
-\end{tabular}
+\begin{table}[h]
+	\centering
+	\caption{Number of tracks and memory requirements for full core PWR problem using quarter assembly geometry, assembly-wise domain decomposition, 64 azimuthal angles, and 0.05 cm azimuthal ray spacing.}
+	\begin{tabular}{cccccccc}
+		\toprule
+		\textbf{Method} & \textbf{Domains ($x$,$y$,$z$)} & \textbf{$n_\theta$} & \textbf{$\boldsymbol{\delta_\theta}$ (cm)} & $\frac{\textbf{tracks}}{\textbf{domain}}$ & $\frac{\textbf{memory}}{\textbf{domain}}$ \textbf{(GB)} \\
+		\midrule
+		3DGT  &            &    &      & $8.65 \times 10^{6}$ & 13.8 \\
+		MRT   & (17,17,21) & 10 & 0.25 & $8.71 \times 10^{6}$ & 13.9 \\
+		s-MRT &            &    &      & $7.00 \times 10^{7}$ & 112.1 \\ \hline
+		3DGT  &            &    &      & $4.32 \times 10^{7}$ & 69.2 \\
+		MRT   & (17,17,21) & 10 & 0.05 & $4.33 \times 10^{7}$ & 69.3 \\
+		s-MRT &            &    &      & $8.64 \times 10^{7}$ & 138.2 \\ \hline
+		3DGT  &            &    &      & $2.16 \times 10^{6}$ & 3.5 \\
+		MRT   & (34,34,42) & 10 & 0.25 & $2.18 \times 10^{6}$ & 3.5 \\
+		s-MRT &            &    &      & $1.76 \times 10^{7}$ & 28.2 \\ \hline
+		3DGT  &            &    &      & $1.08 \times 10^{7}$ & 17.3 \\
+		MRT   & (34,34,42) & 10 & 0.05 & $1.09 \times 10^{7}$ & 17.4 \\ 
+		s-MRT &            &    &      & $2.17 \times 10^{7}$ & 34.7 \\ \hline
+		3DGT  &            &    &      & $8.65 \times 10^{6}$ & 8.4 \\
+		MRT   & (17,17,21) & 6  & 0.25 & $8.71 \times 10^{6}$ & 8.4 \\
+		s-MRT &            &    &      & $7.00 \times 10^{7}$ & 59.4 \\ \hline
+		3DGT  &            &    &      & $4.32 \times 10^{7}$ & 41.8 \\
+		MRT   & (17,17,21) & 6  & 0.05 & $4.33 \times 10^{7}$ & 41.9 \\
+		s-MRT &            &    &      & $8.64 \times 10^{7}$ & 75.7 \\ \hline
+		3DGT  &            &    &      & $2.16 \times 10^{6}$ & 2.1 \\
+		MRT   & (34,34,42) & 6  & 0.25 & $2.18 \times 10^{6}$ & 2.1 \\
+		s-MRT &            &    &      & $1.76 \times 10^{7}$ & 14.9 \\ \hline
+		3DGT  &            &    &      & $1.08 \times 10^{7}$ & 10.5 \\
+		MRT   & (34,34,42) & 6  & 0.05 & $1.09 \times 10^{7}$ & 10.5 \\
+		s-MRT &            &    &      & $2.17 \times 10^{7}$ & 19.0 \\
+		\bottomrule
+	\end{tabular}
+	\label{tab:dom_dec_reqs}
 \end{table}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Angular Discretization}
-\label{subsec:chap8-angular-discretizations}
+Another important aspect to consider is the generality of the track generation scheme. While benchmark geometries can be quite simple, real geometries are often far more complex and can be composed of many different repeating subdomains of different sizes. The implementation of the MRT method must be able to identify these subdomains and have a robust track generation scheme or rely on the user to identify the subdomains in the input. The 3DGT method is completely general and works for arbitrary geometries, whether they have repeating subdomains (e.g. C5G7) or complex structures (e.g. pebble bed reactors). This characteristic makes the 3DGT method well suited as a general track generation scheme to implement in a 3D MOC code.
 
-The OpenMOC simulations of each of the six heterogeneous benchmarks used the same \ac{MOC} angular discretization with 128 azimuthal angles and 0.05 cm track spacing. These parameters were selected since they were previously demonstrated to converge the solution for simple heterogeneous \ac{PWR} benchmark models~\cite{boyd2014ms}. Although the eigenvalues in Chap.~\ref{chap:biases} were only shown to converge for a 1D slab and 2D fuel pin with 0.01 cm track spacing, a coarser spacing of 0.05 cm was employed for the heterogeneous benchmarks for practical reasons\footnote{The computational expense of solving the \ac{MOC} equations scales linearly with the number of track segments. In addition, OpenMOC's memory footprint is dominated by track segments which can make some problems intractable except on high memory nodes. Finally, the time spent ray tracing across a combinatorial geometry is non-negligible if not prohibitive for fine track spacings in large geometries.}. The total number of tracks and segments resulting from the selected angular discretization are itemized in Tab.~\ref{table:chap8-num-fsrs-tracks-segments}. 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Conclusions}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{FSR Discretization}
-\label{subsec:chap8-fsr-discretizations}
-
-Flat source region spatial discretization meshes were applied to each of the six heterogeneous benchmarks in the OpenMOC simulations. The total number of \ac{FSR}s is itemized in Tab.~\ref{table:chap8-num-fsrs-tracks-segments} for each benchmark analyzed in this thesis. The \ac{FSR} meshes applied to the fuel pin, control rod guide tube, instrument tube and burnable poison pin cells are shown in Fig.~\ref{fig:chap8-pin-cell-fsrs}. As shown in the figures, eight equal angle subdivisions were used in all material zones. The UO$_2$ fuel was further subdivided into five equal volume radial rings, while ten radial rings were employed in the water-filled \acp{CRGT} and instrument tubes. The borosilicate glass and borated water material zones filling the \acp{BP} were each discretized into five equal volume radial rings. Finally, five equally spaced rings were used in the moderator zones surrounding each pin.
-
-\begin{figure}[h!]
-\centering
-\begin{subfigure}{.5\textwidth}
-  \centering
-  \includegraphics[width=0.8\linewidth]{figures/quantification/fsrs/fsrs-fuel-pin}
-  \caption{}
-  \label{fig:chap8-pin-1.6}
-\end{subfigure}%
-\begin{subfigure}{.5\textwidth}
-  \centering
-  \includegraphics[width=0.8\linewidth]{figures/quantification/fsrs/fsrs-crgt}
-  \caption{}
-  \label{fig:chap8-pin-crgt}
-\end{subfigure}
-\begin{subfigure}{.5\textwidth}
-  \centering
-  \includegraphics[width=0.8\linewidth]{figures/quantification/fsrs/fsrs-instr-tube}
-  \caption{}
-  \label{fig:chap8-instr-tube}
-\end{subfigure}%
-\begin{subfigure}{.5\textwidth}
-  \centering
-  \includegraphics[width=0.8\linewidth]{figures/quantification/fsrs/fsrs-bp}
-  \caption{}
-  \label{fig:chap8-bp}
-\end{subfigure}%
-\caption[FSR discretization meshes applied to BEAVRS pin cells]{The \ac{FSR} spatial mesh used for fuel pins (a), control rod guide tubes (b), instrument tubes (c) and burnable poisons (d). Diagrams of each pin type color-coded by material are shown in Fig.~\ref{fig:chap7-pin-cells}.}.
-\label{fig:chap8-pin-cell-fsrs}
-\end{figure}
-
-\begin{figure}[hb!]
-\centering
-\begin{subfigure}{0.45\textwidth}
-  \centering
-  \includegraphics[width=0.87\linewidth]{figures/quantification/fsrs/fsrs-assm-16}
-  \caption{}
-  \label{fig:chap8-assm-1.6-fsrs}
-\end{subfigure}%
-\begin{subfigure}{0.45\textwidth}
-  \centering
-  \includegraphics[width=0.87\linewidth]{figures/quantification/cmfd/cmfd-cells-assm}
-  \caption{}
-  \label{fig:chap8-assm-1.6-cmfd-cells}
-\end{subfigure}
-\begin{subfigure}{0.45\textwidth}
-  \centering
-  \includegraphics[width=0.87\linewidth]{figures/quantification/fsrs/fsrs-reflector}
-  \caption{}
-  \label{fig:chap8-reflector-fsrs}
-\end{subfigure}%
-\begin{subfigure}{0.45\textwidth}
-  \centering
-  \includegraphics[width=0.87\linewidth]{figures/quantification/cmfd/cmfd-cells-reflector}
-  \caption{}
-  \label{fig:chap8-reflector-cmfd-cells}
-\end{subfigure}
-\begin{subfigure}{0.45\textwidth}
-  \centering
-  \includegraphics[width=0.87\linewidth]{figures/quantification/fsrs/fsrs-full-core-quarter-pin-cmfd}
-  \caption{}
-  \label{fig:chap8-full-core-fsrs}
-\end{subfigure}%
-\begin{subfigure}{0.45\textwidth}
-  \centering
-  \includegraphics[width=0.87\linewidth]{figures/quantification/cmfd/cmfd-cells-full-core-quarter-pin-cmfd}
-  \caption{}
-  \label{fig:chap8-full-core-cmfd-cells}
-\end{subfigure}
-\caption[FSR discretization and CMFD cells for heterogeneous benchmarks]{\ac{FSR} (left) and \ac{CMFD} (right) meshes for a fuel assembly (a) and (b), a 2$\times$2 colorset with reflector (c) and (d), and quarter core \ac{BEAVRS} benchmark (e) and (f).}
-\label{fig:chap8-assm-fsrs-cmfd-cells}
-\end{figure}
-
-The spatially discretized pin cells were used in each of the six heterogeneous benchmarks. The \ac{FSR} discretizations for an individual fuel assembly, 2$\times$2 colorset with a water reflector, and the upper right quadrant of the \ac{BEAVRS} core are depicted in Fig.~\ref{fig:chap8-assm-fsrs-cmfd-cells}. The water reflector in the 2$\times$2 colorset was discretized using a mesh shown to converge the solution for the similarly designed C5G7 benchmark~\cite{lewis2003c5g7} in~\cite{boyd2014ms}. In particular, the 13.85824 cm (equivalent to 11 pin cells) of water reflector nearest the fuel assemblies was discretized in a 0.125984 cm $\times$ 0.125984 cm rectilinear mesh, equivalent to a 10$\times$10 mesh in each pin. The 7.55904 cm (equivalent to 6 pin cells) of water reflector furthest from the fuel assemblies was discretized in a 1.25984 cm $\times$ 1.25984 cm pin-wise mesh.
-
-Each type of pin cell was discretized in the same way for the quarter core \ac{BEAVRS} model. A 0.31496 cm $\times$ 0.31496 cm mesh (equivalent to a 4$\times$4 mesh in each pin) was applied in the water reflector. The mesh in the reflector was coarser than the mesh used in the reflector for the 2$\times$2 colorset since a finer mesh was not computationally practical for the quarter core \ac{BEAVRS} model, nor needed due to th presence of the steel baffle. A quarter pin-wise \ac{CMFD} mesh (\textit{i.e.}, 0.62992 cm $\times$ 0.62992 cm) was employed for the \ac{BEAVRS} model, which discretized the core barrel and vessel into a corresponding \ac{FSR} mesh.
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Analysis of Multi-Group Results}
-\label{sec:chap8-mg-results}
-
-Each of the six benchmarks was modeled with OpenMOC using \ac{MGXS} generated by the infinite, null and degenerate spatial homogenization schemes. The eigenvalues and pin-wise fission and U-238 capture rates computed by OpenMOC are compared to the reference OpenMC solutions in Secs.~\ref{subsec:chap8-eigenvalues},~\ref{subsec:chap8-fiss-rates} and~\ref{subsec:chap8-capt-rates}, respectively.
-
-%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Eigenvalues}
-\label{subsec:chap8-eigenvalues}
-
-The OpenMOC eigenvalues were compared to the reference OpenMC eigenvalues from Tab.~\ref{table:chap7-ref-eigenvalues}. The eigenvalue bias $\Delta\rho$ was computed from Eqn.~\ref{eqn:chap5-delta-rho} in units of \ac{pcm}. The bias is listed for each benchmark, energy group structure and spatial homogenization scheme in Tab.~\ref{table:chap8-openmoc-eigenvalues}. It should be recalled that isotropic in lab scattering is used by OpenMC to compute both the reference solution and the \ac{MGXS}. If anisotropic scattering were employed in OpenMC, one would expect quite different biases without a robust implementation of a higher order scattering kernel in OpenMOC.
-
-As expected, the eigenvalue bias is highly dependent on energy group structure. In general, a positive bias is exhibited for 2 groups with an increasingly negative trend with more groups. The bias is remarkably consistent between -100 and -250 \ac{pcm} for 70 groups for all of the benchmarks. This slightly negative bias is reminiscent of the -200 \ac{pcm} bias observed for the 1D slab and 2D pin cell \ac{PWR} benchmarks when modeled with 70 groups in Chap.~\ref{chap:biases}. The introduction of a reflector region in the 2$\times$2 colorset increases the bias to over 1700 \ac{pcm} for all homogenization schemes for 2 groups, but the bias is greatly reduced when modeled with more groups.
-
-%\vspace{0.1in} 
-
-\renewcommand{\arraystretch}{0.9}% Tighter
-
-\begin{table}[ht!]
-  \centering
-  \caption[OpenMOC eigenvalue bias]{OpenMOC eigenvalue bias $\Delta\rho$ for heterogeneous benchmarks with varying spatial homogenization schemes and energy group structures.}
-  \small
-  \label{table:chap8-openmoc-eigenvalues}
-  \vspace{6pt}
-  \begin{tabular}{l l R{2.5cm} R{2.5cm} R{2.5cm}}
-  \toprule
-  \rowcolor{lightgray}
-  & & \multicolumn{3}{S[table-format=6.1]}{\cellcolor{lightgray} {$\bm{\Delta\rho}$ \textbf{[pcm]}}} \\
-  \multirow{-2}{*}{\cellcolor{lightgray} \bf Benchmark} &
-  \multirow{-2}{*}{\cellcolor{lightgray} \bf \ac{MGXS} Scheme} &
-  \multicolumn{1}{r}{{\cellcolor{lightgray} \bf 2-Group}} &
-  \multicolumn{1}{r}{{\cellcolor{lightgray} \bf 8-Group}} &
-  \multicolumn{1}{r}{{\cellcolor{lightgray} \bf 70-Group}} \\
-  \midrule
-\multirow{3}{*}{\parbox{2.5cm}{1.6\% Assm}} & Infinite & -132 & -68 & 31 \\
-& Null & 60 & -72 & -161 \\
-& Degenerate & 62 & -72 & -161 \\
-  \midrule
-\multirow{3}{*}{\parbox{2.5cm}{3.1\% Assm}} & Infinite & -188 & -98 & 29 \\
-& Null & 95 & -79 & -202 \\
-& Degenerate & 98 & -80 & -202 \\
-  \midrule
-\multirow{3}{*}{\parbox{2.5cm}{3.1\% Assm w/ 20 BPs}} & Infinite & 392 & 20 & -76 \\
-& Null & -136 & -163 & -252 \\
-& Degenerate & -160 & -161 & -248 \\
-  \midrule
-\multirow{3}{*}{\parbox{2.5cm}{2$\times$2 Colorset}} & Infinite & 267 & -149 & -16 \\
-& Null & 27 & -93 & -196 \\
-& Degenerate & 11 & -93 & -193 \\
-  \midrule
-\multirow{3}{*}{\parbox{2.5cm}{2$\times$2 Colorset w/ Reflector}} & Infinite & 2103 & 267 & 46 \\
-& Null & 1818 & 478 & -142 \\
-& Degenerate & 1765 & 487 & -132 \\
-  \midrule
-\multirow{3}{*}{\parbox{2.5cm}{BEAVRS Full Core}} & Infinite & 2000 & 296 & 103 \\
-& Null & 2181 & 406 & -122 \\
-& Degenerate & 2179 & 408 & -116 \\
-  \bottomrule
-\end{tabular}
-\end{table}
-
-%\footnotetext{The \ac{BEAVRS} benchmark is modeled with 40 groups; all other benchmarks are modeled with 70 groups.\label{note1}}
-
-The eigenvalue bias is also dependent on the spatial homogenization scheme used to compute \ac{MGXS} in the fuel. It should first be noted that the eigenvalues are consistent for the null and degenerate schemes to within 10 \ac{pcm} with 8 or more groups for all benchmarks. This is expected since the \ac{MGXS} for each scheme is homogenized from the same flux and should preserve globally-integrated reaction rates. In contrast, the infinite scheme's eigenvalues differ by up to 300 \ac{pcm} from the null/degenerate schemes, with no marked trend across benchmarks and energy group structures.
-
-%The infinite scheme also agrees with the null and degenerate schemes to within 50 \ac{pcm} for all of the benchmarks with 8 and 70 groups. However, the infinite scheme produces a markedly larger bias for the 2-group structure. The introduction of \acp{BP} to the 3.1\% enriched fuel assembly substantially increases the bias to over 1000 \ac{pcm} for the infinite scheme, while only increasing the magnitude by roughly 50 \ac{pcm} for the null and degenerate schemes. This disparity in the eigenvalue bias between the infinite and null/degenerate schemes is further increased with the introduction of a reflector to the 2$\times$2 colorset, and other heterogeneities in the quarter core \ac{BEAVRS} model.
-
-% PUT THIS IN ANALYSIS SECTION???
-%These results demonstrate the importance of using a relatively fine energy group structure -- in this case, 40 and 70 groups -- to accurately predict the eigenvalue in deterministic multi-group calculations. In addition, use of the spatially self-shielded flux from the heterogeneous geometry to collapse 2-group cross sections in the null and degenerate schemes enabled significantly more accurate eigenvalues than was possible with the infinite lattice flux. 
-
-\begin{emphbox}
-\textbf{A consistent eigenvalue bias between OpenMC and OpenMOC of less than 250 \ac{pcm} is observed for all benchmarks and homogenization schemes with 70 groups. The eigenvalues for the null and degenerate schemes are consistent to within 10 \ac{pcm} for eight or more groups due to reaction rate preservation.}
-\end{emphbox}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Fission Rate Distributions}
-\label{subsec:chap8-fiss-rates}
-
-The OpenMOC energy-integrated pin-wise fission rates were compared to the reference OpenMC fission rates from Figs.~\Crefrange{fig:chap7-fiss-rates-1.6-assm}{fig:chap7-fiss-rates-full-core}. The percent relative errors for each pin's fission rates were computed and the maximum and mean errors are listed for each benchmark, energy group structure and spatial homogenization scheme in Tabs.~\ref{table:chap8-openmoc-max-fiss-rates} and~\ref{table:chap8-openmoc-mean-fiss-rates}, respectively. In particular, the maximum errors are the maximum of the absolute values of the errors along with the appropriate sign, while the mean errors are the averages of the absolute error magnitudes.
-
-As was the case for the eigenvalues, the fission rate errors are highly dependent on energy group structure. As expected, the maximum and mean errors are substantially reduced with finer energy group structures for all benchmarks and spatial homogenization schemes. The maximum fission rates are 2 -- 11\% in 2 groups for the individual fuel assembly and 2$\times$2 colorset benchmarks, respectively, but decrease to less than 1\% when modeled with 70 groups. The mean fission rate errors likewise decrease with finer energy group structures, and are less than 0.2\% in magnitude for the assembly and colorset benchmarks for all homogenization schemes with 70 groups.
-
-The fission rate errors are somewhat dependent on the spatial homogenization scheme used to compute \ac{MGXS} in the fuel. In particular, the degenerate scheme produces slightly smaller maximum and mean errors than the null and infinite schemes. The error reduction is largest in 2 groups, and is less significant for more groups. The null and infinite schemes do not exhibit a systematic difference in their fission rate errors.
-
-%\vspace{0.1in}
-
-\begin{table}[ht!]
-  \centering
-  \caption[Maximum OpenMOC fission rate errors]{OpenMOC maximum fission rate percent relative errors for heterogeneous benchmarks with varying spatial homogenization schemes and energy group structures.}
-  \small
-  \label{table:chap8-openmoc-max-fiss-rates}
-  \vspace{6pt}
-  \begin{tabular}{l l R{2.5cm} R{2.5cm} R{2.5cm}}
-  \toprule
-  \rowcolor{lightgray}
-  & & \multicolumn{3}{c}{\cellcolor{lightgray} \textbf{Max Error [\%]}} \\
-  \multirow{-2}{*}{\cellcolor{lightgray} \bf Benchmark} &
-  \multirow{-2}{*}{\cellcolor{lightgray} \bf \ac{MGXS} Scheme} &
-  \multicolumn{1}{r}{{\cellcolor{lightgray} \bf 2-Group}} &
-  \multicolumn{1}{r}{{\cellcolor{lightgray} \bf 8-Group}} &
-  \multicolumn{1}{r}{{\cellcolor{lightgray} \bf 70-Group}} \\
-  \midrule
-\multirow{3}{*}{\parbox{2.5cm}{1.6\% Assm}} & Infinite & 2.387 & 0.643 & 0.375 \\
-& Null & 2.379 & 0.638 & 0.380 \\
-& Degenerate & 1.903 & 0.726 & 0.315 \\
-  \midrule
-\multirow{3}{*}{\parbox{2.5cm}{3.1\% Assm}} & Infinite & 2.779 & 0.729 & 0.433 \\
-& Null & 2.748 & 0.719 & 0.437 \\
-& Degenerate & 2.151 & 0.832 & 0.372 \\
-  \midrule
-\multirow{3}{*}{\parbox{2.5cm}{3.1\% Assm w/ 20 BPs}} & Infinite & -3.090 & -0.707 & 0.372 \\
-& Null & -3.139 & -0.701 & 0.380 \\
-& Degenerate & 1.915 & -0.689 & 0.331 \\
-  \midrule
-\multirow{3}{*}{\parbox{2.5cm}{2$\times$2 Colorset}} & Infinite & -5.964 & -1.425 & 0.418 \\
-& Null & -6.059 & -1.428 & 0.463 \\
-& Degenerate & -5.339 & -1.442 & 0.427 \\
-  \midrule
-\multirow{3}{*}{\parbox{2.5cm}{2$\times$2 Colorset w/ Reflector}} & Infinite & 11.024 & 2.773 & 0.670 \\
-& Null & -16.330 & -2.855 & 0.764 \\
-& Degenerate & -11.158 & -2.821 & 0.602 \\
-  \midrule
-\multirow{3}{*}{\parbox{2.5cm}{BEAVRS Quarter Core}} & Infinite & -79.994 & -31.934 & 2.103 \\
-& Null & -85.893 & -32.357 & 1.829 \\
-& Degenerate & -85.596 & -32.382 & 1.728 \\
-  \bottomrule
-\end{tabular}
-\end{table}
-
-\begin{table}[ht!]
-  \centering
-  \caption[Mean OpenMOC fission rate errors]{OpenMOC mean absolute fission rate percent relative errors for heterogeneous benchmarks with varying spatial homogenization schemes and energy group structures.}
-  \small
-  \label{table:chap8-openmoc-mean-fiss-rates}
-  \vspace{6pt}
-  \begin{tabular}{l l R{2.5cm} R{2.5cm} R{2.5cm}}
-  \toprule
-  \rowcolor{lightgray}
-  & & \multicolumn{3}{c}{\cellcolor{lightgray} \textbf{Mean Error [\%]}} \\
-  \multirow{-2}{*}{\cellcolor{lightgray} \bf Benchmark} &
-  \multirow{-2}{*}{\cellcolor{lightgray} \bf \ac{MGXS} Scheme} &
-  \multicolumn{1}{r}{{\cellcolor{lightgray} \bf 2-Group}} &
-  \multicolumn{1}{r}{{\cellcolor{lightgray} \bf 8-Group}} &
-  \multicolumn{1}{r}{{\cellcolor{lightgray} \bf 70-Group}} \\
-  \midrule
-\multirow{3}{*}{\parbox{2.5cm}{1.6\% Assm}} & Infinite & 0.951 & 0.231 & 0.073 \\
-& Null & 0.943 & 0.229 & 0.074 \\
-& Degenerate & 0.687 & 0.240 & 0.079 \\
-  \midrule
-\multirow{3}{*}{\parbox{2.5cm}{3.1\% Assm}} & Infinite & 1.177 & 0.285 & 0.080 \\
-& Null & 1.155 & 0.279 & 0.081 \\
-& Degenerate & 0.808 & 0.290 & 0.087 \\
-  \midrule
-\multirow{3}{*}{\parbox{2.5cm}{3.1\% Assm w/ 20 BPs}} & Infinite & 0.927 & 0.194 & 0.095 \\
-& Null & 0.937 & 0.193 & 0.098 \\
-& Degenerate & 0.692 & 0.213 & 0.086 \\
-  \midrule
-\multirow{3}{*}{\parbox{2.5cm}{2$\times$2 Colorset}} & Infinite & 3.152 & 0.690 & 0.108 \\
-& Null & 3.132 & 0.690 & 0.120 \\
-& Degenerate & 2.918 & 0.702 & 0.120 \\
-  \midrule
-\multirow{3}{*}{\parbox{2.5cm}{2$\times$2 Colorset w/ Reflector}} & Infinite & 4.964 & 1.029 & 0.147 \\
-& Null & 5.471 & 1.080 & 0.178 \\
-& Degenerate & 4.731 & 1.065 & 0.138 \\
-  \midrule
-\multirow{3}{*}{\parbox{2.5cm}{BEAVRS Quarter Core}} & Infinite & 34.831 & 10.391 & 0.492 \\
-& Null & 39.355 & 10.541 & 0.323 \\
-& Degenerate & 39.520 & 10.474 & 0.336 \\
-  \bottomrule
-\end{tabular}
-\end{table}
-
-The spatial distributions of fission rate errors are plotted as heatmaps for each benchmark in Figs.~\Crefrange{fig:chap8-assm-1.6-fiss-err}{fig:chap8-full-core-fiss-err}. These figures illustrate the fission rate errors for 8 and 70 energy group structures for the null and degenerate schemes; the reaction rate errors for 2, 8, and 70 groups for all three homogenization schemes are compared in Figs.~\Crefrange{fig:quantify-assm-1.6-fiss-err}{fig:quantify-full-core-fiss-err} in App.~\ref{sec:quantify-fiss-rates}. The heatmaps illustrate systematic trends in the pin-wise fission errors which correlate with spatial heterogeneities in each benchmark. In particular, the fission rates are generally underpredicted for pins near \acp{CRGT}, but overpredicted for pins near \acp{BP} and in pins removed from \acp{CRGT}, such as those in the corners of each fuel assembly. The effects due to heterogeneities are further enhanced when differentiating pins which are facially adjacent to \acp{CRGT}, facially and corner adjacent to two \acp{CRGT}, etc. In addition, the error magnitudes are large for pins along the inter-assembly and assembly-reflector interfaces for the 2$\times$2 colorset benchmarks. For the \ac{PWR} benchmarks modeled here, the moderation provided by neighboring \acp{CRGT} and reflectors softens the flux for nearby fuel pins and should be modeled when collapsing pin-wise \ac{MGXS} for high-fidelity multi-group transport calculations.
-
-%As noted previously, the energy group structure has a large impact on the error distributions as can be seen from the figures. In addition, the heatmaps illustrate how the degenerate spatial homogenization scheme effectively ``smooths'' the pin-wise errors as compared to the infinite and null schemes. This effect is most pronounced when the benchmarks are modeled with 2-group \ac{MGXS} as shown in App.~\ref{sec:quantify-fiss-rates}. The differential of the errors for pins near \acp{CRGT}, \acp{BP}, and assembly and reflector interfaces is substantially reduced when degenerate homogenization is applied. The difference in the error spatial distributions for the infinite and null schemes is hardly noticeable except for pins near the assembly and reflector interfaces for the 2$\times$2 colorset benchmarks.
-
-\begin{emphbox}
-\textbf{The use of degenerate spatial homogenization ``smooths'' the spatial distribution of pin-wise fission rate errors for 2-group \ac{MGXS}. However, the fission rates computed with \ac{MGXS} generated from the infinite, null and degenerate homogenization schemes are very similar with fine 70 group structures.}
-\end{emphbox}
-
-\begin{figure}[h!]
-\centering
-\includegraphics[width=\linewidth]{figures/quantification/assm-16/fiss-err}
-\vspace{2mm}
-\caption[Fission rate errors for a 1.6\% enriched assembly]{Fission rate percent relative errors for a 1.6\% enriched assembly corresponding to the reference in Fig.~\ref{fig:chap7-fiss-rates-1.6-assm}.}
-\label{fig:chap8-assm-1.6-fiss-err}
-\end{figure}
-
-\clearpage
-
-\begin{figure}[h!]
-\centering
-\includegraphics[width=\linewidth]{figures/quantification/assm-31/fiss-err}
-\vspace{2mm}
-\caption[Fission rate errors for a 3.1\% enriched assembly]{Fission rate percent relative errors for a 3.1\% enriched assembly corresponding to the reference in Fig.~\ref{fig:chap7-fiss-rates-3.1-assm}.}
-\label{fig:chap8-assm-3.1-fiss-err}
-\end{figure}
-
-\clearpage
-
-\begin{figure}[h!]
-\centering
-\includegraphics[width=\linewidth]{figures/quantification/assm-31-20BPs/fiss-err}
-\vspace{2mm}
-\caption[Fission rate errors for a 3.1\% enriched assembly with 20 BPs]{Fission rate percent relative errors for a 3.1\% enriched assembly with 20 BPs corresponding to the reference in Fig.~\ref{fig:chap7-fiss-rates-3.1-assm-20BAs}.}
-\label{fig:chap8-assm-3.1-20BPs-fiss-err}
-\end{figure}
-
-\clearpage
-
-\begin{figure}[h!]
-\centering
-\includegraphics[width=\linewidth]{figures/quantification/2x2/fiss-err}
-\vspace{2mm}
-\caption[Fission rate errors for a 2$\times$2 colorset]{Fission rate percent relative errors for a 2$\times$2 colorset corresponding to the reference in Fig.~\ref{fig:chap7-fiss-rates-2x2}.}
-\label{fig:chap8-2x2-fiss-err}
-\end{figure}
-
-\clearpage
-
-\begin{figure}[h!]
-\centering
-\includegraphics[width=\linewidth]{figures/quantification/reflector/fiss-err}
-\vspace{2mm}
-\caption[Fission rate errors for a 2$\times$2 colorset with a reflector]{Fission rate percent relative errors for a 2$\times$2 colorset with a reflector corresponding to the reference in Fig.~\ref{fig:chap7-fiss-rates-reflector}.}
-\label{fig:chap8-reflector-fiss-err}
-\end{figure}
-
-\clearpage
-
-\begin{figure}[h!]
-\centering
-\begin{subfigure}{\textwidth}
-  \centering
-  \includegraphics[width=0.6\linewidth]{figures/quantification/full-core/fiss-err-null}
-  \caption{}
-  \label{fig:chap8-full-core-fiss-err-null}
-\end{subfigure}
-\vspace{4mm}
-\begin{subfigure}{\textwidth}
-  \centering
-  \includegraphics[width=0.6\linewidth]{figures/quantification/full-core/fiss-err-degenerate}
-  \caption{}
-  \label{fig:chap8-full-core-fiss-err-degenerate}
-\end{subfigure}
-\caption[Fission rate errors for BEAVRS]{Fission rate percent relative errors for the quarter core \ac{BEAVRS} model with null (a) and degenerate (b) homogenization corresponding to the reference in Fig.~\ref{fig:chap7-fiss-rates-reflector}.}
-\label{fig:chap8-full-core-fiss-err}
-\end{figure}
-
-\clearpage
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{U-238 Capture Rate Distributions}
-\label{subsec:chap8-capt-rates}
-
-The OpenMOC energy-integrated U-238 capture rates were compared to the reference OpenMC fission rates from Figs.~\Crefrange{fig:chap7-capt-rates-1.6-assm}{fig:chap7-capt-rates-full-core}. The percent relative errors for each pin's capture rates were computed and the maximum and mean errors are listed for each benchmark, energy group structure and spatial homogenization scheme in Tabs.~\ref{table:chap8-openmoc-max-capt-rates} and~\ref{table:chap8-openmoc-mean-capt-rates}, respectively. In particular, the maximum errors are the maximum of the absolute values of the errors along with the appropriate sign, while the mean errors are the averages of the absolute error magnitudes.
-
-\vspace{0.1in}
-
-\begin{table}[hb!]
-  \centering
-  \caption[Maximum OpenMOC U-238 capture rate errors]{Maximum absolute U-238 capture rate percent relative errors for varying spatial homogenization schemes and energy group structures.}
-  \small
-  \label{table:chap8-openmoc-max-capt-rates}
-  \vspace{6pt}
-  \begin{tabular}{l l R{2.5cm} R{2.5cm} R{2.5cm}}
-  \toprule
-  \rowcolor{lightgray}
-  & & \multicolumn{3}{c}{\cellcolor{lightgray} \textbf{Max Error [\%]}} \\
-  \multirow{-2}{*}{\cellcolor{lightgray} \bf Benchmark} &
-  \multirow{-2}{*}{\cellcolor{lightgray} \bf \ac{MGXS} Scheme} &
-  \multicolumn{1}{r}{{\cellcolor{lightgray} \bf 2-Group}} &
-  \multicolumn{1}{r}{{\cellcolor{lightgray} \bf 8-Group}} &
-  \multicolumn{1}{r}{{\cellcolor{lightgray} \bf 70-Group}} \\
-  \midrule
-\multirow{3}{*}{\parbox{2.5cm}{1.6\% Assm}} & Infinite & -2.644 & -1.480 & -1.102 \\
-& Null & -2.629 & -1.475 & -1.101 \\
-& Degenerate & 1.075 & 0.484 & 0.386 \\
-  \midrule
-\multirow{3}{*}{\parbox{2.5cm}{3.1\% Assm}} & Infinite & -2.959 & -1.678 & -1.262 \\
-& Null & -2.934 & -1.670 & -1.262 \\
-& Degenerate & 0.941 & 0.437 & 0.326 \\
-  \midrule
-\multirow{3}{*}{\parbox{2.5cm}{3.1\% Assm w/ 20 BPs}} & Infinite & 3.245 & -1.278 & -0.978 \\
-& Null & 3.193 & -1.253 & -0.946 \\
-& Degenerate & 1.635 & 0.571 & 0.311 \\
-  \midrule
-\multirow{3}{*}{\parbox{2.5cm}{2$\times$2 Colorset}} & Infinite & -5.001 & -1.743 & -1.307 \\
-& Null & -4.591 & -1.598 & -1.305 \\
-& Degenerate & -2.983 & -0.954 & 0.615 \\
-  \midrule
-\multirow{3}{*}{\parbox{2.5cm}{2$\times$2 Colorset w/ Reflector}} & Infinite & 12.010 & 3.618 & -1.889 \\
-& Null & 11.100 & 3.372 & -1.969 \\
-& Degenerate & 8.260 & 2.787 & -0.783 \\
-  \midrule
-\multirow{3}{*}{\parbox{2.5cm}{BEAVRS Quarter Core}} & Infinite & -79.033 & -31.419 & -3.655 \\
-& Null & -84.954 & -31.773 & -4.689 \\
-& Degenerate & -84.624 & -31.392 & -2.292 \\
-  \bottomrule
-\end{tabular}
-\end{table}
-
-\begin{table}[h!]
-  \centering
-  \caption[Mean OpenMOC U-238 capture rate errors]{Mean absolute U-238 capture rate percent relative errors for varying spatial homogenization schemes and energy group structures.}
-  \small
-  \label{table:chap8-openmoc-mean-capt-rates}
-  \vspace{6pt}
-  \begin{tabular}{l l R{2.5cm} R{2.5cm} R{2.5cm}}
-  \toprule
-  \rowcolor{lightgray}
-  & & \multicolumn{3}{c}{\cellcolor{lightgray} \textbf{Mean Error [\%]}} \\
-  \multirow{-2}{*}{\cellcolor{lightgray} \bf Benchmark} &
-  \multirow{-2}{*}{\cellcolor{lightgray} \bf \ac{MGXS} Scheme} &
-  \multicolumn{1}{r}{{\cellcolor{lightgray} \bf 2-Group}} &
-  \multicolumn{1}{r}{{\cellcolor{lightgray} \bf 8-Group}} &
-  \multicolumn{1}{r}{{\cellcolor{lightgray} \bf 70-Group}} \\
-  \midrule
-\multirow{3}{*}{\parbox{2.5cm}{1.6\% Assm}} & Infinite & 1.252 & 0.643 & 0.480 \\
-& Null & 1.247 & 0.641 & 0.479 \\
-& Degenerate & 0.367 & 0.091 & 0.086 \\
-  \midrule
-\multirow{3}{*}{\parbox{2.5cm}{3.1\% Assm}} & Infinite & 1.371 & 0.718 & 0.543 \\
-& Null & 1.361 & 0.715 & 0.543 \\
-& Degenerate & 0.326 & 0.106 & 0.087 \\
-  \midrule
-\multirow{3}{*}{\parbox{2.5cm}{3.1\% Assm w/ 20 BPs}} & Infinite & 1.278 & 0.551 & 0.424 \\
-& Null & 1.261 & 0.543 & 0.414 \\
-& Degenerate & 0.443 & 0.150 & 0.089 \\
-  \midrule
-\multirow{3}{*}{\parbox{2.5cm}{2$\times$2 Colorset}} & Infinite & 2.300 & 0.611 & 0.451 \\
-& Null & 2.007 & 0.616 & 0.446 \\
-& Degenerate & 1.482 & 0.170 & 0.154 \\
-  \midrule
-\multirow{3}{*}{\parbox{2.5cm}{2$\times$2 Colorset w/ Reflector}} & Infinite & 3.878 & 0.847 & 0.480 \\
-& Null & 3.708 & 0.780 & 0.478 \\
-& Degenerate & 3.302 & 0.655 & 0.165 \\
-  \midrule
-\multirow{3}{*}{\parbox{2.5cm}{BEAVRS Quarter Core}} & Infinite & 34.706 & 10.005 & 0.556 \\
-& Null & 39.137 & 10.164 & 0.547 \\
-& Degenerate & 39.370 & 10.137 & 0.434 \\
-  \bottomrule
-\end{tabular}
-\end{table}
-
-As was the case for the other metrics, the U-238 capture rate errors are highly dependent on energy group structure. The maximum and mean errors are substantially reduced with finer energy group structures for all benchmarks and spatial homogenization schemes. The maximum capture rate errors are 2 -- 12\% in 2 groups for the individual fuel assembly and 2$\times$2 colorset benchmarks, respectively, but decrease to 0.4 -- 1.7\% when modeled with 70 groups. The mean capture rate errors likewise decrease with finer energy group structures, and are less than 0.6\% in magnitude for the assembly and colorset benchmarks for all homogenization schemes with 70 groups.
-
-The capture rate errors are more dependent on the spatial homogenization scheme used to compute \ac{MGXS} in the fuel than are the fission rate errors. In particular, the degenerate scheme produces much smaller maximum and mean errors than the null and infinite schemes. The maximum error is greater than 1\% for all benchmarks with the infinite and null schemes even with 70 energy groups. The maximum error is reduced by 2 -- 5$\times$ for all benchmarks with the use of degenerate homogenization. In addition, the degenerate scheme consistently reduces the error for all energy group structures, with the most substantial improvement over the infinite and null schemes observed for 70 groups. This stands in contrast to the fission rate errors where the degenerate scheme was only significantly better for 2-group \ac{MGXS}. As was the case for the fission rate errors, the null and infinite schemes exhibit a negligible difference in their maximum and mean capture rate errors, with no systematic trend in the data.
-
-The spatial distributions of capture rate errors are plotted as heatmaps for each benchmark in Figs.~\Crefrange{fig:chap8-assm-1.6-capt-err}{fig:chap8-full-core-capt-err}. These figures illustrate the capture rate errors for 8 and 70 energy group structures for the null and degenerate schemes; the capture rate errors for 2, 8, and 70 groups for all three homogenization schemes are compared in Figs.~\Crefrange{fig:quantify-assm-1.6-capt-err}{fig:quantify-full-core-capt-err} in App.~\ref{sec:quantify-capt-rates}. In addition, the U-238 capture absolute errors for the benchmarks with vacuum \acp{BC} are illustrated in App.~\ref{sec:quantify-capt-rates-absolute}.
-
-The heatmaps illustrate systematic error trends in the pin-wise capture errors which correlate with spatial heterogeneities in each benchmark. As is observed for the fission rates, the capture rates are generally underpredicted for pins near \acp{CRGT}, but overpredicted for pins removed from \acp{CRGT}, such as those in the corners of the fuel assembly. Unlike the fission rates, the capture rates are also underpredicted for pins near \acp{BP}. The effects due to heterogeneities are further enhanced when differentiating pins which are facially adjacent to \acp{CRGT}, facially and corner adjacent to two \acp{CRGT}, etc. In addition, the error magnitudes are large for pins along the inter-assembly and assembly-reflector interfaces for the 2$\times$2 colorset benchmarks. For the \ac{PWR} benchmarks modeled here, the moderation provided by neighboring \acp{CRGT} and/or reflectors softens the local flux for nearby fuel pins and should be modeled when collapsing pin-wise \ac{MGXS} for high-fidelity multi-group transport calculations.
-
-\begin{figure}[h!]
-\centering
-\includegraphics[width=\linewidth]{figures/quantification/assm-16/capt-err}
-\vspace{2mm}
-\caption[U-238 capture rate errors for a 1.6\% enriched assembly]{U-238 capture rate percent relative errors errors for a 1.6\% enriched assembly corresponding to the reference in Fig.~\ref{fig:chap7-capt-rates-1.6-assm}.}
-\label{fig:chap8-assm-1.6-capt-err}
-\end{figure}
-
-\clearpage
-
-\begin{figure}[h!]
-\centering
-\includegraphics[width=\linewidth]{figures/quantification/assm-31/capt-err}
-\vspace{2mm}
-\caption[U-238 capture rate errors for a 3.1\% enriched assembly]{U-238 capture rate percent relative errors errors for a 3.1\% enriched assembly corresponding to the reference in Fig.~\ref{fig:chap7-capt-rates-3.1-assm}.}
-\label{fig:chap8-assm-3.1-capt-err}
-\end{figure}
-
-\clearpage
-
-\begin{figure}[h!]
-\centering
-\includegraphics[width=\linewidth]{figures/quantification/assm-31-20BPs/capt-err}
-\vspace{2mm}
-\caption[U-238 capture rate errors for a 3.1\% enriched assembly with 20 BPs]{U-238 capture rate percent relative errors errors for a 3.1\% enriched assembly with 20 \acp{BP} corresponding to the reference in Fig.~\ref{fig:chap7-capt-rates-3.1-assm-20BAs}.}
-\label{fig:chap8-assm-3.1-20BPs-capt-err}
-\end{figure}
-
-\clearpage
-
-\begin{figure}[h!]
-\centering
-\includegraphics[width=\linewidth]{figures/quantification/2x2/capt-err}
-\vspace{2mm}
-\caption[U-238 capture rate errors for a 2$\times$2 colorset]{U-238 capture rate percent relative errors errors for a 2$\times$2 colorset corresponding to the reference in Fig.~\ref{fig:chap7-capt-rates-2x2}.}
-\label{fig:chap8-2x2-capt-err}
-\end{figure}
-
-\clearpage
-
-\begin{figure}[h!]
-\centering
-\includegraphics[width=\linewidth]{figures/quantification/reflector/capt-err}
-\vspace{2mm}
-\caption[U-238 capture rate errors for a 2$\times$2 colorset with a reflector]{U-238 capture percent relative errors rate errors for a 2$\times$2 colorset with a reflector corresponding to the reference in Fig.~\ref{fig:chap7-capt-rates-reflector}.}
-\label{fig:chap8-reflector-capt-err}
-\end{figure}
-
-\clearpage
-
-\begin{figure}[h!]
-\centering
-\begin{subfigure}{\textwidth}
-  \centering
-  \includegraphics[width=0.6\linewidth]{figures/quantification/full-core/capt-err-null}
-  \caption{}
-  \label{fig:chap8-full-core-capt-err-null}
-\end{subfigure}
-\vspace{4mm}
-\begin{subfigure}{\textwidth}
-  \centering
-  \includegraphics[width=0.6\linewidth]{figures/quantification/full-core/capt-err-degenerate}
-  \caption{}
-  \label{fig:chap8-full-core-capt-err-degenerate}
-\end{subfigure}
-\caption[U-238 capture rate errors for BEAVRS]{U-238 capture rate percent relative errors for the quarter core \ac{BEAVRS} model with null (a) and degenerate (b) homogenization corresponding to the reference in Fig.~\ref{fig:chap7-capt-rates-full-core}.}
-\label{fig:chap8-full-core-capt-err}
-\end{figure}
-
-\clearpage
-
-As noted previously, the energy group structure has a large impact on the error distributions as can be seen from the figures. In addition, the heatmaps illustrate how the degenerate spatial homogenization scheme effectively ``smooths'' the pin-wise errors as compared to the infinite and null schemes. Although this effect appears most pronounced for the 2-group plots in App.~\ref{sec:quantify-capt-rates}, the ``smoothing'' trend persists for 8 and 70 groups as well (unlike the fission rate errors). In particular, the differential of the errors for pins near \acp{CRGT}, \acp{BP}, and assembly and reflector interfaces is substantially reduced when degenerate homogenization is applied. The difference in the spatial distributions of errors for the infinite and null schemes is hardly noticeable except for pins near the assembly and reflector interfaces for the 2$\times$2 colorset benchmarks.
-
-\begin{emphbox}
-\textbf{The use of degenerate spatial homogenization ``smooths'' the spatial distribution of pin-wise U-238 capture rate errors. The improvement in accuracy with degenerate homogenization increases with more energy groups. This underscores the importance of accounting for spatial heterogeneities -- such as the added moderation from \acp{CRGT} and reflectors -- when generating \ac{MGXS} to predict U-238 capture and Pu-239 production in \acp{LWR}.}
-\end{emphbox}
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Motivation for a New Spatial Homogenization Scheme}
-\label{sec:chap8-motivate}
-
-The results presented in the preceding section quantify and illustrate the impact of capturing heterogeneous spatial self-shielding effects in \ac{MGXS} for fuel pins in \ac{PWR} geometries. The pin-wise U-238 capture rates, and to a lesser extent, the pin-wise fission rates, are better predicted when these effects are incorporated into \ac{MGXS} used in high-fidelity multi-group transport calculations. Alternatively, non-negligible systematic approximation errors in the reaction rates arise when using \ac{MGXS} collapsed with the flux from an infinite lattice calculation which does not differentiate pins based on neighboring spatial heterogeneities\footnote{This is the case for many traditional approaches to self-shielding for \ac{MGXS} generation.}. It should be noted that other approximation errors due to spatial, angular and energy discretization in \ac{MOC} are still present in these calculations, and may complicate the generality of the conclusions drawn in this section.
-
-The use of degenerate spatial homogenization reduces reaction rate errors by directly modeling perturbations in the flux within each fuel pin due to local heterogeneities such as neighboring \acp{CRGT} and \acp{BP}. Some reactions may be more or less sensitive to local spatial self-shielding effects. In the \ac{PWR} benchmarks presented here, degenerate homogenization was most beneficial for predicting U-238 capture rates since it explicitly accounts for moderation from neighboring \acp{CRGT} and reflectors. Although degenerate spatial homogenization is advantageous for accuracy, it is not practical for routine reactor analysis due to computational resource limitations.
-
-As shown in Tab.~\ref{table:chap8-num-materials}, the number of unique materials in the \ac{BEAVRS} model is $\mathcal{O}(10^{4})$ for degenerate homogenization\footnote{The number of materials may be $\mathcal{O}(10^{6})$ for 3D \ac{PWR} models with axial enrichment zoning.}, but only $\mathcal{O}(10)$ for the infinite and null homogenization schemes. As a result of the fine-grained spatial tally mesh employed by degenerate homogenization, far more particle histories are needed to converge the \ac{MGXS} tallies to obtain the same statistical uncertainties as with the simpler schemes. In particular, the particle track density across each of the degenerate tally zones (\textit{e.g}, fuel pins) is roughly one ten thousandth of that in the infinite/null schemes. Therefore, a factor of roughly 10,000 more particle histories are required to obtain the same particle track density within each of the degenerate tally zones\footnote{For eigenvalue calculations in high dominance ratio reactor cores, the additional number of particle histories needed to converge \ac{MGXS} tallies for degenerate homogenization may be even greater due to the highly uneven fission neutron source distribution.} and converge the statistical uncertainties to the same level as would be obtained with infinite/null homogenization.
-
-However, the  spatial distribution of errors motivate the potential for a new homogenization scheme. In particular, the errors in the infinite/null homogenization schemes exhibit marked patterns which correlate with the local heterogeneities in the geometry. For example, the error of the predicted reaction rates for all pins facially adjacent to a \ac{CRGT} is quite similar. More generally, the observed reaction rate errors are similar for groups of pins with similar neighboring local heterogeneities. This key observation implies that the reaction rate errors may be minimized if an appropriate set of spatially self-shielded \ac{MGXS} are defined for each grouping of pins with similar flux profiles due to neighboring heterogeneities. In particular, can a library of \ac{MGXS} be homogenized across a greatly reduced set of pins from the degenerate case which approaches both:
-
-\begin{itemize}[noitemsep]
-\item the \textbf{accuracy} of the degenerate scheme
-\item the \textbf{convergence} of the infinite/null schemes
-\end{itemize}
-
-\noindent with far fewer particle histories than the degenerate scheme? This question is investigated with an in-depth analysis of clustering of pin-wise \ac{MGXS} in the following chapter.
-
-%\begin{itemize}[noitemsep]
-%  \item Plot evolution of rel. err. by batch for each homogenization scheme
-%  \begin{itemize}[noitemsep]
-%    \item groups with highest rel. err.
-%    \item reactions with greatest contribution to eigenvalue (U-238 capture)
-%    \item total (track-length) vs. scattering matrices (analog)    
-%    \item which group structure(s)?
-% \end{itemize}
-%  \item compare to pin power convergence rates in preceding chapter
-%\end{itemize}
-
-%-infinite vs. null vs. degenerate
-%-conv rates for MGXS in each case - choose worst groups
-%  -compare back to pin power error conv. rates
-%  -convergence rates for infinite vs. null vs. degenerate
+In this paper, a detailed description of track generation for 3D MOC was provided. A new track generation method for 3D MOC called 3D Global Tracking that is applicable for arbitrary geometries while having slightly lower memory requirements than the current state-of-the-art MRT method was also presented. A brief analysis of the number of tracks required for an anticipated track laydown for a full-core PWR problem was conducted. This revealed the inherent disadvantage of the s-MRT method in that it required $\sim$8.4 times more tracks than the MRT and 3DGT methods. As we move towards solving larger, more complex problems, the track generation method will become more relevant due to the increased memory and compute requirements implicit to the track laydown. Additionally, the current state-of-the-art method, Modular Ray Tracing, will face new challenges in track generation for complex geometries. As we tackle these larger problems, additional challenges and insights to the track generation procedure will likely arise.
 
 \clearpage
 
