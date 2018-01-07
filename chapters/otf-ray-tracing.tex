@@ -1,100 +1,82 @@
 \chapter{Ray Tracing}
 \label{chap:ray-tracing}
 
-There exists several methodologies to solve the neutron transport equation for a particular reactor geometry and material composition. Each methodology involves a different set of assumptions that can be applied to the neutron transport equation in order to simplify it into a form that can be solved numerically. The Method of Characteristics (MOC) approach solves the equation along characteristic tracks, across which the solution of the angular flux reduces to an ordinary differential equation. The scalar flux in a given region, which is necessary to calculate reaction rates, can be calculated by summing the contributions from each track's angular flux through the region. Often the approximation of a constant neutron source in each source region is applied, although higher order solutions exist. This flat source approximation leads to a simple exponential attenuation of the angular flux, $\psi$, through the flat source region (FSR) given in Eq.~\ref{eq::fsr_attenuation}
+In the previous chapter, track generation was discussed. Once the tracks are laid across the geometry, they need to be partitioned by source region intersections into segments across which the MOC equations can be applied. At a minimum, the segment lengths and associated source region identifiers need to be recorded for each track. During the transport sweep, the MOC equations described in Chapter~\ref{chap:moc} are applied to all segments. This chapter discusses ray tracing procedures in which the segments are formed from the track and geometry information. Section~\ref{sec:rt-intro} provides an introduction of common ray tracing schemes and their implications. In Section~\ref{hi}.
 
-\begin{equation}
-\psi(s) = \psi(0) e^{-\Sigma_t s} + \frac{q}{\Sigma_t} \left( 1 - e^{-\Sigma_t s} \right)
-\label{eq::fsr_attenuation}
-\end{equation}
+FIXME
 
-where $\Sigma_t$ is the total cross-section, $s$ is the distance the track travels through the FSR, and $q$ is the constant neutron source in the FSR. With this approximation, the scalar flux, $\phi$, in a given FSR can be calculated by summing the contributions of each angular flux, as is given in Eq.~\ref{eq::scalar_flux}
 
-\begin{equation}
-\phi = \frac{4\pi}{\Sigma_t} \left(q + \frac{1}{V} \sum_{k\in V} w_k \Delta \psi_k \right)
-\label{eq::scalar_flux}
-\end{equation}
+\section{Introduction to Ray Tracing}
+\label{sec:rt-intro}
 
-where $w_k$ is the weight of track $k$, $\Delta \psi_k$ is the change in the angular flux of track $k$ over the FSR, and $V$ is the volume of the FSR.
+Ray tracing fundamentally solves the problem of determining the next intersection with a surface along the direction of travel and which new region is entered after the intersection. Since complicated geometries contain many surfaces, this step can be expensive if all surfaces in the geometry need to be tested for intersections. Much of the work in complex ray tracing for animations relies on somehow forming \textit{acceleration structures} which limit the number of surfaces that need to be tested~\cite{acceleration-structures}. Traditional methods rely on forming acceleration structures that resemble some hierarchy of cells and surfaces in order to only consider nearby surfaces~\cite{acc-struct-hierarchy}.
 
-These equations are most widely applied in 2D, where the volume transforms to an area and tracks are laid down in 2D. In this scheme a certain polar quadrature is used so that for each 2D track, multiple angular fluxes are represented across both polar angle and neutron energy group. In 3D MOC, the tracks are explicitly laid across the 3D geometry so that each track represents a specific polar angle, although each track still represents multiple angular fluxes across energy groups. 
+In traditional reactor physics problems, an acceleration structure is naturally formed by the hierarchical structure of the geometry. For instance, a core can largely be viewed as an arrangement of assemblies, each of which is comprised of an arrangement of fuel rods. Therefore, by just using the hierarchical CSG form of the geometry, the ray tracing requirements are naturally reduced.
 
-The first step of standard MOC solvers is to lay tracks across the geometry. During this procedure, tracks connect with complementary tracks to satisfy boundary conditions. The tracks' spacings and angles are modified to ensure every track exactly intersects with a complementary track at the boundaries. While simple in theory, this procedure can result in unnecessary modifications to the tracks' spacings and angles that can significantly increase the memory and compute requirements of the problem \cite{sam_old}. The track generation procedure is typically done in a piecewise manner. First, 2D tracks are laid down in the x-y plane according to a procedure described by Filippone \cite{filippone}. Next, 3D tracks are laid down on top of the 2D tracks following one of several procedures: Modular Ray Tracing, simplified-Modular Ray Tracing, and 3D Global Tracking \cite{sam_old, kochunas}. Groups of tracks sharing the same 2D track and polar angle are denoted as $z-$stacks in this paper. A depiction is shown in Fig.~\ref{fig::3D_tracks}.
+However, ray tracing can still be expensive, especially for cases which do not form an easily structured form, such as reactor baffles, grid spacers, and neutron shields. These complexities cause a generic algorithm capable of treating all the reactor detail to lose computational efficiency. In moving from 2D simulations to 3D simulations, even more surfaces are introduced, exacerbating the issue.
+	
+Most MOC implementations avoid this issue by treating ray tracing as a pre-processing step whereby the segment information is explicitly stored at the beginning and then loaded during the transport sweep. In this way  the amount of repeated ray tracing work is reduced and the cost of ray tracing is effectively amortized over the number of transport sweeps. While this approach is straightforward, its memory and compute requirements for 3D MOC can be prohibitive, even for small problems, due to the vast number of segments present in 3D MOC simulations. Reducing the memory footprint is important for many reasons including improved cache efficiency and reducing bulk memory requirements.
 
-\begin{figure}[ht!]
-	\centering
-	\includegraphics[width=0.75\linewidth]{figures/ph2016/3DMOC_stack.png}
-	\caption{Depiction of creating $z$-stacked tracks given a polar angle $\theta$ and a 2D track.}
-	\label{fig::3D_tracks}
-\end{figure}
+In this thesis, an alternative approach is presented that greatly reduces the segment storage and generation requirements by taking advantage of the extruded geometry structure common to many reactor physics problems. This alternative approach saves no 3D segment data, rather treating the ray tracing problem as a coupled 2D and 1D system whereby 2D radial ray tracing information is combined with 1D axial information to compute the 3D intersections~\cite{physor2016}.
 
-Once the tracks are laid across the geometry, they are partitioned by source region intersections into segments (or crossings) across which the MOC equations can be applied. For simplicity, we will assume in this paper all source regions are spatially flat and will hereafter denote a flat source region as an FSR. At a minimum, the segment lengths and associated FSR identifiers are saved for each track. After this is completed, the sweeping process starts in which Eq.~\ref{eq::fsr_attenuation} and Eq.~\ref{eq::scalar_flux} are applied to all segments with some initial guess of scalar fluxes and boundary angular fluxes. 
+Another ray tracing scheme, termed the the Chord Classification Method (CCM)~\cite{Sciannandrone2015}, also sought to reduce the memory requirements for ray tracing axially extruded geometries by only saving the unique chords (or segments).  However, this method still requires that the segmentation procedure be performed for all 3D tracks prior to performing transport sweeps, which can be prohibitively expensive for complex geometries. In addition, while it does indeed reduce the storage requirements, the storage scales with the number of unique 3D segment lengths. This can be problematical for problems in which there are a large number of unique segments. For large full core problems, some regions might indeed have many repeated segment lengths, but regions for which the source height is similar to the axial ray spacing, there would be very few repeated segment lengths.
 
-%This describes the common implementation of 2D MOC. The simple extension of this implementation to 3D MOC is presented in Algorithm~\ref{alg::old}.
+The implementation in this thesis aims to most efficiently solve typical PWR problems. From experience in simulating single PWR assemblies, the axial ray separation can be on the same order as the axial source height~\cite{mc2017}, potentially causing there to be a large number of unique segments. This motivates using concepts from the CCM method to identify repeated segment lengths but the 2D/1D ray tracing approach for storage.  This discussion will be presented in terms of handling flat source regions (FSRs) but the implementation is also valid for handling regions with a linear source approximation. 
 
-%\begin{algorithm*}[!h]
-%\caption{3D MOC algorithm extending the standard 2D approach}
-%\label{alg::old}
-%\begin{algorithmic}
-%\STATE User specifies materials and a geometry
-%\STATE Generate tracks across the geometry
-%\FORALL{$i \in \text{2D tracks}$}
-%  \FORALL{$\theta \in \text{polar angles}$}
-%    \FORALL{$t \in \text{z-stack for 2D track } i \text{ and polar angle } \theta$} 
-%        \STATE Segment track $t$ into segments, saving the segment lengths and corresponding FSR identifiers, populating 3D FSRs as new regions are traversed
-%    \ENDFOR
-%  \ENDFOR
-%\ENDFOR
-%\FORALL{transport sweeps}
-%    \FORALL{$i \in \text{2D tracks}$}
-%      \FORALL{$\theta \in \text{polar angles}$}
-%        \FORALL{$t \in \text{z-stack for 2D track } i \text{ and polar angle } \theta$}
-%            \FORALL{$s \in \text{segments for track } t$}
-%                \STATE Apply Eq.~\ref{eq::fsr_attenuation} and Eq.~\ref{eq::scalar_flux} to segment $s$ and the corresponding FSR
-%                \ENDFOR
-%            \ENDFOR
-%        \ENDFOR
-%    \ENDFOR
-%    \IF{Source is converged} 
-%        \RETURN
-%    \ENDIF
-%\ENDFOR
-%\end{algorithmic}
-%\end{algorithm*}
+\section{Forming an Axially Extruded Geometry}
 
-While this approach is straightforward, its memory and compute requirements for 3D MOC can be prohibitive, even for small problems. Reducing the memory footprint is important for many reasons. Recently, the Chord Classification Method (CCM) \cite{Sciannandrone2015} was presented for axially extruded geometries to reduce memory requirements by only saving the unique chords (or segments).  However, this method still requires that the segmentation procedure be performed for all 3D tracks prior to performing transport sweeps, which can be prohibitively expensive for complex geometries. In this study, an alternative approach is presented that utilizes some ideas of CCM and greatly reduces the segment storage and generation requirements by taking advantage of the extruded geometry structure common to many reactor physics problems.
+As previously stated, OpenMOC only supports piece-wise axially extruded geometries. Most common reactor problems are naturally defined as piece-wise axially extruded so this is not a strong limitation in practice. Here, an axially extruded geometry is defined to be a geometry in which every radial slice of the reactor geometry is identical whereas a piece-wise axially extruded geometry can be defined as the collection of a finite number of axial zones where the geometry over each axial zone constitutes an extruded geometry. 
 
-\section{METHODOLOGY}
+For ray tracing in a 2D/1D scheme, a single axially extruded extruded geometry is required. Therefore, all radial detail must be gathered in order to effectively convert the piece-wise axially extruded geometry to an axially extruded geometry. While common reactor cores contain variations from axially extruded geometries, such as end plugs for control rods, these variations can be fully captured at little cost by implicitly inserting additional geometric intersections. 
 
-An important observation of nuclear reactor cores is their close resemblance to axially extruded geometries. Here, an axially extruded geometry is defined to be a geometry in which every radial slice of the reactor geometry is identical. Note this is a requirement only on the radial geometry, not the materials. Given an axially extruded geometry, it is possible to store only the 2D segments associated with intersections in the radial geometry. The 3D segments can then be formed on-the-fly using a simple axial mesh.
+Note the axially extruded requirement is one only on the geometry, not the materials. Given an axially extruded geometry, it is possible to store only the 2D segments associated with intersections in the radial geometry. The 3D segments can then be formed on-the-fly using a simple axial mesh.
 
-\subsection{Forming an Axially Extruded Geometry}
-
-While common reactor cores contain variations from axially extruded geometries, such as end plugs for control rods, most of these variations can be fully captured at little cost by implicitly inserting additional geometric regions.
-
-First, 2D segments need to be formed which reflect intersections of the 2D tracks with a superposition of all radial surfaces in the geometry. This is done by simultaneously ray tracing across all the unique radial planes in the geometry, as depicted in Fig.~\ref{fig::superposition}. This creates an implicit geometry containing all radial information, which we refer to as the superposition plane. The 2D geometric regions in the superposition plane correspond to an axially extruded region with an associated unique identifier that contains an axial mesh and an array of associated 3D FSRs. 
+First, 2D segments need to be formed which reflect intersections of the 2D tracks with a superposition of all radial surfaces in the geometry. This is done by simultaneously ray tracing across all the unique radial planes in the geometry, as depicted in Fig.~\ref{fig:superposition}. This creates an implicit geometry containing all radial information, termed the \textit{superposition plane}. The 2D geometric regions in the superposition plane correspond to an axially extruded region with an associated unique identifier that contains an axial mesh and an array of associated 3D FSRs. 
 
 \begin{figure}[ht!]
 	\centering
 	\includegraphics[width=\linewidth]{figures/ph2016/new_unique_z_levels_v_extruded_rt2.png}
 	\caption{Depiction of 2D ray tracing for superposition of all radial detail.}
-	\label{fig::superposition}
+	\label{fig:superposition}
 \end{figure}
 
-Each 2D segment formed during the ray tracing contains its length and the unique identifier of the axially extruded region being traversed. After 2D segmentation, axial meshes need to be created for on-the-fly axial ray tracing. If a global axial mesh is desired, whereby all axially extruded regions have the same axial mesh, all the unique z-planes in the geometry are collected and sorted into an axial mesh. Otherwise, local meshes are populated for each axially extruded region during population of the 3D FSRs. To populate the 3D FSRs, a temporary vertical ray is created for each axially extruded region. These rays all start from the bottom of the root geometry and are directed upwards and segmented to determine distances between axial intersections and initialize the associated FSR.
+Each 2D segment formed during the ray tracing contains its length and the unique identifier of the axially extruded region being traversed. After 2D segmentation, axial meshes need to be created for on-the-fly axial ray tracing. If a global axial mesh is desired, whereby all axially extruded regions have the same axial mesh, all the unique z-planes in the geometry are collected and sorted into an axial mesh. Otherwise, local meshes are populated for each axially extruded region during initialization of the 3D FSRs. To initialize the 3D FSRs, a temporary vertical ray is created for each axially extruded region. These rays all start from the bottom of the root geometry and are directed upwards and segmented to determine distances between axial intersections and initialize the associated FSR. During this step, the location of a point within the FSR is noted, and the data structures associated with managing the FSRs are initialized. An illustration of this process is presented in Fig.~\ref{fig:fsr-initialization}.
+
+\begin{figure}[h!]
+	\centering
+	\begin{subfigure}[b]{0.25\textwidth}
+		\centering
+		\includegraphics[width=\linewidth]{figures/ph2016/fsr-init-a.PNG}
+		\caption{}
+		\label{fig:fsr-init-a}
+	\end{subfigure}
+	\begin{subfigure}[b]{0.28\textwidth}
+		\centering
+		\includegraphics[width=\linewidth]{figures/ph2016/fsr-init-b.PNG}
+		\caption{}
+		\label{fig:fsr-init-b}
+	\end{subfigure}
+	\begin{subfigure}[b]{0.4\textwidth}
+		\centering
+		\includegraphics[width=\linewidth]{figures/ph2016/fsr-init-c.PNG}
+		\caption{}
+		\label{fig:fsr-init-c}
+	\end{subfigure}
+	\caption[]{Illustration of FSR initialization starting from the superposition plane (a) where a radial point is chosen in each unique region, vertical tracks (b) are generated at the chosen points to map the axial detail, yielding (c) the 1D axial meshes for each region, and (optionally) a global 1D axial mesh}
+	\label{fig:fsr-initialization}
+\end{figure}
 
 Implicitly, this strategy can create extra radial intersections since some of the axial levels might not have originally contained the full radial detail of the superposition plane. However, the number of additional intersections should be low due to the regular structure of most reactor cores. For instance, fuel rods with end plugs present only a slight deviation from an axially extruded geometry.
 
 The advantage of local axial meshes is the ability to have different axial refinements within the reactor. For instance, a partially inserted control rod might need a finer FSR discretizations near the control rod tip. If a global axial mesh were used, the finer discretization would need to be applied to the whole core at that axial height, including the reflector. With local axial meshes, only the regions which need refinement would use a finer discretization.
 
-\subsection{On-the-fly Axial Ray Tracing}
+\section{On-the-fly Axial Ray Tracing}
 
-During the transport sweeps, each 3D track is traversed until it reaches its end point on a geometry bounding surface. The common method presented in section~\ref{sect::intro} accomplishes this by splitting every 3D track into 3D segments before the transport sweeps and then simply cycling through all the segments of the track sequentially.
+During the transport sweeps, each 3D track is traversed until it reaches its end point on a geometry bounding surface. The common method mentioned in Section~\ref{sec:rt-intro} accomplishes this by splitting every 3D track into 3D segments before the transport sweeps and then simply cycling through all the segments of the track sequentially.
 
-In the methods presented here, 3D segments are recreated on-the-fly for each 3D track using information stored in the 2D tracks formed during initial ray tracing. Due to the manner in which the 3D tracks were formed, each 3D track corresponds to one of the segmented 2D tracks. From the starting locations and polar angles, it is possible to determine the distance along the track to an axial intersection using an axial mesh and to a radial intersection using the 2D segments. On-the-fly axial ray tracing can either be performed on each 3D track individually or on a whole $z$-stack.
+In the methods presented here, 3D segments are recreated on-the-fly for each 3D track using the 2D ray trace over all radial detail and the 1D axial meshes formed at the beginning of the simulations. Due to the manner in which the 3D tracks were generated, as detailed in Chapter~\ref{chap:track-laydown}, each 3D track has a corresponding 2D segmented track. From the starting $z$ coordinate of a track along with its polar angle, it is possible to determine the distance along the track to both intersections with axial planes and intersections with 2D surfaces, defined by the 2D segments. On-the-fly axial ray tracing can either be performed on each 3D track individually or on an entire $z$-stack.
 
-\subsubsection{Ray Tracing Individual 3D Tracks}
-
+\subsection{Ray Tracing Individual 3D Tracks}
 
 \begin{figure}[ht!]
 	\centering
@@ -103,36 +85,29 @@ In the methods presented here, 3D segments are recreated on-the-fly for each 3D 
 	\label{fig::otf_ray_tracing}
 \end{figure}
 
-
-
 For ray tracing each 3D track individually, the associated 2D segments are traversed until the 3D track reaches its endpoint. First, the starting point is used to determine the appropriate starting 2D segment and index into the axial mesh. If local meshes are used, the index needs to be recomputed with a binary search at the start of each 2D segment. If a global mesh is used, the axial index only needs to be calculated at the beginning of the track. The 2D segments are traversed and the shorter distance to either an axial or radial intersection is calculated. This computed distance is the 3D segment length and has an associated 3D FSR indicated by the axial index. To form the next 3D segment, the position along the 2D track is moved by the appropriate distance. This process is repeated until the endpoint is reached. An illustration of this concept is presented in Fig.~\ref{fig::otf_ray_tracing}.
 
-\subsubsection{Ray Tracing 3D Track Z-Stacks}
 
-The structure of the 3D track laydown can be used to ray trace an entire $z$-stack. Specifically all tracks in the $z$-stack have the same polar angle $\theta$, project onto the same 2D track, and are separated by a constant axial ray spacing $\Delta z$. Therefore, if we define $z_0(0)$ as the $z$-coordinate at the intersection of the lowest track with the $z$-axis at the start of the associated 2D track, the axial height $z_i$ of the $i^{\textit{th}}$ lowest track (starting from 0) can be defined as
+
+\subsection{Ray Tracing 3D Track $z$-Stacks}
+
+The structure of the 3D track laydown can be used to ray trace an entire $z$-stack. Specifically all tracks in the $z$-stack have the same polar angle $\theta$, project onto the same 2D track, and are separated by a constant axial ray spacing $\delta z$. Therefore, if we define $z_0(0)$ as the $z$-coordinate at the intersection of the lowest track with the $z$-axis at the start of the associated 2D track, the axial height $z_i$ of the $i^{\textit{th}}$ lowest track (starting from 0) can be defined as
 
 \begin{equation}
-z_i(s) = z_0(0) + i\Delta z + s \cot{\theta}
+z_i(s) = z_0(0) + i\delta z + s \cot{\theta}
 \label{eq::track_projection}
 \end{equation}
-
 where $s$ is the distance along the associated 2D track. Combining this with 2D track information is enough to completely describe the trajectory and location of 3D tracks in the stack. Therefore, it is possible to determine which tracks will traverse a given FSR.
 
 For each 2D segment in the 2D track, there is an associated axially extruded region which contains a list of 3D FSRs in the region. To trace a $z$-stack, intersections within axially extruded FSRs are determined in the order traversed by the 2D segments. The 1D axial mesh (either local or global) associated with the axially extruded region is used to determine the axial boundaries of each 3D FSR. Using the boundaries of the FSR and Eq.~\ref{eq::track_projection}, it is possible to analytically compute the indexes of tracks that will cross the FSR as
-
 \begin{equation}
-%i_\textit{start} = \ceil[\Big]{\frac{z_\textit{min} - \max\left({z_0(s_\textit{start}), z_0(s_\textit{end}})\right) }{\Delta z}}
-FIXME
+i_{\textit{start}} = \Bigg\lceil\frac{z_{\textit{min}} - \max\left({z_0(s_{\textit{start}}), z_0(s_{\textit{end}})}\right) }{\delta z}\Bigg\rceil
 \label{eq::start_track}
 \end{equation}
-
 \begin{equation}
-%i_\textit{end} = \floor[\Big]{\frac{z_\textit{max} - \min\left({z_0(s_\textit{start}), z_0(s_\textit{end}})\right) }{\Delta z}}
-FIXME
+i_{\textit{end}} = \Bigg\lfloor\frac{z_{\textit{max}} - \min\left({z_0(s_{\textit{start}}), z_0(s_{\textit{end}})}\right) }{\delta z}\Bigg\rfloor
 \label{eq::end_track}
 \end{equation}
-
-
 where $i_{\textit{start}}$ is the index of the first track to cross the FSR, $i_{\textit{end}}$ is the index of the last track to cross the FSR, $s_{\textit{start}}$ is the 2D distance traversed at the start of the segment and $s_{\textit{end}}$ is the 2D distance traversed at the end of the segment. A depiction of this process is shown in Fig.~\ref{fig::stack_tracing}.
 
 \begin{figure}[ht!]
@@ -148,18 +123,16 @@ Notice that for FSR A depicted in Fig.~\ref{fig::stack_tracing} there are multip
 L_{3D} = \frac{s_{\textit{end}} - s_{\textit{start}}}{\sin{\theta}}.
 \end{equation}
 
-In common reactor physics problems we expect this effect to be much more pronounced. Due to the radial direction having much greater complexity than the axial direction, FSRs will tend to be longer in the axial direction than in the radial plane, especially when higher order sources are added in the axial direction. The high aspect ratio would cause many tracks to cross the entire 2D length of the FSR.
+In common reactor physics problems we expect this effect to be much more pronounced. Due to the radial direction having much greater complexity than the axial direction, FSRs will tend to be longer in the axial direction than in the radial plane, especially when higher order sources are added in the axial direction. The high aspect ratio causes some tracks to cross the entire 2D length of the FSR.
 
 To take advantage of this, it is possible to calculate the indexes of the first and last tracks to traverse the entire 2D segment length. For this condition to be met, the axial height of the tracks over the entire 2D segment must be greater than the minimum axial boundary of the FSR and less than the maximum axial boundary. Therefore, the indexes of interest are the first track to have its lowest point above the minimum boundary and the first track to have its highest point above the maximum boundary. We name this indexes $i_{\textit{in}}$ and $i_{\textit{out}}$ respectively and they can be calculated as:
 
 \begin{equation}
-%i_{\textit{in}} = \ceil[\Big]{\frac{z_\textit{min} - \min\left({z_0(s_{\textit{start}}), z_0(s_{\textit{end}}})\right) }{\Delta z}}
-FIXME
+i_{\textit{in}} = \Bigg\lceil\frac{z_{\textit{min}} - \min\left({z_0(s_{\textit{start}}), z_0(s_{\textit{end}}})\right) }{\delta z}\Bigg\rceil
 \end{equation}
 
 \begin{equation}
-%i_{\textit{out}} = \ceil[\Big]{\frac{z_\textit{max} - \max\left({z_0(s_{\textit{start}}), z_0(s_{\textit{end}}})\right) }{\Delta z}}
-FIXME
+i_{\textit{out}} = \Bigg\lceil\frac{z_{\textit{max}} - \max\left({z_0(s_{\textit{start}}), z_0(s_{\textit{end}}})\right) }{\delta z}\Bigg\rceil
 \end{equation}
 
 For each FSR these indexes are calculated along with those beginning and end track indexes given in Eq.~\ref{eq::start_track} and Eq.~\ref{eq::end_track}. It is possible that $i_{\textit{in}}$ will be greater than $i_{\textit{out}}$ when the polar angle is steep enough, allowing for the FSR to be fully traversed axially without traversing the entire 2D length. These tracks can be determined with indexes $i_{\textit{in}}$ and $i_{\textit{out}}$ and have a common 3D segment length $L_{3D}$ given by
@@ -171,12 +144,14 @@ Therefore, 3D segments are classified into four categories:
 
 \begin{itemize}
 	\item \textbf{Mixed Tracks -- Case A:} Tracks that partially traverse the FSR and cross the lower FSR boundary. They are defined by track indexes $i_{\textit{start}} \leq i < \min\left(i_{\textit{in}}, i_{\textit{out}}\right)$. For these tracks, each 3D segment is computed individually. 
-	\item \textbf{Mixed Tracks -- Case B:} Tracks that partially traverse the FSR and cross the upper FSR boundary and each 3D segment is again computed individually. They are defined by track indexes $\max\left(i_{\textit{in}}, i_{\textit{out}}\right)  \leq i  \leq i_{\textit{end}}$`
+	\item \textbf{Mixed Tracks -- Case B:} Tracks that partially traverse the FSR and cross the upper FSR boundary and each 3D segment is again computed individually. They are defined by track indexes $\max\left(i_{\textit{in}}, i_{\textit{out}}\right)  \leq i  \leq i_{\textit{end}}$.
 	\item \textbf{Horizontal Tracks:} Tracks that fully traverse the entire 2D radial distance of the FSR and are defined by indexes $i_{\textit{in}} \leq i < i_{\textit{out}}$. 
 	\item \textbf{Vertical Tracks:} Tracks that traverse the entire axial distance of the FSR and are defined by $i_{\textit{out}} \leq i < i_{\textit{in}}$.
 \end{itemize}
 
-\subsection{Applying the MOC Equations}
+vvvv FIXME: remove? vvvv
+
+\section{Applying the MOC Equations}
 The 3D segments that are computed from the axial on-the-fly ray tracing can either be stored in temporary arrays of segments or directly used to apply Eq.~\ref{eq::fsr_attenuation} to the associated track's angular flux and Eq.~\ref{eq::scalar_flux} to the associated FSR as they are formed. In MOC, it is common to have each track represent both a forward and backward angular flux to maximize efficiency and reduce the amount of book keeping associated with each angular flux. 
 
 The advantage to temporarily storing segments is that ray tracing would only need to be performed in the forward direction along each track. Once the segments are stored in the temporary arrays, the MOC equations presented in Eq.~\ref{eq::fsr_attenuation} and Eq.~\ref{eq::scalar_flux} can be applied forward to the stored segments and then backward, representing the forward and backward angular fluxes. The temporary arrays are created at the beginning of the solver. For on-the-fly axial ray tracing by individual 3D track, one temporary array of segments needs to be created of size $S$ equal to the maximum number of segments per 3D track. For on-the-fly axial ray tracing by $z$-stack, the $M$ temporary arrays of segments need to be created of size $S$ where $M$ is the maximum number of tracks per $z$-stack.
@@ -329,7 +304,6 @@ Parallel scaling results are presented in Fig.~\ref{fig::scaling}. Notice that a
 %
 %------------------------------------------------------------------------------
 \section{CONCLUSION} 
-\label{sect::conclusion}
 
 In this study, an alternative approaches to 3D MOC were presented for segment storage whereby only 2D segments are stored and 3D segments are computed on-the-fly. This approach offers significant memory reduction with minimal or no computational overhead. Results show that the most efficient ray tracing tested was ray tracing entire $z$-stacks of 3D tracks with temporary storage of the computed segments.
 \clearpage

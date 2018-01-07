@@ -154,6 +154,12 @@
     year = 2003
 }
 
+@Book{c5g7,
+	Author         = {{M. Smith, E. Lewis, and B. Na}},
+	Title          = {Benchmark on Deterministic Transport Calculations Without Spatial Homogenisation: MOX Fuel Assembly 3-D Extension Case},
+	Publisher      = {Organisation of Economic Co-operation and Development - Nuclear Energy Agency},
+	year           = 2005
+}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -199,7 +205,7 @@
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% CASMO
+% MOC Codes
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 @inproceedings{rhodes2006casmo,
@@ -217,6 +223,22 @@
   year = 1995
 }
 
+@article{3D-MOC-annals,
+	author = {{Z. Liu, et al.}},
+	title = {{A new three-dimensional method of characteristics for neutron transport calculation}},
+	journal = {{Annals of Nuclear Energy}},
+	volume = 38,
+	pages = "447--454",
+	year = 2011,
+}
+
+
+@article{openmoc, 
+	author={{W. Boyd, S. Shaner, L. Li, B. Forget, and K. Smith}},
+	journal={Annals of Nuclear Energy}, 
+	title={{The OpenMOC Method of Characteristics Neutral Particle Transport Code}}, 
+	year=2014
+}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % CODE MANUALS
@@ -617,14 +639,6 @@
   publisher={Elsevier}
 }
 
-@inproceedings{lax2014distribcell,
-  title = {{An Algorithm for Identifying Unique Regions in Constructive Solid Geometries}},
-  author = "D. Lax and W. Boyd and N. Horelik",
-  booktitle = "PHYSOR",
-  address = "Kyoto, Japan",
-  year = 2014
-}
-
 @inproceedings{boyd2016bigdata,
   title = {{Equipping OpenMC for the Big Data Era}},
   author = {Boyd, William and Romano, Paul K and Harper, Sterling},
@@ -698,6 +712,14 @@
   author = "Shaner, Samuel Christopher",
   school = "Massachusetts Institute of Technology",
   year = 2014
+}
+
+@inproceedings{shaner-laydown,
+	author = {{S. Shaner, G. Gunow, B. Forget, and K. Smith}},
+	title = {{Theoretical Analysis of Track Generation in 3D Method of Characteristics}},
+	booktitle = {{\textit{International Conference on Mathematics and Computational Methods Applied to Nuclear Science and Engineering}}},
+	address = {{Nashville, TN, USA}},
+	year = 2015
 }
 
 @article{boyd2016parallel,
@@ -845,16 +867,6 @@
   doi = {10.1007/978-1-4419-7719-9_10},
 }
 
-@article{beazley2003swig,
-  title = {{Automated Scientific Software Scripting with SWIG}},
-  author = "D. M. Beazley",
-  journal = "Future Generation Computer Systems",
-  volume = "19",
-  number = "5",
-  pages = "599--609",
-  year = 2003
-}
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % OPENMP
@@ -868,21 +880,6 @@
   note = {{[Online; accessed 12/22/2013]}}
 }
 
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% MPI
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-@article{gropp1996mpi,
-  title = {{A High-Performance, Portable Implementation of the MPI Message Passing Interface Standard}},
-  author = "Gropp, William and Lusk, Ewing and Doss, Nathan and Skjellum, Anthony",
-  journal = "Parallel computing",
-  volume = "22",
-  number = "6",
-  pages = "789--828",
-  year = 1996
-}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1223,4 +1220,75 @@
   number = "3",
   pages = "626--634",
   year = 1999
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Ray Tracing
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+@book{acceleration-structures,
+	title = {An Introduction to Ray Tracing},
+	author = {J. Arvo and D. Kirk},
+	publisher = {Academic Press},
+	year = 1989
+}
+
+@inproceedings{acc-struct-hierarchy,
+	title = {A 3D representation for fast rendering of complex scenes},
+	author = {S. Rubin and T. Whitted},
+	booktitle = {SIGGRAPH},
+	pages = "110--116",
+	year = 1980
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Software Tools
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+@misc{openmp,
+	title = {{OpenMP Application Program Interface, Version 3.1}},
+	author = {OpenMP Architecture Review Board},
+	howpublished = {\url{http://www.openmp.org}},
+	year = {2011},
+}
+
+@misc{mpi-standard,
+	title = {{MPI: A Message-Passing Interface Standard, Version 3.1}},
+	author = {Message Passing Interface Forum},
+	howpublished = {\url{http://mpi-forum.org/docs/mpi-3.1/mpi31-report.pdf}},
+	year = {2015},
+}
+
+@article{mpi,
+	title = {{A High-Performance, Portable Implementation of the MPI Message Passing Interface Standard}},
+	author = "Gropp, William and Lusk, Ewing and Doss, Nathan and Skjellum, Anthony",
+	journal = "Parallel computing",
+	volume = "22",
+	number = "6",
+	pages = "789--828",
+	year = 1996
+}
+
+@article{lamport,
+	title = {{How to Make a Multiprocessor Computer That Correctly Executes Multiprocess Programs}},
+	author = "Leslie Lamport",
+	journal = "IEEE Transactions on Computers",
+	address = "Sun Valley, Idaho, USA",
+	volume = "C-29",
+	number = "9",
+	pages = "690--691",
+	year = 1979
+}
+
+
+@inproceedings
+ Lamport, Leslie (September 1979). ""
+
+
+@article{swig,
+	title = {{Automated Scientific Software Scripting with SWIG}},
+	author = "D. M. Beazley",
+	journal = "Future Generation Computer Systems",
+	volume = "19",
+	number = "5",
+	pages = "599--609",
+	year = 2003
 }

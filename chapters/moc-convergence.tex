@@ -1,243 +1,235 @@
-\chapter{Conclusions}
-%\label{chap:conclusions-future-work}
+\chapter{Convergence of MOC Source Iteration}
+\label{chap:moc-convergence}
+
+In the previous chapters, the implementation of methods in OpenMOC has been discussed in great detail. All of these methods rely on the \ac{MOC} form of the transport equation presented in Chapter~\ref{chap:moc}. More specifically, these methods rely on the source iteration form the \ac{MOC} equations, possibly used in conjunction with \ac{CMFD} acceleration discussed in Chapter~\ref{chap:cmfd}. In this chapter, the convergence of source iteration with and without \ac{CMFD} acceleration is addressed. While convergence is straightforward for physical cross-sections, the transport correction discussed in Section~\ref{sec:transport-correction} can cause convergence issues. 
+
+In Section~\ref{sec:source-iteration-intro}, the multi-group transport problem is formalized in matrix form which forms the basis of discussing convergence of source iteration. Section~\ref{sec:equiv-cpm} relates multi-group transport forms to collision probabilities, allowing for an analytical description of iteration matrix elements. Section~\ref{sec:moc-iteration-schemes} discusses methods to solve the resulting system of equations, focusing on source iteration. Theoretical issues with source iteration are discussed for transport-corrected cross-sections. Then, in Section~\ref{sec:diagonal-stabilization} a solution is proposed, termed diagonal stabilization. Finally, Section~\ref{sec:convergence-results} demonstrates convergence issues of source iteration on realistic problems and the ability of diagonal stabilization to fix the convergence issues.
+
+\section{Introduction}
+\label{sec:source-iteration-intro}
+
+The multi-group transport equation can be solved by a variety of methods, including \ac{MOC}. Many of these methods discretize the transport equation in some fashion and solve a linear system of the form
+\begin{equation}
+	\boldsymbol{\phi} = J \left(\frac{1}{k} F + S \right) \boldsymbol{\phi}
+	\label{eq:si-transport}
+\end{equation}
+where $\boldsymbol{\phi}$ represents the vector of all scalar fluxes, $J$ is the transport sweep matrix, $F$ is the fission matrix, $S$ is the scattering matrix, and $k$ is the eigenvalue. 
+
+In many efficient transport solvers, these matrices are not explicitly formed but rather they implicitly solve these equations with sweeps taking the place of explicit formulation of the matrix elements. Therefore, these matrices are often presented as operators rather than matrices, but the underlying matrix elements could be computed if desired. 
+
+For physical cross-sections, the matrices $J$, $F$, and $S$ are all positive.
+\begin{equation}
+\begin{split}
+\Sigma_{\textit{tr}, i, g} = \Sigma_{t, i, g} -  \Delta \Sigma_{\textit{tr}, i, g} \\
+\tilde{\Sigma}_{s, i}^{g \rightarrow g} = \Sigma_{s, i}^{g \rightarrow g} -  \Delta \Sigma_{\textit{tr}, i, g}
+\end{split}
+\label{eq:total-xs}
+\end{equation}
+
+When using large numbers of energy groups, the within-group scattering cross-sections can become small, and the modified within-group scattering cross-section can become negative with transport correction. Tabuchi discovered negative within-group scattering cross-sections to be an issue when converging inner within-group scattering iterations of \ac{MOC}~\cite{ty-problem}. Specifically, it was identified that the inner iteration matrix could have a spectral radius greater than unity, causing the system not to converge. Tabuchi later proposed a stabilization technique for inner iterations~\cite{ty-solution}.
+
+In this chapter, the ideas presented by Tabuchi are expanded to explain the observed convergence behavior of source iteration without inner iterations. Convergence is analyzed with transport corrected cross-sections. Realistic full core cases are presented that observe the failed convergence behavior and a new stabilizing method is proposed that stabilizes source iteration.
+
+\section{Equivalence of Collision Probability Methods}
+\label{sec:equiv-cpm}
+
+Deterministic methods such as flat source \ac{MOC} or step characteristics are equivalent to the collision probability form, aside from discretization errors~\cite{ty-problem}. Although collision probabilities do not explicitly enter the transport method, the neutron balance equation takes the form in Eq.~\ref{eq:cpm-form}:
+\begin{equation}
+	\Sigma_{\textit{tr}, i, g} \phi_{i,g} V_i = \sum_j P_{ji, g} q_{j,g} V_j
+	\label{eq:cpm-form}
+\end{equation}
+where $P_{ji,g}$ represents the collision probability of a neutron of energy group $g$ from region $j$ to region $i$, $V_i$ represents the volume of region $i$, $q_{i,g}$ represents the neutron source and $\phi_{i,g}$ represents the average scalar flux in region $i$ and group $g$. In general, the neutron source can be computed by summing contributions from all $G$ energy groups as
+\begin{equation}
+	q_{i,g} = \sum_{g'=1}^G \left( \Sigma_{s,i}^{g'\rightarrow g} \phi_{i,g'} + \chi_{i,g} \nu \Sigma_{f,i,g'} \phi_{i,g'} \right)
+\end{equation}
+where $\Sigma_{s,i}^{g'\rightarrow g}$ is the scattering cross-section in region $i$ from group $g'$ to group $g$, $\chi_{i,g}$ is the fission emission probability for group $g$ in region $i$, and $\nu \Sigma_{f,i,g'}$ is the fission production in region $i$ from group $g'$. Combining this definition with Eq.~\ref{eq:cpm-form}, as well as the reciprocity relationship, 
+\begin{equation}
+	P_{ij, g} \Sigma_{\textit{tr}, i, g} V_i = P_{ji, g} \Sigma_{\textit{tr}, j, g} V_j,
+	\label{eq:reciprocity}
+\end{equation}
+neutron balance can be presented in the form of Eq.~\ref{eq:cpm-balance}.
+\begin{equation}
+	\phi_{i,g} = \sum_j \frac{P_{ij, g} \sum_{g'=1}^G \left( \Sigma_{s,j}^{g'\rightarrow g} \phi_{j,g'} + \chi_{j,g} \nu \Sigma_{f,j,g'} \phi_{j,g'} \right)}{\Sigma_{\textit{tr}, j, g}} 
+	\label{eq:cpm-balance}
+\end{equation}
+Notice that this is in the form of Eq.~\ref{eq:si-transport}. Therefore, the matrix $A = J\left(\frac{1}{k}F + S\right)$, with rows and columns indexed by $(i, g)$  where $i$ is the region and $g$ is the energy group, can be expressed as
+\begin{equation}
+	A_{(i,g), (j, g')} = P_{ij}^g \left(\frac{\chi_{j,g} \nu\Sigma_{f,j,g'} / k + \Sigma_{s,j}^{g' \rightarrow g}}{\Sigma_{\textit{tr}, j, g}}\right).
+	\label{eq:a-matrix}
+\end{equation}
+Matrix $A$ is square and dense with length equal to the number of scalar fluxes. 
+
+\section{Iteration Schemes}
+\label{sec:moc-iteration-schemes}
+
+\subsection{Power Method}
+
+Often an iterative process is performed in which a new source distribution is computed at each iteration, yielding a new estimate of the associated scalar flux distribution. Therefore, solving the transport equation in this form where source terms are lagged is termed \textit{source iteration}.
+
+One method to solve a system of the form given in Eq.~\ref{eq:si-transport} is the power method, which yields the dominant eigenvector corresponding to the steady-state flux distribution. To invoke the power method, Eq.~\ref{eq:si-transport} can be re-arranged to the form in Eq.~\ref{eq:eigenvalue} where $I$ represents the identity matrix~\cite{kords-book}.
+\begin{equation}
+\begin{split}
+Z \equiv \left(I-JS\right)^{-1} JF \\
+Z \boldsymbol{\phi} =  k \boldsymbol{\phi}
+\end{split}
+\label{eq:eigenvalue}
+\end{equation}
+With the power method scheme, repeated multiplication by $Z$ yields the dominant eigenvector~\cite{numerical-analysis}. Rather than performing strict power method iterations, the estimate of the eigenvalue $k_n$ at iteration $n$ is often included in the source. This scheme is presented in Eq.~\ref{eq:power-method}. These iterations are often termed \textit{outer iterations}.
+\begin{equation}
+\boldsymbol{\phi}_{n+1} =  \left(I-JS\right)^{-1} J\frac{F}{k_n} \boldsymbol{\phi}_n
+\label{eq:power-method}
+\end{equation}
+Since explicitly taking the matrix inverse of $I-JS$ is unwise, an iterative scheme is necessary to solve the linear system. In many transport methods, such as \ac{MOC}, computing the elements of $J$ can be as expensive as computing a matrix vector product~\cite{transport-sweeps}. In addition, each matrix-vector product with matrix $J$ is usually quite expensive (often termed \textit{transport sweeps}). Therefore, few methods are available to efficiently solve the linear system in practice. 
+
+\subsection{Source Iteration}
+
+Note that in this notation the neutron source $\mathbf{q}$ can be computed as 
+\begin{equation*}
+	\mathbf{q} = \left(\frac{1}{k} F + S \right) \boldsymbol{\phi}. 
+\end{equation*}
+The transport sweep matrix $J$ therefore yields the scalar flux distribution associated with the computed source distribution. 
+
+An alternative way to solve the transport equation is to directly apply the transport sweep to the full neutron source. The eigenvalue problem in Eq.~\ref{eq:si-transport} is iteratively solved with the left hand side updated and the right hand side lagged as
+\begin{equation}
+	\boldsymbol{\phi}_{n+1} =  J\left(\frac{F\boldsymbol{\phi}_n}{k_n} + S\boldsymbol{\phi}_n\right).
+	\label{eq:power-method-full-source}
+\end{equation}
+It is important to note that this process is non-linear due to the iteration matrix $J\left(\frac{1}{k_n} F + S\right)$ being dependent on the iteration number $n$. To simplify this relationship, assume that the eigenvalue $k$ is perfectly known to be $k_{\textit{crit}}$, the eigenvalue associated with the dominant mode of the system. In reality, the exact value of $k_{\textit{crit}}$ is not known a priori but observations and intuition suggests that it does not strongly impact convergence. With the eigenvalue fixed, the system becomes 
+\begin{equation}
+	\boldsymbol{\phi}_{n+1} =  A \boldsymbol{\phi}_n
+\end{equation}
+where matrix $A$ is defined in Eq.~\ref{eq:a-matrix} with $k = k_{\textit{crit}}$. This process is equivalent to power method iterations with the matrix $A$, which converges to the eigenvector associated with the dominant eigenvalue of $A$. Since $k_{\textit{crit}}$ is the dominant eigenvalue of the original system, 1.0 must be an eigenvalue of $A$. In addition, if an everywhere positive solution exists, it must be associated with the physical solution.
 
-This research was motivated by a desire to obtain Monte Carlo (MC) quality solutions with computationally efficient deterministic neutron transport methods. This thesis approached this objective by employing continuous energy \ac{MC} neutron transport simulations to generate accurate  multi-group cross sections (MGXS) for fine-mesh deterministic transport codes. The new methods developed in this thesis were designed to accelerate the convergence of \ac{MGXS} tallied on full-core, fine-spatial meshes by leveraging the phenomenon of pin-wise \ac{MGXS} clustering. These methods reduce the computational burden of \ac{MC}-based \ac{MGXS} generation techniques, positioning it as a reactor agnostic alternative to today's deterministic methods which rely on engineering approximations.
+Recall from Eq.~\ref{eq:a-matrix} that the iteration matrix $A$ is everywhere positive and real as long as the within-group scattering cross-section is positive. According to the Perron-Frobenius Theorem~\cite{perron-frobenius}, square matrices of all positive real entries have a unique largest real eigenvalue which is dominant and associated with an everywhere positive eigenvector. In addition, all other eigenvectors must have a negative component. Without transport correction, the iteration matrix $A$ is an all positive and real matrix, implying that the largest eigenvalue is 1.0 and is associated with the physical solution. Therefore, the process detailed in Eq.~\ref{eq:power-method-full-source} will converge to the physical solution.
 
-This chapter concludes by evaluating the results presented in this thesis with respect to this over-arching objective, and by defining a roadmap of the milestones which must be addressed in the future to design a production-ready methodology for \ac{MC}-based reactor agnostic fine-mesh \ac{MGXS} generation. The key results demonstrated by this thesis are discussed in Sec.~\ref{sec:chap12-conclusions}, the author's contributions to the field of reactor physics are outlined in Sec.~\ref{sec:chap12-contributions}, and opportunities for future research are summarized in Sec.~\ref{sec:chap12-future-work}.
+However, with the transport correction, it is possible to have negative within-group scattering causing this criteria not to hold. If this criteria does not hold, the system might still converge, but convergence cannot be guaranteed under the Perron-Frobenius Theorem. Therefore, the iteration scheme should be updated to ensure convergence. 
 
-%-notes from bryan's thesis conclusions
-%  -conclusions
-%    -first sentence: something that i did
-%    -remaining sentences: summarize / quantify conclusions
-%    -final sentence: what does it all mean / impact statement
-%  -future work
-%    -break up into multiple sections
-%    -first sentence: problem / approximation
-%    -remaining sentences: how this impacted my results
-%    -final sentence: possible solutions  
+\section{Stabilization of Source Iteration}
+\label{sec:diagonal-stabilization}
 
-%-look at my executive summary - perhaps include a one-page summary of bullets???
+Note that Eq.~\ref{eq:damped-transport} is a mathematically valid rewriting of Eq.~\ref{eq:si-transport} for \textit{any matrix} $D$ where $I+D$ is invertible. 
+\begin{equation}
+	\boldsymbol{\phi} = (I+D)^{-1} J \left(\frac{1}{k} F + S + D\right) \boldsymbol{\phi}
+	\label{eq:damped-transport}
+\end{equation}
+Next, the same source iteration scheme is applied where the left hand side is updated with the right hand side constant. Since $I+D$ needs to be easily invertible for this new scheme to be efficient, $D$ is chosen to be diagonal. The convergence discussion then follows the same discussion as before except the new iteration matrix  now has the form $\tilde{A} = (I+D)^{-1} J \left(\frac{1}{k_{\textit{crit}}} F + S + D\right)$  with the matrix $\tilde{A}$ is described by
+\begin{equation}
+	\tilde{A}_{(i,g), (j, g')} = \frac{1}{1 + D_{(i,g), (i,g)}}\left[P_{ij}^g \left(\frac{\chi_{j,g} \nu\Sigma_{f,j,g'} / k_{\textit{crit}} + \Sigma_{s,j}^{g' \rightarrow g}}{\Sigma_{\textit{tr}, j, g}}\right) + D_{(i,g), (j, g')}\right]
+	\label{eq:a-tilde}
+\end{equation}
+where the rows and columns are again indexed by region, energy group pairs. The diagonal elements of $D$ are chosen to be:
+\begin{equation}
+	D_{(i,g), (i,g)} = \left\{\begin{array}{lr}
+		\frac{-\rho \Sigma_{s,i}^{g \rightarrow g}}{\Sigma_{\textit{tr}, i, g}} , & \text{for } \Sigma_{s,i}^{g \rightarrow g} < 0\\
+		0, & \text{otherwise}
+	\end{array}\right.
+	\label{eq:d-matrix}
+\end{equation}
+where the damping coefficient $\rho$ is a positive value chosen by the user. For $\rho = 1$, the diagonal update ensures that there are no negative diagonal elements in the iteration matrix. The diagonal stabilization scheme has the effect of shifting the iteration matrix eigenvalues to be more positive. The intuition for this shift is due to the Gershgorin Disk Theorem where eigenvalues exist in disks around diagonal elements. Since the diagonal elements are positively increased and all matrix elements are contracted, the Gershgorin Disks are likewise shifted positively with their radii contracted. While this improves stability, it also tightens the positive-eigenvalue modes, causing larger dominance ratios in the iteration matrix, and slower convergence. Therefore, $\rho$ should be chosen to be small while still ensuring convergence. 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Summary of Work}
-%\label{sec:BOO-conclusions}
+\section{Convergence Results}
+\label{sec:convergence-results}
 
-This thesis replaces the traditional multi-level framework used for \ac{MGXS} generation with a single full-core MC calculation, as summarized in Sec.~\ref{subsec:chap12-single-step}. Sec.~\ref{subsec:chap12-approx-error} highlights results which quantify different sources of approximation error in multi-group methods with \ac{MGXS} generated by \ac{MC}. The clustering of pin-wise \ac{MGXS} due to spatial self-shielding effects is recapped in Sec.~\ref{subsec:chap12-mgxs-clustering}. Finally, Sec.~\ref{subsec:chap12-homogenization-schemes} reviews the performance of new pin-wise spatial homogenization schemes which model \ac{MGXS} clustering.
+In order to test the convergence behavior of the stabilization methods, the stabilization methods were implemented in OpenMOC~\cite{openmoc}, a \ac{MOC} neutron transport solver. In particular, this analysis will focus on the 3D \ac{MOC} solver~\cite{openmoc-3dmoc} which has recently proven the ability to solve full core \ac{PWR} problems~\cite{openmoc-beavrs}. The cross-sections used in this analysis are generated using the OpenMC MGXS framework~\cite{will} which uses tallied Monte Carlo reaction rates to form cross-sections.
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{A Single-Step Approach for MGXS Generation}
-%\label{subsec:chap12-single-step}
+The transport correction for most materials in this analysis is taken from the P0-corrected OpenMC MGXS tallies. However, the water transport correction, which is the most vital to obtaining accurate results, uses the CASMO methodology~\cite{casmo-xs} which has recently been outlined for pure hydrogen~\cite{johnny}.
 
-Today's state-of-the-art methods for \ac{MGXS} generation use a multi-level approach in space, energy and angle to account for self-shielding effects while approximating the flux used to collapse cross sections (see Sec.~\ref{subsec:chap2-mgxs-lib-std-approach}). The flux approximations used in multi-level schemes are based on engineering prescriptions for specific reactor configurations and spectra and are not easily generalizable to new core designs. In addition, \ac{MC}-based \ac{MGXS} generation methods to date have retained the multi-level geometric framework to tabulate MGXS for individual reactor components for subsequent use in full-core multi-group calculations. Although the use of MC within a multi-level scheme eliminates the need to approximate the flux in energy, it does not account for spatial self-shielding effects throughout a reactor core. This thesis replaces the multi-level framework with a full-core \ac{MC} calculation that simultaneously accounts for all energy and spatial effects with a single simulation of the complete heterogeneous geometry.
+This section focuses on results for realistic reactor physics problems. All results use the 3D \ac{MOC} solver of OpenMOC with 32 azimuthal angles, 0.1 cm radial ray spacing, 6 polar angles (Gauss-Legendre quadrature), and 1.5 cm axial ray spacing. While finer \ac{MOC} parameters would be necessary to accurately the solution, the convergence has not been observed to change substantially from refining \ac{MOC} parameters beyond these values. The source region mesh for all problems has 4 sectors in fuel and 8 sectors in the moderator for pin-cells. All source regions are 2.0 cm tall. 
 
-This work required the development of a ``simulation triad'' encompassing three primary simulation codes. The OpenMC Monte Carlo code was utilized to generate multi-group cross sections on high-spatial-fidelity tally meshes. Second, the OpenMOC code used \ac{MGXS} for deterministic multi-group transport calculations. Finally, the OpenCG library enabled the processing and transfer of tally data on combinatorial geometry meshes between OpenMC and OpenMOC. The simulation triad directly modeled all energy and spatial self-shielding effects with a single full-core OpenMC calculation of the complete heterogeneous geometry to generate \ac{MGXS} for use in OpenMOC.
+\subsection{Single Assembly with Axial Water Reflectors}
+\label{sec:sa-axial-ref}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Approximation Error in Multi-Group Methods}
-%\label{subsec:chap12-approx-error}
+While OpenMOC is capable of solving full core \ac{PWR} problems, this analysis will start by focusing on a 3D single assembly model, which is computationally less expensive, in order to observe longer iteration histories. The single assembly model is 400 cm in axial height with an active fuel height of 366 cm and an assembly pitch of 21.42 cm. It is simulated with vacuum boundaries in the axial directions and reflective boundaries in the radial directions. The assembly incorporates the full geometric detail, including grid spacers. Outside the core, full geometrical detail is also captured including support plate nozzles and, most notably, water reflectors of approximately 20 cm above and below the fuel.
 
-This thesis investigated approximation error present in multi-group solutions even when the ``true'' flux from \ac{MC} is used to collapse cross sections for \ac{MGXS} generation. The case studies presented in Chap.~\ref{chap:biases} quantified the eigenvalue bias between OpenMC and OpenMOC by separately varying the angular discretization, flat source region discretization and energy group structure while holding all other variables constant. A systematic bias on the order of -300 \ac{pcm} was demonstrated for a representative 2D \ac{PWR} fuel pin cell with converged angular and spatial discretization schemes and 70-group cross sections. The iso-in-lab scattering feature was employed in OpenMC to enable direct comparisons with OpenMOC which assumes an isotropic scattering source, but this only mitigated the bias by approximately 100 \ac{pcm}. The remaining -200 \ac{pcm} was shown to be caused by over-predictions of U-238 capture rates in resonance energy groups. As the energy group structures were refined, the errors were magnified for those energy groups encompassing the three lowest lying U-238 capture resonances.
+To analyze the convergence behavior, an error metric is needed. Usually, error is analyzed in terms of RMS error in the fission distribution over all fissile regions.  This requires a having a reference solution to be the fission distribution of tightly converged case. 
 
-%-Surprisingly, the bias grew in magnitude (but decreased in value) with more energy groups.
-%-the eigenvalue bias varied substantially with the \ac{FSR} discretization, but was invariant to the spatial tally mesh used to generate \ac{MGXS}. 
-%-largest for interior zones of fuel pin, smallest for outer rim of fuel pin nearest to the clad/moderator
 
-In collaboration with Gibson~\cite{gibson2016thesis}, the U-238 capture rate errors and resulting eigenvalue bias were demonstrated to be the result of the flux separability approximation (Sec.~\ref{subsec:chap2-angle}) which permits the use of constant-in-angle \ac{MGXS}. In particular, it was shown that the flux separability approximation is not generally valid for U-238 capture since the angular neutron flux leaving a fuel pin is much more self-shielded in resonance groups than it is for the neutron flux entering the fuel pin from the moderator. Since the angular dependence of \ac{MGXS} is not typically modeled in deterministic multi-group transport codes, an equivalence scheme is needed to correct for the loss of angular information when cross sections are collapsed with the scalar rather than the angular flux. 
+\subsubsection{Source Iteration Convergence without CMFD Acceleration}
 
-Chap.~\ref{chap:sph} explored the use of SuPerHomog\'{e}n\'{e}isation (SPH) factors as one possible equivalence scheme to enforce reaction rate preservation between OpenMC and OpenMOC. The \ac{SPH} factor approach uses a reference fixed source to correct the total \ac{MGXS} to preserve reaction rates between fine and coarse mesh methods. The \ac{SPH} factors systematically eliminated the few percent reaction rate errors in U-238 resonance groups, and correspondingly reduced the eigenvalue bias from -200 \ac{pcm} to approximately 10 \ac{pcm}. In particular, the \ac{SPH} factors reduced the total \ac{MGXS} in resonance groups by 1 -- 3\% to resolve errors of the same magnitude in each of the lowest lying U-238 capture resonance groups. Notwithstanding these results, it is unclear if a generalizable scheme based upon \ac{SPH} factors may be used to correct for the flux separability approximation. Future work should further investigate equivalence methods which adequately preserve reaction rates in fine-mesh transport methods with \ac{MC}-generated \ac{MGXS}.
+The single assembly model is first analyzed using pure source iteration, without any \ac{CMFD} acceleration. In order to focus on the asymptotic convergence behavior, rather than the behavior far from convergence, the \ac{MOC} simulations start with a \textit{good guess} of the scalar flux distribution. Specifically, a converging simulation where the error drops below $3\times 10^{-5}$ on RMS fission rate error is chosen as the starting point.
 
-%-depending on energy group structure and \ac{FSR} discretization
+The convergence behavior is presented in Figure~\ref{fig:no-cmfd} in which the relative error is plotted as a function of iteration number for a variety of stabilizing schemes.
+\begin{figure}[ht!]
+	\centering
+	\includegraphics[width=1.0\linewidth]{figures/convergence/no_cmfd.png}
+	\caption{Convergence behavior of different stabilization schemes. TY Stabalization refers to the approach presented by Tabuchi, et. al~\cite{ty-solution} whereas Diagonal Stabilization refers to the approach presented in this paper with damping coefficient $\rho$.}
+	\label{fig:no-cmfd}
+\end{figure}
+Notice that the case without stabilization diverges while all the stabilization cases converge except for the new diagonal stabilization scheme with damping factor $\rho = 1/128$. This is expected since as $\rho$ approaches zero as the stabilization method becomes equivalent to source iteration without stabilization. This clearly shows that this problem requires stabilization to converge with source iteration. In addition, the more conservative the stabilization scheme, the more convergence is slowed. The scheme proposed by Tabuchi slows convergence the most. The diagonal damping scheme hinders convergence significantly less, especially for $\rho < 1$. 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Clustering of Pin-Wise MGXS}
-%\label{subsec:chap12-mgxs-clustering}
+\subsubsection{Convergence with CMFD Acceleration}
 
-This thesis explored the dispersion and clustering of pin-wise \ac{MGXS} due to the spatial self-shielding spectral effects in heterogeneous single assembly benchmarks, 2$\times$2 assembly colorsets and a quarter core model of the \ac{BEAVRS} \ac{PWR} geometry. The results in Chap.~\ref{chap:spatial} demonstrated that the population variance of pin-wise \ac{MGXS} increases with the introduction of geometric heterogeneities such as control rod guide tubes (CRGTs), burnable poisons (BPs) and water reflectors. The magnitude of the dispersion depended on the sensitivity of each nuclide, reaction type and energy group to spatial self-shielding effects. Furthermore, the distributions of pin-wise \ac{MGXS} plotted as histograms illustrated the clustering of \ac{MGXS} in fuel pins with similar neighboring heterogeneities, and hence similar spatially self-shielded flux spectra. Although U-235 thermal fission \ac{MGXS} exhibited more clearly defined clusters than U-238 capture \ac{MGXS}, the U-238 capture \ac{MGXS} varied by up to 1.8\% about the population mean while U-235 fission \ac{MGXS} varied by only 1.2\% about the mean. These results indicate that \ac{MGXS} clustering is more challenging to identify but more important to model for accurate U-238 capture rates than for U-235 fission rates.
+Often \ac{CMFD} acceleration is necessary to achieve reasonable convergence on practical reactor physics problems. \ac{CMFD} acceleration is implemented in OpenMOC with damping on the current correction term~\cite{smith_cmfd}, often termed the \ac{CMFD} relaxation factor. When \ac{CMFD} acceleration is applied, the behavior is much more difficult to analyze since \ac{CMFD} is a non-linear process. Therefore, discussion of \ac{CMFD} results will focus on hypotheses to explain the observed results rather than rigorous analysis. In this study, the \ac{CMFD} mesh is always chosen to be a uniform mesh with cells of pin-cell pitch in the radial dimensions and 2.0 cm in the axial dimension. In addition, a relaxation factor of 0.7 is applied to the \ac{CMFD} acceleration scheme for computing corrected diffusion coefficients. 
 
-%The distributions of pin-wise \ac{MGXS} were highly dependent on the specific reactor configuration.
+Many \ac{CMFD} implementations choose to collapse to a fewer number of energy groups in order to improve the speed of the CMFD solver. While the CMFD equations are computationally less expensive in collapsed few-group structures, it is possible that collapsing group structures could cause slower convergence by not fully resolving spectral effects. In this study, a variety of \ac{CMFD} group structures are presented. While the \ac{MOC} calculation always uses a 70 group structure, \ac{CMFD} group structures are formed with $G_C$ \ac{CMFD} groups, with group ranges taken from the CASMO 4 Manual~\cite{casmo-xs}.
 
-This thesis performed a series of case studies to investigate the impact of modeling (or neglecting) the clustering of pin-wise \ac{MGXS} due to spatial self-shielding effects\footnote{Although all spatial zones may experience spatial self-shielding, this thesis specifically modeled the impact of spatial self-shielding on MGXS in fissile materials.}. The null and degenerate pin-wise spatial homogenization schemes were designed to quantify the magnitude of the approximation error in deterministic methods that can be resolved by accounting for \ac{MGXS} clustering. Both schemes use a single \ac{MC} calculation of the complete heterogeneous geometry to collapse MGXS with the ``true'' flux. Null homogenization simply assigns all fuel pins to the same \ac{MGXS} cluster and averages all spatial self-shielding effects across the entire geometry. The null scheme makes no effort to account for spatial self-shielding effects experienced by different fuel pins, and computes a single \ac{MGXS} for each fuel enrichment. Degenerate spatial homogenization takes the opposite approach and assigns each fuel pin its own \ac{MGXS}, and is equivalent to modeling each fuel pin as a unique \ac{MGXS} cluster. The degenerate scheme accounts for all spatial self-shielding effects experienced by each instance of each fuel pin throughout a heterogeneous geometry. Although degenerate homogenization is more accurate than null homogenization, it requires many more \ac{MC} particle histories to converge the uncertainties on the \ac{MGXS} tallied separately for each fuel pin.
+The results with \ac{CMFD} applied and \textit{without} any \ac{MOC} source iteration stabilization are shown in Figure~\ref{fig:sa-cmfd-no-stab} for a variety of \ac{CMFD} group structures with the error once again relative to a tightly converged reference.
+\begin{figure}[ht!]
+	\centering
+	\includegraphics[width=0.65\linewidth]{figures/convergence/sa_no_stab_cmfd.png}
+	\caption{Convergence behavior for a variety of \ac{CMFD} group structures with $G_C$ \ac{CMFD} groups and \textit{without} \ac{MOC} source iteration stabilization.}
+	\label{fig:sa-cmfd-no-stab}
+\end{figure}
+As expected, most of the convergence histories have trouble converging. This is likely due to the convergence issue observed with pure source iteration. However, the 70 group \ac{CMFD} scheme appears to be stable. It is important to remember that the \ac{CMFD} equations do not suffer from the issue of a negative dominant eigenvalue in the source iteration scheme since since they solve an alternate form of the original eigenvalue system with standard eigenvalue solver techniques. 
 
-A series of OpenMOC simulations were performed in Chap.~\ref{chap:quantify} with 70-group \ac{MGXS} libraries prepared by the null and degenerate spatial homogenization schemes for six heterogeneous \ac{PWR} benchmarks to measure the impact of \ac{MGXS} clustering on deterministic calculations. In each case, the OpenMOC eigenvalue, pin-wise fission rate and U-238 capture rate predictions were compared with reference OpenMC results\footnote{The case studies were performed for 2-, 8- and 70-group cross sections. The results cited in this chapter correspond to the 70-group calculations since the fine group structure was necessary to resolve OpenMOC's U-238 capture rate predictions to within 2\% of the reference OpenMC results. }. The OpenMOC eigenvalues were within 100 -- 250 \ac{pcm} of the reference OpenMC eigenvalues for all six benchmarks. More importantly, the effect of \ac{MGXS} clustering had no impact on the eigenvalue predictions since null and degenerate homogenization use the same \ac{MC} flux to collapse the cross sections and therefore preserve global reaction rates. The effects of \ac{MGXS} clustering only marginally impacted the OpenMOC fission rates errors which were <2\% for all six benchmarks\footnote{The degenerate homogenization fission rate errors were 5 -- 20\% less than those for null homogenization.}.
+If 70 group \ac{CMFD} is driving the convergence process, then the instability in the underlying source iteration technique might be overcome by the \ac{CMFD} acceleration prolongation update in which \ac{MOC} scalar fluxes are updated with the \ac{CMFD} solution. One way of interpreting this behavior is to think of the convergence as being dominated by the \ac{CMFD} acceleration where \ac{MOC} transport sweeps are used purely to resolve local behavior, integrate reaction rates to form \ac{CMFD} cross-sections, and tally currents crossing \ac{CMFD} mesh surfaces. 
 
-The U-238 capture rate errors were much more sensitive to \ac{MGXS} clustering than the fission rates. The degenerate homogenization scheme reduced the errors by 2 -- 4$\times$ with respect to the null scheme for each of the single assembly and colorset benchmarks, approaching the same error magnitude as that observed for the fission rates. The errors for the null scheme were largest for fuel pins near control rode guide tubes and along inter-assembly and assembly-reflector interfaces. The degenerate homogenization scheme reduced the errors for these pins since it accounts for spatial self-shielding spectral effects, such as the additional moderation provided by neighboring control rod guide tubes and/or water reflectors. These results indicate that the U-238 capture rate errors in deterministic multi-group calculations of \acp{PWR} are largely dominated by the approximation(s) made to model pin-wise \ac{MGXS} clustering.
+However, with a reduced \ac{CMFD} group structure, the flux distribution in energy within a single \ac{CMFD} group \textit{must} be resolved by the \ac{MOC} source iteration process unless an effective energy interpolation can be formed during the \ac{CMFD} prolongation stage. Since the underlying \ac{MOC} source iteration process is unstable, any reliance on the process for convergence using a reduced group structure should lead to instability.
 
-A large fraction of the fissions that occur in \ac{LWR} fuel at the end-of-life occur in the Pu-239 that is bred from U-238 capture reactions. As a result, accurate, high-spatial-fidelity fission rate predictions are limited by the accuracy of the U-238 capture rate predictions in burn-up calculations. The results presented in this thesis underscore the importance of modeling \ac{MGXS} clustering in order to predict Pu-239 production and therefore fission rates over time. This is important not only for \acp{LWR}, but also for advanced reactor concepts that are designed to convert sizable amounts of U-238 to Pu-239 for consumption. In general, \ac{MGXS} clustering is important to model in reactors with a complex configuration of absorbing (\textit{e.g.}, control) and/or moderating materials and relatively short neutron mean free paths (\textit{i.e.}, thermal reactors) such that geometric heterogeneities shield the localized flux throughout the reactor.
+\subsubsection{Convergence with CMFD Acceleration and Source Iteration Stabilization}
 
-%\footnote{\ac{MGXS} clustering may be less important for fast spectrum reactors with large neutron mean free paths since the local flux is relatively insensitive to spatial self-shielding spectral effects.}.
+To verify that the convergence issue can be remedied with \ac{MOC} source iteration stabilization, the same test is conducted but using diagonal stabilization with $\rho = 1/4$. For pure source iteration, this scheme was able to stabilize source iteration, as previously shown in Figure~\ref{fig:no-cmfd}. The results using this stabilization with \ac{CMFD} acceleration are shown in Figure~\ref{fig:sa-cmfd-stab}. As expected, the \ac{MOC} source iteration stabilization fixes the convergence issues for all \ac{CMFD} group structures, indicating that the convergence issue was caused by the underlying \ac{MOC} source iteration.
+\begin{figure}[ht!]
+	\centering
+	\includegraphics[width=0.65\linewidth]{figures/convergence/sa_stab_cmfd.png}
+	\caption{Convergence behavior for a variety of \ac{CMFD} group structures with $G_C$ \ac{CMFD} groups and \textit{with} Diagonal \ac{MOC} source iteration stabilization ($\rho = 1/4$).}
+	\label{fig:sa-cmfd-stab}
+\end{figure}
 
-%In particular, \ac{MGXS} clustering is an important phenomenon to model for advanced reactors with relatively short neutron mean free paths (\textit{i.e.}, thermal reactors) such that geometric heterogeneities shield the localized flux to varying degrees throughout the reactor.
+\subsection{Single Assembly without Axial Water Reflectors}
+\label{sec:sa-no-axial-ref}
 
-%These results are important since U-238 capture rates must be accurately calculated to predict Pu-239 production over time. 
+Next, the same single assembly model is studied but without the axial water reflectors. Vacuum boundary conditions are placed at the top and bottom of the active fuel. All other geometric and material data is unchanged. This model is run \textit{without} source iteration stabilization. The results with \ac{CMFD} acceleration for a variety of \ac{CMFD} group structures are presented in Figure~\ref{fig:truncated-convergence}.
+\begin{figure}[ht!]
+	\centering
+	\includegraphics[width=0.65\linewidth]{figures/convergence/sa_trunc_no_stab.png}
+	\caption{Convergence behavior for the single assembly \textit{without} axial reflectors with a variety of \ac{CMFD} group structures with $G_C$ \ac{CMFD} groups and \textit{without} \ac{MOC} source iteration stabilization.}
+	\label{fig:truncated-convergence}
+\end{figure}
+Notice that the convergence issues are not present in this model. This indicates the issue is caused by the axial water reflectors. More generally, it appears to be a problem with deep water reflectors that have negative cross-sections. Recall from the theory discussion that iteration matrix components in Eq.~\ref{eq:a-matrix} were formed with the product of collision probability and self-scattering cross-sections. In deep water reflectors, the probability of transport between water regions containing negative cross-sections is significantly higher than in the active fuel where many neutrons collide with fuel. This motivates the idea of neutron behavior in deep reflectors causing the instability. 
 
-%-degenerate scheme ``smooths'' U-238 capture rates (i.e., reduces largest errors)
+\subsection{Full Core Behavior}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Pin-Wise Spatial Homogenization Schemes}
-%\label{subsec:chap12-homogenization-schemes}
+The previous results were focused on a single assembly with and without axial reflectors which proved the existence of source iteration instability. Since this issue seems to only appear at very low errors, the reader might judge this issue to be purely academic. However, for problems where deeper reflectors exist, such as a typical full core \ac{PWR} problem, this issue is exacerbated. In this last results section, the full core \ac{BEAVRS} benchmark is simulated using the same cross-section set applied in the single assembly studies. 
 
-Although the degenerate scheme greatly reduces U-238 capture rate errors by accounting for \ac{MGXS} clustering, it is computationally expensive to converge the \ac{MC} tallies since the particle track densities in each spatial tally zone is quite small. This thesis developed two new pin-wise spatial homogenization schemes which aim to strike a balance between accuracy and computational efficiency by accounting for \ac{MGXS} clustering to accelerate the convergence of the \ac{MGXS} tallies in each fine-spatial-mesh tally zone. The two new schemes are motivated by the idea that fuel pins with similar neighboring heterogeneities will have similar microscopic \ac{MGXS}. In particular, these schemes aim to approach the accuracy of the degenerate scheme by accounting for spatial self-shielding effects, while simultaneously approaching the \ac{MC} convergence of the null scheme by homogenizing over as many spatial tally zones (\textit{i.e.}, fuel pins) as possible.
+The model is again 400 cm in axial height with an active fuel height of 366 cm. The model extent in the radial plane is the size of $17\times 17$ assembly widths with each assembly again having a width of 21.54 cm. Since the \ac{BEAVRS} model only has 15 assemblies on the major axis, the model guarantees at least one assembly width of water reflector outside the core in every direction. Since the simulated geometry is square in the radial plane, the corners have very deep water reflectors. In general, vacuum boundaries are assumed on all surfaces. The geometry outside the core is radially discretized into square regions of length equal to $1/3$ of the pin-cell pitch (which is 1.26 cm).
 
-%-need to homogenize across many fuel pins to reduce the MGXS statistical uncertainties and batchwise deviations
+\subsubsection{2D Extruded Model}
 
-This thesis proposes both engineering-based clustering and statistical clustering methods to accelerate the convergence of full-core \ac{MC} calculations for \ac{MGXS} generation. Local Neighbor Symmetry (LNS) spatial homogenization (Chap.~\ref{chap:spatial}) is an engineering-based approach which clusters \ac{MGXS} based on a nearest neighbor analysis of the fuel pins in a combinatorial geometry. The \ac{LNS} scheme is akin to geometric templates employed by some lattice physics codes to predict which groupings of fuel pins are likely to experience similar spatial self-shielding effects and hence have similar \ac{MGXS}. The MGXS are homogenized from ``noisy'' \ac{MC} tally data across all pins within the same \ac{LNS} grouping. Inferential \ac{MGXS} (\textit{i}\ac{MGXS}) spatial homogenization (Chap.~\ref{chap:unsupervised}) uses statistical clustering algorithms to infer \ac{MGXS} clusters directly from ``noisy'' \ac{MC} tally data. Unlike the \ac{LNS} scheme, the \textit{i}\ac{MGXS} has no knowledge of a reactor's geometric or materials configuration and instead relies on unsupervised machine learning techniques to determine which fuel pins to cluster in spatial homogenization zones. The \textit{i}\ac{MGXS} scheme is a multi-stage data processing pipeline and includes feature extraction, feature selection, dimensionality reduction, predictor training, model selection and spatial homogenization stages. Both \ac{LNS} and \textit{i}\ac{MGXS} homogenization schemes attempt to model \ac{MGXS} clustering with fewer materials than degenerate homogenization in order to accelerate the \ac{MC} tally convergence rate by homogenizing \ac{MGXS} across many fuel pins.
+Before simulating the explicit 3D model, a 2D extruded model is constructed to observe the convergence behavior. This model takes a radial slice of the core that does not contain grid spacers and extruded the slice 10 cm in the axial direction, applying reflective boundaries on the top and bottom. This essentially converts the 3D problem into a 2D problem. Still, the problem is solved using the 3D \ac{MOC} solver. The results are shown in Figure~\ref{fig:fc-2D}. 
+\begin{figure}[ht!]
+	\centering
+	\includegraphics[width=0.65\linewidth]{figures/convergence/fc_2D.png}
+	\caption{Convergence behavior of \ac{CMFD} group structures with $G_C$ \ac{CMFD} groups and Diagonal \ac{MOC} source iteration stabilization with stabilization coefficient $\rho$.}
+	\label{fig:fc-2D}
+\end{figure}
+The simulation is run with 8 group and 70 group \ac{CMFD} with Diagonal Stabilization. The damping coefficient $\rho$ is chosen for both cases to be zero (equivalent to no stabilization) and $1/4$. For all reduced \ac{CMFD} group structures, similar results are observed as seen with the 8 group \ac{CMFD} structure in Figure~\ref{fig:fc-2D} in which reasonable convergence can only be obtained by applying the \ac{MOC} diagonal stabilization.
 
-%The \textit{i}\ac{MGXS} scheme can flexibly accommodate arbitrary core heterogeneities better than heuristic approaches like \ac{LNS} which must be customized for particular core geometries. In addition, the \textit{i}\ac{MGXS} scheme accelerates the convergence rate of MGXS tallied with MC with respect to the degenerate and \ac{LNS} schemes since it homogenizes MC tallies across many more fuel pins.
+\subsubsection{Explicit 3D Model}
 
-% However, the \ac{LNS} algorithm fails to predict spatial self-shielding effects in arbitrary core geometries, such as those that occur at assembly-assembly and assembly-reflector interfaces. These shortcomings motivate the need for an unsupervised approach to accurately and scalably predict MGXS clustering.
+Now the full core 3D model is simulated. Since the problem is large, current results use only 4 azimuthal angles and 2 polar angles for the \ac{MOC} angular quadrature. These parameters are very coarse, but still exhibit the convergence issue. For the final submission after edits, 3D results will be displayed for the quadrature with 32 azimuthal angles and 6 polar angles. Since the run time with coarse angles can become dominated by the \ac{CMFD} solution time, it is infeasible to use 70 \ac{CMFD} groups. Therefore, results are presented only for a reduced 8 group \ac{CMFD} structure. The results are shown in Figure~\ref{fig:fc-3D} both with and without using the Diagonal Stabilization technique with $\rho = 1/4$. 
 
-The efficacy of the \ac{LNS} and \textit{i}\ac{MGXS} schemes to identify \ac{MGXS} clusters was evaluated for each of the six heterogeneous \ac{PWR} benchmarks. The ``clustered geometries'' for the \ac{LNS} scheme illustrate the method's ability to distinguish fuel pins with neighboring \acp{CRGT} and/or \acp{BP}, but its inability to distinguish fuel pins at the interfaces with neighboring assemblies, reflectors or baffles. In contrast, the \textit{i}\ac{MGXS} scheme distinguished pins with similar neighboring \acp{CRGT} and/or \acp{BP}, and subsequently distinguished pins along interfaces into unique clusters. In general, the clustered geometries indicate that \textit{i}\ac{MGXS} scheme can flexibly accommodate arbitrary core heterogeneities better than heuristic approaches like \ac{LNS} which must be customized for particular core geometries.
+\begin{figure}[ht!]
+	\centering
+	\includegraphics[width=0.65\linewidth]{figures/convergence/full-core-3D.png}
+	\caption{Convergence behavior the full core \ac{BEAVRS} benchmark with and without Diagonal Stabilization ($\rho = 1/4$).}
+	\label{fig:fc-3D}
+\end{figure}
 
-A series of OpenMOC simulations were performed with \ac{MGXS} libraries prepared by the \ac{LNS} (Chap.~\ref{chap:spatial}) and \textit{i}\ac{MGXS} (Chap.~\ref{chap:results}) spatial homogenization schemes. As expected, the eigenvalues predicted by both schemes were nearly identical (to within 10 \ac{pcm}) since both schemes preserve global reaction rates. Although fission rates are only marginally impacted by \ac{MGXS} clustering, the predictions with the \ac{LNS} and \textit{i}\ac{MGXS} schemes were very nearly as accurate as those for the degenerate scheme. Most importantly, the U-238 capture rate errors approached those for the degenerate scheme to varying degrees for both schemes. The \ac{LNS} scheme performed as well the degenerate scheme for the single assembly benchmarks, but failed to systematically reduce the largest errors in the pins along inter-assembly and assembly-reflector interfaces. The \textit{i}\ac{MGXS} scheme largely reduced the U-238 capture rate errors with just a few clusters with relatively diminishing returns for more clusters. The \textit{i}\ac{MGXS} scheme required more materials (\textit{i.e.}, clusters) than \ac{LNS} to achieve the same accuracy for single assembly benchmarks. However, \textit{i}\ac{MGXS} outperformed \ac{LNS} for those benchmarks with inter-assembly and assembly-reflector interfaces, since it assigned unique \ac{MGXS} to the fuel pins along the interfaces to account for the local spatially self-shielded flux spectra.
+These results show that for the 3D full core \ac{PWR} problem, a stabilization technique is necessary in order to reach any reasonable convergence, especially when it is computationally infeasible to use a many-group \ac{CMFD} solver.
 
-%The convergence analysis was performed for the single assembly and 2$\times$2 colorset benchmarks, but was not performed for the quarter core \ac{BEAVRS} model due to computational constraints.
+\section{Conclusion}
 
-In addition, the simulations were performed to quantify the number of \ac{MC} particle histories required to sufficiently converge the \ac{MGXS} for stable OpenMOC solutions with each pin-wise spatial homogenization scheme. The eigenvalues for the null, degenerate, \ac{LNS} and \textit{i}\ac{MGXS} schemes converged to the same value with approximately 10$^{8}$ particle histories. As expected, the pin-wise U-238 capture rates converged in accordance with the number of clusters used in each pin-wise spatial homogenization scheme. In particular, the capture rates for the null scheme quickly converged with only 10$^{6}$ histories, but were still not yet fully converged for degenerate homogenization even with 10$^{9}$ histories. In contrast, the \ac{LNS} and \textit{i}\ac{MGXS} schemes converged faster than the degenerate scheme since they averaged the \ac{MGXS} tallied for the pins assigned to each cluster. Furthermore, both schemes converged faster than the statistical uncertainties of the corresponding reference OpenMC calculation. The magnitude of the acceleration achieved by both schemes depends on both the number of clusters required to meet the desired level of accuracy, as well as the number of fuel pins assigned to each cluster\footnote{The error convergence is limited by the number of pins assigned to the smallest \ac{MGXS} cluster. The pins adjacent to the baffle/reflector -- which exhibited the largest U-238 capture rate errors -- comprised the smallest clusters in each benchmark and were the most limiting to the overall convergence.}. The mean capture rate rate errors converged 4 -- 30$\times$ faster than the degenerate scheme and 2 -- 10$\times$ faster than the OpenMC reference solution uncertainties for the benchmarks considered in this thesis.
+In this study, a theoretical analysis of source iteration convergence was presented which showed the possibility for source iteration instabilities. The theory was broadened to include source iterations without inner iterations. A new diagonal stabilization technique was presented which is substantially less conservative than previously proposed techniques. Realistic reactor physics problems were presented that showed instability with the source iteration process. The diagonal stabilization technique was shown to successfully stabilize the source iteration process without having much impact on convergence rate.
 
-%, though more histories may be needed for larger geometries (\textit{e.g.}, \ac{BEAVRS})
-
-% -but with so few pins assigned to the cluster, the track density and therefore acceleration is minimal
-% The eigenvalues fluctuated within 500 \ac{pcm} of the converged mean for fewer histories.
-
-These results demonstrate a path forward to generate \ac{MGXS} with reactor agnostic \ac{MC} for computationally efficient deterministic transport codes. This thesis replaced traditional multi-level \ac{MGXS} generation schemes with \ac{MC} calculations of the complete heterogeneous geometry to generate reactor agnostic \ac{MGXS} in a single step. Engineering-based and statistical clustering algorithms were developed to model the clustering of pin-wise \ac{MGXS} to reduce the U-238 capture rate errors while simultaneously accelerating the convergence of the tallied \ac{MGXS}. The \ac{LNS} and \textit{i}\ac{MGXS} schemes enabled deterministic reactor physics simulations to produce accurate results from \ac{MGXS} generated by \ac{MC} faster than would be possible with a direct calculation with \ac{MC}. Furthermore, the \textit{i}\ac{MGXS} scheme was shown to be advantageous over geometric heuristic approaches such as \ac{LNS} which must be highly customized for specific types of core geometries.
-
-%  -\ac{LNS} requires 400+ of materials to model 12,000+ fuel pin instances in \ac{BEAVRS}
-%    -analysis of geometry is based on cell/universe/lattice IDs
-
-%-iMGXS accounts for spatial self-shielding spectral effects without engineering heuristics based on the reactor core configuration.
-
-\clearpage
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Contributions}
-%\label{sec:chap12-contributions}
-
-%-itemize which approximation errors were investigated
-%  -MOC: angular discretization, \ac{FSR} discretization, energy discretization
-%  -MGXS: isotropic in lab approximation, energy discretization, spatial homogenization zones (by FSR within each pin, across many ``clustered pins'')
-
-%\item Developed \ac{LNS} and \textit{i}\ac{MGXS} pin-wise spatial homogenization schemes to account for spatial self-shielding effects on the \ac{MGXS} in each fuel pin while simultaneously accelerating \ac{MC} tally convergence.
-
-\begin{emphbox}
-\begin{itemize}
-\item Generated \ac{MGXS} with a single \ac{MC} simulation of a complete heterogeneous reactor geometry for use in fine-mesh deterministic transport calculations.
-\item Implemented a simulation triad that generated \ac{MGXS} with OpenMC, used \ac{MGXS} in deterministic OpenMOC calculations, and transferred \ac{MGXS} between codes and built clustered geometries with OpenCG.
-\item Explored \ac{SPH} factors as an equivalence scheme between continuous energy \ac{MC} and multi-group \ac{MOC} methods and to correct for approximation error resulting from constant-in-angle \ac{MGXS}.
-\item Developed pin-wise spatial homogenization schemes to model spatial self-shielding for each fuel pin with varying degrees of granularity and complexity while simultaneously accelerating \ac{MC} tally convergence:
-\begin{itemize}
-%  \item Null homogenization treats all fuel pins of a given enrichment with the same \ac{MGXS}.
-%  \item Degenerate homogenization assigns a unique \ac{MGXS} to each fuel pin within a reactor.
-  \item Local Neighbor Symmetry (LNS) homogenization uses a nearest neighbor-like analysis of a combinatorial geometry to predict which fuel pins will experience similar spatial self-shielding effects.
-  \item Inferential \ac{MGXS} (\textit{i}\ac{MGXS}) homogenization uses unsupervised statistical clustering algorithms to predict \ac{MGXS} clustering from ``noisy'' \ac{MC} tally data without any knowledge of the reactor geometry.
-\end{itemize}
-\item Quantified approximation error between reference OpenMC and deterministic OpenMOC calculations of the eigenvalues, pin-wise fission rates and U-238 capture rates for each homogenization scheme.
-\item Demonstrated that \ac{LNS} and \textit{i}\ac{MGXS} spatial homogenization schemes are credible paths to generate very accurate \ac{MGXS} and require fewer \ac{MC} histories to generate \ac{MGXS} and to converge deterministic calculations to a given accuracy than an equivalent \ac{MC} calculation.
-\end{itemize}
-\end{emphbox}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Future Work}
-%\label{sec:chap12-future-work}
-
-This thesis identified several issues which must be investigated in the future to position single-step \ac{MC} simulations as a practical alternative to traditional multi-level \ac{MGXS} generation techniques. The following sections itemize the author's assessment of the most important outstanding issues and the order in which they should be addressed. Sec.~\ref{subsec:chap12-further-imgxs} discusses case studies which should be performed to optimize and to evaluate the performance of the \textit{i}\ac{MGXS} spatial homogenization scheme. Sec.~\ref{subsec:chap12-improve-mc-methods} highlights several key shortcomings in the present approach to generate \ac{MGXS} with \ac{MC} which must be confronted to resolve lingering sources of approximation error between continuous energy \ac{MC} and deterministic multi-group methods.
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Further Evaluation of the \textit{i}MGXS Scheme}
-%\label{subsec:chap12-further-imgxs}
-
-A number of challenges must be addressed in the future in order for \textit{i}\ac{MGXS} to be useful in a production code setting. Sec.~\ref{subsubsec:chap12-imgxs-noisy-mc-data} discusses the need for future studies to determine the number of particle histories required to accurately identify \ac{MGXS} clusters from ``noisy'' \ac{MC} tally data. Sec.~\ref{subsubsec:chap12-optimize-imgxs} outlines the many remaining challenges to optimize the various stages of the \textit{i}\ac{MGXS} data processing pipeline. Sec.~\ref{subsubsec:chap12-optimize-simulation-triad} highlights issues which must be resolved to enable fast and reliable calculations with the simulation triad of OpenMC, OpenMOC and OpenCG.
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsubsection{Noisy Tally Data and the \textit{i}MGXS Scheme}
-%\label{subsubsec:chap12-imgxs-noisy-mc-data}
-
-The case studies in Sec.~\ref{sec:chap11-converge} investigated the number of \ac{MC} particle histories required to sufficiently converge \ac{MGXS} tallied by OpenMC for stable deterministic solutions with OpenMOC. Each of the studies used ``fully converged'' \ac{MC} tally data to train a clustering model, which was then repeatedly used to cluster fuel pins for spatial homogenization with ``noisier'' \ac{MC} tally data. This was a useful exercise since it provided a lower bound on how quickly \ac{MGXS} would converge if a formulation of the \textit{i}\ac{MGXS} pipeline is devised in the future that can accurately identify clusters from ``noisy'' \ac{MC} tally data. However, these results did not adequately gauge the number of \ac{MC} particle histories required to stabilize the OpenMOC solutions with \textit{i}\ac{MGXS} in a production-like setting.
-
-Future convergence studies should train clustering models with the ``noisy'' MC tally data for each statepoint from an OpenMC simulation to determine how quickly the clustering predictions converge. Based on this author's preliminary studies, a larger fraction of fuel pins are assigned to the ``wrong'' \ac{MGXS} clusters when the clustering models are trained with ``noisy'' \ac{MC} tally data. As a result, it is reasonable to expect that the approximation error between OpenMOC and the reference OpenMC solutions will be larger than that observed in Sec.~\ref{sec:chap11-converge} when relatively few particle histories are used to generate \ac{MGXS}. However, given enough particle histories, the approximation errors should approach the converged values presented in Sec.~\ref{sec:chap11-converge}. The results from future convergence studies should be used to improve the estimates for the expected runtimes for OpenMOC simulations with \textit{i}\ac{MGXS} in Sec.~\ref{subsec:chap11-runtimes}.
-
-%  -wouldn't reduce but could potentially increase the runtime estimates
-%  -also possible that clustering predictions ``converge'' or ``stabilize'' before the OpenMOC solutions
-%-should also perform convergence studies with BEAVRS full core
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsubsection{\textit{i}MGXS Data Processing Pipeline Configuration}
-%\label{subsubsec:chap12-optimize-imgxs}
-
-There is a plethora of opportunities to optimize the performance of the \textit{i}\ac{MGXS} spatial homogenization scheme. This thesis tested only but a few of the many different possible machine learning algorithms that may be interchangeably used within the \textit{i}\ac{MGXS} data processing pipeline. Future work should systematically evaluate various configurations of the pipeline and score each by the number of \ac{MC} histories needed to accurately identify \ac{MGXS} clusters from ``noisy'' \ac{MC} tally data. The feature extraction stage (Sec.~\ref{sec:chap10-feature-extract}) may be improved with the development of new \ac{MC} tallies, or combinations of tallies, to be used as features which may indicate the existence of \ac{MGXS} clustering with fewer particle histories than the features introduced in this thesis. New techniques should be evaluated for the feature selection stage (Sec.~\ref{sec:chap10-feature-select}) to identify those features most useful for clustering analysis. The dimensionality reduction stage (Sec.~\ref{sec:chap10-dimension-reduce}) should be a key focal point of future work to determine how to extract latent information from highly correlated features and to reduce the number of features used in clustering analysis\footnote{Although the clustered geometries produced with three different dimensionality reduction techniques are briefly compared in App.~\ref{sec:clustering-with-dimension-reduce}, dimensionality reduction was not used by the \textit{i}\ac{MGXS} pipeline for the simulation results presented in Chap.~\ref{chap:results}.}. Future efforts may explore different clustering algorithms -- and optimize the parameters for each with cross-validation -- for the predictor training stage (Sec.~\ref{sec:chap10-train-predictor}). The performance of each clustering algorithm should be scored according to the number of clusters required to reduce the U-238 capture rate errors in OpenMOC. Finally, future work should identify one or more heuristics to reliably determine the most appropriate number of clusters\footnote{None of the model selection techniques evaluated in Sec.~\ref{sec:chap11-model-select} performed as expected except for the Bayesian Information Criterion, which showed some promise as a means to select the number of components for Gaussian Mixture Models.} for the model selection stage (Sec.~\ref{sec:chap10-model-select}).
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsubsection{Computational Performance of the Simulation Triad}
-%\label{subsubsec:chap12-optimize-simulation-triad}
-
-The analysis of the quarter core \ac{BEAVRS} model in Chaps.~\Crefrange{chap:quantify}{chap:results} was limited by some computational bottlenecks that must be resolved to enable practical and reliable full-core calculations with the simulation triad (Chap.~\ref{chap:workflow}). First and foremost, a quarter pin mesh was required to guarantee stable solutions for the \ac{BEAVRS} model with OpenMOC's implementation of Coarse Mesh Finite Difference (CMFD) acceleration, which greatly increased the runtime of each simulation. Future work should improve the stability of \ac{CMFD} in OpenMOC for coarser meshes (\textit{e.g.}, quarter assembly meshes) and optimize the computational efficiency of the \ac{CMFD} implementation overall. A linear source approximation (instead of a flat source approximation) would greatly reduce the number of discretized spatial zones, likewise reducing both the runtime and memory footprint for OpenMOC simulations. Furthermore, the computational efficiency of the transport solver in OpenMOC would be greatly improved with the use of Single Instruction, Multiple Data (SIMD) vectorization over energy groups. In addition to improving OpenMOC's computational efficiency, the performance of the OpenMC code may be improved in the future. As noted in Tab.~\ref{table:chap11-openmc-rates}, the per-core particle tracking rates for OpenMC were 3 -- 4$\times$ slower with tallies. This performance degradation may be mitigated in the future with spatial domain decomposition~\cite{horelik2014dd}, tally servers~\cite{romano2013servers}, and/or SIMD vectorization of the tallying algorithms in OpenMC.
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Improve Methods to Generate MGXS with MC}
-%\label{subsec:chap12-improve-mc-methods}
-
-This thesis identified several areas which must be addressed in order to make \ac{MC}-based \ac{MGXS} generation methods practical for fine-mesh transport codes. Sec.~\ref{subsubsec:chap12-tally-estimators} presents the need for new statistical estimators to improve the tally efficiency of multi-group scattering matrices. As discussed in Sec.~\ref{subsubsec:chap12-transport-mgxs}, new methods must be developed to compute transport-corrected \ac{MGXS} with \ac{MC} which account for anisotropic scattering, thereby eliminating the isotropic in lab scattering approximations used throughout this thesis. Sec.~\ref{subsubsec:chap12-angular-dependent-mgxs} motivates the need for an equivalence method to enforce reaction rate preservation between continuous energy \ac{MC} and multi-group deterministic methods with scalar flux-weighted \ac{MGXS}. Finally, future work should consider employing \ac{MC} to generate \ac{MGXS} for multi-physics applications as highlighted in Sec.~\ref{subsubsec:chap12-multi-physics-mgxs}.
-
-%The deficiencies which should be addressed may be measured along two primary dimensions:
-
-%\begin{itemize}[noitemsep]
-%\item Improve the Monte Carlo tallying efficiency of multi-group cross sections
-%\item Reduce approximation error between continuous energy \ac{MC} and multi-group deterministic methods
-%\end{itemize}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsubsection{Statistical Efficiencies of Tally Estimators}
-%\label{subsubsec:chap12-tally-estimators}
-
-This thesis generated \ac{MGXS} using a mixture of track-length and analog tally estimators as described in Sec.~\ref{subsubsec:chap3-tally-types-summary}. Track-length estimators were used for reaction rate and flux tallies which depend on the incoming neutron energy (\textit{e.g.}, total, fission), while less efficient analog estimators were necessary for tallies with an outgoing energy dependence, including those used to compute multi-group scattering matrices and fission emission spectra. Although the expectation of track-length and analog statistical estimates are identical, the variance is typically much larger for the analog estimates for a given number of particle histories. As a result, the \ac{MGXS} tallied with a mixture of track-length and analog estimators will not preserve neutron balance without a sufficient number of particle histories. This was observed in Sec.~\ref{subsec:chap11-eigenvalue-converge} where the eigenvalue estimates for different pin-wise spatial homogenization schemes only converged to the same value after 10$^{8}$ particle histories were simulated. Future work may rectify this by designing a more statistically efficient tally estimator for multi-group scattering matrices and fission spectra. Nelson developed a theoretically rigorous methodology for this purpose in~\cite{nelson2014improved}, though a simple heuristic to simultaneously tally to multiple outgoing energy bins in scattering collisions may be sufficient for hydrogenous reactor systems.
-
-%The separation between the eigenvalues for each scheme with few simulated particle histories is likely due to the mixture of track-length and analog tally estimators. 
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsubsection{Tally Estimators for Transport-Corrected MGXS}
-%\label{subsubsec:chap12-transport-mgxs}
-
-This thesis implemented a feature to use isotropic in lab (``iso-in-lab'') scattering in OpenMC to enable direct comparisons with OpenMOC which uses an isotropic scattering source. Isotropic scattering is generally not a valid approximation for nuclear reactors as is vividly evident by comparing the pin-wise fission and U-238 capture rates for \ac{BEAVRS} modeled in OpenMC with iso-in-lab scattering (Figs.~\ref{fig:chap7-fiss-rates-full-core} and~\ref{fig:chap7-capt-rates-full-core}) and anisotropic scattering (Fig.~\ref{fig:benchmarks-beavrs-aniso})\footnote{The fission and capture rates are much more highly peaked in the assemblies near the periphery of the core since more neutrons scatter back into the reactor from the reflector with the iso-in-lab approximation. The reaction rate distributions are flatter when modeled with anisotropic scattering since more neutons leak from the core.}. Future work should account for anisotropic scattering in deterministic multi-group calculations with \ac{MGXS} generated by \ac{MC}. The most theoretically rigorous approach would model a truncated form of the Legendre moment expansion of the scattering kernel (Sec.~\ref{subsec:chap2-scatt-src}) as is done in many deterministic transport codes today. This approach requires the use of multi-group scattering matrix Legendre moments which may be computed using the \texttt{openc.mgxs} module. However, a model of the scattering moments does increase the computational complexity for deterministic codes.
-
-A common alternative is to use a transport correction to the total \ac{MGXS} and scattering matrix (Sec.~\ref{subsec:chap2-transport-corr}). Future work may aim to develop and validate methods to model transport corrections for \ac{MGXS} generated from \ac{MC} tallies. The work by Liu~\cite{liuphysor2016} to tally diffusion coefficients without approximation in \ac{MC} may be extended to develop a reliable method to tally transport-corrected \ac{MGXS} in \ac{MC}. The development of an improved transport-corrected \ac{MGXS} tally estimator may not only account for the effects of anisotropic scattering, but also make it possible to employ reduced energy group structures without sacrificing accuracy. Group condensation studies should be considered in the future to determine if it is possible to maintain a high-level of accuracy with fewer energy groups with transport-corrected \ac{MGXS}.
-
-%-unclear what expansion order is necessary
-% -more expensive to 1) compute scattering source and 2) tally flux moments
-% -modify the total cross section in an attempt to produce an equivalent solution 
-%  -advantage is that the computational burden is no larger than it is currently
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsubsection{Equivalence Methods for Angular-Dependent MGXS}
-%\label{subsubsec:chap12-angular-dependent-mgxs}
-
-The results in Chap.~\ref{chap:biases} demonstrated how constant-in-angle \ac{MGXS} leads to U-238 capture rate errors in resonance groups, resulting in a few hundred \ac{pcm} eigenvalue bias for a simple \ac{PWR} pin cell problem\footnote{It is also likely that the flux separability approximation was a dominant factor in the <2\% pin-wise fission and U-238 capture rate errors which remained even with the use of highly accurate degenerate spatial homogenization (Chap.~\ref{chap:spatial}), though this was not definitively proven in this thesis.}. Chap.~\ref{chap:sph} successfully used \ac{SPH} factors as an equivalence scheme to correct for the approximation error resulting from the use of the angular rather than the scalar flux to collapse cross sections. However, the \ac{SPH} factor approach suffers from a number of shortcomings (Sec.~\ref{sec:chap6-sph-shortcomings}) and it is unclear whether it may be broadly applied to correct for the flux separability approximation in \ac{MGXS} generated from \ac{MC}. In particular, the \ac{SPH} factor method is complicated by the need to compute a reference fixed source with \ac{MC} for the spatial discretization mesh used in multi-group methods. In addition, \ac{SPH} factors do not simply correct for the error due to the flux separability approximation, but instead indiscriminately correct for all sources of approximation error between \ac{MC} and multi-group methods.
-
-As a result, new equivalence schemes should be explored in the future to specifically correct for the flux separability approximation in arbitrarily discretized geometries. For example, the angular dependence of the total \ac{MGXS} may be adequately embedded into the scattering kernel using the Consistent-P approximation~\cite{bell1967transport} (also known as the BHS approximation). Alternatively, a coarse set of angular-dependent \ac{MGXS} may mitigate most of the approximation error observed between continuous energy \ac{MC} and deterministic multi-group methods. For example, a simple approximation might model two different total \ac{MGXS} for neutrons entering or leaving a fuel pin. Although such a coarse angular scheme would not capture the high degree of angular variation of \ac{MGXS}, it might capture enough to adequately reduce the integrated error\footnote{Recent work by Gibson~\cite{gibson2016thesis} showed that the use of finely discretized angular-dependent \ac{MGXS} very nearly eliminated the error in resonance groups resulting from the flux separability approximation.}. 
-
-%One challenge to this approach would be to define a general way to accommodate different spatial discretizations, which is highly coupled to the \ac{MGXS} angular dependence of the \ac{MGXS}.
-
-% -SPH is iterative and hence computationally expensive
-%  -possible changes: may be able to tabulate a set of \ac{SPH} factors
-%     -for a specific group structure and spatial discretization
-%  -unclear how much the factors depend on enrichment, spatial discretization, etc.
-
-%-angular-dependent \ac{MGXS}
-%  -why it is challenging:
-%    -burdensome to track extra data in deterministic code
-%    -burdensome to tally extra data in \ac{MC}
-%    -must \textit{a priori} know or approximate angular dependence and its relationship with spatial mesh
-%  -possible changes: ``jump'' conditions, i.e. coarse angular discretization
-%    -still requires some knowledge of spatial discretization mesh
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsubsection{Multi-Physics Feedback in MGXS}
-%\label{subsubsec:chap12-multi-physics-mgxs}
-
-This thesis performed steady-state calculations of \ac{PWR} benchmarks with fresh fuel at hot zero power conditions. Future work should build upon the progress made in this thesis to generate \ac{MGXS} with \ac{MC} for multi-physics applications. Further development of the \textit{i}\ac{MGXS} scheme may account for thermal-hydraulic feedback in which fuel temperature and moderator density gradients are modeled in \ac{MC} calculations for \ac{MGXS} generation. For example, \ac{MC} calculations performed using Doppler broadened cross sections sampled on-the-fly with the windowed multipole method in OpenMC~\cite{forget2014direct} to generate \ac{MGXS} which accurately reflect the distribution of fuel temperatures across a reactor core. The extensions of the \textit{i}\ac{MGXS} scheme would be most useful if developed in conjunction with an extension of the simulation framework from two to three dimensions. In addition, \ac{MC} may be used to generate \ac{MGXS} for deterministic codes at each burnup step in a depletion calculation with the appropriate isotopic vectors modeled in each fuel pin. Furthermore, future work should consider using the \textit{i}\ac{MGXS} scheme in calculations with thermal-hydraulic feedback and nuclide depletion where the moderator density, fuel temperature and burnup may be used as features to predict MGXS clustering. Indeed, it may be valuable to expand upon this thesis' dependence on clustering algorithms and instead use multivariate regression models (\textit{e.g.}, decision tree regressors) to predict continuously varying \ac{MGXS} based on features such as fuel temperature and burnup\footnote{Regression models may pose a challenge since continuously varying \ac{MGXS} predictions will not preserve global reactivity, which is guaranteed by simple(r) discrete predictions from clustering models used to compute track density-weighted average \ac{MGXS} (Sec.~\ref{subsec:chap9-lns-math}) in this thesis.}.
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Inspiration for New Research Directions}
-%\label{subsec:chap12-inspiration}
-
-The \textit{i}\ac{MGXS} scheme uses unsupervised statistical clustering methods to replace engineering-based approximations or heuristics with data-informed decision-making to cluster \ac{MGXS} for pin-wise spatial homogenization. This thesis may inspire the future application of machine learning to closely related issues, such as automating the selection of energy group boundaries for \ac{MGXS} generation. However, it is this author's opinion that \ac{MGXS} clustering is only one of many potential applications for which machine learning may be used to improve the accuracy and speed of numerical simulations. The scientific computing community has an increasingly vast array of machine learning algorithms at its disposal which may be used to automate the tedious and error prone process of parameter selection. Only the sky is the limit when it comes to harnessing the power of machine learning in the service of advanced computational physics simulation.
-
-%    -more flexible/extensible and accurate for parameter regimes (i.e., reactor designs) for which there may be little prior experience / heuristics
+Results were also presented for convergence with \ac{CMFD} acceleration which showed that \ac{CMFD} acceleration without group collapse was able to stabilize the source iteration process. For \ac{CMFD} acceleration with a collapsed group structure, the previously discussed stabilization techniques were necessary to ensure convergence. In the case of full core \ac{PWR} problems, a collapsed group structure is attractive to reduce run time, necessitating a stabilization method to converge to a reasonable distribution.

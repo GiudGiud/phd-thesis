@@ -127,16 +127,16 @@ Across each track crossing a given constant cross-section source region, the var
 	\label{fig:segmentation}
 \end{figure}
 
-All of these images showed track laydown and segmentation in just the radial plane, but the same methodology applies for dealing with full three dimensional geometries. Now that tracks have been segmented, a system of equations can be formed governing the variation of angular flux thorough each region as presented in Eq.~\ref{eqn:angular-flux-var}. However, this has a dependence on the incoming angular flux. For segments originating in the bulk of the geometry, continuity of angular flux is naturally enforced. The outgoing flux of the preceding segment in the track provides the incoming flux of the segment. Specifically, the position-dependent angular flux $\psi_{p,g}^{t,s}(\mathbf{r})$ in group $g$ along track $t$ and segment $s$ can be expressed as the angular flux of the preceding segment $s-1$ at the interface point $\mathbf{r_{\textbf{int}}}$ where the segments meet as
+All of these images showed track laydown and segmentation in just the radial plane, but the same methodology applies for dealing with full three dimensional geometries. Now that tracks have been segmented, a system of equations can be formed governing the variation of angular flux thorough each region as presented in Eq.~\ref{eqn:angular-flux-var}. However, this has a dependence on the incoming angular flux. For segments originating in the bulk of the geometry, continuity of angular flux is naturally enforced. The outgoing flux of the preceding segment in the track provides the incoming flux of the segment. Specifically, the position-dependent angular flux $\psi_{p,g}^{t,\varsigma}(\mathbf{r})$ in group $g$ along track $t$ and segment $\varsigma$ can be expressed as the angular flux of the preceding segment $\varsigma-1$ at the interface point $\mathbf{r_{\textbf{int}}}$ where the segments meet as
 \begin{dmath}
-	\psi_{p,g}^{t,s}(\mathbf{r_{\textbf{int}}}) = \psi_{p,g}^{t,s-1}(\mathbf{r_{\textbf{int}}}).
+	\psi_{p,g}^{t,\varsigma}(\mathbf{r_{\textbf{int}}}) = \psi_{p,g}^{t,\varsigma-1}(\mathbf{r_{\textbf{int}}}).
 \end{dmath}
 Defining the angular flux along a segment in terms of distance traveled along the segment rather than position, this can equivalently be written as
 \begin{dmath}
-	\psi_g^{t,s}(0) = \psi_g^{t,s-1}(\ell_{t,s-1})
+	\psi_g^{t,\varsigma}(0) = \psi_g^{t,\varsigma-1}(\ell_{t,\varsigma-1})
 	\label{eqn:angular_flux_boundary}
 \end{dmath}
-where $\ell_{t,s}$ refers to the length of segment $s$ along track $t$. For angular fluxes originating at the geometry boundary, the boundary condition provides the relationship for the angular flux. For vacuum boundary conditions, it is assumed that there is no impinging angular flux, so the incoming angular flux is simply taken to be zero at the boundary. 
+where $\ell_{t,\varsigma}$ refers to the length of segment $\varsigma$ along track $t$. For angular fluxes originating at the geometry boundary, the boundary condition provides the relationship for the angular flux. For vacuum boundary conditions, it is assumed that there is no impinging angular flux, so the incoming angular flux is simply taken to be zero at the boundary. 
 
 For reflective boundary conditions, the incoming angular flux is equal to the outgoing angular flux of the reflected angle. This requires that a track be present with the correct reflecting angle, meeting at precisely the same point on the boundary. During track laydown, this is enforced. If only vacuum boundary conditions were present, this restriction on track laydown would not be necessary. Similar treatments are possible for periodic and rotational boundary conditions if allowed by the track laydown.  A more complete discussion of track laydown is given in Chapter~\ref{chap:track-laydown}. For instance, the conditions required to link tracks at geometric boundaries will be discussed at length.
 
@@ -150,9 +150,9 @@ For boundary conditions (such as reflective, periodic, and rotational) that conn
 	\label{eqn:linking-bc}
 \end{dmath}
 
-With the angular and spatial discretization from the track laydown, the angular flux relationship along a characteristic path given in Eq.~\ref{eqn:angular-flux-var} can be presented in terms of the discretized track segments in Eq.~\ref{eqn:angular-flux-var-disc} where the function $R$ yields the region traversed by track $t$ and segment $s$. 
+With the angular and spatial discretization from the track laydown, the angular flux relationship along a characteristic path given in Eq.~\ref{eqn:angular-flux-var} can be presented in terms of the discretized track segments in Eq.~\ref{eqn:angular-flux-var-disc} where the function $R$ yields the region traversed by track $t$ and segment $\varsigma$. 
 \begin{dmath}
-	\psi_g^{t,s}(s) = \psi^{t,s}_g(0) + \left( \frac{q^0_{R(t,s),g}}{\Sigma_{t}^{i,g}} - \psi_g^{t,s}(0) \right) F_1\left(\Sigma_{t}^{R(t,s),g} s \right)
+	\psi_g^{t,\varsigma}(s) = \psi^{t,\varsigma}_g(0) + \left( \frac{q^0_{R(t,\varsigma),g}}{\Sigma_{t}^{i,g}} - \psi_g^{t,\varsigma}(0) \right) F_1\left(\Sigma_{t}^{R(t,\varsigma),g} s \right)
 	\label{eqn:angular-flux-var-disc}
 \end{dmath}
 Still, these equations only determine the behavior of the neutron flux along a particular track. To determine the behavior of the neutron flux throughout the geometry, an infinite number of tracks would be required so that every point in the geometry lies along one of the tracks. Therefore, an approximation is invoked in which all points within the geometry are characterized by the nearest track. Therefore each track represents a volume formed by the product of its length and the perpendicular distances to tracks of the same direction. Those perpendicular lengths form the track cross-sectional area as illustrated in Figure~\ref{fig:track-cross-section}. This illustration just shows the radial view of the tracks. However, in three dimensions, axial distances also exist between tracks so that the track cross-sectional area does indeed represent an area rather than a distance.
@@ -171,15 +171,15 @@ w_{t} = \delta A_{t} \alpha_t
 \end{equation}
 With each track now representing a portion of the spatial and angular domain, Eq.~\ref{eqn:avg-flux-theory} can be transformed to reflect the track discretization in Eq.~\ref{eqn:average-flux-disc}, yielding a closed-form relationship to calculate the scalar flux.
 \begin{dmath}
-	\overline{\phi_{i,g}} = \frac{1}{V_i} \sum_{(t,s) \in V_i} w_{t} \int_{0}^{\ell_{t,s}} ds \, \psi^{t,s}_g(s)
+	\overline{\phi_{i,g}} = \frac{1}{V_i} \sum_{(t,\varsigma) \in V_i} w_{t} \int_{0}^{\ell_{t,\varsigma}} ds \, \psi^{t,\varsigma}_g(s)
 	\label{eqn:average-flux-disc}
 \end{dmath}
 Combining Eq.~\ref{eqn:average-flux-disc} with Eq.~\ref{eqn:angular-flux-var-disc}, the scalar flux can be calculated using the relationship in Eq.~\ref{eqn:average-flux}. A proof is given in Appendix~\ref{deriv:avg-flux} for the interested reader.
 \begin{dmath}
-	\overline{\phi_{i,g}} = \frac{q^0_{i,g}}{\Sigma_{t}^{i,g}} + \frac{1}{\Sigma_{t}^{i,g} V_i} \sum_{(t,s) \in V_i} w_{t} \Delta \psi_g^{t,s}
+	\overline{\phi_{i,g}} = \frac{q^0_{i,g}}{\Sigma_{t}^{i,g}} + \frac{1}{\Sigma_{t}^{i,g} V_i} \sum_{(t,\varsigma) \in V_i} w_{t} \Delta \psi_g^{t,\varsigma}
 	\label{eqn:average-flux}
 \end{dmath}
-The difference in angular flux $\Delta \psi_g^{t,s}$ is equal to $\psi_g^{t,s}(0) - \psi_g^{t,s}(\ell_{t,s})$. The calculated fluxes can then be used to construct the neutron sources $q^0_{i,g}$ for each region $i$ and each energy group $g$ with the relationship in Eq.~\ref{eqn:source-discr}.
+The difference in angular flux $\Delta \psi_g^{t,\varsigma}$ is equal to $\psi_g^{t,\varsigma}(0) - \psi_g^{t,\varsigma}(\ell_{t,\varsigma})$. The calculated fluxes can then be used to construct the neutron sources $q^0_{i,g}$ for each region $i$ and each energy group $g$ with the relationship in Eq.~\ref{eqn:source-discr}.
 
 
 \section{Solving the MOC System of Equations}
@@ -208,7 +208,7 @@ where all other unspecified matrix elements are zero. Both of these matrices are
 
 The relationship in Eq.~\ref{eqn:angular-flux-var-disc} can be rearranged to form the relationship in Eq.~\ref{eqn:re-angular-flux-var-disc}. This form is much easier to work with in the translation to matrix definitions.
 \begin{equation}
- \psi^{t,s}_g(0) \left(\frac{F_1\left(\Sigma_{t}^{i,g} s \right) - 1}{F_1\left(\Sigma_{t}^{i,g} s \right)}\right) + \psi_g^{t,s}(s) \left(\frac{1}{F_1\left(\Sigma_{t}^{i,g} s \right)}\right) = \frac{q^0_{i,g}}{\Sigma_{t}^{i,g}}
+ \psi^{t,\varsigma}_g(0) \left(\frac{F_1\left(\Sigma_{t}^{i,g} s \right) - 1}{F_1\left(\Sigma_{t}^{i,g} s \right)}\right) + \psi_g^{t,\varsigma}(s) \left(\frac{1}{F_1\left(\Sigma_{t}^{i,g} s \right)}\right) = \frac{q^0_{i,g}}{\Sigma_{t}^{i,g}}
 \label{eqn:re-angular-flux-var-disc}
 \end{equation}
 This relationship can be turned into matrix form by defining an angular flux vector $\boldsymbol{\psi}$ that contains all outgoing angular fluxes. This is represented in Eq.~\ref{eqn:matrix-attn} by an angular flux transport matrix $T$ defining relationships between angular fluxes, a source selection matrix $H$ which selects the source of the region being traversed, and a diagonal matrix $D$ containing the total cross-sections which scale the source appropriately to match the relationship in Eq.~\ref{eqn:re-angular-flux-var-disc}.
@@ -216,9 +216,9 @@ This relationship can be turned into matrix form by defining an angular flux vec
 T \boldsymbol{\psi} = H D^{-1} \mathbf{q}
 \label{eqn:matrix-attn}
 \end{equation}
-The number of angular fluxes is $N = \beta L G$ where $\beta$ is the average number of track crossings per source region. Since there must be a significant number of track crossings per region for convergence we expect $N >> M$. $T$ is size $N \times N$ as it defines relationships between angular fluxes, the size of $H$ is $N \times M$ since for each angular flux pair it must pick out the appropriate source region, and the size of $D$ is $M \times M$ since it relates only to the source regions. The elements relating to angular flux quantities are indexed by track $t$, segment $s$, and group $g$. The source selection matrix $H$ can therefore be defined as
+The number of angular fluxes is $N = \beta L G$ where $\beta$ is the average number of track crossings per source region. Since there must be a significant number of track crossings per region for convergence we expect $N >> M$. $T$ is size $N \times N$ as it defines relationships between angular fluxes, the size of $H$ is $N \times M$ since for each angular flux pair it must pick out the appropriate source region, and the size of $D$ is $M \times M$ since it relates only to the source regions. The elements relating to angular flux quantities are indexed by track $t$, segment $\varsigma$, and group $g$. The source selection matrix $H$ can therefore be defined as
 \begin{equation}
-H_{\left(t,s,g\right), \, \left(R(t,s), g\right)} = 1.
+H_{\left(t,\varsigma,g\right), \, \left(R(t,\varsigma), g\right)} = 1.
 \label{eqn:source-selection-matrix}
 \end{equation}
 This matrix therefore, has only one non-zero value per row, indicating which region is being traversed, relating track-based quantities such as angular fluxes to region based quantities such as the scalar fluxes. Its transpose similarly relates the regions to the tracks traversing the region. The matrix $H^T H$ is a $M \times M$ diagonal matrix with each diagonal element representing the number of tracks that traverse the region multiplied by the number of groups. Since it is diagonal, it is easily invertible, which will be important in the later discussion.
@@ -229,12 +229,12 @@ D_{\left(i, g\right), \, \left(i, g\right)} = \Sigma_t^{i,g}.
 \end{equation}
 The angular flux transport matrix $T$ is defined by
 \begin{equation}
-T_{\left(t,s,g\right), \, \left(t, s, g\right)} = \frac{1}{F_1\left(\Sigma_{t}^{R(t,s),g} \ell_{t,s}\right)}
+T_{\left(t,\varsigma,g\right), \, \left(t, \varsigma, g\right)} = \frac{1}{F_1\left(\Sigma_{t}^{R(t,\varsigma),g} \ell_{t,\varsigma}\right)}
 \label{eqn:angular-flux-transport-matrix-1}
 \end{equation}
 and
 \begin{equation}
-T_{\left(t,s,g\right), \, \left(t, s-1, g\right)} = \frac{F_1\left(\Sigma_{t}^{R(t,s),g} \ell_{t,s}\right) - 1}{F_1\left(\Sigma_{t}^{R(t,s),g} \ell_{t,s}\right)}.
+T_{\left(t,\varsigma,g\right), \, \left(t, \varsigma-1, g\right)} = \frac{F_1\left(\Sigma_{t}^{R(t,\varsigma),g} \ell_{t,\varsigma}\right) - 1}{F_1\left(\Sigma_{t}^{R(t,\varsigma),g} \ell_{t,\varsigma}\right)}.
 \label{eqn:angular-flux-transport-matrix-2}
 \end{equation}
 Again, all non-specified quantities are zero.
@@ -254,11 +254,11 @@ V_{\left(i, g\right), \, \left(i, g\right)} = V_i
 \end{equation}
 and $\tilde{W}$ is an $N \times N$ matrix defined by
 \begin{equation}
-\tilde{W}_{\left(t,s,g\right), \, \left(t, s, g\right)} = -w_{t}
+\tilde{W}_{\left(t,\varsigma,g\right), \, \left(t, \varsigma, g\right)} = -w_{t}
 \end{equation}
 and
 \begin{equation}
-\tilde{W}_{\left(t,s,g\right), \, \left(t, s-1, g\right)} = w_{t}
+\tilde{W}_{\left(t,\varsigma,g\right), \, \left(t, \varsigma-1, g\right)} = w_{t}
 \end{equation}
 with all other elements being zero. Now that all matrix elements have been defined, the transport equation can be written as a matrix eigenvalue problem. Combining Eq.~\ref{eqn:matrix-source-calc} and Eq.~\ref{eqn:matrix-flux-calc} yields
 \begin{equation}

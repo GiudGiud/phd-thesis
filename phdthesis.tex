@@ -107,6 +107,10 @@
 
 \newcommand\ddfrac[2]{\frac{\displaystyle #1}{\displaystyle #2}}
 
+\makeatletter
+\newcommand\footnoteref[1]{\protected@xdef\@thefnmark{\ref{#1}}\@footnotemark}
+\makeatother
+
 \hypersetup{colorlinks=true, linkcolor=black, citecolor=black, urlcolor=black,
   pdftitle={Full Core Simulation of the 3D Neutron Transport Equation Using the Method of Characteristics with Linear Sources},
   pdfauthor={Geoffrey Alexander Gunow}
@@ -242,38 +246,32 @@
 
 \part{Introduction}
 \include{chapters/introduction}
+%\include{chapters/literature-review}
 
 \part{Background}
 \include{chapters/transport-theory}
 \include{chapters/mgxs}
 \include{chapters/moc}
 \include{chapters/cmfd-acceleration}
+\include{chapters/beavrs-model}
 %\include{chapters/workflow}
 
 \part{Implementation}
 % anals
 \include{chapters/modular-structure}
-%%%%%% ^^^ Also code design / code development / practices %%%%%%%
 \include{chapters/track-laydown}
 \include{chapters/otf-ray-tracing}
-%%%%%% ^^^ Make the chapter about ray tracing, not just OTF ray tracing %%%%%
-%\include{chapters/linear-source}
-%\include{chapters/cmfd-acceleration}
-%\include{chapters/domain-decomposition}
+\include{chapters/linear-source}
+%\include{chapters/performance} (Single node)
+\include{chapters/domain-decomposition}
 %% Section on computational optimization???
 
-%\part{3D Assembly Analysis}
+\part{Simulation Results}
+%FIXME \part{3D Assembly Analysis}
 % anals
-%\include{chapters/xs-generation}
-%\include{chapters/moc-convergence}
-%\include{chapters/cmfd-optimization}
-
-%\part{Computational Performance}
-% jcp
-
-%\part{Full Core Analysis}
-%\include{chapters/beavrs-model}
-%\include{chapters/full-core-results}
+\include{chapters/moc-convergence}
+%\include{chapters/moc-sensitivity} % FIXME: include CMFD studies
+%\include{chapters/full-core-results} % Timing breakdown, etc
 
 %\part{Conclusions}
 %\include{chapters/conclusions}
