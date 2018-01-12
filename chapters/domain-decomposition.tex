@@ -1,7 +1,7 @@
 \chapter{Domain Decomposition}
 \label{chap:domain-decomposition}
 
-In Chapter~\ref{chap:software-design}, the on-node shared memory parallelism of OpenMOC was discussed in which all data is shared and available to all threads on a single computational node. However, this thesis concentrates on solving large scale reactor physics problems which cannot be solved with just one computational node. Extending to multiple computational nodes, communication of data between nodes becomes extremely costly. This makes a shared parallelism model computationally infeasible across nodes. Therefore, hybrid parallelism is introduced in which on-node parallelism uses the OpenMP shared parallelism model, but \ac{MPI}~\cite{mpi} is used to communicate information across nodes. In section~\ref{sec:geometrical-decomposition}, geometric domain decomposition is discussed which forms the basis of the inter-node parallelism in OpenMOC. Section~\ref{sec:moc-dd} discusses how the \ac{MOC} solver is domain decomposed and Section~\ref{sec:cmfd-dd} discusses how the \ac{CMFD} solver is domain decomposed. Both sections first identify the quantities that need to be communicated and then discuss the communication algorithms.
+In the previous chapters, the on-node shared memory parallelism of OpenMOC was discussed in which all data is shared and available to all threads on a single computational node. However, this thesis concentrates on solving large scale reactor physics problems which cannot be solved with just one computational node. Extending to multiple computational nodes, communication of data between nodes becomes extremely costly. This makes a shared parallelism model computationally infeasible across nodes. Therefore, hybrid parallelism is introduced in which on-node parallelism uses the OpenMP shared parallelism model, but \ac{MPI}~\cite{mpi} is used to communicate information across nodes. In section~\ref{sec:geometrical-decomposition}, geometric domain decomposition is discussed which forms the basis of the inter-node parallelism in OpenMOC. Section~\ref{sec:moc-dd} discusses how the \ac{MOC} solver is domain decomposed and Section~\ref{sec:cmfd-dd} discusses how the \ac{CMFD} solver is domain decomposed. Both sections first identify the quantities that need to be communicated and then discuss the communication algorithms.
 
 \section{Geometrical Decomposition}
 \label{sec:geometrical-decomposition}
@@ -282,3 +282,162 @@ The most important communication component of the \ac{CMFD} algorithm is the com
 Since the \ac{CMFD} cells are laid out in a uniform grid and each buffer location corresponds to at most two \ac{CMFD} cells, the mapping of cells to buffer locations is straightforward, eliminating the need to communicate indexes.
 
 \section{Results}
+
+In order to evaluate the performance of the domain decomposition implementation, both strong scaling and weak scaling studies are conducted. Strong scaling studies analyze the performance as cores are added to solve a problem of fixed size, as we have seen in the past for on-node parallel performance. Weak scaling studies analyze the performance with a fixed problem size per node. Therefore, weak scaling studies deal with problems of variable size.
+
+Since we expect transport sweeps to dominate run time of an \ac{MOC} solver, such as OpenMOC, this thesis focuses on just the scalability of transport sweeps. However, it is important to note that domain decomposing the \ac{CMFD} acceleration is critical to being able to accelerate using any significant number of \ac{CMFD} groups since a many-group \ac{CMFD} can be quite costly for a large problem when solved on a single node. However, once the problem is distributed over the available nodes, its cost becomes trivial in comparison with the transport sweeps.
+
+In each trial, only one \ac{MOC} iteration is simulated. Each domain decomposed configuration is simulated three times. Each node is assigned a domain and each node makes use of all of its cores with shared memory parallelism, as outlined in previous chapters. The presented results take into account the average run time, as well as the minimum and maximum runtime to form estimates of the uncertainty. All presented results in this chapter use the Argonne BlueGene/Q supercomputer on the Cetus partition. The Argonne BlueGene/Q supercomputer is designed for many-node parallelism, reserving a large number of adjacent nodes for each submitted job. The reservation of many adjacent nodes allows for much better reproducibility in timing studies. The results in this chapter focus on solving geometries found in the BEAVRS benchmark. These geometries may be replicated in a lattice for weak scaling studies. 
+
+\subsection{Strong Scaling Studies}
+\label{sec:dd-strong-scaling}
+
+For the strong scaling studies the single assembly modeled detailed in Section~\ref{sec:beavrs-single-assembly} is chosen. It is important to note that this model includes full axial detail, including grid spacers and axial water reflectors. The problem is then domain decomposed only in the axial direction. 
+
+The \ac{MOC} ray spacing parameters for these strong scaling tests are given in Table~\ref{tab:dd-ss-params}. Due to the one hour time limit of jobs on the Cetus partition of the Argonne BlueGene/Q supercomputer, these parameters are significantly coarser than those required to accurately converge the fission source distribution. When domain decomposing the geometry, tracks are generated such that the track laydown is guaranteed to be the same for all the domain decomposed configurations.
+
+\begin{table}[ht]
+	\centering
+	\caption{MOC parameters for the strong scaling studies of the single assembly test problem}
+	\medskip
+	\begin{tabular}{lc}
+		\hline
+		Number of Sectors in Moderator & 8 \\
+		Number of Sectors in Fuel & 4 \\
+		Height of Flat Source Regions & 2.0 cm \\
+		Radial Ray Spacing & 0.1 cm \\
+		Axial Ray Spacing & 1.5 cm \\
+		Number of Azimuthal Angles & 16 \\
+		Number of Polar Angles & 6 \\
+		\hline
+	\end{tabular}
+	\label{tab:dd-ss-params}
+\end{table}
+
+The strong scaling results are presented in Figure~\ref{fig:strong-scaling-single-assembly-ts} for both linear source and flat source solvers. For these results the uncertainties are not shown because they are so small in comparison with differences in run-time from scaling, causing them to not be noticeable.
+\begin{figure}[h!]
+	\centering
+	\begin{subfigure}{0.45\textwidth}
+		\centering
+		\includegraphics[width=\linewidth]{figures/DD/sa-scaling-fs-ts.png}
+		\caption{Flat}
+		\label{fig:dd-sa-fs}
+	\end{subfigure}
+	\begin{subfigure}{0.45\textwidth}
+		\centering
+		\includegraphics[width=\linewidth]{figures/DD/sa-scaling-ls-ts.png}
+		\caption{Linear}
+		\label{fig:dd-sa-ls}
+	\end{subfigure}
+	\caption[]{Strong scaling of axial domain decomposition for a single assembly model of the (a) flat and (b) linear source solver.}
+	\label{fig:strong-scaling-single-assembly-ts}
+\end{figure}
+
+Note that the scaling is far better for the linear source solver than the flat source solver since there is significantly more on-node computational work for the linear source solver while the inter-node communication costs are the same as the flat source solver. In fact, the strong scaling performance for the linear source solver is better than the ideal linear scaling. Since the aim of this thesis is to solve full core problems with the linear source solver, its performance will be the main focus of discussion.
+
+These results might be difficult to understand as performance would not be expected to exceed ideal. However, recall from Chapter~\ref{chap:ray-tracing} that additional intersections, and therefore segments, are inserted when a piece-wise axially extruded geometry is converted to an axial extruded geometry on each sub-domain. As a given geometry is domain decomposed axially, the deviations from a true axially extruded geometry decrease, and therefore the number of additional intersections inserted to ensure an axially extruded geometry on the sub-domain also decrease.
+
+This implies that runtime should be normalized by the number of segments to capture the pure computational performance of the algorithm. The results when normalizing runtime by the number of segments is shown in Figure~\ref{fig:strong-scaling-single-assembly-normalized}. 
+
+\begin{figure}[h!]
+	\centering
+	\begin{subfigure}{0.45\textwidth}
+		\centering
+		\includegraphics[width=\linewidth]{figures/DD/sa-scaling-fs-ts-norm.png}
+		\caption{Flat}
+		\label{fig:dd-sa-fs-norm}
+	\end{subfigure}
+	\begin{subfigure}{0.45\textwidth}
+		\centering
+		\includegraphics[width=\linewidth]{figures/DD/sa-scaling-ls-ts-norm.png}
+		\caption{Linear}
+		\label{fig:dd-sa-ls-norm}
+	\end{subfigure}
+	\caption[]{Strong scaling of axial domain decomposition for a single assembly model of the (a) flat and (b) linear source solver, normalized by the number of segments treated in the simulation.}
+	\label{fig:strong-scaling-single-assembly-normalized}
+\end{figure}
+
+After the normalization, the linear source results are no longer better than ideal. It is important to note that here a fixed 400 cm tall single assembly is domain decomposed axially all the way to 200 domains (each of 2 cm height), which is quite excessive. At 200 domains there is only one source region axially for each domain. The expected \ac{MOC} ray parameters to fully resolve the fission distribution produce approximately $27\times$ more rays than the coarse ray parameters simulated here, greatly increasing the on-node work and improving the domain decomposition performance. Using finer \ac{MOC} ray parameters on this benchmark, we would expect to only domain decompose to 20 domains axially. For a problem of this size with the ray parameters given in Table~\ref{tab:dd-ss-params}, any domain decomposition might be excessive. Still at 8 axial domains, the speedup of the linear source solver is 97\% of ideal. The efficiency then decreases to 87\% and 67\% at 20 and 200 axial domains, respectively.
+
+Since the desired \ac{MOC} parameters are significantly are significantly finer than those shown in these scaling studies, the performance should be tested using the desired parameters. Due to the one hour time limit on Cetus runs, this can only be tested using at least several domains. Therefore, the linear source solve is tested with a domain decomposition of 20 axial domains and with the the expected \ac{MOC} parameters to accurately converge the fission distribution, given in Table~\ref{tab:expected-moc-params}.
+
+\begin{table}[ht]
+	\centering
+	\caption{Expected MOC parameters to accurately converge a full core PWR fission distribution}
+	\medskip
+	\begin{tabular}{lc}
+		\hline
+		Number of Sectors in Moderator & 8 \\
+		Number of Sectors in Fuel & 4 \\
+		Height of Flat Source Regions & 2.0 cm \\
+		Radial Ray Spacing & 0.05 cm \\
+		Axial Ray Spacing & 0.75 cm \\
+		Number of Azimuthal Angles & 64 \\
+		Number of Polar Angles & 10 \\
+		\hline
+	\end{tabular}
+	\label{tab:expected-moc-params}
+\end{table}
+
+From the strong scaling studies with coarse rays, 67\% efficiency was observed for the linear source solver. In order to judge the efficiency with desired ray parameters, the timing breakdown for the single assembly case is presented in Table~\ref{tab:dd-sa-breakdown}. Here, three timing statistics are considered: total transport sweep execution time, angular flux communication time, and idle time between sweeps. The angular flux communication time is the total time required to communicate all angular flux information between domains. The idle time between sweeps is the average time that nodes remain idle after doing all on-node work and before transferring angular fluxes with other domains. Therefore, the idle time is an indication of load imbalance.
+
+\begin{table}[ht]
+	\centering
+	\caption{Timing breakdown of the single assembly test problem with the linear source solver domain decomposed into 20 axial domains}
+	\medskip
+	\begin{tabular}{l|l|l}
+		Procedure & Time (s)  & \% of Total Transport Sweep \\
+		\hline
+		\hline
+		Total Transport Sweep & 1059 +/- 11 & -- \\
+		\hline
+		Angular Flux Communication & 15 +/- $8 \times 10^{-3}$ & 1.4 \\
+		Idle Time Between Sweeps & 145 +/- 10 & 13.7 \\
+		\hline
+	\end{tabular}
+	\label{tab:dd-sa-breakdown}
+\end{table}
+
+These results show the angular flux communication time to be almost trivial for this single assembly case but the idle time is measurable. This indicates a cost to the modular ray tracing structure where domains are required to be of equal size. For this single assembly problem, there are many more segments in the core, and thus more work, than in reflector regions. Domains in the reflector region need to wait for in-core domains to finish their work before moving on, leading to wasted computational resources. Still, the combined 15.1\% of transport sweep time spent to accommodate domain decomposition is a small cost for a problem of this size. Since this problem is run with the desired \ac{MOC} parameters, it should be a good measure of the expected performance on realistic problems.
+
+\subsection{Weak Scaling Studies}
+\label{sec:dd-weak-scaling}
+
+For the weak scaling studies, chosen geometries are replicated in a lattice. The first set of tests radially replicate the single assembly geometry used in the previous section and detailed in Section~\ref{sec:beavrs-single-assembly} in a 2D lattice. These series of tests are true to the design of common reactor cores, as they typically resemble arrangements of assemblies placed in some radial format. The disadvantage of this test problem is that it only tests weak scaling of the domain decomposition in the radial directions. Therefore, another set of tests is performed that replicate the SDSA test problem detailed in Section~\ref{sec:sdsa} in a 3D lattice. This test problem more precisely tests the scalability of the algorithm as every domain has the same geometry and material composition. 
+
+Since the emphasis of this work is to both solve real problems and solve them efficiently, these tests provide great insight into the capabilities and behavior of the OpenMOC implementation. For these weak scaling tests, all test problems use the desired \ac{MOC} parameters, as given in Table~\ref{tab:expected-moc-params}. All results in this section focus on the scalability of the linear source solver.
+ 
+
+\subsubsection{2D Lattice of the Single Assembly Geometry}
+
+First, the 2D lattice of full-height assemblies is considered. The geometry needs to be domain decomposed axially in order to run with these desired parameters in less than the one hour time limit set by the Cetus policies. Therefore, all geometries are domain decomposed into 20 axial domains and then further domain decomposed such that each domain simulates an assembly in the radial direction. The base case is therefore the single assembly decomposed into 20 domains, which was analyzed at the end of the strong scaling studies.
+
+All efficiency results are relative ot the base case of a single assembly. The ideal case is for runtime to stay fixed as the problem size is increased with 20 nodes assigned to each assembly. The geometry is expanded in a $N \times N$ square lattice where $N$ is the number of domains in both the $x$ and $y$ directions. The results are shown in Fig.~\ref{fig:dd-ws-2D} where the efficiency is plotted as a function of the number of nodes used in the computation. Note the logarithmic scale on the $x$-axis.
+
+\begin{figure}[h!]
+	\centering
+	\includegraphics[width=0.6\linewidth]{figures/DD/dd-ws-2D.png}
+	\caption[]{Weak scaling inter-node parallel efficiency of the domain decomposition implementation of the linear source solver on a replicated 2D lattice of assemblies.}
+	\label{fig:dd-ws-2D}
+\end{figure}
+
+These results show the domain decomposition implementation is able to efficiently scale to many nodes. Even at 2000 nodes (32,000 cores), the efficiency is above 95\%.
+
+\subsubsection{3D Lattice of the SDSA Geometry}
+
+The next sets of tests are similar to the 2D lattice tests but expand the domain in all 3 Cartesian directions using a 3D lattice. Instead of replicating the single assembly test problem, the SDSA test problem is replicated, causing each domain to have the same geometry and equal computational work. The geometry is replicated in a $N \times N \times N$ cubic lattice where $N$ is the number of domains in each Cartesian direction.
+
+\begin{figure}[h!]
+	\centering
+	\includegraphics[width=0.6\linewidth]{figures/DD/dd-ws-3D.png}
+	\caption[]{Weak scaling inter-node parallel efficiency of the domain decomposition implementation of the linear source solver on a replicated 3D lattice of the SDSA test problem.}
+	\label{fig:dd-ws-3D}
+\end{figure}
+
+Again, excellent scaling is observed with the efficiency above 90\% for all tested cases. At 1728 nodes (27,648 cores), using a $12 \times 12 \times 12$ domain decomposition, the efficiency is 92\%.
+
+\newpage
+\section{Conclusion}
+
+In order to scale to large problems, inter-node parallelism is essential. To accomplish this, domain decomposition has been implemented in OpenMOC with MPI, utilizing the natural track linking of the modular ray tracing structure. This allows angular fluxes to be easily communicated by referring to connecting periodic tracks. The domain decomposition implementation has been tested and observed to scale very well to many nodes. Communication costs of transferring angular fluxes were at most only a few percent of overall runtime for realistic cases. The biggest hindrance to inter-node scaling of the domain decomposition implementation is the potential load imbalance created by domains of unequal work. For domains with uniform work, the inter-node parallel efficiency was above 90\% for all weak scaling studies. Significant degradation in performance was only noticed in strong scaling studies for cases with an unrealistically low amount of on-node work.
+

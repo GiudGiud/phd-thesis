@@ -1,9 +1,9 @@
 \chapter{The Method of Characteristics}
 \label{chap:moc}
 
-In the previous chapter, some significant approximations are made in generation of multi-group cross-sections. Standard Method of Characteristics (MOC) solvers, such as the one developed and discussed in this thesis, rely on multi-group cross-sections as input. Once the cross-sections are generated, MOC is capable of computing reaction rates across the reactor geometry.
+In the previous chapter, some significant approximations are made in generation of multi-group cross-sections. Standard \ac{MOC} solvers, such as the one developed and discussed in this thesis, rely on multi-group cross-sections as input. Once the cross-sections are generated, \ac{MOC} is capable of computing reaction rates across the reactor geometry.
 
-First, the MOC equations are derived from the multi-group neutron transport equation. Then, track discretization is introduced, forming a system of equations involving discrete variables. Finally, the solution of the system of equations is discussed. Discussions of solution techniques to the MOC system of equations normally are centered around the underlying physics with little mention of the system as a linear algebra problem~\cite{boyd2014openmoc}. Others further describe MOC in terms of operator notation, but offer little insight into the structure of the operators~\cite{kochunas}. Instead, this discussion casts the system of equations as simply a general eigenvalue problem. Then discussion of matrix structure motivates the use of an uncommon solution technique. Physical reasoning for the structure is mentioned throughout the discussion. The properties of the chosen solution technique are discussed, motivating the need for an acceleration scheme to mitigate its weaknesses.
+First, the \ac{MOC} equations are derived from the multi-group neutron transport equation. Then, track discretization is introduced, forming a system of equations involving discrete variables. Finally, the solution of the system of equations is discussed. Discussions of solution techniques to the \ac{MOC} system of equations normally are centered around the underlying physics with little mention of the system as a linear algebra problem~\cite{boyd2014openmoc}. Others further describe \ac{MOC} in terms of operator notation, but offer little insight into the structure of the operators~\cite{kochunas}. Instead, this discussion casts the system of equations as simply a general eigenvalue problem. Then discussion of matrix structure motivates the use of an uncommon solution technique. Physical reasoning for the structure is mentioned throughout the discussion. The properties of the chosen solution technique are discussed, motivating the need for an acceleration scheme to mitigate its weaknesses.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -61,7 +61,7 @@ Realistically, the source distribution is not known before solving the neutron t
 	\label{fig:pin-discretization}
 \end{figure}
 
-One common low order approximation for the neutron source is the flat source approximation. This approximation assumes the neutron source for a given energy group $q_g(\mathbf{r})$ is constant over each source region. A linear source approximation will be introduced later in Section~\ref{sec:linear-source}, allowing for a coarser discretization of the geometry. However, the flat source approximation is first presented in this description of MOC as it is less mathematically cumbersome than the linear source approximation while arriving at a very similar form and solution method as the linear source version. The flat source approximation is also the most frequently used approximation in standard MOC solvers~\cite{kochunas, FIXME}. Under this approximation the angular flux relationship given in Eq.~\ref{eqn:moc-source-int} reduces to
+One common low order approximation for the neutron source is the flat source approximation. This approximation assumes the neutron source for a given energy group $q_g(\mathbf{r})$ is constant over each source region. A linear source approximation will be introduced later in Section~\ref{sec:linear-source}, allowing for a coarser discretization of the geometry. However, the flat source approximation is first presented in this description of \ac{MOC} as it is less mathematically cumbersome than the linear source approximation while arriving at a very similar form and solution method as the linear source version. The flat source approximation is also the most frequently used approximation in standard \ac{MOC} solvers~\cite{kochunas, FIXME}. Under this approximation the angular flux relationship given in Eq.~\ref{eqn:moc-source-int} reduces to
 \begin{dmath}
 	\psi_g(\mathbf{r_0} + \ell \mathbf{\Omega},\mathbf{\Omega}) = \psi_g(\mathbf{r_0},\mathbf{\Omega}) e^{-\Sigma_{t}^{i,g} \ell} + \int\displaylimits_{0}^{\ell} ds \, q^0_{i,g} e^{-\Sigma_{t}^{i,g} (\ell-s)}
 \end{dmath}
@@ -90,7 +90,7 @@ This form is relatively unuseful since the relationship presented in Eq.~\ref{eq
 
 \section{Track Discretization of the MOC Equations}
 
-MOC discretizes the angular space by choosing a finite number of directions to lay down \textit{tracks} across the geometry. For each direction, tracks stretch the entire length of the geometry, from one boundary to another, and completely fill the geometry. This collection of tracks is termed the \textit{track laydown}. A radial view of a coarse track laydown for a simple pin-cell geometry is shown in Figure~\ref{fig:track-laydown}. The geometry is colored by material region; namely water, clad, and fuel. Note that the final track laydown traverses tracks in both forward and backward directions rather than generating tracks in each direction for computational efficiency~\cite{kochunas2007twoway}.
+\ac{MOC} discretizes the angular space by choosing a finite number of directions to lay down \textit{tracks} across the geometry. For each direction, tracks stretch the entire length of the geometry, from one boundary to another, and completely fill the geometry. This collection of tracks is termed the \textit{track laydown}. A radial view of a coarse track laydown for a simple pin-cell geometry is shown in Figure~\ref{fig:track-laydown}. The geometry is colored by material region; namely water, clad, and fuel. Note that the final track laydown traverses tracks in both forward and backward directions rather than generating tracks in each direction for computational efficiency~\cite{kochunas2007twoway}.
 
 %The left image shows the geometry, colored by material region; namely water, clad, and fuel. The middle image shows the track laydown across the geometry for one direction. The right image shows complete track laydown for four azimuthal directions.
 
@@ -140,7 +140,7 @@ where $\ell_{t,\varsigma}$ refers to the length of segment $\varsigma$ along tra
 
 For reflective boundary conditions, the incoming angular flux is equal to the outgoing angular flux of the reflected angle. This requires that a track be present with the correct reflecting angle, meeting at precisely the same point on the boundary. During track laydown, this is enforced. If only vacuum boundary conditions were present, this restriction on track laydown would not be necessary. Similar treatments are possible for periodic and rotational boundary conditions if allowed by the track laydown.  A more complete discussion of track laydown is given in Chapter~\ref{chap:track-laydown}. For instance, the conditions required to link tracks at geometric boundaries will be discussed at length.
 
-Precise definitions are needed in order to discuss the relation of these tracks to the MOC equations. Tracks are defined to originate at one boundary and stretch across the geometry until they terminate at another boundary. The segments of a track are ordered in the direction of the track so that only the first segment is affected by a boundary condition. Track $t$ is defined to have $S(t)$ segments. For vacuum boundaries,
+Precise definitions are needed in order to discuss the relation of these tracks to the \ac{MOC} equations. Tracks are defined to originate at one boundary and stretch across the geometry until they terminate at another boundary. The segments of a track are ordered in the direction of the track so that only the first segment is affected by a boundary condition. Track $t$ is defined to have $S(t)$ segments. For vacuum boundaries,
 \begin{dmath}
 	\psi_g^{t,1}(0) = 0
 \end{dmath}
@@ -185,7 +185,7 @@ The difference in angular flux $\Delta \psi_g^{t,\varsigma}$ is equal to $\psi_g
 \section{Solving the MOC System of Equations}
 \label{sec:moc-solve}
 
-In the previous section Eq.~\ref{eqn:angular-flux-var-disc} and Eq.~\ref{eqn:average-flux} provided ways to calculate the angular fluxes and scalar fluxes, respectively. The source can be computed from the scalar fluxes with Eq.~\ref{eqn:source-discr}. This forms a system of equations that can be solved to determine the neutron distribution inside a nuclear reactor core. Normally, the solution of the MOC equations is presented in terms of a physics perspective, following neutrons along trajectories, and repeatedly solving for the neutron source. Physical intuition usually guides this discussion.
+In the previous section Eq.~\ref{eqn:angular-flux-var-disc} and Eq.~\ref{eqn:average-flux} provided ways to calculate the angular fluxes and scalar fluxes, respectively. The source can be computed from the scalar fluxes with Eq.~\ref{eqn:source-discr}. This forms a system of equations that can be solved to determine the neutron distribution inside a nuclear reactor core. Normally, the solution of the \ac{MOC} equations is presented in terms of a physics perspective, following neutrons along trajectories, and repeatedly solving for the neutron source. Physical intuition usually guides this discussion.
 
 The discussion presented here will be more broad. Instead of solely focusing on physics, the problem will be cast as a set of matrix equations that could theoretically be solved with common linear algebra packages. However, this discussion will show that blindly solving the system of equations with a general linear algebra package is computationally infeasible since it loses sight of inherent structure the physics-based approach naturally captures.
 
@@ -345,7 +345,7 @@ k = \frac{\mathbb{1}_M^T F \boldsymbol{\phi}}{\mathbb{1}_M^T \left(D - S \right)
 \end{equation}
 where $\mathbb{1}_M^T F \boldsymbol{\phi}$ refers to the fission rate, $\mathbb{1}_M^T \left(D - S \right) \boldsymbol{\phi}$ refers to the absorption rate, and $-\mathbb{1}_M^T W \boldsymbol{\psi}$ refers to the leakage rate. Physically, this shows that $k$ is simply a ratio of neutron production to neutron loss terms.
 
-Notice that each source iteration relies on simply taking the inverse of the transport matrix $T$ rather than the full $B$ matrix, which includes the scattering matrix, as would normally be taken during an eigenvalue solver, e.g. power iteration. While this choice does ease the computational burden of each iteration, it also requires many more iterations to converge to the correct solution as each iteration does little work in resolving the angular fluxes as the scattering matrix is not included in the inversion. Physically, this relates to not treating the scattering source as directly coupled to the total neutron source. Therefore, un-accelerated MOC is inherently plagued by slow convergence. 
+Notice that each source iteration relies on simply taking the inverse of the transport matrix $T$ rather than the full $B$ matrix, which includes the scattering matrix, as would normally be taken during an eigenvalue solver, e.g. power iteration. While this choice does ease the computational burden of each iteration, it also requires many more iterations to converge to the correct solution as each iteration does little work in resolving the angular fluxes as the scattering matrix is not included in the inversion. Physically, this relates to not treating the scattering source as directly coupled to the total neutron source. Therefore, un-accelerated \ac{MOC} is inherently plagued by slow convergence. 
 
 Next, in Chapter~\ref{chap:cmfd}, Course Mesh Finite Difference (CMFD) acceleration is introduced which resolves the issue of slow convergence for source iteration. This allows for the computational burden of each iteration to be eased without giving up anything in terms of convergence rate by iteration.
 
@@ -353,14 +353,14 @@ Next, in Chapter~\ref{chap:cmfd}, Course Mesh Finite Difference (CMFD) accelerat
 \vfill
 \begin{highlightsbox}[frametitle=Highlights]
 	\begin{itemize}
-		\item The MOC transform changes the neutron transport equation from a partial differential equation to an ordinary differential equation along a certain direction.
+		\item The \ac{MOC} transform changes the neutron transport equation from a partial differential equation to an ordinary differential equation along a certain direction.
 		\item The geometry is discretized into source regions which have constant cross-sections and a low-order approximation of the neutron source within the region.
-		\item Tracks are laid down across the geometry which enable the  MOC transform to yield an analytic description of the angular flux variation across each source region.
+		\item Tracks are laid down across the geometry which enable the  \ac{MOC} transform to yield an analytic description of the angular flux variation across each source region.
 		\item The angular flux variation along each track provided a weighted contribution to the scalar flux estimate of each traversed source region.
-		\item The synthesis of MOC equations over each source region form an eigenvalue problem.
-		\item The MOC eigenvalue problem fundamentally involves all angular fluxes over each source region.
-		\item Since the number of angular fluxes is vast, standard eigenvalue solution techniques are abandoned in favor of \textit{source iteration} which takes advantage of fundamental structure of the MOC equations.
-		\item \textit{Source iteration} allows each MOC iteration to be computed far more efficiently in the form of a \textit{transport sweep} but at the cost of slow convergence (if acceleration is absent)
+		\item The synthesis of \ac{MOC} equations over each source region form an eigenvalue problem.
+		\item The \ac{MOC} eigenvalue problem fundamentally involves all angular fluxes over each source region.
+		\item Since the number of angular fluxes is vast, standard eigenvalue solution techniques are abandoned in favor of \textit{source iteration} which takes advantage of fundamental structure of the \ac{MOC} equations.
+		\item \textit{Source iteration} allows each \ac{MOC} iteration to be computed far more efficiently in the form of a \textit{transport sweep} but at the cost of slow convergence (if acceleration is absent)
 	\end{itemize}
 \end{highlightsbox}
 
