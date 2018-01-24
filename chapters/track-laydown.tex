@@ -1,7 +1,7 @@
 \chapter{Track Laydown}
 \label{chap:track-laydown}
 
-One of the often overlooked aspects of \ac{MOC} implementations is the method chosen to lay down tracks across the geometry. In Chapter~\ref{chap:moc} the basic strategy of laying down tracks and then applying the \ac{MOC} equations over the tracks was discussed. In this chapter, the strategies for laying down tracks are discussed in great detail. First, this chapter discusses 2D track laydown in Section~\ref{sec:laydown-2D} which is relatively straightforward. Section~\ref{sec:angular-quadrature} discusses how angular quadratures are formed and the impact of track linking requirements. Then, Section~\ref{sec:laydown-3D} describes how a 2D track laydown can be used to form a 3D track laydown. Section~\ref{sec:openmoc-laydown} details features of the OpenMOC track generation implementation. This chapter closely follows the track laydown analysis of Shaner, et al~\cite{shaner-laydown}.
+One of the often overlooked aspects of \ac{MOC} implementations is the method chosen to lay down tracks across the geometry. In Chapter~\ref{chap:moc} the basic strategy of laying down tracks and then applying the \ac{MOC} equations over the tracks was discussed. In this chapter, the strategies for laying down tracks are discussed in great detail. First, this chapter discusses 2D track laydown in Section~\ref{sec:laydown-2D} which is relatively straightforward. Section~\ref{sec:angular-quadrature} discusses how angular quadratures are formed and the impact of track linking requirements. Then, Section~\ref{sec:laydown-3D} describes how a 2D track laydown can be used to form a 3D track laydown. Section~\ref{sec:openmoc-laydown} details features of the OpenMOC track generation implementation. The chapter concludes in Section~\ref{sec:tg-conclusion} by highlighting important aspects of 3D track generation. This chapter closely follows the track laydown analysis of Shaner, et al~\cite{shaner-laydown}.
 
 \section{2D Track Generation}
 \label{sec:laydown-2D}
@@ -12,7 +12,7 @@ When creating the tracks, it is important to consider the boundary conditions as
 
 In this discussion, it is important to make clear the distinction between tracks and segments (sometimes also referred to as intersections). Tracks are defined to span an entire geometry or geometry sub-domain and pass through region boundaries. On the other hand, segments do not cross region or material boundaries.
 
-Tracks for a 2D \ac{MOC} problem are typically laid down using the cyclic tracking approach. Users input a desired radial ray spacing $\tilde{\delta}_\phi$ and number of azimuthal angles $n_{\phi}$ in $[0, 2 \pi]$. With this approach, desired azimuthal angles are created to evenly subdivide the angular space such that the $i^{\text{th}}$ desired azimuthal angle $\tilde{\phi}_i$ in $[0, \frac{\pi}{2}]$ is paired with a complementary azimuthal angle $\tilde{\phi}_{\frac{n_{\phi}}{2} - i - 1}$ as described in Eq.~\ref{eq:disc-azim-angles} and Eq.~\ref{eq:disc-azim-angles-comp}.
+Tracks for a 2D \ac{MOC} problem are typically laid down using the cyclic tracking approach. Users input a desired radial ray spacing $\tilde{\delta}_\phi$ and number of azimuthal angles $n_{\phi}$ in $[0, 2 \pi]$. With this approach, desired azimuthal angles are created to evenly subdivide the angular space such that the $i^{\text{th}}$ desired azimuthal angle $\tilde{\phi}_i \in [0, \frac{\pi}{2}]$ is paired with a complementary azimuthal angle $\tilde{\phi}_{\frac{n_{\phi}}{2} - i - 1}$ as described in Eq.~\ref{eq:disc-azim-angles} and Eq.~\ref{eq:disc-azim-angles-comp}.
 \begin{equation}
 \tilde{\phi}_i = \frac{2 \pi}{n_\phi} \left(\frac{1}{2} + i\right) \qquad \forall \qquad i = \Big[0,\frac{n_{\phi}}{2}\Big)
 \label{eq:disc-azim-angles}
@@ -21,7 +21,7 @@ Tracks for a 2D \ac{MOC} problem are typically laid down using the cyclic tracki
 \tilde{\phi}_{\frac{n_{\phi}}{2} - i - 1} = \pi - \tilde{\phi}_i \qquad \forall \qquad i= \Big[0,\frac{n_{\phi}}{4}\Big)
 \label{eq:disc-azim-angles-comp}
 \end{equation} 
-Other valid angular quadrature sets can also be used~\cite{3D-MOC-annals}. By tracking both forward and backward along a track, the full $2 \pi$ angular space is covered as shown in Fig. \ref{fig:laydown-2D} for four azimuthal angles. Tracks are laid down such that they intersect with a complementary track at the boundaries. 
+Other valid angular quadrature sets can also be used~\cite{liu_mrt}. By tracking both forward and backward along a track, the full $2 \pi$ angular space is covered as shown in Figure~\ref{fig:laydown-2D} for four azimuthal angles. Tracks are laid down such that they intersect with a complementary track at the boundaries. 
 
 \begin{figure}[h!]
 	\centering
@@ -67,25 +67,25 @@ where $\delta_{\phi}^i$ is used to denote the corrected radial ray spacing. Usin
 \section{Angular Quadrature}
 \label{sec:angular-quadrature}
 
-In any \ac{MOC} implementation, angular quadratures needed. A angular quadrature is a set of angles and weights that can accurately integrate the angular space. In this thesis, a product quadrature is assumed which allows azimuthal and polar quadratures to be separable. For a given azimuthal and polar angle combination, the weight from the azimuthal quadrature is multiplied with the weight from the polar quadrature to determine the total angular weight.
+In any \ac{MOC} implementation, angular quadratures are needed. An angular quadrature is a set of angles and weights that can accurately integrate the angular space. In this thesis, a product quadrature is assumed which allows azimuthal and polar quadratures to be separable. For a given azimuthal and polar angle combination, the weight from the azimuthal quadrature is multiplied with the weight from the polar quadrature to determine the total angular weight.
 
 \subsection{Azimuthal Quadrature}
 
-For the azimuthal space, equal angle separation is chosen since it is expected that all azimuthal directions are equally important, as given in Eq.~\ref{eq:disc-azim-angles}. The angles needed to be corrected to ensure track linking at reflective and periodic boundaries. Azimuthal weights $w_{\phi}^i$ for azimuthal index $i=1...{n_\phi/2}$ are then chosen as
+For the azimuthal space, equal angle separation is chosen since it is expected that all azimuthal directions are equally important, as given in Eq.~\ref{eq:disc-azim-angles}. The angles need to be corrected to ensure track linking at reflective and periodic boundaries. Azimuthal weights $w_{\phi}^i$ for azimuthal index $i=1...{n_\phi/2}$ are then chosen as:
 \begin{equation}
 w_{\phi}^i = \frac{\phi_{i+1} - \phi_{i-1}}{4\pi}
 \end{equation}
-with the virtual angles $\phi_{0}$ and $\phi_{n_\phi/2+1}$ are defined to be
+Virtual angles are introduced at the extremes for notational convenience. These angles, $\phi_{0}$ and $\phi_{n_\phi/2+1}$, are defined to be:
 \begin{equation}
 \phi_0 = - \phi_1 \qquad \phi_{n_\phi/2+1} = \pi - \phi_{n_\phi/2}
 \end{equation}
-In this form, the weights account for the angular space represented by each track. Note that these relationships define weights for azimuthal angles $\phi \in [0, \pi]$ since tracking both forward and backward along tracks accounts for the full $2\pi$ azimuthal space.
+The computed weights account for the angular space represented by each track. Note that these relationships define weights for azimuthal angles $\phi \in [0, \pi]$, only accounting for half the azimuthal angular space, since tracking both forward and backward along tracks accounts for the full $2\pi$ azimuthal space.
 
 \subsection{Polar Quadrature}
 
 In 2D, the axial dimension is assumed infinite and therefore linking is not required beyond the radial plane. This allows any polar angle quadrature to be chosen without having to correct polar angles. One interpretation is that tracks in 2D \ac{MOC} are allowed to continue unbounded axially, with their $z$-height insubstantial, since behavior must be the same along the axial direction due to symmetry. Popular quadratures include the Gauss-Legendre polar quadrature and the TY quadrature~\cite{ty-quadrature}. Both are important polar quadrature sets for \ac{MOC} solvers.
 
-The Gauss-Legendre quadrature set is based on the Gaussian quadrature rule which allows polynomials of order up to $2n-1$ to be integrated exactly using only $n$ quadrature points. The Gauss-Legendre quadrature set chooses quadrature points and weights to enforce the exact integration of Legendre polynomials of order $2n-1$ over the interval [-1, 1] with $n$ points. This is accomplished by choosing quadrature points $x_j$ and weights $w_{\textit{gl}}^j$ such that
+The Gauss-Legendre quadrature set is based on the Gaussian quadrature rule which allows polynomials of order up to $2n-1$ to be integrated exactly using only $n$ quadrature points over the interval [-1, 1]. This is accomplished by choosing quadrature points $x_j$ and weights $w_{\textit{gl}}^j$ such that
 \begin{equation}
 \int_{-1}^{1} dx \, P_m(x) = \sum_{j=1}^n x_j w_{\textit{gl}}^j \qquad \forall m = [0, 2n-1]
 \end{equation}
@@ -95,7 +95,7 @@ w_{\textit{gl}}^j = \frac{2(1-x_j^2)}{(n+1)^2\left[P_{n+1}(x_j)\right]^2}
 \end{equation}
 Since the polar angle $\theta \in [0, \pi]$ and $\cos{\theta} \in [-1, 1]$, this quadrature rule can be used by the taking polar angles to be $\cos^{-1} x_j$.  
 
-Another useful quadrature for 2D \ac{MOC}, and the most widely used in production \ac{MOC} codes, is the TY polar quadrature~\cite{ty-quadrature}. This quadrature set notes the relation of \ac{MOC} to collision probability methods, allowing an analytic form for \ac{MOC} scalar fluxes in terms of collision probabilities. These collision probabilities can then be cast in terms of \ac{MOC} equations along a strip associated with a 2D track to show that the polar quadrature is optimal when it minimizes the error of approximating Bickley functions. With this insight, the TY quadrature is computationally formed by minimizing the error to Bickley functions, which can be numerically evaluated. In practice, most codes take the results of the published optimization to hard-code the polar angle quadrature points and associated polar weights. While the TY quadrature has been quite successful in 2D simulations, it cannot be easily extended to 3D \ac{MOC} since it relies on an analytic form for the neutron transport over a 2D strip. Therefore, the Gauss-Legendre quadrature is typically used in 3D \ac{MOC} simulations. 
+Another useful quadrature for 2D \ac{MOC}, and the most widely used in production \ac{MOC} codes, is the TY polar quadrature~\cite{ty-quadrature}. This quadrature set notes the relation of \ac{MOC} to collision probability methods, allowing an analytic form for \ac{MOC} scalar fluxes in terms of collision probabilities. These collision probabilities can then be cast in terms of \ac{MOC} equations along a strip associated with a 2D track to show that the polar quadrature is optimal when it minimizes the error of approximating Bickley functions. With this insight, the TY quadrature is computationally formed by minimizing the error to Bickley functions, which can be numerically evaluated. In practice, most simulation tools hard-code the published polar angle quadrature points and associated polar weights. While the TY quadrature has been quite successful in 2D simulations, it cannot be easily extended to 3D \ac{MOC} since it relies on an analytic form for the neutron transport over a 2D strip. Therefore, the Gauss-Legendre quadrature is typically used in 3D \ac{MOC} simulations. 
 
 Together, the azimuthal and polar quadrature combine to form a product quadrature. An example of a quadrature for 3D MOC is shown in Figure~\ref{fig:quad-unit-sphere} where the product quadrature is plotted on a octant of the unit sphere using the Gauss-Legendre polar quadrature.
 
@@ -127,7 +127,7 @@ Together, the azimuthal and polar quadrature combine to form a product quadratur
 \section{3D Track Generation}
 \label{sec:laydown-3D}
 
-Once the 2D tracks are laid down, 3D tracks can be formed from the 2D tracks. In generating 3D tracks, it is assumed that 3D tracks are laid down as $z$-stacked arrays of tracks that project down onto the 2D track layout. A sparse 2D and associated 3D track laydown for a homogeneous cube geometry is illustrated in Fig~\ref{fig:sample-tracks}.
+Once the 2D tracks are laid down, 3D tracks can be formed from the 2D tracks. In generating 3D tracks, it is assumed that 3D tracks are laid down as $z$-stacked groups of tracks that project down onto the 2D track layout. A sparse 2D and associated 3D track laydown for a cubic geometry is illustrated in Fig~\ref{fig:sample-tracks}.
 
 \begin{figure}[h!]
 	\centering
@@ -150,7 +150,7 @@ Once the 2D tracks are laid down, 3D tracks can be formed from the 2D tracks. In
 
 \subsection{Requirements for Cyclic Track Laydown in 3D}
 
-Before discussing the conditions required to generate cyclic tracks in 3D, it is important to understand the concept of a track cycle. Fig.~\ref{fig:tracks-cycles-2D} shows a track laydown in 2D for reflective track cycles with $T_{R,k}^{i}$ denoting the $k^{\textit{th}}$ reflective track cycle for the $i^{\textit{th}}$ azimuthal angle. 
+Before discussing the conditions required to generate cyclic tracks in 3D, it is important to understand the concept of a track cycle. Figure~\ref{fig:tracks-cycles-2D} shows a track laydown in 2D for reflective track cycles with $T_{R,k}^{i}$ denoting the $k^{\textit{th}}$ reflective track cycle for the $i^{\textit{th}}$ azimuthal angle. 
 
 % insert picture
 \begin{figure}[h]
@@ -167,9 +167,9 @@ To generate 3D tracks, users input a desired track axial ray spacing $\tilde{\de
 \end{equation} 
 where $\tilde{\theta}_{n_{\theta} - j - 1}$ is the complement of the desired polar angle. Most useful quadrature sets, such as the Gauss Legendre quadrature set, are indeed symmetric. 
 
-Note that the polar angles are initially defined to be independent of azimuthal angle index. Later, the corrected polar angle will be dependent on the azimuthal angle to ensure the tracks are cyclic. Following the same notation used to describe the azimuthal angles, the corrected polar angles will be denoted by $\theta_{i,j}$ for azimuthal index $i$ and polar index $j$. By tracking both forward and backward along a track, the full $4 \pi$ angular space can be covered as previously shown in Fig.~\ref{fig:sample-tracks} for four azimuthal and two polar angles.
+Note that the polar angles are initially defined to be independent of azimuthal angle index. Later, the corrected polar angle will be dependent on the azimuthal angle to ensure the tracks are cyclic. Following the same notation used to describe the azimuthal angles, the corrected polar angles will be denoted by $\theta_{i,j}$ for azimuthal index $i$ and polar index $j$. By tracking both forward and backward along a track, the full $4 \pi$ angular space can be covered, as previously shown in Figure~\ref{fig:sample-tracks} for four azimuthal and two polar angles.
 
-Tracks are laid down such that they intersect with a complementary track at the boundaries. Selecting an arbitrary cycle $T_{R,k}^{i}$ a set of 3D tracks are followed as they complete one 2D cycle. Fig.~\ref{fig:projected-tracks} highlights a particular 2D track cycle and a set of 3D tracks projected along that cycle.
+Tracks are laid down such that they intersect with a complementary track at the boundaries. Selecting an arbitrary cycle $T_{R,k}^{i}$ a set of 3D tracks are followed as they complete one 2D cycle. Figure~\ref{fig:projected-tracks} highlights a particular 2D track cycle and a set of 3D tracks projected along that cycle.
 
 \begin{figure}[h!]
 	\centering
@@ -198,11 +198,11 @@ To guarantee cyclic track wrapping of the 3D tracks, two conditions must be met:
 	\item There must be an integer number of track spacings along the $z$-axis over the depth of geometry, $\Delta z$ for each azimuthal/polar angle combination.
 \end{enumerate}
 
-The first condition guarantees that a 3D track cycle wraps back onto another 3D track when the 2D reflective cycle is completed. The second condition guarantees that a 3D track cycle that contains a reflection off a top or bottom surface still reflects into an existing 3D track when the 2D cycle is completed. All 3D track generation schemes must comply with these conditions, though many make additional assumptions.
+The first condition guarantees that a 3D track cycle wraps back onto another 3D track when the 2D reflective cycle is completed. The second condition guarantees that a 3D track cycle that contains a reflection off a top or bottom surface still reflects into an existing 3D track when the 2D cycle is completed. All cyclic 3D track generation schemes must comply with these conditions, though many make additional assumptions.
 
 \subsection{The Modular Ray Tracing Method}
 
-\ac{MRT} uses the previously stated conditions for 3D cyclic ray tracing to generate tracks for a rectangular geometry. After the 2D track information has been generated, the 3D track information can be computed using the requirements for 3D cyclic tracking. \ac{MRT} relies on the principle that a geometry can be uniformly decomposed into a series of rectangular cuboids of equal dimensions. For a domain, the number of tracks and spacing between tracks in $x$ and $y$ are described in Eq.~\ref{eq:mrt-nx-ny} and Eq.~\ref{eq:mrt-dx-dy}, respectively,
+\ac{MRT} is a popular method for generating tracks, as tracks from different modules naturally link at boundaries. Liu presented the first thorough description of this method for 3D \ac{MOC}~\cite{liu_mrt} based on a similar approach introduced by Filippone for 2D \ac{MOC}~\cite{orig-moc-rt}. \ac{MRT} uses the previously stated conditions for 3D cyclic ray tracing to generate tracks for a rectangular geometry. After 2D track information has been generated, the 3D track information can be computed using the requirements for 3D cyclic tracking. \ac{MRT} relies on the principle that a geometry can be uniformly decomposed into a series of rectangular cuboids of equal dimensions, which are referred to as sub-domains. For a sub-domain, the number of tracks and spacing between tracks in $x$ and $y$ are described in Eq.~\ref{eq:mrt-nx-ny} and Eq.~\ref{eq:mrt-dx-dy}, respectively, as
 
 \begin{equation}
 n_x^i = \Bigg\lceil\frac{\Delta x\sin{\tilde{\phi}_i}}{D_x \tilde{\delta}_\phi}\Bigg\rceil \qquad n_y^i = \Bigg\lceil\frac{\Delta y \cos{\tilde{\phi}_i}}{D_y \tilde{\delta}_\phi} \Bigg\rceil
@@ -215,15 +215,17 @@ n_x^i = \Bigg\lceil\frac{\Delta x\sin{\tilde{\phi}_i}}{D_x \tilde{\delta}_\phi}\
 \end{equation}
 
 \noindent
-where $D_x$ and $D_y$ are the integer number of domains in the $x$ and $y$ directions, respectively. This guarantees that an integer number of tracks lie along the $x$ and $y$ boundaries of each domain cell and that tracks on one surface line up with adjoining tracks in the neighbor domain cell. 
+where $D_x$ and $D_y$ are the integer number of sub-domains in the $x$ and $y$ directions, respectively. This guarantees that an integer number of tracks lie along the $x$ and $y$ boundaries of each sub-domain cell and that tracks on one surface line up with adjoining tracks in the neighbor sub-domain cell. 
 
-When generating tracks using the \ac{MRT} method, it is important to remember that a track crossing a domain interface needs to connect with another track on the neighboring domain. Following a series of tracks across the geometry, notice that the series of tracks is periodic. A periodic track cycle is defined to be the series of domain tracks that repeats when a global track traverses a geometry. Fig.~\ref{fig:periodic-cycles} shows the periodic track cycles for one azimuthal angle in our sample geometry when it is split into four domains.
+When generating tracks using the \ac{MRT} method, it is important to remember that a track crossing a sub-domain interface needs to connect with another track on the neighboring sub-domain. Note that connecting tracks on modular sub-domains are periodic in nature. This allows tracks at sub-domain boundaries to be naturally linked through periodic track linking.
+
+A periodic track cycle is defined to be the series of sub-domain tracks that repeats when a global track traverses a geometry. Figure~\ref{fig:periodic-cycles} shows the periodic track cycles for one azimuthal angle in our sample geometry when it is split into four sub-domains.
 
 % insert picture
 \begin{figure}[h]
 	\centering
 	\includegraphics[width=5in]{figures/laydown/2d_periodic_track_cycles_2.png}
-	\caption{An illustration of 2D periodic track cycles $T_{P,k}^i$ for the $k^{th}$ periodic track cycle with the azimuthal index $i$ in a sample geometry split into four domains.}
+	\caption{An illustration of 2D periodic track cycles $T_{P,k}^i$ for the $k^{th}$ periodic track cycle with the azimuthal index $i$ in a sample geometry split into four sub-domains.}
 	\label{fig:periodic-cycles}
 \end{figure}
 Note that all 2D track cycles for a particular azimuthal angle index $i$ have the same periodic cycle length $L_P^{i}$ that can be computed as
@@ -275,7 +277,7 @@ It is important to note that when polar angles are adjusted, the Gauss-Legendre 
 \alpha_t = w_{\phi}^i w_{\textit{gl}}^j .
 \end{equation}
 
-The procedure for identifying the periodic track cycles and finding the start and end points for all tracks using the \ac{MRT} method can seem a bit tedious, so others have simplified the \ac{MRT} method by noticing that the lengths of all 2D tracks are an integer multiple of the shortest 2D track \cite{kochunas}. For example, the length of the first three 2D tracks, $t_1^i$, $t_2^i$, and $t_3^i$, for azimuthal index $i$ are shown in Eq.~\ref{eq:short-track}, Eq.~\ref{eq:short-track-2}, and Eq.~\ref{eq:short-track-3}.
+The procedure for identifying the periodic track cycles and finding the start and end points for all tracks using the \ac{MRT} method can seem a bit tedious, so others have simplified the \ac{MRT} method by noticing that the lengths of all 2D tracks are an integer multiple of the shortest 2D track~\cite{kochunas}. For example, the length of the first three 2D tracks, $t_1^i$, $t_2^i$, and $t_3^i$, for azimuthal index $i$ are shown in Eq.~\ref{eq:short-track}, Eq.~\ref{eq:short-track-2}, and Eq.~\ref{eq:short-track-3}.
 
 \begin{equation}
 l_1^i = \sqrt{\bigg[\frac{\delta_x^i}{2}\bigg]^2 + \bigg[\frac{\delta_y^i}{2}\bigg]^2} = \frac{1}{2} \sqrt{(\delta_x^i)^2 + (\delta_y^i)^2}
@@ -362,13 +364,17 @@ When the periodic cycle length is small relative to the desired axial ray spacin
 \section{OpenMOC Implementation}
 \label{sec:openmoc-laydown}
 
-Due to the great flexibility of modular ray tracing methods and the run-time concerns of \ac{s-MRT}, \ac{MRT} was chosen as the track generation technique for OpenMOC. In earlier development stages, multiple track generation options exist, but since \ac{MRT} outperformed all options in both flexibility and efficiency, the other options were eliminated.
+Due to the great flexibility of modular ray tracing methods and the run-time concerns of \ac{s-MRT}, \ac{MRT} was chosen as the track generation technique for OpenMOC. In earlier development stages, multiple track generation options existed, but since \ac{MRT} outperformed all options in both flexibility and efficiency, the other options were eliminated.
 
 In addition to implementing \ac{MRT} for 3D Track Generation, OpenMOC generates tracks on-the-fly rather than pre-computing and saving all track data. With the large number of tracks involved in a 3D calculation, the storage of 3D track information can be expensive. Therefore, 3D tracks are computed on-the-fly provided the track indexes. The track indexes used to identify a track are: the azimuthal angle index, the $xy$ track number, the polar angle index, and the axial track number. As a pre-processing step, auxiliary information is saved, such as the actual ray spacings, the actual polar angles, the 2D track information, and the number of tracks in a cycle. Since retrieving track data is simple given this auxiliary information, track retrieval adds trivial computational cost to the simulation.
 
+\section{Conclusion}
+\label{sec:tg-conclusion}
 
-\clearpage
+Efficiently laying down tracks is important to any \ac{MOC} solver. In this chapter, the methodology for laying down 3D tracks to guarantee cyclic relationships at boundaries was discussed in detail. The \ac{MRT} track laydown scheme was chosen for its flexibility. Under this scheme, tracks can link at domain boundaries through periodic conditions. More importantly, corrected ray parameters do not deviate significantly from desired ray parameters. This is especially important for typical 3D reactor physics problems in which the radial plane contains much more complexity than the axial direction, allowing for a potentially coarser ray spacing in the axial direction than radial direction which \ac{MRT} can easily accommodate. Other track laydown schemes, such as \ac{s-MRT}, have great difficulties in accommodating these conditions. 
 
+
+\newpage
 \vfill
 \begin{highlightsbox}[frametitle=Highlights]
 \begin{itemize}

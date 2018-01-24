@@ -1,7 +1,7 @@
 \chapter{Domain Decomposition}
 \label{chap:domain-decomposition}
 
-In the previous chapters, the on-node shared memory parallelism of OpenMOC was discussed in which all data is shared and available to all threads on a single computational node. However, this thesis concentrates on solving large scale reactor physics problems which cannot be solved with just one computational node. Extending to multiple computational nodes, communication of data between nodes becomes extremely costly. This makes a shared parallelism model computationally infeasible across nodes. Therefore, hybrid parallelism is introduced in which on-node parallelism uses the OpenMP shared parallelism model, but \ac{MPI}~\cite{mpi} is used to communicate information across nodes. In section~\ref{sec:geometrical-decomposition}, geometric domain decomposition is discussed which forms the basis of the inter-node parallelism in OpenMOC. Section~\ref{sec:moc-dd} discusses how the \ac{MOC} solver is domain decomposed and Section~\ref{sec:cmfd-dd} discusses how the \ac{CMFD} solver is domain decomposed. Both sections first identify the quantities that need to be communicated and then discuss the communication algorithms.
+In the previous chapters, the on-node shared memory parallelism of OpenMOC was discussed in which data is shared and available to all threads on a single computational node. However, this thesis concentrates on solving large scale reactor physics problems which cannot be solved with just one computational node. When extending to multiple computational nodes, communication of data between nodes becomes extremely costly. This makes a shared parallelism model computationally infeasible across nodes. Therefore, hybrid parallelism is introduced in which on-node parallelism uses the OpenMP shared parallelism model, but \ac{MPI}~\cite{mpi} is used to communicate information across nodes. In section~\ref{sec:geometrical-decomposition}, geometric domain decomposition is discussed which forms the basis of the inter-node parallelism in OpenMOC. Fundamentals of \ac{MPI} are introduced in Section~\ref{sec:mpi} which form the basis for developing communication algorithms between nodes. Section~\ref{sec:moc-dd} discusses how the \ac{MOC} solver is domain decomposed and Section~\ref{sec:cmfd-dd} discusses how the \ac{CMFD} solver is domain decomposed. Both sections first identify the quantities that need to be communicated and then discuss the communication algorithms. At the end of the chapter, Section~\ref{sec:dd-results} gives scalability results for domain decomposition implementation and Section~\ref{sec:dd-conclusion} concludes the chapter highlighting important features of the implementation and insightful results.
 
 \section{Geometrical Decomposition}
 \label{sec:geometrical-decomposition}
@@ -15,7 +15,7 @@ There are a wide variety of options for decomposing a problem into sub-domains, 
 	\label{fig:domain-partition}
 \end{figure}
 
-Each geometrical sub-domain can be approached as a somewhat independent reactor physics problem. However, the \ac{MOC} equations require knowing the boundary impingent boundary angular fluxes. Since these angular fluxes are carried along tracks, this requirement can be satisfied by linking tracks at sub-domain boundaries. To enforce the linking of tracks, the \ac{MRT} track laydown algorithm is implemented, as discussed in Chapter~\ref{chap:track-laydown}, with each sub-domain required to be of identical dimensions and track laydown. Under the \ac{MRT} scheme, tracks automatically link at reflective and periodic boundaries. By ensuring periodic track linking, tracks naturally meet at sub-domain boundaries. This is illustrated in Figure~\ref{fig:domain-track-linking}.
+Each geometrical sub-domain can be approached as a somewhat independent reactor physics problem. However, the \ac{MOC} equations require estimates of the angular flux impingent on the boundaries. Since these angular fluxes are carried along tracks, this requirement can be satisfied by linking tracks at sub-domain boundaries and communicating the angular flux information. To enforce the linking of tracks, the \ac{MRT} track laydown algorithm is implemented, as discussed in Chapter~\ref{chap:track-laydown}, with each sub-domain required to be of identical dimensions and track laydown. Under the \ac{MRT} scheme, tracks automatically link at reflective and periodic boundaries. By ensuring periodic track linking, tracks naturally meet at sub-domain boundaries. This is illustrated in Figure~\ref{fig:domain-track-linking}.
 
 \begin{figure}[h!]
 	\centering
@@ -24,7 +24,7 @@ Each geometrical sub-domain can be approached as a somewhat independent reactor 
 	\label{fig:domain-track-linking}
 \end{figure}
 
-It is important to note that while the track laydown across each sub-domain is identical, the internal geometry of each sub-domain can be different. Therefore, ray tracing must be conducted on each sub-domain separately, using the techniques described in Chapter~\ref{chap:ray-tracing}. Each \ac{MPI} process separately forms a superposition of radial detail across its sub-domain. Since only the local sub-domain super position plane is used during ray tracing, the extra intersections formed from assuming an axially extruded geometry become minimal for a large number of axial sub-domains.
+It is important to note that while the track laydown across each sub-domain is identical, the internal geometry of each sub-domain can be different. Therefore, ray tracing must be conducted on each sub-domain separately, using the techniques described in Chapter~\ref{chap:ray-tracing}. Each \ac{MPI} process separately forms a superposition of radial detail across its sub-domain. Since only the local sub-domain super position plane is used during ray tracing, the extra intersections formed from transforming piecewise axially extruded geometries to pure axially extruded geometries (discussed in Chapter~\ref{chap:ray-tracing}) can be reduced as the number of axial sub-domain partitions increases.
 
 \section{MPI Communication}
 \label{sec:mpi}
@@ -35,9 +35,9 @@ The communicated quantities in this thesis fall into two categories: boundary qu
 
 \subsection{MPI Fundamentals}
 
-The fundamental \ac{MPI} communication protocols are sends and receives, which can either be blocking or non-blocking. During blocking sends and receives, if node $A$ sends data with an \texttt{MPI_Send} function to node $B$, it will wait until node $B$ calls the \texttt{MPI_Recv} function to receive data from node $A$. Likewise, node $B$ will wait until it finds the matching send from node $A$. Once there is a match, node $A$ sends the data to node $B$ at the specified addresses and once the communication is complete both nodes $A$ and $B$ then continue their operations.
+The fundamental \ac{MPI} communication protocols are sends and receives, which can either be blocking or non-blocking. During blocking sends and receives, if node $A$ sends data with an \texttt{MPI_Send} function to node $B$, it will wait until node $B$ calls a corresponding \texttt{MPI_Recv} function to receive data from node $A$. Likewise, node $B$ will wait until it finds the matching send from node $A$. Once there is a match, node $A$ sends the data to node $B$ at the specified memory addresses and once the communication is complete both nodes $A$ and $B$ then continue their operations.
 
-In contrast, non-blocking sends and receives do not wait for the matching send / receive functions to continue. Instead, the send and receive are merely posted and when they match the data is transmitted. When using non-blocking sends and receives it is important to manage the send and receive matches with care in order to ensure that the data is actually received before use. Therefore, the non blocking \ac{MPI} send and receive functions (\texttt{MPI_Isend} and \texttt{MPI_Irecv}, respectively) are also created with an \texttt{MPI_Request} object which monitors the communication. The object can be queried using the \texttt{MPI_Test} function to determine whether the data transfer has been completed. In general, non-blocking communication can be much faster than blocking communication but requires extra book-keeping to monitor the status of \ac{MPI} messages.
+In contrast, non-blocking sends and receives do not wait for the matching send / receive functions to continue. Instead, the send and receive are merely posted and when they match the data is transmitted. When using non-blocking sends and receives it is important to manage the send and receive statuses with care in order to ensure that the data is actually received before use. Therefore, the non blocking \ac{MPI} send and receive functions (\texttt{MPI_Isend} and \texttt{MPI_Irecv}, respectively) are also created with an \texttt{MPI_Request} object which monitors the communication. The object can be queried using the \texttt{MPI_Test} function to determine whether the data transfer has been completed. In general, non-blocking communication can be much faster than blocking communication since processes are not required to wait but requires extra book-keeping to monitor the status of \ac{MPI} messages.
 
 In addition to standard send and receive messages, \ac{MPI} also contains functions for global reductions. A \textit{reduction} is an operation applied to data across many nodes. A global reduction is a reduction over all nodes. An example of this is a summation of values across all nodes, though other operations exist such as maximum and minimum. For instance, consider a domain decomposed problem in which the total neutron production rate is desired. To compute this quantity, each node could first compute the local neutron production on its sub-domain. A reduction can be used to then sum the local neutron production rates to form the total neutron production rate.
 
@@ -89,9 +89,10 @@ A common theme in the \ac{MPI} communication algorithms for both the \ac{MOC} an
 	\end{algorithmic}
 \end{algorithm*}
 
-It is important to underscore that this algorithm works for any collection of neighbors a given node might have, which do not need to be adjacent. For application in OpenMOC, this algorithm is applied to spatially adjacent neighbors. In OpenMOC, boundary communication is limited to face-adjacent and corner-adjacent neighbors.
+It is important to underscore that this algorithm works for any collection of neighbors a given node might have, which do not need to be adjacent. For application in OpenMOC, this algorithm is applied to spatially adjacent neighbors. Boundary communication for angular flux data is limited to face-adjacent and corner-adjacent neighbors whereas \ac{CMFD} boundary data is only communicated with fac-adjacent neighbors.
 
-\newpage
+A major advantage of the Buffered Synchoronous Algorithm over blocking communication is the ability for a single \ac{MPI} process to communicate with multiple neighbors at once. Since nodes often have physical connections with more than one other node, it is important to make full use of all the available connections in order to maximize efficiency.
+
 
 \section{MOC Inter-domain Communication}
 \label{sec:moc-dd}
@@ -106,15 +107,15 @@ While the boundary angular flux communication accounts for the vast majority of 
 
 Since the bulk of the \ac{MOC} communication costs relate to the communication of boundary angular fluxes, the algorithm for transferring boundary angular flux information is described in great detail here. In order to simplify the algorithms for communicating angular flux data, a bulk synchronous communication scheme is chosen whereby all angular fluxes are communicated after the transport sweep, rather than during the transport sweep. 
 
-Before and after the communication scheme, there are \textit{synchronization barriers} which force all nodes to wait until all other nodes have reached the barrier before continuing. This ensures that data is not overwritten that is necessary for the transport sweeps. In addition, it allows for simple recording of the run-time spent in the \ac{MOC} communication stage.
+Before and after the communication step, there are \textit{synchronization barriers} which force all nodes to wait until all other nodes have reached the barrier before continuing. This ensures that data is not overwritten that is necessary for the transport sweeps. In addition, it allows for simple recording of the run-time spent in the \ac{MOC} communication stage.
 
-To determine how the angular flux information is communicated, recall that each node is aware of which track in the neighboring sub-domain each of its tracks need to connect with since the track laydown is identical on all sub-domains. The index of the connecting track on the neighboring sub-domain is simply the index of the periodic track in the current sub-domain. Since tracks run in both forward and reverse directions, the direction of the connecting track is also relevant.
+Determining connecting tracks is important for communicating angular flux data. Recall that the \ac{MRT} track laydown scheme allows for each node to compute the connecting tracks on neighboring sub-domains since the track laydown is identical on all sub-domains. The index of the connecting track on the neighboring sub-domain is simply the index of the periodic track in the current sub-domain. Since tracks run in both forward and reverse directions, the direction of the connecting track is also relevant. 
 
 By providing the neighboring node with the track index, the track direction, and the boundary angular flux data, the neighboring node can copy the angular flux data into its local boundary angular flux arrays. 
 
 The communication of angular fluxes between nodes can be accomplished by using the Buffered Synchronous algorithm with corner-adjacent neighbors in addition to face-adjacent neighbors since tracks can cross sub-domain corners. However, due to the structure of the \ac{MRT} track laydown, there are no tracks through $xy$ corners. Therefore, there is a maximum of 14 neighboring sub-domains. 
 
-In order to use the Buffered Synchronous algorithm, buffers need to be setup that temporarily store the communication data. A naive approach would be to have these buffers be the size of the boundary angular flux data. While this would accurately communicate the data, it would significantly add to the on-node memory footprint of the algorithm and would also likely have slow communication due to the large size of data being sent at once.
+In order to use the Buffered Synchronous algorithm, buffers need to be setup that temporarily store the communication data. A naive approach would create buffers capable of storing all boundary angular flux data. While this would accurately communicate the data, it would significantly add to the on-node memory footprint of the algorithm and would also likely have slow communication due to the large size of data being sent at once.
 
 Instead, the Buffered Synchronous algorithm is applied iteratively in which smaller buffers are packed with some angular flux and connecting track data. After the Buffered Synchronous algorithm completes, new data is packed into the buffers and the process repeats until all boundary angular flux data has been successfully communicated with neighbor domains. Structuring the communication algorithm in this way allows for all communication channels to be filled frequently without significantly lower bandwidth usage per communication round, yielding improved performance. 
 
@@ -172,6 +173,7 @@ The algorithm is given in Algorithm~\ref{alg:moc-dd-transfer} which assumes that
 	\end{algorithmic}
 \end{algorithm*}
 
+\newpage
 \section{CMFD Inter-domain Communication}
 \label{sec:cmfd-dd}
 
@@ -199,13 +201,13 @@ While many algorithms exist to solve generalized eigenvalue problems, the \ac{CM
 	\label{fig:red-black}
 \end{figure}
 
-Each iteration is split into two stages: one dealing with the red cells and one dealing with the black cells. Since each cell only depends on the neighbors, the two stages can be solved separately. First, the solution in the red cells is updated with the previous solution on black cells. Then, the solution of the black cells is updated with the new solution in the red cells. In this way, all cells in each stage can be computed independently, allowing increased parallelism. For structuring the communication algorithm, it is important to note that this scheme only solves for half of the scalar fluxes in each iteration. This means only half the boundary terms need to be communicated at each stage.
+Each iteration is split into two stages: one dealing with the red cells and one dealing with the black cells. Note that the solution in each cell only depends on its neighbors, which are of the opposite color. First, the solution in the red cells is updated with the previous solution on black cells. Then, the solution of the black cells is updated with the new solution in the red cells. In this way, all cells in each stage can be computed in parallel. For structuring the communication algorithm, it is important to note that this scheme only solves for half of the scalar fluxes in each iteration. This means only half the boundary terms need to be communicated at each stage.
 
 \subsection{Identification of Communicated Quantities}
 
 In solving the \ac{CMFD} equations, the main communication between nodes involves the boundary \ac{CMFD} \textit{scalar fluxes} at every red/black stage during the red-black SOR algorithm. In addition, boundary \ac{CMFD} diffusion coefficients, volumes, and surface currents must be communicated at the start of the \ac{CMFD} eigenvalue solver setup during each transport sweep iteration.
 
-In addition to boundary quantities, a few global quantities need to be communicated. Similar to \ac{MOC}, these are limited to residuals and reaction rates. The only difference with \ac{CMFD} global quantities is their definition. Rather than being defined in terms of \ac{MOC} scalar fluxes, they are defined in terms of \ac{CMFD} scalar fluxes.
+A few global quantities need to be communicated. Similar to \ac{MOC}, these are limited to residuals and reaction rates. The only difference with \ac{CMFD} global quantities is their definition. Rather than being defined in terms of \ac{MOC} scalar fluxes, they are defined in terms of \ac{CMFD} scalar fluxes.
 
 
 \subsection{Communication of Boundary Currents}
@@ -214,7 +216,7 @@ At the beginning of the formation of the \ac{CMFD} eigenvalue solver during each
 
 \subsubsection{Handling Edge and Vertex Currents}
 
-Before discussing how OpenMOC treats the communication of \ac{CMFD} surface currents, the process for handling edge and vertex currents needs to be described. In OpenMOC, currents are directly tallied on cell faces, edges, and vertexes during transport sweeps. This means that each \ac{CMFD} cell has 26 tally surfaces (6 face surfaces, 12 edge surfaces, and 8 vertex surfaces) in 3D rather than just the 6 face surfaces used in the \ac{CMFD} calculation. In OpenMOC all currents are defined as leaving a particular \ac{CMFD} cell. For instance the current shown in Figure~\ref{fig:tally-current} would be tallied as a current leaving the positive $x$ surface of \ac{CMFD} cell $C$ rather than a current entering cell $D$ along the negative $x$ surface. Therefore, currents entering a cell are gathered from current tallies leaving neighboring cells across opposite surface directions.
+Before discussing how OpenMOC treats the communication of \ac{CMFD} surface currents, the process for handling edge and vertex currents needs to be described. In OpenMOC, currents are directly tallied on cell faces, edges, and vertexes during transport sweeps. This means that each \ac{CMFD} cell has 26 tally surfaces (6 face surfaces, 12 edge surfaces, and 8 vertex surfaces) in 3D rather than just the 6 face surfaces used in the \ac{CMFD} calculation. In OpenMOC all currents are defined as leakage from a particular \ac{CMFD} cell. For instance the current shown in Figure~\ref{fig:tally-current} would be tallied as a current leaking from the positive $x$ surface of \ac{CMFD} cell $C$ rather than a current entering cell $D$ along the negative $x$ surface. Therefore, currents entering a cell are gathered from current tallies leaving neighboring cells across opposite surface directions.
 
 
 \begin{figure}[h!]
@@ -226,7 +228,7 @@ Before discussing how OpenMOC treats the communication of \ac{CMFD} surface curr
 
 After the transport sweep, currents are split from edges and vertexes onto faces such that the current is delivered to the cell with which the \ac{MOC} track connects. This is accomplished by having the current traverse across neighboring cells and into the connecting cell.
 
-For edge currents, this is easy to visualize as show in Figure~\ref{fig:cmfd-split-edge}. In this instance the current from the \ac{MOC} track is split onto the faces that meet at the edge, as shown in red. Each split current receives half the current of the original \ac{MOC} tallied current. In order for the two split currents to transmit to the connecting \ac{CMFD} cell, they then traverse the other surface composing the edge.
+For edge currents, this is easy to visualize, as shown in Figure~\ref{fig:cmfd-split-edge}. In this instance the current from the \ac{MOC} track is split onto the faces that meet at the edge, as shown in red. Each split current receives half the current of the original \ac{MOC} tallied current. In order for the two split currents to transmit to the connecting \ac{CMFD} cell, they then traverse the other surface composing the edge through the neighboring cell.
 
 \begin{figure}[h!]
 	\centering
@@ -235,8 +237,8 @@ For edge currents, this is easy to visualize as show in Figure~\ref{fig:cmfd-spl
 	\label{fig:cmfd-split-edge}
 \end{figure}
 
-
-It is important to note that this process involves tallying currents on neighboring \ac{CMFD} cells in order to properly transmit currents. For vertex, a similar approach is taken. However, rather than splitting the vertex current directly onto faces, the current is split onto the three corresponding edges, as shown in Figure~\ref{fig:cmfd-split-vertex}. Since edges comprise to surfaces (such as $xy$), the remaining face (in this case $z$) must be crossed in order to properly deliver the current to the connecting cell. For vertex currents, each split current takes one third of the original current since it is split along three edges.
+\newpage
+It is important to note that this process involves tallying currents on neighboring \ac{CMFD} cells in order to properly transmit currents. For vertex currents, a similar approach is taken. However, rather than splitting the vertex current directly onto faces, the current is split onto the three corresponding edges, as shown in Figure~\ref{fig:cmfd-split-vertex}. Since edges comprise to surfaces (such as $xy$), the remaining face (in this case $z$) must be crossed in the appropriate neighboring cell in order to properly deliver the current to the connecting cell. For vertex currents, each split current takes one third of the original current since it is split along three edges.
 
 \begin{figure}[h!]
 	\centering
@@ -269,19 +271,21 @@ For each of the virtual tracks, it is important to treat boundaries carefully to
 \end{figure}
 
 
+\newpage
 \subsubsection{Communicating Edge and Vertex Currents}
 
-Since the process of splitting edge and vertex currents tallies face and edge currents onto neighboring cells, nodes may need to tally currents onto another node's sub-domain. In order to keep the off-domain tallied currents local with the 6 communicating neighbors, the communication is conducted in two steps. First, the vertex currents are split and off-domain edge and face currents are communicated. Off-domain face currents are necessary to be communicated during this steps to properly account for the facial crossing which transmits current to the appropriate connecting cell. Then, edge currents are split and off-domain face currents are communicated. When these currents are communicated, the off-domain currents are received by the appropriate domain and added to the local tally of the corresponding surface current.
+Since the process of splitting edge and vertex currents tallies face and edge currents onto neighboring cells, nodes may need to tally currents onto another node's sub-domain. In order to keep the off-domain tallied currents local with the 6 communicating neighbors, the communication is conducted in two steps. First, the vertex currents are split and the corresponding off-domain edge and face currents are communicated. Then, edge currents are split and off-domain face currents are communicated. When these currents are communicated, the off-domain currents are received by the appropriate domain and added to the local tally of the corresponding surface current.
 
 Since vertex currents are split before communication, only the 18 face and edge currents need to be communicated between nodes. The two stage communication process allows current to be transmitted with corner neighbors with only direct communication between the 6 nodes representing face-adjacent sub-domains. Again, this communication can be implemented using the Buffered Synchronous algorithm.
 
 \subsection{Communication of Boundary Scalar Fluxes}
 
-The most important communication component of the \ac{CMFD} algorithm is the communication of boundary scalar fluxes. Since the number of boundary \ac{CMFD} scalar fluxes on a typical sub-domain are usually quite small in comparison with the \ac{MOC} boundary angular fluxes, the Buffered Synchronous algorithm can be applied directly to the red-black SOR scheme with face-adjacent neighbors. Since only half the boundary scalar fluxes are communicated in each red-black iteration, the communication buffers can be chosen to be half the size of the number of scalar fluxes on each boundary.
+The most important communication component of the \ac{CMFD} algorithm is the communication of boundary scalar fluxes. Since the number of boundary \ac{CMFD} scalar fluxes on a typical sub-domain are usually quite small in comparison with the \ac{MOC} boundary angular fluxes, the Buffered Synchronous algorithm can be applied directly to the red-black SOR scheme with face-adjacent neighbors. Since only half the boundary scalar fluxes are communicated in each red/black iteration, the communication buffers can be chosen to be half the size of the number of scalar fluxes on each boundary.
 
 Since the \ac{CMFD} cells are laid out in a uniform grid and each buffer location corresponds to at most two \ac{CMFD} cells, the mapping of cells to buffer locations is straightforward, eliminating the need to communicate indexes.
 
 \section{Results}
+\label{sec:dd-results}
 
 In order to evaluate the performance of the domain decomposition implementation, both strong scaling and weak scaling studies are conducted. Strong scaling studies analyze the performance as cores are added to solve a problem of fixed size, as we have seen in the past for on-node parallel performance. Weak scaling studies analyze the performance with a fixed problem size per node. Therefore, weak scaling studies deal with problems of variable size.
 
@@ -335,7 +339,7 @@ The strong scaling results are presented in Figure~\ref{fig:strong-scaling-singl
 
 Note that the scaling is far better for the linear source solver than the flat source solver since there is significantly more on-node computational work for the linear source solver while the inter-node communication costs are the same as the flat source solver. In fact, the strong scaling performance for the linear source solver is better than the ideal linear scaling. Since the aim of this thesis is to solve full core problems with the linear source solver, its performance will be the main focus of discussion.
 
-These results might be difficult to understand as performance would not be expected to exceed ideal. However, recall from Chapter~\ref{chap:ray-tracing} that additional intersections, and therefore segments, are inserted when a piece-wise axially extruded geometry is converted to an axial extruded geometry on each sub-domain. As a given geometry is domain decomposed axially, the deviations from a true axially extruded geometry decrease, and therefore the number of additional intersections inserted to ensure an axially extruded geometry on the sub-domain also decrease.
+These results might be difficult to understand as performance would not be expected to exceed ideal. However, recall from Chapter~\ref{chap:ray-tracing} that additional intersections, and therefore segments, are inserted when a piece-wise axially extruded geometry is converted to an axial extruded geometry on each sub-domain. As a given geometry is domain decomposed axially, the deviations from a true axially extruded geometry on each sub-domain decrease, and therefore the number of additional intersections inserted to ensure an axially extruded geometry on each sub-domain also decrease.
 
 This implies that runtime should be normalized by the number of segments to capture the pure computational performance of the algorithm. The results when normalizing runtime by the number of segments is shown in Figure~\ref{fig:strong-scaling-single-assembly-normalized}. 
 
@@ -379,7 +383,7 @@ Since the desired \ac{MOC} parameters are significantly are significantly finer 
 	\label{tab:expected-moc-params}
 \end{table}
 
-From the strong scaling studies with coarse rays, 67\% efficiency was observed for the linear source solver. In order to judge the efficiency with desired ray parameters, the timing breakdown for the single assembly case is presented in Table~\ref{tab:dd-sa-breakdown}. Here, three timing statistics are considered: total transport sweep execution time, angular flux communication time, and idle time between sweeps. The angular flux communication time is the total time required to communicate all angular flux information between domains. The idle time between sweeps is the average time that nodes remain idle after doing all on-node work and before transferring angular fluxes with other domains. Therefore, the idle time is an indication of load imbalance.
+From the strong scaling studies with coarse rays, 67\% efficiency was observed for the linear source solver with 20 axial domains. In order to judge the efficiency with desired ray parameters, the timing breakdown for the single assembly case is presented in Table~\ref{tab:dd-sa-breakdown}. Here, three timing statistics are considered: total transport sweep execution time, angular flux communication time, and idle time between sweeps. The angular flux communication time is the total time required to communicate all angular flux information between domains. The idle time between sweeps is the average time that nodes remain idle after doing all on-node work and before transferring angular fluxes with other domains. Therefore, the idle time is an indication of load imbalance.
 
 \begin{table}[ht]
 	\centering
@@ -434,10 +438,24 @@ The next sets of tests are similar to the 2D lattice tests but expand the domain
 	\label{fig:dd-ws-3D}
 \end{figure}
 
-Again, excellent scaling is observed with the efficiency above 90\% for all tested cases. At 1728 nodes (27,648 cores), using a $12 \times 12 \times 12$ domain decomposition, the efficiency is 92\%.
+Again, excellent scaling is observed with the efficiency above 90\% for all tested cases. At 1728 nodes (27,648 cores) the efficiency is 92\%.
 
 \newpage
 \section{Conclusion}
+\label{sec:dd-conclusion}
 
-In order to scale to large problems, inter-node parallelism is essential. To accomplish this, domain decomposition has been implemented in OpenMOC with MPI, utilizing the natural track linking of the modular ray tracing structure. This allows angular fluxes to be easily communicated by referring to connecting periodic tracks. The domain decomposition implementation has been tested and observed to scale very well to many nodes. Communication costs of transferring angular fluxes were at most only a few percent of overall runtime for realistic cases. The biggest hindrance to inter-node scaling of the domain decomposition implementation is the potential load imbalance created by domains of unequal work. For domains with uniform work, the inter-node parallel efficiency was above 90\% for all weak scaling studies. Significant degradation in performance was only noticed in strong scaling studies for cases with an unrealistically low amount of on-node work.
+In order to scale to large problems, inter-node parallelism is essential. To accomplish this, domain decomposition has been implemented in OpenMOC with \ac{MPI}, utilizing the natural track linking of the \ac{MRT} structure. This allows angular fluxes to be easily communicated by referring to connecting periodic tracks. The domain decomposition implementation has been tested and observed to scale very well to many nodes. Communication costs of transferring angular fluxes were at most only a few percent of overall runtime for realistic cases. The biggest hindrance to inter-node scaling of the domain decomposition implementation is the potential load imbalance created by domains of unequal work. For domains with uniform work, the inter-node parallel efficiency was above 90\% for all weak scaling studies. Significant degradation in performance was only noticed in strong scaling studies for cases with an unrealistically low amount of on-node work.
 
+\newpage
+\vfill
+\begin{highlightsbox}[frametitle=Highlights]
+	\begin{itemize}
+		\item Domain decomposition is implemented by partitioning the geometry into regions of equal dimensions with tracks naturally linking at sub-domain boundaries due to the ac{MRT} ray tracing scheme
+		\item Both \ac{MOC} and \ac{CMFD} solvers are domain decomposed with \ac{MPI} used to communicate information between nodes, often using the Buffered Synchronous Algorithm
+		\item Currents at corner and edge boundaries need to be carefully treated in a domain decomposed setting to ensure consistency between \ac{MOC} and \ac{CMFD} solvers
+		\item The largest hindrance to the scalability of the domain decomposition implementation is the potential for load imbalance between sub-domains of equal size but unequal work
+		\item Results show the domain decomposed implementation to have very low communication costs, allowing for over 90\% parallel scaling in weak scaling studies with expected \ac{MOC} parameters
+		
+	\end{itemize}
+\end{highlightsbox}
+\vfill

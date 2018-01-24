@@ -1,39 +1,39 @@
 \chapter{Ray Tracing}
 \label{chap:ray-tracing}
 
-In the previous chapter, track generation was discussed. Once the tracks are laid across the geometry, they need to be partitioned by source region intersections into segments across which the \ac{MOC} equations can be applied. At a minimum, the segment lengths and associated source region identifiers need to be recorded for each track. During the transport sweep, the \ac{MOC} equations described in Chapter~\ref{chap:moc} are applied to all segments. This chapter discusses ray tracing procedures in which the segments are formed from the track and geometry information. Section~\ref{sec:rt-intro} provides an introduction of common ray tracing schemes and their implications. In Section~\ref{hi}.
+In the previous chapter, track generation was discussed. Once the tracks are laid across the geometry, they need to be partitioned by source region intersections into segments across which the \ac{MOC} equations can be applied. At a minimum, the segment lengths and associated source region identifiers need to be recorded for each track. During the transport sweep, the \ac{MOC} equations described in Chapter~\ref{chap:moc} are applied to all segments. This chapter discusses ray tracing procedures in which the segments are formed from the track and geometry information. 
 
-FIXME
+Section~\ref{sec:rt-intro} provides an introduction of common ray tracing schemes and their implications. The section concludes with a discussion of the 2D/1D ray tracing approaches, which is the focus of ray tracing in this thesis. In Section~\ref{sec:ax-extruded}, geometric considerations in forming an extruded geometry to perform 2D/1D ray tracing are discussed. Section~\ref{sec:otf-axial-ray-tracing} discusses potential algorithms for ray tracing axially extruded geometries in a 2D/1D fashion. In Section~\ref{sec:performance-considerations}, implications of ray tracing algorithms on hardware performance are considered, focusing on cache and memory considerations. Section~\ref{sec:rt-results} presents performance results of the different ray tracing methods and Section~\ref{sec:rt-conclusion} concludes the chapter by summarizing the important results and implications of the ray tracing schemes.
 
-MENTION 2D/1D distinction
+This chapter often refers to a 2D/1D approach to ray tracing. It is important to note the distinction between a 2D/1D approach to ray tracing and a 2D/1D approach to \ac{MOC}. In this thesis, all problems are solved using 3D \ac{MOC} but the ray tracing approach splits apart radial and axial detail to efficiently form 3D segments.
 
 \section{Introduction to Ray Tracing}
 \label{sec:rt-intro}
 
-Ray tracing fundamentally solves the problem of determining the next intersection with a surface along a direction of travel and which new region is entered after the intersection. Since complicated geometries contain many surfaces, this can be expensive if all surfaces in the geometry need to be tested for intersections. Much of the work in complex ray tracing for animations relies on somehow forming \textit{acceleration structures} which limit the number of surfaces that need to be tested~\cite{acceleration-structures}. Traditional methods form acceleration structures that resemble some hierarchy of cells and surfaces grouped by location so that only nearby surfaces are considered~\cite{acc-struct-hierarchy}.
+Ray tracing fundamentally solves the problem of determining the next intersection with a surface along a direction of travel and which new region is entered after the intersection. Since complicated geometries contain many surfaces, this can be expensive if all surfaces in the geometry need to be tested for intersections. Much of the work in complex ray tracing, often for animations, relies on somehow forming \textit{acceleration structures} which limit the number of surfaces that need to be tested~\cite{acceleration-structures}. Traditional methods form acceleration structures that resemble some hierarchy of cells and surfaces grouped by location so that only nearby surfaces are considered~\cite{acc-struct-hierarchy}.
 
 In traditional reactor physics problems, an acceleration structure is naturally formed by the hierarchical structure of the geometry. For instance, a core can largely be viewed as an arrangement of assemblies, each of which is comprised of an arrangement of fuel rods. Therefore, by just using the hierarchical \ac{CSG} form of the geometry, the ray tracing requirements are naturally reduced.
 
 However, ray tracing can still be expensive, especially for cases which do not form an easily structured form, such as reactor baffles, grid spacers, and neutron shields. These complexities cause a generic algorithm capable of treating all the reactor detail to lose computational efficiency. In moving from 2D simulations to 3D simulations, even more surfaces are introduced, exacerbating the issue.
 	
-Most \ac{MOC} implementations avoid this issue by treating ray tracing as a pre-processing step whereby the segment information, which includes its length and the ID of the traversed \ac{SR}, is calculated and explicitly stored at the beginning of the simulation and then loaded during the transport sweep. In this way  the amount of repeated ray tracing work is reduced and the cost of ray tracing is effectively amortized over the number of transport sweeps. While this approach is straightforward, its memory and compute requirements for 3D \ac{MOC} can be prohibitive, even for small problems, due to the vast number of segments present in 3D \ac{MOC} simulations~\cite{physor2016otf}. Reducing the memory footprint is important for many reasons including improved cache efficiency and reducing bulk memory requirements.
+Most \ac{MOC} implementations avoid this issue by treating ray tracing as a pre-processing step whereby the segment information, which includes its length and the ID of the traversed \ac{SR}, is calculated and explicitly stored at the beginning of the simulation. During the transport sweeps, the information is then loaded from memory. In this way, the amount of repeated ray tracing work is reduced and the cost of ray tracing is effectively amortized over the number of transport sweeps. While this approach is straightforward, its memory and compute requirements for 3D \ac{MOC} can be prohibitive, even for small problems, due to the vast number of segments present in 3D \ac{MOC} simulations~\cite{physor2016otf}. Reducing the memory footprint is important for many reasons including improved cache efficiency and reducing bulk memory requirements.
 
-In this thesis, an alternative approach is presented that greatly reduces the segment storage and generation requirements by taking advantage of the extruded geometry structure common to many reactor physics problems. This alternative approach saves no 3D segment data, rather treating the ray tracing problem as a coupled 2D and 1D system whereby 2D radial ray tracing information is combined with 1D axial information to compute the 3D intersections~\cite{pyhsor2016otf}.
+In this thesis, an alternative approach is presented that greatly reduces the segment storage and generation requirements by taking advantage of the extruded geometry structure common to many reactor physics problems. This alternative approach saves no 3D segment data, rather treating the ray tracing problem as a coupled 2D and 1D system whereby 2D radial ray tracing information is combined with 1D axial information to compute the 3D intersections~\cite{physor2016otf}.
 
-Another ray tracing scheme, termed the \ac{CCM}~\cite{Sciannandrone2015}, also sought to reduce the memory requirements for ray tracing axially extruded geometries by only saving the unique chords (or segments).  However, this method still requires that the segmentation procedure be performed for all 3D tracks prior to performing transport sweeps, which can be prohibitively expensive for complex geometries. In addition, while it does indeed reduce the storage requirements, the storage scales with the number of unique 3D segment lengths. This can be problematical for problems in which there are a large number of unique segments. For large full core problems, some regions might indeed have many repeated segment lengths, but regions for which the source height is similar to the axial ray spacing, there would be very few repeated segment lengths.
+Another ray tracing scheme, termed the \ac{CCM}~\cite{Sciannandrone2016}, also sought to reduce the memory requirements for ray tracing axially extruded geometries by only saving the unique chords (or segments).  However, this method still requires that the segmentation procedure be performed for all 3D tracks prior to performing transport sweeps, which can be prohibitively expensive for complex geometries. In addition, while it does indeed reduce the storage requirements, the storage scales with the number of unique 3D segment lengths. This can be problematical for problems in which there are a large number of unique segments. For large full core problems, some regions might indeed have many repeated segment lengths, but in regions for which the source height is similar to the axial ray spacing, there would be very few repeated segment lengths.
 
 The implementation in this thesis aims to most efficiently solve typical \ac{PWR} problems. From experience in simulating single \ac{PWR} assemblies, the axial ray separation can be on the same order as the axial source height~\cite{openmoc-beavrs}, potentially causing there to be a large number of unique segments. This motivates using concepts from the \ac{CCM} method to identify repeated segment lengths but also relying on the 2D/1D ray tracing approach to reduce storage.
 
 \section{Forming an Axially Extruded Geometry}
 \label{sec:ax-extruded}
 
-As previously stated, OpenMOC only supports piece-wise axially extruded geometries. Most common reactor problems are naturally defined as piece-wise axially extruded so this is not a strong limitation in practice. Here, an axially extruded geometry is defined to be a geometry in which every radial slice of the reactor geometry is identical whereas a piece-wise axially extruded geometry can be defined as the collection of a finite number of axial zones where the geometry over each axial zone constitutes an extruded geometry. 
+As previously stated, OpenMOC only supports piece-wise axially extruded geometries. Most common reactor problems are naturally piece-wise axially extruded so this is not a strong limitation in practice. Here, an axially extruded geometry is defined to be a geometry in which every radial plane in the geometry is identical whereas a piece-wise axially extruded geometry can be defined as the collection of a finite number of axial zones where the geometry over each axial zone constitutes an extruded geometry. 
 
-For ray tracing in a 2D/1D scheme, a single axially extruded extruded geometry is required. Therefore, all radial detail must be gathered in order to effectively convert the piece-wise axially extruded geometry to an axially extruded geometry. While common reactor cores contain variations from axially extruded geometries, such as end plugs for control rods, these variations can be fully captured at little cost by implicitly inserting additional geometric intersections. 
+For ray tracing in a 2D/1D scheme, a single axially extruded geometry is required. Therefore, all radial detail must be gathered in order to effectively convert the piece-wise axially extruded geometry to an axially extruded geometry. While common reactor cores contain variations from axially extruded geometries, such as end plugs for control rods, these variations can be fully captured by implicitly inserting additional geometric intersections. Note the axially extruded requirement is only applied to the geometry, not the materials. Each axial zone in an axially extruded region could be a different material. 
 
-Note the axially extruded requirement is only applied to the geometry, not the materials. Each axially extruded region could be comprised of various materials. Given an axially extruded geometry, it is possible to store only the 2D segments associated with intersections in the radial geometry. The 3D segments can then be formed on-the-fly using a simple axial mesh.
+Given an axially extruded geometry, it is possible to store only the 2D segments associated with intersections in the radial geometry. The 3D segments can then be formed on-the-fly using a simple axial mesh.
 
-First, 2D segments need to be formed which reflect intersections of the 2D tracks with a superposition of all radial surfaces in the geometry. This is done by simultaneously ray tracing across all the unique radial planes in the geometry, as depicted in Fig.~\ref{fig:superposition}. This creates an implicit geometry containing all radial information, termed the \textit{superposition plane}. The 2D geometric regions in the superposition plane correspond to an axially extruded region with an associated unique identifier that contains an axial mesh and an array of associated 3D \ac{SR}s. 
+First, 2D segments need to be formed which reflect intersections of the 2D tracks with a superposition of all radial surfaces in the geometry. This is done by simultaneously ray tracing across all the unique radial planes in the geometry, as depicted in Fig.~\ref{fig:superposition}. This creates an implicit geometry containing all radial information, termed the \textit{superposition plane}. Each 2D geometric region in the superposition plane corresponds to an axially extruded region with an associated unique identifier that contains an axial mesh and an array of associated 3D \ac{SR}s. 
 
 \begin{figure}[ht!]
 	\centering
@@ -42,7 +42,7 @@ First, 2D segments need to be formed which reflect intersections of the 2D track
 	\label{fig:superposition}
 \end{figure}
 
-Each 2D segment formed during the ray tracing contains its length and the unique identifier of the axially extruded region being traversed. After 2D segmentation, axial meshes need to be created for on-the-fly axial ray tracing. If a global axial mesh is desired, whereby all axially extruded regions have the same axial mesh, all the unique z-planes in the geometry are collected and sorted into a single axial mesh. Otherwise, local meshes are populated for each axially extruded region during initialization of the 3D \ac{SR}s. To initialize the 3D \ac{SR}s, a temporary vertical ray is created for each axially extruded region. These rays are all upward directed, starting from the bottom of the root geometry, and segmented to determine distances between axial intersections while initializing the associated \ac{SR}s. During this step, the location of a point within each \ac{SR} is noted, and the data structures associated with managing the \ac{SR}s are initialized. An illustration of this process is presented in Fig.~\ref{fig:fsr-initialization}.
+Each 2D segment formed during the ray tracing contains its length and the unique identifier of the axially extruded region being traversed. After 2D segmentation, axial meshes need to be created for on-the-fly axial ray tracing. If a global axial mesh is desired, whereby all axially extruded regions have the same axial mesh, all the unique $z$-planes in the geometry are collected and sorted into a single axial mesh. Otherwise, local meshes are populated for each axially extruded region during initialization of the 3D \ac{SR}s. To initialize the 3D \ac{SR}s, a temporary vertical ray is created for each axially extruded region. These rays are all upward directed, starting from the bottom of the root geometry, and segmented to determine distances between axial intersections while initializing the associated \ac{SR}s. During this step, the location of a point within each \ac{SR} is noted, and the data structures associated with managing the \ac{SR}s are initialized. An illustration of this process is presented in Fig.~\ref{fig:fsr-initialization}.
 
 \begin{figure}[h!]
 	\centering
@@ -70,13 +70,14 @@ Each 2D segment formed during the ray tracing contains its length and the unique
 
 Implicitly, this strategy can create extra radial intersections since some of the axial levels might not have originally contained the full radial detail of the superposition plane. However, the number of additional intersections should be low due to the regular structure of most reactor cores. For instance, fuel rods with end plugs present only a slight deviation from an axially extruded geometry.
 
-The advantage of local axial meshes is the ability to have different axial refinements within the reactor. For instance, a partially inserted control rod might need a finer \ac{SR} discretizations near the control rod tip. If a global axial mesh were used, the finer discretization would need to be applied to the whole core at that axial height, including the reflector. With local axial meshes, only the regions which need refinement would use a finer discretization.
+The advantage of local axial meshes is the ability to have different axial refinements within the reactor. For instance, a partially inserted control rod might require a finer \ac{SR} discretization near the control rod tip. If a global axial mesh were used, the finer discretization would need to be applied to the whole geometry at that axial height. With local axial meshes, only the regions which need refinement would use a finer discretization.
 
 \section{On-the-fly Axial Ray Tracing}
+\label{sec:otf-axial-ray-tracing}
 
 During the transport sweeps, all 3D tracks are traversed across their span of the geometry. The common method mentioned in Section~\ref{sec:rt-intro}, in which segments are formed in a pre-processing step, accomplishes this by splitting every 3D track into 3D segments before the transport sweeps and then simply cycling through all the segments.
 
-In the methods presented here, 3D segments are recreated on-the-fly using information from the 2D ray trace over all radial detail and the 1D axial meshes, both formed at the beginning of the simulation. Due to the manner in which the 3D tracks were generated, as detailed in Chapter~\ref{chap:track-laydown}, each 3D track has a corresponding 2D segmented track. From the starting $z$ coordinate of a track along with its polar angle, it is possible to determine the distance along the track to both intersections with axial planes and intersections with 2D surfaces, defined by the 2D segments. On-the-fly axial ray tracing can either be performed on each 3D track individually or on an entire $z$-stack.
+In the methods presented here, 3D segments are recreated on-the-fly using information from the 2D ray trace over all radial detail and the 1D axial meshes, both formed at the beginning of the simulation. Due to the manner in which the 3D tracks were generated, as detailed in Chapter~\ref{chap:track-laydown}, each 3D track has a corresponding 2D segmented track. From the starting $z$ coordinate of a track along with its polar angle, it is possible to determine the distance along the track to both intersections with axial planes and intersections with radial surfaces, defined by the 2D segments. On-the-fly axial ray tracing can either be performed on each 3D track individually or on an entire $z$-stack.
 
 \subsection{Ray Tracing Individual 3D Tracks}
 
@@ -98,7 +99,7 @@ z_i(s) = z_0(0) + i\delta z + s \cot{\theta}
 \end{equation}
 where $z_0(0)$ is the $z$-coordinate at the intersection of the lowest track with the $z$-axis at the start of the associated 2D track. Combining this with 2D track information is enough to completely describe the trajectory and location of 3D tracks in the stack. Therefore, it is possible to determine which tracks will traverse a given \ac{SR}.
 
-For each 2D segment in the 2D track, there is an associated axially extruded region which contains a list of 3D \ac{SR}s in the region. To trace a $z$-stack, intersections within axially extruded \ac{SR}s are determined in the order traversed by the 2D segments. The 1D axial mesh (either local or global) associated with the axially extruded region is used to determine the axial boundaries of each 3D \ac{SR}. Using the boundaries of the \ac{SR} and Eq.~\ref{eq::track_projection}, it is possible to analytically compute the indexes of tracks that will cross the \ac{SR} as
+For each 2D segment in the 2D track, there is an associated axially extruded region which contains a list of 3D \ac{SR}s in the region. With this structure, the \ac{SR}s can be traversed rather than the tracks. Using the boundaries of the \ac{SR} and Eq.~\ref{eq::track_projection}, it is possible to analytically compute the indexes in the $z$-stack of tracks that will cross the \ac{SR} as
 \begin{equation}
 i_{\textit{start}} = \Bigg\lceil\frac{z_{\textit{min}} - \max\left({z_0(s_{\textit{start}}), z_0(s_{\textit{end}})}\right) }{\delta z}\Bigg\rceil
 \label{eq::start_track}
@@ -112,7 +113,7 @@ where $i_{\textit{start}}$ is the index of the first track to cross the \ac{SR},
 \begin{figure}[ht!]
 	\centering
 	\includegraphics[width=0.75\linewidth]{figures/ph2016/stack_tracing.png}
-	\caption{Illustration of the on-the-fly axial ray tracing process for an entire $z$-stack. The green arrows denote the first track to traverse the highlighted \ac{SR}s calculated by Eq.~\ref{eq::start_track} and the red arrows denote the last tracks to traverse the \ac{SR}s calculated by Eq.~\ref{eq::end_track}.}
+	\caption{Illustration of the on-the-fly axial ray tracing process for an entire $z$-stack. The green arrows denote the first track to traverse the highlighted \ac{SR}s calculated by Eq.~\ref{eq::start_track} and the red arrows denote the last tracks to traverse the \ac{SR}s calculated by Eq.~\ref{eq::end_track}. In \ac{SR} A, a group of tracks traverse the entire 2D segment length. In \ac{SR} B, a one track traverses the entire axial source height.}
 	\label{fig::stack_tracing}
 \end{figure}
 
@@ -122,9 +123,9 @@ Notice that for \ac{SR} A depicted in Fig.~\ref{fig::stack_tracing} there are mu
 L_{3D} = \frac{s_{\textit{end}} - s_{\textit{start}}}{\sin{\theta}}.
 \end{equation}
 
-In common reactor physics problems we expect this effect to be much more pronounced. Due to the radial direction having much greater complexity than the axial direction, \ac{SR}s will tend to be longer in the axial direction than in the radial plane, especially when higher order sources are added in the axial direction. The high aspect ratio causes some tracks to cross the entire 2D length of the \ac{SR}.
+Due to the radial direction having much greater complexity than the axial direction, \ac{SR}s will tend to be longer in the axial direction than in the radial plane, especially when higher order sources allow for coarse discretization in the axial direction. The high aspect ratio causes some tracks to cross the entire 2D length of the \ac{SR}.
 
-To take advantage of this, it is possible to calculate the indexes of the first and last tracks to traverse the entire 2D segment length. For this condition to be met, the axial height of the tracks over the entire 2D segment must be greater than the minimum axial boundary of the \ac{SR} and less than the maximum axial boundary. Therefore, the indexes of interest are the first track to have its lowest point above the minimum boundary and the first track to have its highest point above the maximum boundary. These indexes, $i_{\textit{in}}$ and $i_{\textit{out}}$, respectively, can be calculated as:
+To take advantage of the repeated lengths, it is possible to calculate the indexes of the first and last tracks to traverse the entire 2D segment length. For this condition to be met, the axial height of the tracks over the entire 2D segment must be greater than the minimum axial boundary of the \ac{SR} and less than the maximum axial boundary. Therefore, the indexes of interest are the first track to have its lowest point above the minimum boundary and the first track to have its highest point above the maximum boundary. These indexes, $i_{\textit{in}}$ and $i_{\textit{out}}$, respectively, can be calculated as:
 
 \begin{equation}
 i_{\textit{in}} = \Bigg\lceil\frac{z_{\textit{min}} - \min\left({z_0(s_{\textit{start}}), z_0(s_{\textit{end}}})\right) }{\delta z}\Bigg\rceil
@@ -139,7 +140,7 @@ A derivation of these relations an be found in Appendix~\ref{app:z-stack}. For e
 L_{3D} = \frac{z_{\textit{max}} - z_{\textit{min}}}{\left| \cos{\theta}\right|}.
 \end{equation}
 
-Therefore, 3D segments are classified into four categories:
+Therefore, 3D segments are classified into four categories named by Sciannandrone~\cite{Sciannandrone2016}:
 
 \begin{itemize}
 	\item \textbf{Mixed Tracks -- Case A:} Tracks that partially traverse the \ac{SR} and cross the lower \ac{SR} boundary. They are defined by track indexes $i_{\textit{start}} \leq i < \min\left(i_{\textit{in}}, i_{\textit{out}}\right)$. For these tracks, each 3D segment is computed individually. 
@@ -152,33 +153,51 @@ This classification of segments allows the computational work involved in calcul
 
 Another important distinction between this scheme and ray tracing by individual 3D track is the traversal order of segments. Since the ray tracing by $z$-stack scheme describes intersections of all tracks with a given region, segments are traversed by \textit{region} rather than by track. In this scheme, the algorithm loops over all regions which are intersected by the $z$-stack, treating all segments which intersect the region before moving to the next region. This has profound implications on cache performance and is the subject of the next section.
 
-\section{Cache Considerations for Segment Traversal}
+\section{Performance Considerations}
+\label{sec:performance-considerations}
 
-%When CPU cores load information from memory, they load entire cache lines into local caches rather than just the desired variable. This allows the number of loads to be reduced if nearby memory is accessed. When desired memory is already within the cache of the CPU core, it is termed a \textit{cache hit}. If it is not, it is termed a \textit{cache miss}. Optimizing cache performance to maximize cache hits is critical when designing efficient software, as loads from main memory can be quite expensive. \textit{Locality} refers to how well memory is organized such that nearby or local memory is accessed frequently. 
+Now that the on-the-fly ray tracing algorithms have been defined, performance considerations on typical computer hardware are discussed. This section focuses on how these algorithms interact with the hardware design of computers in order to maximize performance.
 
-In the context of ray tracing, an efficient algorithm should traverse regions in a similar order in which the data is organized. This means information relating to \ac{SR}s, including the neutron source and scalar fluxes, should also be allocated contiguously in memory according to the traversed order. However, complex geometric detail in the radial plane causes any ordering to be very difficult. For instance, a completely optimized ordering of source regions in one direction might be a completely sub-optimal ordering in the perpendicular direction. This is illustrated in Figure~\ref{fig:radial-fsr-ordering}.
+\subsection{Cache Considerations for Segment Traversal}
 
-However, the axial geometric detail for axially extruded geometries is far more regular. This allows for the ordering of regions in the axial direction to be organized, allowing for improved cache performance when operating on nearby regions with the same 2D projection. This ordering is illustrated in Figure~\ref{fig:axial-fsr-ordering}. Note that this ordering is natural created by the \ac{SR} initialization scheme discussed in Section~\ref{sec:ax-extruded}.
+In the context of ray tracing, an efficient algorithm should traverse regions in a similar order in which the data is organized. This means information relating to \ac{SR}s, including the neutron source and scalar fluxes, should also be allocated contiguously in memory according to the traversed order. However, complex geometric detail in the radial plane causes any ordering to be very difficult. For instance, a completely optimized ordering of source regions in one direction might be a completely sub-optimal ordering in the perpendicular direction. This is illustrated in Figure~\ref{fig:radial-fsr-ordering} for a simplified pin-cell. As the geometric complexity and number of regions grows, the stride between \ac{SR}s along the perpendicular track would also grow, leading to a cache miss on almost every new source region along the sub-optimal track. 
+
+\begin{figure}[ht!]
+	\centering
+	\includegraphics[width=0.4\linewidth]{figures/FSR_ordering_radial.PNG}
+	\caption{A depiction of optimizing 2D radial \ac{SR} ordering for the track highlighted in blue. A perpendicular track, highlighted in red, experiences a very sub-optimal \ac{SR} ordering over its traversal with larger strides between sequential \ac{SR}s.}
+	\label{fig:radial-fsr-ordering}
+\end{figure}
+
+However, the axial geometric detail for axially extruded geometries is far more regular. This allows for the ordering of regions in the axial direction to be organized, leading to improved cache performance when operating on nearby regions with the same 2D projection. This ordering is illustrated in Figure~\ref{fig:axial-fsr-ordering}. Note that this ordering is natural created by the \ac{SR} initialization scheme discussed in Section~\ref{sec:ax-extruded}.
+
+\begin{figure}[ht!]
+	\centering
+	\includegraphics[width=0.4\linewidth]{figures/FSR_ordering_axial.PNG}
+	\caption{A depiction of optimizing \ac{SR} ordering for vertical intersections. \ac{SR}s are ordered sequentially in the axial direction, causing all vertical intersections to only have a stride of one \ac{SR} in memory.}
+	\label{fig:axial-fsr-ordering}
+\end{figure}
 
 For ray tracing by individual 3D tracks, this memory layout means that intersections with vertical surfaces cause a likely cache hit whereas intersections with horizontal surfaces, dictated by the 2D segments, likely incur cache misses. For ray tracing by $z$-stack, segments are traversed by \ac{SR} rather than track. In this scheme, \ac{SR}s are traversed in order axially with all segments of a given \ac{SR} treated together. This greatly improves the locality for loading \ac{SR} information.
 
 However, the improved locality for loading \ac{SR} information does come at a cost. When ray tracing individual 3D tracks, all segments correspond to the same track and thus only one set of boundary angular flux data is updated while traversing segments. This means the angular flux data for the track is always kept in a low level cache. When ray tracing an entire $z$-stack, the segments belong to various tracks. While these tracks are generally close in memory, there is a possibility of cache misses when switching tracks. Due to the nature of the $z$-stack traversal, the algorithm switches tracks on nearly every traversed segment. When the number of energy groups becomes large, the angular flux data associated with a track also becomes large, and the possibility of incurring cache misses when switching tracks increases.
 
-\section{Temporary Storage of Segments}
+\subsection{Temporary Storage of Segments}
 
 The 3D segments that are computed from the axial on-the-fly ray tracing can either be directly used to apply the \ac{MOC} equations on-the-fly or stored in buffers in the order in which they are formed. It is important to remember that in the OpenMOC implementation, as well as many other \ac{MOC} implementations, each segment represents both a forward and backward angular flux in order to maximize efficiency. Therefore, if segments are stored in buffers, the ray tracing cost can be halved since the ray tracing operation would not need to be repeated in the reverse direction. With the segments stored in buffers, the buffer can be traversed forward and backward, representing forward and backward angular fluxes.
 
 Another benefit of storing the segments in a buffer is the ability to group together similar operations. All segments for a selected track or $z$-stack are ray traced, yielding a buffer of segments. Afterwards, the \ac{MOC} equations are applied to all segments in the buffer. This allows for improved locality since the two tasks are separated and nearby data is used more frequently during each task.
 
-The cost of storing segments in buffers is the additional memory cost. The memory for the buffer is allocated as an array at the beginning of the solver. Since each thread handles different segments simultaneously, each tread needs its own buffer. The size of each buffer should be sufficient to store the computed segments. For ray tracing by track, this is equal to the maximum number of segments for a single track. For ray tracing by $z$-stack, it is equal to the maximum number of segments for a single $z$-stack. The memory required for these buffers when ray tracing by track is trivial in comparison with the total memory footprint of the solver since there are many tracks in the problem and buffers only need to be created for each thread. The memory cost of the buffers is higher when ray tracing by $z$-stack, but still very small in comparison with the overall memory footprint. However, the need to store information into buffers could lead to detrimental latency effects when loading the segment information.
+The cost of storing segments in buffers is the additional memory cost. The memory for the buffer is allocated as an array at the beginning of the solver. Since each thread handles different segments simultaneously, each tread needs its own buffer. The size of each buffer should be sufficient to store the computed segments. For ray tracing by track, this is equal to the maximum number of segments for a single track. For ray tracing by $z$-stack, it is equal to the maximum number of segments for an entire $z$-stack. The memory required for the maximum segments per track track is trivial in comparison with the total memory footprint of the solver since there are many tracks in the problem and buffers only need to be created for each thread. The memory cost of the buffers is higher when ray tracing by $z$-stack, but still very small in comparison with the overall memory footprint. However, the need to store information into buffers could lead to detrimental latency effects when loading the segment information.
 
 \section{Results}
+\label{sec:rt-results}
 
 Since there are trade-offs between the different ray tracing schemes, they should be analyzed within the context of full core 3D \ac{MOC} simulations. Previous work studied these schemes on a portion of a single C5G7 assembly~\cite{physor2016otf}. It is important to note that the geometry had the same axial discretization in each radial region such that using a global axial mesh incurs no penalty. The results showed that:
 \begin{itemize}
 	\item Storing segment information in temporary buffers outperforms on-the-fly application of the \ac{MOC} equations
 	\item Ray tracing by stack was more efficient that ray tracing by track for all configurations
-	\item Storing local axial meshes did not see any improvement over a global axial mesh for ray tracing by $z$-stack
+	\item Using a global axial mesh did not improve performance over local axial meshes for ray tracing by $z$-stack
 	\item Using a global axial mesh was more efficient than local axial meshes for ray tracing by individual 3D track
 	\item All on-the-fly ray tracing schemes significantly outperformed explicit storage of segment information
 \end{itemize}
@@ -189,7 +208,7 @@ The aim of this thesis is to analyze full core problems with a high number of en
 
 \subsection{Simulation Parameters}
 
-The results presented here concentrate on the differences between ray tracing by individual 3D track and ray tracing with both schemes using local axial meshes. The SDSA test problem is simulated with the simulation parameters given in Table~\ref{tab:sdsa-rt-flat}, which resemble expected \ac{MOC} ray spacing and mesh parameters, but with a flat source approximation.
+The results presented here concentrate on the differences between ray tracing by individual 3D track and ray tracing by $z$-stack with both schemes using local axial meshes. The SDSA test problem, described in Section~\ref{sec:sdsa}, is simulated with the simulation parameters given in Table~\ref{tab:sdsa-rt-flat}, which resemble expected \ac{MOC} ray spacing and mesh parameters, but with a flat source approximation. For all computational results, each case is run three times, reporting the mean and estimating the error margin using the maximum deviation from the mean.
 	
 \begin{table}[ht]
 	\centering
@@ -214,11 +233,11 @@ The results presented here concentrate on the differences between ray tracing by
 
 \subsection{Single Thread Performance Comparison}
 
-First, the single thread performance of the flat source solver with the two on-the-fly ray tracing schemes is compared. Two metrics are considered -- the time to compute the single transport sweep and the integration time. The integration time refers to the time required to compute the angular flux variation over a segment and tally its contribution to the local scalar flux for a single energy group. It is calculated as $T / N_I$ where $T$ is the average time to compute one transport sweep and $N_I$ is the number of integrations, which can be computed as $N_I = 2 S G$ where $S$ is the number of segments and $G$ is the number of energy groups. The factor of two arises since each segment represents forward and backward directed angular fluxes. The results are presented in Table~\ref{tab:rt-single-thread} which utilize the Falcon supercomputer.
+First, the single thread performance of the flat source solver with the two on-the-fly ray tracing schemes is compared. Two metrics are considered -- the time to compute the single transport sweep and the integration time. The integration time refers to the time required to compute the angular flux variation over a segment and tally its contribution to the local scalar flux for a single energy group. It is calculated as $T / N_I$ where $T$ is the average time to compute one transport sweep and $N_I$ is the number of integrations, which can be computed as $N_I = 2 S G$ where $S$ is the number of segments and $G$ is the number of energy groups. The factor of two arises since each segment represents forward and backward directed angular fluxes. Normally, integration time is computed for a single-thread or on a per-core basis. The self-imposed target for efficiency in this thesis is to achieve near 10 ns integration time on the SDSA test problem. The single threaded results using one node of the Falcon supercomputer are presented in Table~\ref{tab:rt-single-thread}, showing ray tracing by $z$-stack to have slightly better single-threaded performance than ray tracing by individual track. Both schemes result in integration times near the 10 ns target.
 
 \begin{table}[ht]
 	\centering
-	\caption{MOC parameters for the SDSA test problem for ray tracing studies}
+	\caption{Single thread performance of ray tracing schemes using one node of the Falcon supercomputer}
 	\medskip
 	\begin{tabular}{l|l|l}
 		\hline
@@ -231,59 +250,124 @@ First, the single thread performance of the flat source solver with the two on-t
 	\label{tab:rt-single-thread}
 \end{table}
 
-CONTEMPLATE PUTTING GFLOPS IN ????
-
 \subsection{Parallel Scaling}
 
-The parallel scaling of the flat source solver with the different schemes is now compared. As noted in Chapter~\ref{chap:software-design}, the on-node parallelism uses OpenMP shared memory parallelism. In this section, we consider strong scaling where the computation time of the SDSA test problem is compared, varying the number of threads created. In these analysis, the number of threads never exceeds the number of cores such that cores and threads become synonymous as each core is assigned at most one thread. 
+As noted in Chapter~\ref{chap:software-design}, the on-node parallelism of OpenMOC uses OpenMP shared memory parallelism. In this section, the strong scaling performance is considered for both ray tracing schemes in which the number of created threads is varied for the SDSA problem of fixed size. In this analysis, the number of threads never exceeds the number of cores such that cores and threads become synonymous as each core is assigned at most one thread. 
 
-To analyze parallel performance, the speedup metric is considered which for $n$ threads is defined by $T_1 / T_n$ where $T_1$ is the single-threaded computation time and $T_n$ is the computation time with $n$ threads. When each core is assigned at most one thread, the ideal speedup with $n$ threads is $n$. The parallel performance, as measured by the speedup, of the SDSA test problem is presented in Fig.~\ref{fig:rt-parallel-fs} for both ray tracing schemes.
+To analyze parallel performance, the speedup metric is considered which for $n$ threads is defined by $T_1 / T_n$ where $T_1$ is the single-threaded computation time and $T_n$ is the computation time with $n$ threads. When each core is assigned at most one thread, the ideal speedup with $n$ threads is $n$. The parallel performance on the SDSA test problem is presented in Fig.~\ref{fig:rt-parallel-fs} for both ray tracing schemes.
 
 \begin{figure}[h!]
 	\centering
-	\begin{subfigure}{0.45\textwidth}
+	\begin{subfigure}{0.48\textwidth}
 		\centering
 		\includegraphics[width=\linewidth]{figures/fs-parallel-scaling-tracks.png}
 		\caption{By Tracks}
 		\label{fig:rt-parallel-fs-tracks}
 	\end{subfigure}
-	\begin{subfigure}{0.45\textwidth}
+	\begin{subfigure}{0.48\textwidth}
 		\centering
 		\includegraphics[width=\linewidth]{figures/fs-parallel-scaling-stacks.png}
 		\caption{By $Z$-Stacks}
 		\label{fig:rt-parallel-fs-stacks}
 	\end{subfigure}
-	\caption[]{Strong scaling of the SDSA test problem on the Falcon supercomputer using on-the-fly ray tracing by (a) tracks and (b) $z$-stacks.}
+	\caption[]{Strong scaling performance on the SDSA test problem using the Falcon supercomputer with on-the-fly ray tracing by (a) tracks and (b) $z$-stacks.}
 	\label{fig:rt-parallel-fs}
 \end{figure}
 
+For practical purposes, performance using the full available resources is more important than single thread performance or scalability. Therefore, it is important to compare the runtime of the algorithms using the maximum number of available cores on a single node. This comparison is shown in Table~\ref{tab:rt-full-thread}, showing that ray tracing by $z$-stack seems to have slightly better performance than ray tracing by individual 3D track.
 
-NOTE THE FULL THREAD RESULTS FOR FALCON AND CETUS
+\begin{table}[ht]
+	\centering
+	\caption{Performance on the SDSA test problem using full computational resources of a single Falcon node with 36 cores}
+	\medskip
+	\begin{tabular}{l|l|l}
+		\hline
+		Ray Tracing Scheme & Transport Sweep Time (s) & Integration Time (ns) \\
+		\hline
+		By Track & 49.9 +/- 3.9 & 0.66 +/- 0.05 \\
+		By $z$-Stack & 43.1 +/- 2.3 & 0.57 +/- 0.03 \\
+		\hline
+	\end{tabular}
+	\label{tab:rt-full-thread}
+\end{table}
 
-	method --	machine -- number of threads -- time
-tracks
-stacks
+\subsection{Performance on Cetus}
 
+Since the aim of this thesis is accurately simulating full core PWR problems, which requires immense computational resources, the performance should be compared on a machine capable of solving very large problems. This work targets the Argonne BlueGene/Q supercomputer. Since the architecture of this machine is very different from traditional nodes, with comparatively slow cores and the ability to host four hyper-threads per core, the performance of algorithms on this machine should also be compared.
 
+For testing performance on the Argonne BlueGene/Q supercomputer, the Cetus partition is utilized. One limitation in terms of testing performance on the Cetus partition is a one hour runtime limit of all jobs. Because of this limitation, the \ac{MOC} ray parameters are significantly coarsened to those shown in Table~\ref{tab:rt-cetus-params} so the problem can run on one thread in under an hour.
+
+\begin{table}[ht]
+	\centering
+	\caption{MOC ray parameters for the SDSA test problem for ray tracing studies on the Cetus partition of the Argonne BlueGene/Q supercomputer}
+	\medskip
+	\begin{tabular}{lc}
+		\hline
+		Radial Ray Spacing & 0.1 cm \\
+		Axial Ray Spacing & 1.5 cm \\
+		Number of Azimuthal Angles & 16 \\
+		Number of Polar Angles & 6 \\
+		\hline
+	\end{tabular}
+	\label{tab:rt-cetus-params}
+\end{table}
+
+First, the performance is tested using the full computational resources of a single node of the Cetus partition. Since each node features 16 cores with 4 hyper-threads per core, this means using 64 threads. 
+
+\begin{table}[ht]
+	\centering
+	\caption{Performance on the SDSA test problem using full computational resources of a single Cetus node with 16 cores}
+	\medskip
+	\begin{tabular}{l|l|l}
+		\hline
+		Ray Tracing Scheme & Transport Sweep Time (s) & Integration Time (ns) \\
+		\hline
+		By Track & 13.83 +/- 0.06 & 4.77 +/- 0.02 \\
+		By $z$-Stack & 13.52 +/- 0.04 & 4.66 +/- 0.01 \\
+		\hline
+	\end{tabular}
+	\label{tab:rt-full-thread-cetus}
+\end{table}
+
+From these results, it seems that yet again the on-the-fly ray tracing by $z$-stack performs slightly better than on-the-fly ray tracing by individual 3D track. It is important to note the slowdown in integration time from Falcon to Cetus, even on a per-core basis, highlighting the extent to which the cores on Cetus are slower than the cores on Falcon. 
+
+Since the scaling studies on Falcon showed scaling to be quite similar between ray tracing methods, only the scaling using on-the-fly ray tracing by $z$-stack is analyzed on Cetus. 
+
+It is also important to note the role of hyper-threads in scaling studies. Since hyper-threads share computational resources with other hyper-threads on the same core, ideal scaling is only tangible when the number of threads is less than the number of cores. In this case, the number of cores is 16. At 16 threads, the parallel speedup of the algorithm is 91.9\% of idea, which is significantly better than the scaling observed on Falcon. At 64 threads, where all available hyper-threads are utilized, the average speedup is 42.15. This shows that the algorithm benefits greatly from the addition of hyper-threads, showing that there latency is a major contributor to the overall run-time. The full scaling results are plotted in Figure~\ref{fig:rt-parallel-fs-cetus}.
+
+\begin{figure}[ht!]
+	\centering
+	\includegraphics[width=0.75\linewidth]{figures/fs-parallel-scaling-stacks-cetus.png}
+	\caption{Strong scaling performance on the SDSA test problem using the Cetus partition of the Argonne BlueGene/Q supercomputer with on-the-fly ray tracing by $z$-stacks.}
+	\label{fig:rt-parallel-fs-cetus}
+\end{figure}
 
 %------------------------------------------------------------------------------
 %
 %------------------------------------------------------------------------------
-\section{CONCLUSION} 
+\section{Conclusion} 
+\label{sec:rt-conclusion}
 
-In this study, an alternative approaches to 3D \ac{MOC} were presented for segment storage whereby only 2D segments are stored and 3D segments are computed on-the-fly. This approach offers significant memory reduction with minimal or no computational overhead. Results show that the most efficient ray tracing tested was ray tracing entire $z$-stacks of 3D tracks with temporary storage of the computed segments.
-\clearpage
+In this chapter, the \ac{MOC} ray tracing problem was thoroughly discussed. Alternative approaches to ray tracing for 3D \ac{MOC} were presented whereby only 2D segments are stored and 3D segments are computed on-the-fly. Two approaches were analyzed: one in which each individual 3D track is ray traced and another where an entire $z$-stack of tracks is ray traced. Both approaches offer significant memory reduction with minimal or no computational overhead. Results comparing these two on-the-fly ray tracing algorithms show that the ray tracing by entire $z$-stacks of 3D tracks was most efficient. Parallel scaling of the algorithms was also studied, showing similar scaling between the two ray tracing algorithms. Parallel scaling was quite close to ideal linear scaling for the targeted Argonne BlueGene/Q architecture, even into the hyper-thread regime. This supports the expectation that OpenMOC should make efficient use of the BlueGene/Q computational resources for full core simulations.
 
 \vfill
 \begin{highlightsbox}[frametitle=Highlights]
 \begin{itemize}
-  \item The bias between OpenMC and OpenMOC is the result of the flux separability approximation which uses the scalar rather than the angular flux to collapse the total \ac{MGXS} in energy and space.
-  \item The most rigorous solution would require the use of angular-dependent total \ac{MGXS}. However, most deterministic multi-group methods, including OpenMOC, are not equipped to use angular-dependent \ac{MGXS}.
-  \item \ac{SPH} factors are introduced here as one approach to force reaction rate preservation in multi-group methods which use \ac{MC}-generated \ac{MGXS}.
-  \item The \ac{SPH} factor scheme corrects the total \ac{MGXS} to enforce neutron balance with a reference fixed source computed from \ac{MC} tallies.
-  \item The flux errors and eigenvalue bias between OpenMC and OpenMOC was largely resolved with \ac{SPH} factors for a 1D slab and 2D fuel pin.
-  \item It is unclear if a generalizable scheme based upon \ac{SPH} factors may be used to correct for the flux separability approximation.
-  \item Future work should investigate methods to account for the angular dependence of total \ac{MGXS} in order to adequately preserve reaction rates in fine-mesh transport methods with \ac{MC}-generated \ac{MGXS}.
+ 
+ \item On-the-fly ray tracing is chosen to alleviate the computational burden of explicitly storing an immense number of 3D segments
+
+ \item All 2D radial geometric detail forms a superposition plane which is used in conjunction with axial meshes to form an axially extruded geometry
+ 
+ \item In converting from a piecewise axially extruded geometry to a pure axially extruded geometry, additional intersections can be added
+
+ \item On-the-fly ray can either be accomplished for each individual track or with an entire $z$-stack of tracks together assuming constant axial ray spacing
+ 
+ \item For a high number of energy groups, differences in performance of ray tracing schemes are mostly dependent on the memory access patterns for traversing source regions
+
+ \item Results show the on-the-fly ray tracing by $z$-stack to be slightly preferable to on-the-fly ray tracing by individual track for the 70-group energy structure used in this thesis
+
+ \item The parallel scaling of the flat source solver using the on-the-fly ray tracing methods is achieves near-linear over threads for the targeted Argonne BG/Q architecture
+ 
 \end{itemize}
 \end{highlightsbox}
 \vfill

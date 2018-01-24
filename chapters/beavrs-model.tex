@@ -16,7 +16,8 @@ axial height adjustment
 \section{Cross-Section Generation}
 \label{sec:beavrs-xs-gen}
 
-In this thesis, the same 70 group cross-section library is used for all results involving the BEAVRS benchmark or cutouts of the BEAVRS benchmark. The
+In this thesis, the same 70 group cross-section library is used for all results involving the BEAVRS benchmark or cutouts of the BEAVRS benchmark except for the rod insertion studies. A separate 70 group cross-section library was formed for rod insertion studies in order to form accurate cross-sections for control rod materials. In this section, the process used to form cross-sections is thoroughly discussed.
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Description of BEAVRS Models}
@@ -31,22 +32,29 @@ Talk about: really just the BEAVRS model directly
 
 Important to note modifications
 
+The model is again 400 cm in axial height with an active fuel height of 366 cm. The model extent in the radial plane is the size of $17\times 17$ assembly widths with each assembly again having a width of 21.54 cm. Since the \ac{BEAVRS} model only has 15 assemblies on the major axis, the model guarantees at least one assembly width of water reflector outside the core in every direction. Since the simulated geometry is square in the radial plane, the corners have very deep water reflectors. In general, vacuum boundaries are assumed on all surfaces. 
+
 \subsection{Full Core 2D Model}
 \label{sec:beavrs-2D}
 
 Talk about: smaller model
 
 Talk about: still incorporating radial detail including the radial water reflector (most importantly)
+Before simulating the explicit 3D model, a 2D extruded model is constructed to observe the convergence behavior. This model takes a radial slice of the core that does not contain grid spacers and extruded the slice 10 cm in the axial direction, applying reflective boundaries on the top and bottom. This essentially converts the 3D problem into a 2D problem.
 
 \subsection{Single Assembly Model}
 \label{sec:beavrs-single-assembly}
 
 Talk about: smaller model to do rigorous performance and MOC parameter opt analysis
 
+While OpenMOC is capable of solving full core \ac{PWR} problems, this analysis will start by focusing on a 3D single assembly model, which is computationally less expensive, in order to observe longer iteration histories. The single assembly model is 400 cm in axial height with an active fuel height of 366 cm and an assembly pitch of 21.42 cm. It is simulated with vacuum boundaries in the axial directions and reflective boundaries in the radial directions. The assembly incorporates the full geometric detail, including grid spacers. Outside the core, full geometrical detail is also captured including support plate nozzles and, most notably, water reflectors of approximately 20 cm above and below the fuel.
+
 \subsection{Truncated Single Assembly Model}
 \label{sec:trunc-single-assembly}
 
 Talk about: no reflector effects, similar to lattice calc
+
+This model is the same as the single assembly model but without the axial water reflectors. Vacuum boundary conditions are placed at the top and bottom of the active fuel. All other geometric and material data is unchanged.
 
 \subsection{SDSA Model}
 \label{sec:sdsa}
