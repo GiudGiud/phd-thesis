@@ -89,9 +89,9 @@ A common theme in the \ac{MPI} communication algorithms for both the \ac{MOC} an
 	\end{algorithmic}
 \end{algorithm*}
 
-It is important to underscore that this algorithm works for any collection of neighbors a given node might have, which do not need to be adjacent. For application in OpenMOC, this algorithm is applied to spatially adjacent neighbors. Boundary communication for angular flux data is limited to face-adjacent and corner-adjacent neighbors whereas \ac{CMFD} boundary data is only communicated with fac-adjacent neighbors.
+It is important to underscore that this algorithm works for any collection of neighbors a given node might have, which do not need to be adjacent. For application in OpenMOC, this algorithm is applied to spatially adjacent neighbors. Boundary communication for angular flux data is limited to face-adjacent and corner-adjacent neighbors whereas \ac{CMFD} boundary data is only communicated with face-adjacent neighbors.
 
-A major advantage of the Buffered Synchoronous Algorithm over blocking communication is the ability for a single \ac{MPI} process to communicate with multiple neighbors at once. Since nodes often have physical connections with more than one other node, it is important to make full use of all the available connections in order to maximize efficiency.
+A major advantage of the Buffered Synchronous Algorithm over blocking communication is the ability for a single \ac{MPI} process to communicate with multiple neighbors at once. Since nodes often have physical connections with more than one other node, it is important to make full use of all the available connections in order to maximize efficiency.
 
 
 \section{MOC Inter-domain Communication}

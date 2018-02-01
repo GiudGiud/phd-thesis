@@ -3,9 +3,14 @@
 
 In Chapter~\ref{chap:moc}, the MOC equations were derived using a flat source approximation. While this approximation is convenient and used by many in practice~\cite{moc-codes}, a linear approximation can potentially reduce the computational requirements of simulating a fully converged reactor physics problem. While the linear source approximation increases the computational cost for a fixed discretization, the higher order source can capture source gradients, allowing for a much coarser discretization while maintaining solution accuracy. In Section~\ref{sec:ls-scalar-flux}, the linear source approximation is defined, leading to a new relationship for the variation of angular flux over source regions and hence the computation of the scalar flux. In Section~\ref{sec:ls-moments}, the computation of linear source moments is derived and discussed. Finally, Section~\ref{sec:ls-implications} discusses the implications of the linear source approximation.
 
+
+Maybe change ordering to:
+- Linear Source Derivation
+- Algorithmic Strategy for Linear Source MOC (list relevant equations)
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Definition and Derivation of the Linear Source Approximation}
-\label{sec:ls-scalar-flux}
+\section{Derivation of the Linear Source Approximation}
+\label{sec:ls-derivation}
 
 Starting from the integral form of the equation derived in Chapter~\ref{chap:moc}, the angular flux varies dependent on the neutron source $q_g(\mathbf{r})$ as
 \begin{dmath*}
@@ -16,11 +21,18 @@ Previously, the neutron source was taken to be constant which resulted in a simp
 q_g(\mathbf{r_0} + s\mathbf{\Omega}) = q^0_{t,\varsigma,g} + q^1_{t,\varsigma,g}(s-\ell_{t,\varsigma}/2)
 \label{eq:track-ls}
 \end{equation}
-where $\ell_{t,\varsigma}$ is the length of the track $t$ over the region $i$ and the track-dependent coefficients are $q^0_{t,\varsigma,g}$ and $q^1_{t,\varsigma,g}$ . It is important to note that in this definition the source components are dependent on the track. Later, the track description of the source will be transformed into the spatial reference of the source, which is not track-dependent. Since tracks enter the source regions at different positions and different angles, the source strength they encounter varies. This is the reason for the track-dependent coefficients. With this form, the angular flux follows the form
+where $\ell_{t,\varsigma}$ is the length of the track $t$ over the region $i$ and the track-dependent coefficients are $q^0_{t,\varsigma,g}$ and $q^1_{t,\varsigma,g}$ . It is important to note that in this definition the source components are dependent on the track. Later, the track description of the source will be transformed into the spatial reference of the source, which is not track-dependent. Since tracks enter the source regions at different positions and different angles, the source strength they encounter varies. This is the reason for the track-dependent coefficients. 
+
+By inserting the linear source definition into the balance equation, the angular flux follows the relationship
 \begin{equation}
-	\psi_g(\mathbf{r_0} + \ell \mathbf{\Omega},\mathbf{\Omega}) = \psi_g(\mathbf{r_0},\mathbf{\Omega}) e^{-\Sigma_{t}^{i,g} \ell} + \int\displaylimits_{0}^{\ell} ds \, (q^0_{t,\varsigma,g} + q^1_{t,\varsigma,g}(s-\ell_{t,\varsigma}/2)) e^{-\Sigma_{t}^{i,g} (\ell-s)}
+\psi_g(\mathbf{r_0} + \ell \mathbf{\Omega},\mathbf{\Omega}) = \psi_g(\mathbf{r_0},\mathbf{\Omega}) e^{-\Sigma_{t}^{i,g} \ell} + \int\displaylimits_{0}^{\ell} ds \, (q^0_{t,\varsigma,g} + q^1_{t,\varsigma,g}(s-\ell_{t,\varsigma}/2)) e^{-\Sigma_{t}^{i,g} (\ell-s)}.
+\label{eq:first-ls}
 \end{equation}
-which can be simplified to
+In this form, ... EXPLAIN, lay out sub-sections.
+
+\subsection{Calculation of Average Scalar and Angular Fluxes}
+
+The calculation of average scalar fluxes are often the goal of neutron transport simulations. Therefore, this derivation of the track-based linear source approximation starts with a discussion of their calculation given the linear source definition. The angular flux relationship previously presented in Eq.~\ref{eq:first-ls} can be simplified to
 \begin{dmath}
 	\psi_g(\mathbf{r_0} + \ell \mathbf{\Omega},\mathbf{\Omega}) = \psi_g(\mathbf{r_0},\mathbf{\Omega}) + \left( \frac{q^0_{t,\varsigma,g}}{\Sigma_{t}^{i,g}} - \psi_g(\mathbf{r_0},\mathbf{\Omega}) \right) F_1\left(\Sigma_{t}^{i,g} \ell\right) \\ +  \left(\frac{q^1_{t,\varsigma,g}}{2\left(\Sigma_{t}^{i,g}\right)^2}\right) F_2\left(\Sigma_{t}^{i,g} \ell, \Sigma_{t}^{i,g} \ell_{t,\varsigma}\right)
 \end{dmath}
@@ -39,11 +51,12 @@ With the discretization of the angular and spatial variables into tracks and seg
 \end{equation}
 Recall that the average flux can be computed with the angular fluxes as
 \begin{equation}
-	\overline{\phi_{i,g}} = \frac{1}{V} \sum_{(t,\varsigma) \in V_i} w_t \int_{0}^{\ell_{t,\varsigma}} ds \, \psi^{t,\varsigma}_g(s)
+	\overline{\phi_{i,g}} = \frac{1}{V_i} \sum_{(t,\varsigma) \in V_i} w_t \int_{0}^{\ell_{t,\varsigma}} ds \, \psi^{t,\varsigma}_g(s)
 \end{equation}
 which can be re-written in terms of the average angular flux $\overline{\psi}^{t,\varsigma}_g$ as
 \begin{equation}
-	\overline{\phi_{i,g}} = \frac{1}{V} \sum_{(t,\varsigma) \in V_i} w_t \overline{\psi}^{t,\varsigma}_g \ell_{t,\varsigma}
+	\overline{\phi_{i,g}} = \frac{1}{V_i} \sum_{(t,\varsigma) \in V_i} w_t \overline{\psi}^{t,\varsigma}_g \ell_{t,\varsigma}
+	\label{eq:flat-scalar-flux}
 \end{equation}
 where the angular average angular flux $\overline{\psi}^{t,\varsigma}_g$ is defined by
 \begin{equation}
@@ -59,12 +72,19 @@ when the angular and spatial discretization is applied. This relationship can be
 \label{eq:ls-avg-angular-flux}
 \end{equation}
 
-FIXME
-
-Using Eq.~\ref{eq:ls-avg-angular-flux} with Eq.~\ref{eq:ls-angular-flux}, all of the scalar fluxes and angular fluxes can be calculated given the linear neutron source components presented in Eq.~\ref{eq:track-ls}. The procedure used to determine the track-based linear source components from a linear source approximation defined by region is the subject of the next section.
+Using Eq.~\ref{eq:ls-avg-angular-flux} with Eq.~\ref{eq:ls-angular-flux}, all of the angular fluxes can be calculated, along with their averages, given the linear neutron source components presented in Eq.~\ref{eq:track-ls}. The scalar fluxes can also be computed by combining Eq.~\ref{eq:flat-scalar-flux} with Eq.~\ref{eq:ls-avg-angular-flux}, yielding
+\begin{equation}
+\overline{\phi_{i,g}} = \frac{1}{V_i} \sum_{(t,\varsigma) \in V_i} w_t \ell_{t,\varsigma} \left( \frac{q^0_{t,\varsigma,g}}{\Sigma_{t}^{i,g}} + \frac{\psi^{t,\varsigma}_g(0) - \psi^{t,\varsigma}_g(\ell_{t,\varsigma})}{\Sigma_{t}^{i,g} \ell_{t,\varsigma}} \right)
+\end{equation}
+which can be simplified as
+\begin{equation}
+\overline{\phi_{i,g}} = \frac{\overline{q}_{i,g}}{\Sigma_{t}^{i,g}} + \frac{1}{\Sigma_{t}^{i,g} V_i} \sum_{(t,\varsigma) \in V_i} w_t \left(\psi^{t,\varsigma}_g(0) - \psi^{t,\varsigma}_g(\ell_{t,\varsigma}) \right)
+\label{eq:ls-avg-scalar-flux}
+\end{equation}
+All these equations are dependent on being able to calculate the track-based linear source components, which is the subject of the remainder of this section.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Linear Source Defined By Region}
+\subsection{Linear Source Defined By Region}
 \label{sec:derivation-of-moc}
 
 Until now, the linear source approximation has been introduced in the perspective of each track. This is convenient for simplifying the MOC equations, but not convenient for computing the components. Therefore, a region-wise linear source $q_i^g$ for region $i$ and energy group $g$ is defined in terms of position $\mathbf{r}$ as
@@ -92,9 +112,11 @@ q_{i,g}(x, y, z) = \overline{q}_{i,g} + \sum_{v \in (x,y,z)} q_{v,i,g} \left( v 
 where $v$ iterates over the spatial variables $x$, $y$, and $z$. Using this same notation, the track-based source components can be expressed as:
 \begin{equation}
 q^0_{t,\varsigma,g} = \overline{q}_{i,g} + \sum_{v \in (x,y,z)} q_{v,i,g} \left( v^m_{t,\varsigma} - v^C_i \right)
+\label{eq:q0-def}
 \end{equation}
 \begin{equation}
 q^1_{t,\varsigma,g} = \sum_{v \in (x,y,z)} \Omega_{v,t} q_{v,i,g}
+\label{eq:q1-def}
 \end{equation}
 where $\Omega_{v,t}$ refers to the $v\in(x,y,z)$ component of the unit vector direction $\mathbf{\Omega}_t$ for track $t$ and $v^m_{t,\varsigma}$ refers to the $v$ coordinate of the midpoint of segment $\varsigma$ along track $t$. Since the centroid $v^C_i$ can be computed as
 \begin{equation}
@@ -109,16 +131,22 @@ v = v^m_{t,\varsigma} + \Omega_{v,t} \left(s - \frac{\ell_{t,\varsigma}}{2} \rig
 which can be inserted in Eq.~\ref{eq:gen-centroid-int} to yield the simplified form as
 \begin{equation}
 v^C_i = \sum_{(t,\varsigma) \in V_i} w_t \ell_{t,\varsigma} v^m_{t,\varsigma} \qquad \forall v \in (x,y,z).
+\label{eq:gen-centroid-sum}
+\end{equation}
+The flat source component $\overline{q}_{i,g}$ can be computed using the scalar fluxes in the same way as the flat source approximation, as shown in Eq.~\ref{eq:ls-flat-source}.
+\begin{equation}
+\overline{q}_{i,g} = \frac{1}{4 \pi} \left( \frac{\chi_{i,g}}{k} \sum_{g'=1}^{G} \nu_{i,g'} \Sigma_f^{i,g'} \overline{\phi_{i,g'}} + \, \sum_{g'=1}^G \,  \Sigma_{s}^{i,g' \rightarrow g} \overline{\phi_{i,g'}} \right)
+\label{eq:ls-flat-source}
 \end{equation}
 
-\section{Computing Linear Source Moments}
-\label{sec:ls-moments}
+\subsection{Relating Linear Source Components To Moments}
+\label{sec:ls-components}
 
-With the neutron source defined in terms of spatial variables rather than track-based variables, it is possible to compute source moments. The moment $Q_{v,i,g}$ of the source in the $v\in(x,y,z)$ direction can be computed as
+With the neutron source defined in terms of spatial variables rather than track-based variables, it is possible to relate the linear source components to source moments. The moment $Q_{v,i,g}$ of the source in the $v\in(x,y,z)$ direction can be calculated as
 \begin{equation}
 Q_{v,i,g} = \int_{V_i} d\mathbf{r} \, \left(v - v^C_i\right) q(\mathbf{r}) \qquad \forall v \in (x,y,z)
 \end{equation}
-where $V$ refers to the volume and $V_i$ is the volume of region $i$. With the track discretization, the integral can be computed as
+where $V$ refers to the volume and $V_i$ is the volume of region $i$. With the track discretization, the integral can be calculated as
 \begin{equation}
 Q_{v,i,g}  = \sum_{(t,\varsigma) \in V_i} w_t \int_{0}^{\ell_{t,\varsigma}} ds \, \left(v - v^C_i\right) \left(\overline{q}_{i,g} + \sum_{v' \in (x,y,z)} q_{v',i,g} \left( v' - {v'}^C_i \right)\right) \qquad \forall v \in (x,y,z).
 \end{equation}
@@ -132,28 +160,30 @@ Q_{v,i,g}  = \sum_{(t,\varsigma) \in V_i} w_t \int_{0}^{\ell_{t,\varsigma}} ds \
 \end{equation}
 due to the definition of the region centroid in Eq.~\ref{eq:gen-centroid-int}. Defining moment coefficients $M_{v,v'}$ such that
 \begin{equation}
-M_{v,v'} = \sum_{(t,\varsigma) \in V_i} w_t  \int_{0}^{\ell_{t,\varsigma}} ds \, \left(v - v^C_i\right) \left( v' - {v'}^C_i \right) \qquad \forall (v,v') \in (x,y,z) \times (x,y,z),
+M_{i,v,v'} = \sum_{(t,\varsigma) \in V_i} w_t  \int_{0}^{\ell_{t,\varsigma}} ds \, \left(v - v^C_i\right) \left( v' - {v'}^C_i \right) \qquad \forall (v,v') \in (x,y,z) \times (x,y,z),
 \label{eq:moment-matrix-comp}
 \end{equation}
 it becomes clear that this can be cast as a linear problem such that
 \begin{equation}
-M \vec{q}_{i,g} = \vec{Q}_{i,g}
+M_i \vec{q}_{i,g} = \vec{Q}_{i,g}
+\label{eq:lin-moment-system}
 \end{equation}
 where $\vec{Q}_{i,g} = \left[Q_{x,i,g}, Q_{y,i,g}, Q_{z,i,g}\right]^T$ and the matrix $M$ is defined by Eq.~\ref{eq:moment-matrix-comp} where
 \begin{equation}
-M = 
+M_i = 
 \begin{bmatrix}
-M_{xx} & M_{xy}  & M_{xz} \\
-M_{xy} & M_{yy}  & M_{yz} \\
-M_{xz} & M_{yz}  & M_{zz}
+M_{i,xx} & M_{i,xy}  & M_{i,xz} \\
+M_{i,xy} & M_{i,yy}  & M_{i,yz} \\
+M_{i,xz} & M_{i,yz}  & M_{i,zz}
 \end{bmatrix}.
+\label{eq:linear-moment-matrix}
 \end{equation}
 Altogether, the linear system is defined by
 \begin{equation}
 \begin{bmatrix}
-M_{xx} & M_{xy}  & M_{xz} \\
-M_{xy} & M_{yy}  & M_{yz} \\
-M_{xz} & M_{yz}  & M_{zz}
+M_{i,xx} & M_{i,xy}  & M_{i,xz} \\
+M_{i,xy} & M_{i,yy}  & M_{i,yz} \\
+M_{i,xz} & M_{i,yz}  & M_{i,zz}
 \end{bmatrix}
 \begin{bmatrix}
 q_{x,i,g} \\
@@ -169,26 +199,27 @@ Q_{z,i,g}
 .
 \label{eq:moments-linear-sys}
 \end{equation}
-The source moments can then be calculated using the relationship
+The source moments can then be calculated similar to the flat source components, using the relationship
 \begin{equation}
 Q_{v,i,g} = \frac{1}{4 \pi} \left( \frac{\chi_{i,g}}{k} \sum_{g'=1}^{G} \nu_{i,g'} \Sigma_f^{i,g'} \hat{\phi}_{v,i,g'} + \, \sum_{g'=1}^G \,  \Sigma_{s}^{i,g' \rightarrow g} \hat{\phi}_{v,i,g'} \right) \qquad \forall v \in (x,y,z)
 \end{equation}
-where $\hat{\phi}_{v,i,g}$ is the moment of the scalar flux in the $v$ direction. Similarly, the flat source component $\overline{q}_{i,g}$ can be computed using the scalar fluxes in the same way as the flat source approximation, as shown in Eq.~\ref{eq:ls-flat-source}.
+where $\hat{\phi}_{v,i,g}$ is the moment of the scalar flux in the $v$ direction. 
+
+
+\subsection{Calculation of Scalar Flux Moments}
+\label{sec:ls-moments}
+The previous section allowed for the calculation of linear source moments given scalar flux moments. These scalar flux moments can be calculated by
 \begin{equation}
-\overline{q}_{i,g} = \frac{1}{4 \pi} \left( \frac{\chi_{i,g}}{k} \sum_{g'=1}^{G} \nu_{i,g'} \Sigma_f^{i,g'} \overline{\phi_{i,g'}} + \, \sum_{g'=1}^G \,  \Sigma_{s}^{i,g' \rightarrow g} \overline{\phi_{i,g'}} \right)
-\label{eq:ls-flat-source}
-\end{equation}
-The scalar flux moments can be calculated by
-\begin{equation}
-\hat{\phi}_{v,i,g} = \sum_{(t,\varsigma) \in V_i} w_t \int_{0}^{\ell_{t,\varsigma}} ds \, v \psi^{t,\varsigma}_g(s) \qquad \forall v \in (x,y,z).
+\hat{\phi}_{v,i,g} = \sum_{(t,\varsigma) \in V_i} w_t \int_{0}^{\ell_{t,\varsigma}} ds \, \left(v - v^C_i\right) \psi^{t,\varsigma}_g(s) \qquad \forall v \in (x,y,z).
 \end{equation}
 Converting the variable $v$ into the tracked distance $s$ using Eq.~\ref{eq:v-to-s}, this can be recast as
 \begin{equation}
-\hat{\phi}_{v,i,g} = \sum_{(t,\varsigma) \in V_i} w_t \int_{0}^{\ell_{t,\varsigma}} ds \, \left[v^m_{t,\varsigma} + \Omega_{v,t} \left(s - \frac{\ell_{t,\varsigma}}{2} \right) \right] \psi^{t,\varsigma}_g(s) \qquad \forall v \in (x,y,z)
+\hat{\phi}_{v,i,g} = \sum_{(t,\varsigma) \in V_i} w_t \int_{0}^{\ell_{t,\varsigma}} ds \, \left[v^m_{t,\varsigma} + \Omega_{v,t} \left(s - \frac{\ell_{t,\varsigma}}{2} \right) - v^C_i \right] \psi^{t,\varsigma}_g(s) \qquad \forall v \in (x,y,z)
 \end{equation}
 which can be simplified to
 \begin{equation}
-\hat{\phi}_{v,i,g} = \sum_{(t,\varsigma) \in V_i} w_t \ell_{t,\varsigma} \left[\Omega_{v,t} \hat{\psi}^{t,\varsigma}_g +  \left( v^m_{t,\varsigma} - \frac{\ell_{t,\varsigma}}{2} \right) \overline{\psi}^{t,\varsigma}_g \right] \qquad \forall v \in (x,y,z)
+\hat{\phi}_{v,i,g} = \sum_{(t,\varsigma) \in V_i} w_t \ell_{t,\varsigma} \left[\Omega_{v,t} \hat{\psi}^{t,\varsigma}_g +  \left( v^m_{t,\varsigma}- v^C_i - \frac{\Omega_{v,t} \ell_{t,\varsigma}}{2} \right) \overline{\psi}^{t,\varsigma}_g \right] \qquad \forall v \in (x,y,z)
+\label{eq:flux-moments-1}
 \end{equation}
 where $\overline{\psi}^{t,\varsigma}_g$ is the average angular flux which can be calculated using Eq.~\ref{eq:ls-avg-angular-flux} and $ \hat{\psi}^{t,\varsigma}_g$ is the angular flux moment defined by
 \begin{equation}
@@ -201,6 +232,7 @@ To solve for the angular flux moment, the definition for angular flux in Eq.~\re
 which can be simplified to
 \begin{equation}
 \hat{\psi}^{t,\varsigma}_g = \frac{\psi^{t,\varsigma}_g(0) \ell_{t,\varsigma}}{2} + \left(\frac{q^0_{t,\varsigma,g}}{\Sigma_{t}^{i,g}} - \psi^{t,\varsigma}_g(0) \right) \frac{G_1(\Sigma_{t}^{i,g} \ell_{t,\varsigma})}{\Sigma_{t}^{i,g}} + \frac{\ell_{t,\varsigma} q^1_{t,\varsigma,g} G_2(\Sigma_{t}^{i,g} \ell_{t,\varsigma})}{2\left(\Sigma_{t}^{i,g}\right)^2}
+\label{eq:angular-flux-moment}
 \end{equation}
 where the functions $G_1(\tau)$ and $G_2(\tau)$ are mathematically defined as
 \begin{equation}
@@ -210,13 +242,196 @@ and
 \begin{equation}
 G_2(\tau) = \frac{2}{3} \tau - \left(1 + \frac{2}{\tau}\right) G_1(\tau).
 \end{equation}
+With these definitions, the scalar flux moments can be calculated by inserting the definitions of average angular flux $\overline{\psi}^{t,\varsigma}_g$ (Eq.~\ref{eq:angular-flux-moment}) and angular flux moments $\hat{\psi}^{t,\varsigma}_g$ into the definition of the scalar flux moments in Eq.~\ref{eq:flux-moments-1}. This results in a long expression which, for simplicity, can be decomposed into four terms as
+\begin{equation}
+\hat{\phi}_{v,i,g} = K_1 + K_2 + K_3 + K_4
+\end{equation}
+where the terms are defined by:
+\begin{align}
+K_1 = & \frac{1}{\Sigma_{t}^{i,g}} \sum_{(t,\varsigma) \in V_i} w_t \ell_{t,\varsigma} q^0_{t,\varsigma,g} \left(\frac{\Omega_{v,t} G_1(\Sigma_{t}^{i,g} \ell_{t,\varsigma})}{\Sigma_{t}^{i,g}} +  v^m_{t,\varsigma} - v^C_i - \frac{\Omega_{v,t} \ell_{t,\varsigma}}{2} \right) \\
+K_2 = & \frac{1}{\Sigma_{t}^{i,g}} \sum_{(t,\varsigma) \in V_i} w_t \Omega_{v,t} \ell_{t,\varsigma} \psi^{t,\varsigma}_g(0) \left(\frac{\Sigma_{t}^{i,g} \ell_{t,\varsigma}}{2} - G_1(\Sigma_{t}^{i,g} \ell_{t,\varsigma}) \right) \\
+K_3 = & \frac{1}{2\left(\Sigma_{t}^{i,g}\right)^2} \sum_{(t,\varsigma) \in V_i} w_t q^1_{t,\varsigma,g} \Omega_{v,t} \ell_{t,\varsigma}^2 G_2(\Sigma_{t}^{i,g} \ell_{t,\varsigma}) \\
+K_4 = & \frac{1}{\Sigma_{t}^{i,g}} \sum_{(t,\varsigma) \in V_i} w_t \left( v^m_{t,\varsigma} - v^C_i- \frac{\Omega_{v,t} \ell_{t,\varsigma}}{2} \right) \left(\psi^{t,\varsigma}_g(0) - \psi^{t,\varsigma}_g(\ell_{t,\varsigma}) \right)
+\end{align}
+Each of the terms can be simplified. First, $K_1$ can be simplified by inserting the definition of $q^0_{t,\varsigma,g}$ from Eq.~\ref{eq:q0-def}. After expanding terms, $K_1$ can be cast as
+\begin{equation}
+\begin{split}
+K_1 = &\frac{\overline{q}_{i,g}}{\Sigma_{t}^{i,g}} \sum_{(t,\varsigma) \in V_i} w_t \ell_{t,\varsigma} \left(v^m_{t,\varsigma} - v^C_i \right) + 
+ \frac{\overline{q}_{i,g}}{\Sigma_{t}^{i,g}} \sum_{(t,\varsigma) \in V_i} w_t \Omega_{v,t} \ell_{t,\varsigma} \left[\frac{G_1(\Sigma_{t}^{i,g} \ell_{t,\varsigma})}{\Sigma_{t}^{i,g}} - \frac{\ell_{t,\varsigma}}{2}\right] + \\
+& \frac{1}{\Sigma_{t}^{i,g}} \sum_{p \in (x,y,z)} q_{p,i,g} \sum_{(t,\varsigma) \in V_i} w_t \ell_{t,\varsigma} \left( p^m_{t,\varsigma} - p^C_i \right) \left[\frac{\Omega_{v,t} G_1(\Sigma_{t}^{i,g} \ell_{t,\varsigma})}{\Sigma_{t}^{i,g}} +  v^m_{t,\varsigma} - v^C_i - \frac{\Omega_{v,t} \ell_{t,\varsigma}}{2} \right]
+\end{split}
+\end{equation}
+Note that the first term of $K_1$ is zero due to the definition of the centroid in Eq.~\ref{eq:gen-centroid-sum}. The second term also becomes zero by noting that all tracks are traversed forwards and backwards, utilizing the simplification discussed in Section~\ref{sec:track-simplifications}. Therefore, after further expanding terms, $K_1$ is simplified to 
+\begin{equation}
+\begin{split}
+K_1 = & \frac{1}{\Sigma_{t}^{i,g}} \sum_{p \in (x,y,z)} q_{p,i,g} \sum_{(t,\varsigma) \in V_i} w_t \ell_{t,\varsigma} \left( p^m_{t,\varsigma} - p^C_i \right) \left(v^m_{t,\varsigma} - v^C_i\right) + \\
+& \frac{1}{\Sigma_{t}^{i,g}} \sum_{p \in (x,y,z)} q_{p,i,g} \sum_{(t,\varsigma) \in V_i} w_t \Omega_{v,t} \ell_{t,\varsigma} \left( p^m_{t,\varsigma} - p^C_i \right) \left[\frac{G_1(\Sigma_{t}^{i,g} \ell_{t,\varsigma})}{\Sigma_{t}^{i,g}} - \frac{\ell_{t,\varsigma}}{2} \right]. \\
+\end{split}
+\end{equation}
+Notice that the bracketed quantity in the second term is not dependent on direction. Therefore, by again utilizing the forward and backward tracking simplifications discussed in Section~\ref{sec:track-simplifications}, the first term can be simplified and the second term can be eliminated, resulting in
+\begin{equation}
+K_1 = \frac{2}{\Sigma_{t}^{i,g}} \sum_{p \in (x,y,z)} q_{p,i,g} \sum_{(t,\varsigma) \in V^F_i} w_t \ell_{t,\varsigma} \left( p^m_{t,\varsigma} - p^C_i \right) \left(v^m_{t,\varsigma} - v^C_i\right)
+\end{equation}
+where $V^F_i$ represents the forward tracked volume of $V_i$, therefore using only half of the directional tracks. Next, $K_2$ can be simplified to
+\begin{equation}
+K_2 = \frac{1}{\Sigma_{t}^{i,g}} \sum_{(t,\varsigma) \in V_i} w_t \Omega_{v,t} \ell_{t,\varsigma} \psi^{t,\varsigma}_g(0) H(\Sigma_{t}^{i,g} \ell_{t,\varsigma})
+\end{equation}
+by defining the function $H$ as
+\begin{equation}
+H(\tau) = \frac{\tau}{2} - G_1(\tau).
+\end{equation}
+The $K_3$ term can be simplified by inserting the definition of $q^1_{t,\varsigma,g}$ in Eq.~\ref{eq:q1-def} and again using the forward and backward tracking simplifications discussed in Section~\ref{sec:track-simplifications} as
+\begin{equation}
+K_3 = \frac{1}{\left(\Sigma_{t}^{i,g}\right)^2} \sum_{p \in (x,y,z)} q_{p,i,g} \sum_{(t,\varsigma) \in V^F_i} w_t \Omega_{v,t} \Omega_{p,t} \ell_{t,\varsigma}^2 G_2(\Sigma_{t}^{i,g} \ell_{t,\varsigma}).
+\end{equation}
+The fourth and final term $K_4$ can be simplified as
+\begin{equation}
+K_4 = \frac{1}{\Sigma_{t}^{i,g}} \sum_{(t,\varsigma) \in V_i} w_t v^{\textbf{in}}_{t,\varsigma} \left(\psi^{t,\varsigma}_g(0) - \psi^{t,\varsigma}_g(\ell_{t,\varsigma}) \right)
+\end{equation}
+by defining $v^{\textbf{in}}_{t,\varsigma}$, the entering coordinate of the segment on the source region relative to the centroid as
+\begin{equation}
+v^{\textbf{in}}_{t,\varsigma} = v^m_{t,\varsigma} - v^C_i - \frac{\Omega_{v,t} \ell_{t,\varsigma}}{2}.
+\end{equation}
+Altogether, these equations can be combined and written compactly as
+\begin{equation}
+\begin{split}
+\hat{\phi}_{v,i,g} = \frac{1}{\Sigma_{t}^{i,g}} \sum_{p \in (x,y,z)} q_{p,i,g} C_{v,p}^{i,g} + & \\
+\frac{1}{\Sigma_{t}^{i,g}} \sum_{(t,\varsigma) \in V_i} w_t & \left[\Omega_{v,t} \ell_{t,\varsigma} \psi^{t,\varsigma}_g(0) H(\Sigma_{t}^{i,g} \ell_{t,\varsigma}) + v^{\textbf{in}}_{t,\varsigma} \left(\psi^{t,\varsigma}_g(0) - \psi^{t,\varsigma}_g(\ell_{t,\varsigma}) \right)\right]
+\end{split}
+\label{eq:final-scalar-flux-moments}
+\end{equation}
+where
+\begin{equation}
+C_{v,p}^{i,g} =  2 \sum_{(t,\varsigma) \in V^F_i} w_t \ell_{t,\varsigma}^2 \Omega_{v,t} \Omega_{p,t} G_2(\Sigma_{t}^{i,g} \ell_{t,\varsigma}) + \frac{1}{\Sigma_{t}^{i,g}} \sum_{(t,\varsigma) \in V^F_i} w_t \ell_{t,\varsigma} \left( p^m_{t,\varsigma} - p^C_i \right) \left(v^m_{t,\varsigma} - v^C_i\right).
+\label{eq:ls-C}
+\end{equation}
 
-%FIRST THE SOLVED FORM OF PSI HAT AS IN THE PAPER
+\section{MOC Algorithm with Linear Sources}
+\label{sec:ls-algorithm}
 
-%NEXT INSERT INTO EQUATIONS, GIVE "NON-OPTIMIZED" FORM
+In the previous section, the linear source equations were derived. Since these equations are much longer and greater in number than the flat source equivalent, this section will highlight the important equations and discuss how to implement an algorithm using the linear source approximation. For the flat source approximation discussed in Chapter~\ref{chap:moc}, there was significant discussion about the source iteration scheme. For linear source, source iteration will be the assumed as the method to solve the equations and this section will not dwell on the implications of source iteration. The iterative equations in this section will also be expressed in analytic form rather than matrix form.
 
-%TALK TO KORD ABOUT OPTIMIZED FORM --- simplifying was done to convert from track based linear source to region based linear source, likely to pull out components
-%... but why??? We already need to calculate track based linear source to get difference in angular flux
+\subsection{Identifying Invariant Constants}
+
+Before transport sweeps yada yada yada
+
+START:
+
+init:
+
+Just dependent on the geometry and track laydown.
+
+\ref{eq:ls-C}
+\begin{equation*}
+C_{v,p}^{i,g} =  2 \sum_{(t,\varsigma) \in V^F_i} w_t \ell_{t,\varsigma}^2 \Omega_{v,t} \Omega_{p,t} G_2(\Sigma_{t}^{i,g} \ell_{t,\varsigma}) + \frac{1}{\Sigma_{t}^{i,g}} \sum_{(t,\varsigma) \in V^F_i} w_t \ell_{t,\varsigma} \left( p^m_{t,\varsigma} - p^C_i \right) \left(v^m_{t,\varsigma} - v^C_i\right)
+\end{equation*}
+
+calculate explicitly $M_i^{-1}$ for each cell where
+
+\ref{eq:linear-moment-matrix}
+\begin{equation*}
+M_i = 
+\begin{bmatrix}
+M_{i,xx} & M_{i,xy}  & M_{i,xz} \\
+M_{i,xy} & M_{i,yy}  & M_{i,yz} \\
+M_{i,xz} & M_{i,yz}  & M_{i,zz}
+\end{bmatrix}
+\end{equation*}
+
+and
+\ref{eq:moment-matrix-comp}
+\begin{equation*}
+M_{i,v,v'} = \sum_{(t,\varsigma) \in V_i} w_t  \int_{0}^{\ell_{t,\varsigma}} ds \, \left(v - v^C_i\right) \left( v' - {v'}^C_i \right) \qquad \forall (v,v') \in (x,y,z) \times (x,y,z)
+\end{equation*}
+
+
+create exponential table for $F_1$, $F_2$, and $H$
+%TODO talk about exponential lookup & capturing the 1/(vol * sig_t)
+
+\subsection{Source Iterations}
+
+iterate:
+
+\begin{equation}
+Q_{v,i,g}^{\mathbf{n}} = \frac{1}{4 \pi} \left( \frac{\chi_{i,g}}{k} \sum_{g'=1}^{G} \nu_{i,g'} \Sigma_f^{i,g'} \hat{\phi}_{v,i,g'}^{\mathbf{n}-1} + \, \sum_{g'=1}^G \,  \Sigma_{s}^{i,g' \rightarrow g} \hat{\phi}_{v,i,g'}^{\mathbf{n}-1} \right) \qquad \forall v \in (x,y,z)
+\end{equation}
+
+cite equation above \ref{eq:lin-moment-system}
+$\vec{Q}_{i,g}^{\mathbf{n}} = \left[Q_{x,i,g}^{\mathbf{n}}, Q_{y,i,g}^{\mathbf{n}}, Q_{z,i,g}^{\mathbf{n}}\right]^T$
+$\vec{q}_{i,g}^{\mathbf{n}} = \left[q_{x,i,g}^{\mathbf{n}}, q_{y,i,g}^{\mathbf{n}}, q_{z,i,g}^{\mathbf{n}} \right]^T$
+
+\begin{equation}
+\vec{q}_{i,g}^{\mathbf{n}} = M_i^{-1} \vec{Q}_{i,g}^{\mathbf{n}}
+\end{equation}
+
+
+\ref{eq:ls-flat-source}
+\begin{equation}
+\overline{q}_{i,g}^{\mathbf{n}} = \frac{1}{4 \pi} \left( \frac{\chi_{i,g}}{k} \sum_{g'=1}^{G} \nu_{i,g'} \Sigma_f^{i,g'} \overline{\phi_{i,g'}}^{\mathbf{n}-1} + \, \sum_{g'=1}^G \,  \Sigma_{s}^{i,g' \rightarrow g} \overline{\phi_{i,g'}}^{\mathbf{n}-1} \right)
+\end{equation}
+
+We now have fully defined sources
+
+Once a source is formed, two equations:
+
+\ref{eq:ls-avg-scalar-flux}
+\begin{equation}
+\overline{\phi_{i,g}}^{\mathbf{n}} = \frac{\overline{q}_{i,g}^{\mathbf{n}}}{\Sigma_{t}^{i,g}} + \frac{1}{\Sigma_{t}^{i,g} V_i} \sum_{(t,\varsigma) \in V_i} w_t \left(\psi^{t,\varsigma}_g(0) - \psi^{t,\varsigma}_g(\ell_{t,\varsigma}) \right)
+\end{equation}
+
+\ref{eq:final-scalar-flux-moments}
+\begin{equation*}
+\begin{split}
+\hat{\phi}_{v,i,g}^{\mathbf{n}} = \frac{1}{\Sigma_{t}^{i,g}} \sum_{p \in (x,y,z)} q_{p,i,g}^{\mathbf{n}} C_{v,p}^{i,g} + & \\
+\frac{1}{\Sigma_{t}^{i,g}} \sum_{(t,\varsigma) \in V_i} w_t & \left[\Omega_{v,t} \ell_{t,\varsigma} \psi^{t,\varsigma}_g(0) H(\Sigma_{t}^{i,g} \ell_{t,\varsigma}) + v^{\textbf{in}}_{t,\varsigma} \left(\psi^{t,\varsigma}_g(0) - \psi^{t,\varsigma}_g(\ell_{t,\varsigma}) \right)\right]
+\end{split}
+\end{equation*}
+
+
+For each iteration .... computed on-the-fly, similar to the process laid out for solving flat source \ac{MOC} un Chapter~\ref{chap:moc}
+
+angular fluxes:
+\ref{eq:ls-angular-flux}
+\begin{equation}
+\psi_g^{t,\varsigma}(s) = \psi_g^{t,\varsigma}(0) + \left( \frac{q^0_{t,\varsigma,g}}{\Sigma_{t}^{i,g}} - \psi_g^{t,\varsigma}(0) \right) F_1\left(\Sigma_{t}^{i,g} s \right) + \left(\frac{q^1_{t,\varsigma,g}}{2\left(\Sigma_{t}^{i,g}\right)^2}\right) F_2\left(\Sigma_{t}^{i,g} s, \Sigma_{t}^{i,g} \ell_{t,\varsigma} \right).
+\end{equation}
+
+NOTE LINKING of fluxes from Chapter~\ref{chap:moc}
+
+\ref{eq:q0-def}
+\begin{equation}
+q^0_{t,\varsigma,g} = \overline{q}_{i,g}^{\mathbf{n}} + \sum_{v \in (x,y,z)} q_{v,i,g}^{\mathbf{n}} \left( v^m_{t,\varsigma} - v^C_i \right)
+\end{equation}
+\ref{eq:q1-def}
+\begin{equation}
+q^1_{t,\varsigma,g} = \sum_{v \in (x,y,z)} \Omega_{v,t} q_{v,i,g}^{\mathbf{n}}
+\end{equation}
+
+
+
+\section{Performance Considerations}
+\label{sec:ls-performance}
+
+
+\subsection{Memory Access}
+
+Locality structure, locality tight loops, and contention
+
+source components laid out together
+
+\subsection{Ray Tracing}
+
+Redo analysis
+
+Since the performance of \ac{MOC} changes with the incorporation of linear sources, ...
+
+\subsection{Comparison with Linear Source}
+%TODO compare FLOPs of linear vs flat
+also give run-time comparison
+
+\section{Conclusion}
+\label{sec:ls-conclusion}
+
 
 
 %\clearpage

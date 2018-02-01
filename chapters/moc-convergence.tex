@@ -157,7 +157,7 @@ To analyze the convergence behavior, an error metric is needed. Usually, error i
 
 Often \ac{CMFD} acceleration is necessary to achieve reasonable convergence on practical reactor physics problems. \ac{CMFD} acceleration, as detailed in Chapter~\ref{chap:cmfd}, is implemented in OpenMOC with damping on the current correction term~\cite{smith2002casmo}, often termed the \ac{CMFD} relaxation factor. When \ac{CMFD} acceleration is applied, the behavior is much more difficult to analyze since \ac{CMFD} is a non-linear process. Therefore, discussion of \ac{CMFD} results will focus on hypotheses to explain the observed results rather than rigorous analysis. Results are presented with and without \ac{CMFD} acceleration.
 
-In this chapter, the \ac{CMFD} mesh is always chosen to be a uniform mesh with cells of pin-cell pitch in the radial dimensions and 2.0 cm in the axial dimension. In addition, a relaxation factor of 0.7 is applied to the \ac{CMFD} acceleration scheme for computing corrected diffusion coefficients. Many \ac{CMFD} implementations choose to collapse to a fewer number of energy groups in order to improve the speed of the CMFD solver. While the \ac{CMFD} equations are computationally less expensive in collapsed few-group structures, it is possible that collapsing group structures could cause slower convergence by not fully resolving spectral effects. Results with a variety of \ac{CMFD} group structures are presented. While the \ac{MOC} calculation always uses a 70 group structure, \ac{CMFD} group structures are formed with $G_C$ \ac{CMFD} groups, with group ranges taken from the CASMO 4 Manual~\cite{edenius1995casmo}.
+In this chapter, the \ac{CMFD} mesh is always chosen to be a uniform mesh with cells of pin-cell pitch in the radial dimensions and 2.0 cm in the axial dimension. In addition, a relaxation factor of 0.7 is applied to the \ac{CMFD} acceleration scheme for computing corrected diffusion coefficients. Many \ac{CMFD} implementations choose to collapse to a fewer number of energy groups in order to improve the speed of the CMFD solver. While the \ac{CMFD} equations are computationally less expensive in collapsed few-group structures, it is possible that collapsing group structures could cause slower convergence by not fully resolving spectral effects. Results with a variety of \ac{CMFD} group structures are presented. While the \ac{MOC} calculation always uses a 70 group structure, \ac{CMFD} group structures are formed with $G_C$ \ac{CMFD} groups, with group ranges taken from the CASMO-4 Manual~\cite{edenius1995casmo}.
 
 \subsection{Single Assembly with Axial Water Reflectors}
 \label{sec:sa-axial-ref}
@@ -242,9 +242,11 @@ Now the full core 3D BEAVRS model is simulated, as detailed in Section~\ref{sec:
 
 These results show that for the 3D full core \ac{PWR} problem, a stabilization technique is necessary in order to reach any reasonable convergence, especially when it is computationally infeasible to use a many-group \ac{CMFD} solver.
 
-%\subsubsection{Explicit 3D Model with Linear Source}
+\subsubsection{Explicit 3D Model with Linear Source}
 
-%The preceding tests have all been conducted using a flat source approximation. However, the goal of this thesis is to solve full core \ac{PWR} problems with a linear source approximation. While the theory of the diagonal stabilization was developed for flat source, it can also be applied to simulations with a linear source approximation. The results using a linear source approximation are presented in Figure~\ref{fig:fc-3D-ls} for the full core 3D BEAVRS benchmark, showing similar results to those with a flat source approximation.
+The preceding tests have all been conducted using a flat source approximation. However, the goal of this thesis is to solve full core \ac{PWR} problems with a linear source approximation. While the theory of the diagonal stabilization was developed for flat source, it can also be applied to simulations with a linear source approximation. The results using a linear source approximation are presented in Figure~\ref{fig:fc-3D-ls} for the full core 3D BEAVRS benchmark, showing similar results to those with a flat source approximation.
+
+TODO
 
 %FIXME 
 
@@ -271,7 +273,7 @@ Results were also presented for convergence with \ac{CMFD} acceleration which sh
 		
 		\item A stabilization scheme, termed diagonal stabilization, is introduced which stabilizes source iteration allowing for convergence
 		
-		%\item While diagonal stabilization was formed based on the flat source \ac{MOC} equations, it has also been shown to stabilize source iteration for a linear source approximation
+		\item While diagonal stabilization was formed based on the flat source \ac{MOC} equations, it has also been shown to stabilize source iteration for a linear source approximation
 		
 	\end{itemize}
 \end{highlightsbox}

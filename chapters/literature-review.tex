@@ -9,6 +9,14 @@ INTRO
 TODO
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{3D MOC Implementations}
+\label{sec:3d-imp}
+
+3D MOC implementations
+
 \section{The LEAF Method}
 \label{sec:leaf}
 
@@ -23,12 +31,6 @@ However, the main difference for practical application comes when these probabil
 Since the goal of this method is to treat coarse axial regions, higher order source approximations are introduced. Specifically sources are formed up to 2nd order in the axial direction and first order in the radial direction. These higher order source approximations allow for a significantly coarsened mesh while maintaining accuracy, reducing the computational requirements of the method.
 
 So far the method has only been tested on somewhat small problems. However, it shows great potential. As long as the required probabilities can be accurately interpolated from somewhat coarse abscissa and the 2nd order Legendre approximation of angular flux is sufficiently accurate, this method should outperform 3D \ac{MOC} methods. However, if a very large number of abscissa are required or the 2nd order Legendre approximation is not sufficient, then explicit 3D \ac{MOC} methods would be preferable. 
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{3D MOC Implementations}
-\label{sec:3d-imp}
-
-3D MOC implementations
 
 \subsection{DRAGON}
 \label{sec:dragon}
@@ -47,7 +49,7 @@ MOCFE is a finite element \ac{MOC} created at Argonne National Laboratory~\cite{
 
 MOCFE also does not link tracks at boundaries. Due to this implementation decision, approximations are required to treat reflective or periodic boundary conditions. However, the lack of track linking requirements allows for less constraints when constructing a quadrature set. MOCFE implements a quadrature set such that the projection to the spherical harmonics of the scattering kernel are exactly preserved. Tracks are also created symmetric in $z$ with each track representing both forward and backward angular fluxes.
 
-The parallelism in MOCFE is implemented with \ac{MPI} parallel over trajectories such that each process receives a copy of all source regions. On every transport sweep, each process computes the variation of angular fluxes over its trajectories and accumulates their contribution to all source regions. In order to communicate the results, global reductions are required at the end of each transport sweep, which can be quite expensive.
+The parallelism in MOCFE is implemented with \ac{MPI}~\cite{mpi} parallel over trajectories such that each process receives a copy of all source regions. On every transport sweep, each process computes the variation of angular fluxes over its trajectories and accumulates their contribution to all source regions. In order to communicate the results, global reductions are required at the end of each transport sweep, which can be quite expensive.
 
 Application of MOCFE to large scale problems distributed across many processors was studied at length~\cite{mocfe_bgp}. In order to increase scalability, the entire space, angle, and energy variables were decomposed across \ac{MPI} processes. While this does indeed increase the parallelism, it can lead to dramatically inefficient designs due to poor cache efficiency. In this thesis, energy groups for a given computation are always treated with the same core in order to increase performance.
 
@@ -69,7 +71,23 @@ MMOC was tested on a variety of problems and used \ac{CMFD} acceleration to redu
 \subsection{MPACT}
 \label{sec:mpact}
 
-Kochunas implemented a 3D \ac{MOC} solver in MPACT, a neutron transport modeling code.  
+Kochunas implemented a 3D \ac{MOC} solver in MPACT~\cite{mpact_initial, kochunas}, the standard neutron transport code in the VERA core simulator~\cite{vera}.  This was the first 3D \ac{MOC} solver implemented with the intention of solving full core PWR problems with full geometric detail. The solver used many of the common principles and structure of 2D \ac{MOC} solvers at the time. For instance, it used a flat source approximation and explicitly stored segment information during a pre-processing ray tracing step at the beginning of the solver. Unlike other solvers, it used a strict source iteration scheme without any inner iterations. 
+
+The track laydown implemented in the 3D \ac{MOC} solver relied on the Modular Ray Tracing scheme~\cite{liu_mrt}. However, simplifications were made leading to the s-MRT method, discussed further in Chapter~\ref{chap:track-laydown}. One of the reasons presented for these simplifications was to avoid tracks intersecting corners. In OpenMOC, corner intersections are allowed and are explicitly treated. While the s-MRT method leads to a much simpler track laydown algorithm, it has serious drawbacks. Specifically, the axial ray spacing must be finer than the radial ray spacing. This is problematic for full core \ac{PWR} problems in which there is much greater geometric detail in the radial direction than the axial direction. This can lead to an artificial increase in the number of tracks required to resolve typical \ac{PWR} problems. Since the computational cost (both in memory usage and run time) scales linearly with the number of tracks, any large artificial increase in the number of tracks can significantly hinder the computational performance. Published MPACT results show only a modest artificial increase (~8\%) in the number of tracks, but a fine axial ray spacing was assumed to be necessary. Published results~\cite{shaner-laydown, openmoc-beavrs} for OpenMOC show that it is possible to significantly coarsen the axial ray spacing while maintaining solution accuracy.
+
+One of the benefits of using a modular ray tracing track laydown is the ability to naturally link tracks at domain boundaries when using spatial domain decomposition. The 3D \ac{MOC} solver in MPACT implemented both spatial domain decomposition and angular domain decomposition using non-blocking \ac{MPI} communication~\cite{mpi}. For spatial domain decomposition, the geometry is decomposed into $N$ sub-domains where $N$ is equal to the number of \ac{MPI} processes per number of angular decompositions. An algorithm is implemented to subdivide the geometry in order to maximize the volume-to-surface area ratio of each sub-domain, reducing the relative communication costs which scale with surface area. For angular domain decomposition, each \ac{MPI} process, the scalar fluxes of the associated sub-domain are replicated, using global reductions to sum all of the tallied contributions to local scalar fluxes across all processes. This reduction operation was shown to be a bottleneck in the parallel scalability of the algorithm.
+
+During each transport sweep, the sweeping algorithm first loops over energy groups, then over angles within the angular sub-domain, then over all tracks within the angular sub-domain in parallel using OpenMP. In this shared memory parallelism implementation, each thread receives a full copy of the scalar fluxes within the sub-domain. This replication of information allows contention between threads to be reduced, but also greatly increases the memory footprint of storing scalar fluxes. In addition, a reduction operation is required to sum together all of the local thread scalar fluxes.
+
+%The choice to loop over energy groups on the outside (rather than on the inner-most loop) causes decreased vectorization. The choice to also loop over angles on the outside and only parallelize over tracks within an angle (rather than parallelizing over all tracks) reduces the potential for parallelism
+
+During transport sweeps, each track represents both forward and backward directed angular fluxes, a common feature of 2D \ac{MOC} algorithms~\cite{kochunas2007twoway}. When computing the angular flux variation over each source region, the exponential computation is performed using a table interpolation.
+
+\ac{CMFD} acceleration was implemented in MPACT using the \ac{GMRES} linear solver in PETSc with a block ILU preconditioner to solve the associated linear system. The solver was domain decomposed spatially and a procedure implemented to update angular fluxes at sub-domain boundaries~\cite{mpact_dd_cmfd}.
+
+Various benchmarks were evaluated for the MPACT 3D \ac{MOC} solver. These benchmarks include the Takeda benchmark~\cite{takeda} and the C5G7 benchmark~\cite{c5g7}. Unfortunately, the results did not seem to match well with the reference solution. To understand performance on realistic \ac{PWR} problems, a realistic \ac{PWR} assembly was constructed and modeled. 
+
+A theoretical computational performance model was developed which matched well with the observed computational performance of the MPACT 3D \ac{MOC} solver, showing a very high computational cost for full resolving a full core \ac{PWR} problem using the MPACT implementation of 3D \ac{MOC}.
 
 \subsection{APOLLO3}
 \label{sec:apollo3}
@@ -92,7 +110,7 @@ Some ideas of \ac{CCM} are implemented in OpenMOC. For instance, OpenMOC identif
 
 %groups on outside
 
-Initially, the TDT solver was dependent on a flat source approximation. Its accuracy was verified on a variety of benchmark problems~\cite{apollo3_3dmoc, apollo3_vv}. More recently, it has been extended to allow for axial polynomial expansions of the source~\cite{apollo3_extruded}. The radial variation of the neutron source within each source region is still assumed to be flat. The authors cite radial heterogeneity and complexity for not using a higher order source approximation in the radial plane. The higher order source approximation requires significantly more computational work per segment but allows a much coarser axial mesh to be used. 
+Initially, the TDT solver was dependent on a flat source approximation. Its accuracy was verified on a variety of benchmark problems~\cite{apollo3_3dmoc, apollo3_vv}. More recently, it has been extended to allow for axial polynomial expansions of the source~\cite{apollo3_extruded}. The radial variation of the neutron source within each source region is still assumed to be flat. The authors cite radial heterogeneity and complexity for not using a higher order source approximation in the radial plane. The higher order source approximation requires significantly more computational work per segment but allows a much coarser axial mesh to be used. \ac{CCM} is emphasized for its ability to mitigate the additional work required for the higher order source approximation as it allows for chords of equal lengths to be efficiently computed. While developed for arbitrary order axial polynomial expansions, the presentation focuses on quadratic axial sources.
 
 The TDT implementation is parallelized with OpenMP. The work is divided in a task-based parallelism approach. Each thread receives a set of tracks and a full copy of the scalar flux accumulators. When a given thread changes angle, the local copy of scalar flux accumulators are synchronized with the global scalar flux accumulator. Since this synchronization can be a bottleneck for parallel scaling, tracks are sorted into groups to minimize the frequency of changing angle.
 

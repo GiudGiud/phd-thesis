@@ -89,6 +89,7 @@ where $\overline{\phi_{i,g}}$ is the average scalar flux in the region and the c
 This form is relatively unuseful since the relationship presented in Eq.~\ref{eqn:angular-flux-var} only applies for a specific direction. Therefore, the angular space is discretized into a finite number of directions. With the angular space discretized, the integral could be transformed into a weighted sum over the discrete directions, allowing the calculation of scalar fluxes.
 
 \section{Track Discretization of the MOC Equations}
+\label{sec:track-disceretization}
 
 \ac{MOC} discretizes the angular space by choosing a finite number of directions to lay down \textit{tracks} across the geometry. For each direction, tracks stretch the entire length of the geometry, from one boundary to another, and completely fill the geometry. This collection of tracks is termed the \textit{track laydown}. A radial view of a coarse track laydown for a simple pin-cell geometry is shown in Figure~\ref{fig:track-laydown}. The geometry is colored by material region; namely water, clad, and fuel. Note that the final track laydown traverses tracks in both forward and backward directions rather than generating tracks in each direction for computational efficiency~\cite{kochunas2007twoway}.
 
@@ -181,11 +182,40 @@ Combining Eq.~\ref{eqn:average-flux-disc} with Eq.~\ref{eqn:angular-flux-var-dis
 \end{dmath}
 The difference in angular flux $\Delta \psi_g^{t,\varsigma}$ is equal to $\psi_g^{t,\varsigma}(0) - \psi_g^{t,\varsigma}(\ell_{t,\varsigma})$. The calculated fluxes can then be used to construct the neutron sources $q^0_{i,g}$ for each region $i$ and each energy group $g$ with the relationship in Eq.~\ref{eqn:source-discr}.
 
+\section{Track Simplifications and Calculation of Volumes}
+\label{sec:track-simplifications}
+
+In the previous section, the track discretization of the \ac{MOC} equation was introduced. In the section, it was noted that tracks are reused in both forward and backward directions. In the notation, a given track $t$ represents only a single direction but is associated with another track which traverses the same line in the opposite direction. Due to the two tracks traversing the same line, simplifications can sometimes be made to the equations.
+
+Consider the weighted summation of values $r_{t,\varsigma}$ which are potentially dependent on the traversed segment $\varsigma$ of track $t$. The summation can be cast as
+\begin{equation}
+	\sum_{(t,\varsigma) \in V_i} w_t r_{t,\varsigma} = \sum_{(t,\varsigma) \in V^F_i} w_t r_{t,\varsigma} + \sum_{(t,\varsigma) \in V^B_i} w_t r_{t,\varsigma}
+\end{equation}
+where $V^F_i$ refers to the volume tracked by forward traversed tracks and $V^B_i$ refers to the volume tracked by backward traversed tracks. Note that the corresponding forward/backward tracks have opposite directions. Therefore, if all quantities $\tilde{r}_{t,\varsigma}$ do not depend on the direction $\mathbf{\Omega}$, then for any direction $v \in (x,y,z)$ and any \textit{odd} integer $d$,
+\begin{equation}
+\sum_{(t,\varsigma) \in V_i} w_t \left(\Omega_{v,t}\right)^d \tilde{r}_{t,\varsigma} = 0.
+\end{equation}
+Similarly, for any \textit{even} integer $d$,
+\begin{equation}
+\sum_{(t,\varsigma) \in V_i} w_t \left(\Omega_{v,t}\right)^d \tilde{r}_{t,\varsigma} = 2 \sum_{(t,\varsigma) \in V^F_i} \left(\Omega_{v,t}\right)^d w_t \tilde{r}_{t,\varsigma}.
+\end{equation}
+The calculation of region volumes is one example of where this simplification can be used. In order for the \ac{MOC} equations to be accurate, the condition
+\begin{dmath}
+	\frac{1}{V_i} \sum_{(t,\varsigma) \in V_i} w_{t} \int_{0}^{\ell_{t,\varsigma}} ds \, 1 = 1
+\end{dmath}
+must hold. However, for a coarse track laydown the volume might not be perfectly accurate, causing the condition not to hold. Therefore, rather than calculating region volumes externally, volumes are calculated with the tracked lengths and weights as
+\begin{dmath}
+	V_i = \sum_{(t,\varsigma) \in V_i} w_{t} \ell_{t,\varsigma}
+\end{dmath}
+which forces the afore mentioned condition to hold. This can be simplified by noting that $\ell_{t,\varsigma}$ is not dependent on direction, allowing the volume to be calculated only using forward-directed tracks as
+\begin{equation}
+V_i = 2 \sum_{(t,\varsigma) \in V^F_i} w_{t} \ell_{t,\varsigma}.
+\end{equation}
 
 \section{Solving the MOC System of Equations}
 \label{sec:moc-solve}
 
-In the previous section Eq.~\ref{eqn:angular-flux-var-disc} and Eq.~\ref{eqn:average-flux} provided ways to calculate the angular fluxes and scalar fluxes, respectively. The source can be computed from the scalar fluxes with Eq.~\ref{eqn:source-discr}. This forms a system of equations that can be solved to determine the neutron distribution inside a nuclear reactor core. Normally, the solution of the \ac{MOC} equations is presented in terms of a physics perspective, following neutrons along trajectories, and repeatedly solving for the neutron source. Physical intuition usually guides this discussion.
+In Section~\ref{sec:track-disceretization}, Eq.~\ref{eqn:angular-flux-var-disc} and Eq.~\ref{eqn:average-flux} provided ways to calculate the angular fluxes and scalar fluxes, respectively. The source can be computed from the scalar fluxes with Eq.~\ref{eqn:source-discr}. This forms a system of equations that can be solved to determine the neutron distribution inside a nuclear reactor core. Normally, the solution of the \ac{MOC} equations is presented in terms of a physics perspective, following neutrons along trajectories, and repeatedly solving for the neutron source. Physical intuition usually guides this discussion.
 
 The discussion presented here will be more broad. Instead of solely focusing on physics, the problem will be cast as a set of matrix equations that could theoretically be solved with common linear algebra packages. However, this discussion will show that blindly solving the system of equations with a general linear algebra package is computationally infeasible since it loses sight of inherent structure the physics-based approach naturally captures.
 
@@ -350,16 +380,14 @@ Notice that each source iteration relies on simply taking the inverse of the tra
 
 Next, in Chapter~\ref{chap:cmfd}, Course Mesh Finite Difference (CMFD) acceleration is introduced which resolves the issue of slow convergence for source iteration. This allows for the computational burden of each iteration to be eased without giving up anything in terms of convergence rate by iteration.
 
-\newpage
 \vfill
 \begin{highlightsbox}[frametitle=Highlights]
 	\begin{itemize}
-		\item The \ac{MOC} transform changes the neutron transport equation from a partial differential equation to an ordinary differential equation along a certain direction.
-		\item The geometry is discretized into source regions which have constant cross-sections and a low-order approximation of the neutron source within the region.
-		\item Tracks are laid down across the geometry which enable the  \ac{MOC} transform to yield an analytic description of the angular flux variation across each source region.
-		\item The angular flux variation along each track provided a weighted contribution to the scalar flux estimate of each traversed source region.
-		\item The synthesis of \ac{MOC} equations over each source region form an eigenvalue problem.
-		\item The \ac{MOC} eigenvalue problem fundamentally involves all angular fluxes over each source region.
+		\item The neutron transport equation is transformed from a partial differential equation to an ordinary differential equation along a certain direction using the \ac{MOC} transform
+		\item The geometry is discretized into source regions, each internally having constant cross-sections and a low-order approximation of the neutron source
+		\item Tracks are laid down across the geometry, enabling th  \ac{MOC} transform to yield an analytic description of the angular flux variation
+		\item The angular flux variation along each track provides a weighted contribution to the scalar flux estimate of each traversed source region.
+		\item The synthesis of \ac{MOC} equations over source regions form an eigenvalue problem which fundamentally involves the calculation of all angular fluxes
 		\item Since the number of angular fluxes is vast, standard eigenvalue solution techniques are abandoned in favor of \textit{source iteration} which takes advantage of fundamental structure of the \ac{MOC} equations.
 		\item \textit{Source iteration} allows each \ac{MOC} iteration to be computed far more efficiently in the form of a \textit{transport sweep} but at the cost of slow convergence (if acceleration is absent)
 	\end{itemize}
