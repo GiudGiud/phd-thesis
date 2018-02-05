@@ -3,7 +3,9 @@
 
 In the previous chapter, some significant approximations are made in generation of multi-group cross-sections. Standard \ac{MOC} solvers, such as the one developed and discussed in this thesis, rely on multi-group cross-sections as input. Once the cross-sections are generated, \ac{MOC} is capable of computing reaction rates across the reactor geometry.
 
-First, the \ac{MOC} equations are derived from the multi-group neutron transport equation. Then, track discretization is introduced, forming a system of equations involving discrete variables. Finally, the solution of the system of equations is discussed. Discussions of solution techniques to the \ac{MOC} system of equations normally are centered around the underlying physics with little mention of the system as a linear algebra problem~\cite{boyd2014openmoc}. Others further describe \ac{MOC} in terms of operator notation, but offer little insight into the structure of the operators~\cite{kochunas}. Instead, this discussion casts the system of equations as simply a general eigenvalue problem. Then discussion of matrix structure motivates the use of an uncommon solution technique. Physical reasoning for the structure is mentioned throughout the discussion. The properties of the chosen solution technique are discussed, motivating the need for an acceleration scheme to mitigate its weaknesses.
+First, the \ac{MOC} equations are derived from the multi-group neutron transport equation in Section~\ref{sec:derivation-of-moc}. Then, track discretization is introduced in Section~\ref{sec:track-disceretization}, forming a system of equations involving discrete variables. Simplifications using the discussed track laydown are discussed in Section~\ref{sec:track-simplifications}, with a concentration on the volume calculation. Finally, methods to solve the system of equations formed in \ac{MOC} is discussed in Section~\ref{sec:moc-solve}. 
+
+Discussions of solution techniques to the \ac{MOC} system of equations normally are centered around the underlying physics with little mention of the system as a linear algebra problem~\cite{boyd2014openmoc}. Others further describe \ac{MOC} in terms of operator notation~\cite{mocfe_init, kochunas}, but this discussions often offer little insight into the structure of the operators. Instead, this discussion casts the system of equations as simply a general eigenvalue problem. Discussion of matrix structure motivates the use of \textit{source iteration}. Physical reasoning for the structure is mentioned throughout the discussion. The properties of \textit{source iteration} are discussed, motivating the need for an acceleration scheme to mitigate its weaknesses.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -73,6 +75,7 @@ with region $i$ having constant neutron source $q^0_{i,g}$. The integral can be 
 where
 \begin{equation}
 F_1(\tau) = 1 - e^{-\tau}.
+\label{eq:f1}
 \end{equation}
 
 This equation allows for the computation of all necessary angular fluxes within a region of neutron source $q^0_{i,g}$. From the definition of the neutron source in Eq.~\ref{eqn:source}, the constant neutron source $q^0_{i,g}$ in the region $i$ can be computed as
@@ -151,9 +154,9 @@ For boundary conditions (such as reflective, periodic, and rotational) that conn
 	\label{eqn:linking-bc}
 \end{dmath}
 
-With the angular and spatial discretization from the track laydown, the angular flux relationship along a characteristic path given in Eq.~\ref{eqn:angular-flux-var} can be presented in terms of the discretized track segments in Eq.~\ref{eqn:angular-flux-var-disc} where the function $R$ yields the region traversed by track $t$ and segment $\varsigma$. 
+With the angular and spatial discretization from the track laydown, the angular flux relationship along a characteristic path given in Eq.~\ref{eqn:angular-flux-var} can be presented in terms of the discretized track segments in Eq.~\ref{eqn:angular-flux-var-disc} where $i$ is the region traversed by track $t$ and segment $\varsigma$. 
 \begin{dmath}
-	\psi_g^{t,\varsigma}(s) = \psi^{t,\varsigma}_g(0) + \left( \frac{q^0_{R(t,\varsigma),g}}{\Sigma_{t}^{i,g}} - \psi_g^{t,\varsigma}(0) \right) F_1\left(\Sigma_{t}^{R(t,\varsigma),g} s \right)
+	\psi_g^{t,\varsigma}(s) = \psi^{t,\varsigma}_g(0) + \left( \frac{q^0_{i,g}}{\Sigma_{t}^{i,g}} - \psi_g^{t,\varsigma}(0) \right) F_1\left(\Sigma_{t}^{i,g} s \right)
 	\label{eqn:angular-flux-var-disc}
 \end{dmath}
 Still, these equations only determine the behavior of the neutron flux along a particular track. To determine the behavior of the neutron flux throughout the geometry, an infinite number of tracks would be required so that every point in the geometry lies along one of the tracks. Therefore, an approximation is invoked in which all points within the geometry are characterized by the nearest track. Therefore each track represents a volume formed by the product of its length and the perpendicular distances to tracks of the same direction. Those perpendicular lengths form the track cross-sectional area as illustrated in Figure~\ref{fig:track-cross-section}. This illustration just shows the radial view of the tracks. However, in three dimensions, axial distances also exist between tracks so that the track cross-sectional area does indeed represent an area rather than a distance.
@@ -246,7 +249,7 @@ This relationship can be turned into matrix form by defining an angular flux vec
 T \boldsymbol{\psi} = H D^{-1} \mathbf{q}
 \label{eqn:matrix-attn}
 \end{equation}
-The number of angular fluxes is $N = \beta L G$ where $\beta$ is the average number of track crossings per source region. Since there must be a significant number of track crossings per region for convergence we expect $N >> M$. $T$ is size $N \times N$ as it defines relationships between angular fluxes, the size of $H$ is $N \times M$ since for each angular flux pair it must pick out the appropriate source region, and the size of $D$ is $M \times M$ since it relates only to the source regions. The elements relating to angular flux quantities are indexed by track $t$, segment $\varsigma$, and group $g$. The source selection matrix $H$ can therefore be defined as
+The number of angular fluxes is $N = \beta L G$ where $\beta$ is the average number of track crossings per source region. Since there must be a significant number of track crossings per region for convergence we expect $N >> M$. $T$ is size $N \times N$ as it defines relationships between angular fluxes, the size of $H$ is $N \times M$ since for each angular flux pair it must pick out the appropriate source region, and the size of $D$ is $M \times M$ since it relates only to the source regions. The elements relating to angular flux quantities are indexed by track $t$, segment $\varsigma$, and group $g$. For notational convenience, a function $R$ is created which maps a track $t$ and segment number $\varsigma$ to the traversed region $R(t,\varsigma)$. The source selection matrix $H$ can therefore be defined as
 \begin{equation}
 H_{\left(t,\varsigma,g\right), \, \left(R(t,\varsigma), g\right)} = 1.
 \label{eqn:source-selection-matrix}
