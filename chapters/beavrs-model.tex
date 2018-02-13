@@ -1,15 +1,26 @@
 \chapter{The BEAVRS Benchmark}
 \label{chap:beavrs}
 
-The main results presented in this thesis are based on models formed from the BEAVRS benchmark. This chapter introduces the BEAVRS benchmark in Section~\ref{sec:beavrs-intro}, including a description of alteration made to the benchmark. Section~\ref{sec:beavrs-xs-gen} describes how cross-sections are generated for the benchmark. Finally, Section~\ref{sec:beavrs-models} details the particular models formed from cutouts of the BEAVRS model and, in some cases, replication of the cutouts.
+The main results presented in this thesis are based on models formed from the BEAVRS benchmark~\cite{horelik2013beavrs}. This chapter introduces the BEAVRS benchmark in Section~\ref{sec:beavrs-intro}, including a description of alteration made to the benchmark. Section~\ref{sec:beavrs-xs-gen} describes how cross-sections are generated for the benchmark. Finally, Section~\ref{sec:beavrs-models} details the particular models formed from cutouts of the BEAVRS model and, in some cases, replication of the cutouts.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Introduction to the BEAVRS Benchmark}
 \label{sec:beavrs-intro}
 
-general BEAVRS
+The BEAVRS benchmark~\cite{horelik2013beavrs} was released in 2013, representing a Westinghouse 4-loop nuclear power reactor. This reactor is representative of common \ac{PWR} designs in the United States. The benchmark contains core loadings and detector measurements for the first two cycles of operation, but this thesis concentrates on \ac{HZP} simulations at the beginning of the first cycle in an all rods out configuration.
 
-axial height adjustment
+The reactor contains 193 fuel assemblies. Each assembly contains a $17 \times 17$ lattice of fuel rods, guide tubes, and instrument tubes. The pin-pitch is 1.26 cm inside each assembly. All fuel rods within the same assembly contain uranium of the same enrichment. In the first cycle, three uranium enrichments are used: 1.6\%, 2.4\%, and 3.1\%. Wet annular burnable absorbers are present throughout the core to flatten the power distribution. The active fuel height is 365.76 cm. A radial description of the core is shown in Figure~\ref{fig:beavrs-assembly-enrichment}.
+
+\begin{figure}[h!]
+	\centering
+	\includegraphics[width=\linewidth]{figures/beavrs-visual/beavrs-assembly-enrichment.png}
+	\caption{A radial illustration of the BEAVRS benchmark with fuel pins colored by enrichment.}
+	\label{fig:beavrs-assembly-enrichment}
+\end{figure} 
+
+The goal of this thesis is to simulate the BEAVRS benchmark using the explicit detail provided in the BEAVRS specification. However, in order to conduct uniform axial mesh refinement studies, the axial heights of material regions are altered such that each discontinuity occurs at an even number (in cm). The top and bottom grid spacers in the BEAVRS benchmark were defined to be 5.72 cm with intermediate grid spacers 3.36 cm. These lengths were altered to 6.0 cm and 2.0 cm respectively. The starting height of the grid spacers were rounded to the nearest even integer. All other $z$-heights in the geometry were similarly rounded to the nearest integer. The altering of axial heights allows regions to be formed which all have the same axial height, which can simplify sensitivity analysis. While these alterations do change the benchmark slightly -- and therefore also change the computed solutions -- these solutions are still representative of a realistic \ac{PWR} problem.
+
+Although the BEAVRS model is defined inside a cylindrical geometry, a rectangular bounding geometry is often necessary in \ac{MOC} methods for cyclic tracking. Therefore, the BEAVRS model is modeled with a rectangular prism bounding the geometry. In the radial plane, the bounding dimensions are square with length equal to 17 assembly widths. Since the BEAVRS model has a maximum of 15 assemblies along each $x$ and $y$ direction, this allows at least one assembly of radial reflector to be modeled outside the core. In addition, the corners have very deep water reflectors. In the axial direction, the BEAVRS benchmark is modeled with 400 cm height, allowing approximately 20 cm of axial reflector in each direction. Vacuum boundaries are assumed on all surfaces. 
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -18,64 +29,108 @@ axial height adjustment
 
 In this thesis, the same 70 group cross-section library is used for all results involving the BEAVRS benchmark or cutouts of the BEAVRS benchmark except for the rod insertion studies. A separate 70 group cross-section library was formed for rod insertion studies in order to form accurate cross-sections for control rod materials. In this section, the process used to form cross-sections is thoroughly discussed.
 
+Using the OpenMC Monte Carlo code, reaction rate tallies are generated for each unique material. These allow for the computation of multi-group cross-sections with the methodology discussed in Chapter~\ref{chap:mgxs} using the \texttt{mgxs} package implemented by Boyd~\cite{boyd2017thesis}. The 70 group library is formed from OpenMC simulations of the full core BEAVRS benchmark. The in-scatter transport correction described in Section~\ref{sec:transport-correction} is applied to the cross-sections using anisotropic scattering tallies. Note that using these tallies to form the transport correction introduces approximation since the true tallies should involve angular fluxes rather than scalar fluxes. Since the anisotropic current tallies could vary significantly between core and outer reflector regions, the water is split into two materials for which cross-sections are independently formed: core water and outer reflector water. In addition, a third water material is also formed near the support plate nozzle as the isotopic composition differs due to boron concentration. A plot of the BEAVRS benchmark colored by unique material region is shown in Figure~\ref{fig:beavrs-materials-radial}. In addition an axial plot of the materials is shown in Figure~\ref{fig:beavrs-materials-axial}. Similarly the radial and axial material plots of a 1.6\% enriched fuel assembly are shown in Figure~\ref{fig:beavrs-single-assembly-materials-radial} and Figure~\ref{fig:beavrs-single-assembly-materials-axial}, respectively.
+
+
+\begin{figure}[h!]
+	\centering
+	\includegraphics[width=\linewidth]{figures/beavrs-visual/materials-beavrs-radial.jpg}
+	\caption{A radial view of the BEAVRS benchmark with regions colored by material.}
+	\label{fig:beavrs-materials-radial}
+\end{figure} 
+
+\begin{figure}[h!]
+	\centering
+	\includegraphics[width=\linewidth]{figures/beavrs-visual/materials-beavrs-axial.jpg}
+	\caption{An axial view of the BEAVRS benchmark with regions colored by material.}
+	\label{fig:beavrs-materials-axial}
+\end{figure} 
+
+\begin{figure}[h!]
+	\centering
+	\includegraphics[width=0.65\linewidth]{figures/beavrs-visual/materials-single-assembly-radial.png}
+	\caption{A radial view of the 1.6\% enriched fuel assembly in the BEAVRS benchmark with regions colored by material.}
+	\label{fig:beavrs-single-assembly-materials-radial}
+\end{figure} 
+
+\begin{figure}[h!]
+	\centering
+	\includegraphics[width=0.65\linewidth]{figures/beavrs-visual/materials-single-assembly-axial.png}
+	\caption{An axial view of 1.6\% enriched fuel assembly in the BEAVRS benchmark with regions colored by material.}
+	\label{fig:beavrs-single-assembly-materials-axial}
+\end{figure} 
+
+
+
+\clearpage
+
+The computed cross-sections were compared with CASMO-4 cross-sections and significant differences were found in the transport correction for water. In preliminary tests, the CASMO-4 multi-group cross-sections for core water were also able to much more accurately simulate the gross fission distribution. Therefore, instead of solely using the OpenMC \texttt{mgxs} cross-sections for core water which had an inaccurate transport correction, or solely using CASMO-4 cross-sections which are generated for more general problems, a new cross-section set was formed specifically for core water. Since CASMO-4 is a lattice physics code, it is designed to have accurate estimates of core water cross-sections. Therefore, the transport correction from CASMO-4 is used to modify the cross-sections formed by the OpenMC \texttt{mgxs} package. Specifically, the transport cross-section $\Sigma_{tr}^g$ for group $g$ is formed by computing
+\begin{equation}
+\Sigma_{tr}^g = \Sigma_{a}^g + \eta \left( \Sigma_{t}^g - \Sigma_{a}^g \right)
+\end{equation}
+where $\Sigma_{a}^g$ and $\Sigma_{t}^g$ are the associated absorption and total cross-sections formed by \texttt{mgxs}, respectively. The factor $\eta$ is computed by
+\begin{equation}
+\eta = \frac{\Sigma_{tr}^{g, \textbf{CASMO}} - \Sigma_{a}^{g, \textbf{CASMO}}}{\Sigma_{t}^{g, \textbf{CASMO}} - \Sigma_{a}^{g, \textbf{CASMO}}}
+\end{equation}
+where the \textbf{CASMO} superscript denotes CASMO-4 cross-sections. It is important to note that this is only done for core water. All other materials use the cross-sections formed directly from the \texttt{mgxs} package in OpenMC.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Description of BEAVRS Models}
 \label{sec:beavrs-models}
 
-Note these all use modified heights, etc
+All models which are simulated in this thesis are derived from cutouts of the BEAVRS benchmark with 70 group cross-sections. In past presentations the, 3D \ac{MOC} solver implemented in this thesis has been verified on a variety of simpler, conventional reactor physics models~\cite{physor2016shaner, physor2016otf}. The BEAVRS benchmark represents a far more computationally demanding challenge, especially with a 70 group cross-section library. Cutouts are formed in order to evaluate smaller problems which are representative of computational performance or physical behavior of the large full core problem.
 
 \subsection{Full Core 3D Model}
 \label{sec:beavrs-3D}
 
-Talk about: really just the BEAVRS model directly
+The first model is just the BEAVRS model incorporating all the details discussed in previous sections. The simulation of this model directly corresponds with the OpenMC simulations from which the cross-sections are derived. The objective of this thesis is to accurately simulate this model. However, due to the large computational cost of simulating this model, only minimal tests can be conducted. Therefore, smaller cutouts are formed which are more computationally feasible in order to test computational and physical behavior before running the 3D full core case.
 
-Important to note modifications
-
-The model is again 400 cm in axial height with an active fuel height of 366 cm. The model extent in the radial plane is the size of $17\times 17$ assembly widths with each assembly again having a width of 21.54 cm. Since the \ac{BEAVRS} model only has 15 assemblies on the major axis, the model guarantees at least one assembly width of water reflector outside the core in every direction. Since the simulated geometry is square in the radial plane, the corners have very deep water reflectors. In general, vacuum boundaries are assumed on all surfaces. 
 
 \subsection{Full Core 2D Model}
 \label{sec:beavrs-2D}
 
-Talk about: smaller model
-
-Talk about: still incorporating radial detail including the radial water reflector (most importantly)
-Before simulating the explicit 3D model, a 2D extruded model is constructed to observe the convergence behavior. This model takes a radial slice of the core that does not contain grid spacers and extruded the slice 10 cm in the axial direction, applying reflective boundaries on the top and bottom. This essentially converts the 3D problem into a 2D problem.
+A 2D extruded cutout of the reactor is formed in order to determine the physical behavior of the BEAVRS model in the radial direction. This cutout is taken from an 10 cm axial interval over which there are no grid spacers. Reflective boundary conditions are placed on the top and bottom of the problem. While this model lacks any axial variation, it still contains all radial detail. Due to the lack of axial detail, 2D \ac{MOC} and 3D \ac{MOC} simulations with sufficient parameter refinement should produce equivalent solutions. Only this model and the full core 3D model contain the full radial water reflector. Therefore, this model is very useful in determining the effect of large radial water reflectors. 
 
 \subsection{Single Assembly Model}
 \label{sec:beavrs-single-assembly}
 
-Talk about: smaller model to do rigorous performance and MOC parameter opt analysis
-
-While OpenMOC is capable of solving full core \ac{PWR} problems, this analysis will start by focusing on a 3D single assembly model, which is computationally less expensive, in order to observe longer iteration histories. The single assembly model is 400 cm in axial height with an active fuel height of 366 cm and an assembly pitch of 21.42 cm. It is simulated with vacuum boundaries in the axial directions and reflective boundaries in the radial directions. The assembly incorporates the full geometric detail, including grid spacers. Outside the core, full geometrical detail is also captured including support plate nozzles and, most notably, water reflectors of approximately 20 cm above and below the fuel.
+A single assembly model is formed which represents the full axial detail of a single 1.6\% enriched fuel assembly. While this model lacks radial water reflectors, it contains the full axial detail fo the full core problem, including grid spacers. Outside the core, full geometrical detail is also captured including support plate nozzles and, most notably, water reflectors of approximately 20 cm above and below the fuel. Reflective boundaries are placed on the $x$ and $y$ boundaries. Physically, this is equivalent to an infinite 2D lattice of 1.6\% enriched fuel assemblies. Vacuum boundaries remain on the top and bottom of this model. Since this problem is significantly less computationally expensive than the full core models (both 2D and 3D), it allows rigorous parameter refinement and convergence studies.
 
 \subsection{Truncated Single Assembly Model}
 \label{sec:trunc-single-assembly}
 
-Talk about: no reflector effects, similar to lattice calc
-
-This model is the same as the single assembly model but without the axial water reflectors. Vacuum boundary conditions are placed at the top and bottom of the active fuel. All other geometric and material data is unchanged.
+In addition to the single assembly model, a truncated single assembly model is also formed which contains all the detail of the single assembly model, but without the axial water reflectors. Specifically, 20 cm are removed from both the bottom and top of the model, resulting in a model that only covers the active fuel and is 360 cm tall. Axial boundaries still have vacuum boundary conditions. Comparison with the single assembly model described in Section~\ref{sec:beavrs-single-assembly} allows for the effect of axial water reflectors to be directly tested.
 
 \subsection{SDSA Model}
 \label{sec:sdsa}
 
-The Single Domain Single Assembly Model (SDSA)
-
-Talk about motivation: realistic on-node performance characterization
-
-Talk about: no spacers
+The Single Domain Single Assembly (SDSA) model is formed for rigorous performance testing. It represents a 20 cm tall cutout within the single assembly model which contains no grid spacers. Reflective boundary conditions are imposed on all surfaces. Since this problem is far reduced in size, it allows for rigorous performance testing. In Chapter~\ref{chap:domain-decomposition}, spatial domain decomposition is introduced in which the geometry is split into equal sized domains in which each computational node is expected to handle one domain. When simulating the BEAVRS benchmark with domain decomposition, the expected domain size is the size of the SDSA model. Therefore, this model allows for realistic on-node performance characterization of the BEAVRS benchmark without needing to run the large full core problem.
 
 \subsection{Short Single Assembly Model}
 \label{sec:short-single-assembly}
 
-The Single Domain Single Assembly Model (SDSA)
+Similar to the SDSA model, a short single assembly model is created which allows for studies at far reduced computational cost. This model is the same as the SDSA model except it is only 10 cm in axial height and contains 3.1\% enriched fuel. This enrichment is the highest enrichment found in the cycle 1 BEAVRS model. The higher enriched fuel allows for slightly larger gradients with a flux peak in the moderator. The primary focus of this model is to test in-core radial mesh sensitivity.
 
-Same as SDSA but shorter and 3.1\% enriched
 
-Motivation: short runtime and flux peak in moderator for higher enriched bundles
-Note that 3.1 is highest enriched in cycle 1 beavrs
+\subsection{Rodded Single Assembly Model}
+\label{sec:rodded-single-assembly}
 
-\subsection{Replicated Assembly Lattice Model}
-\label{sec:assembly-lattice}
+The rodded single assembly model is the only model which uses a geometry not explicitly found in the full core 3D BEAVRS model. The model is constructed in the same way as the single assembly model described in Section~\ref{sec:beavrs-single-assembly}, but with 3.1\% enriched fuel and with all rods inserted at 100 steps -- covering approximately half of the active fuel height. This large control rod insertion causes significant gradients within the axial scalar flux distribution, allowing for robust testing of 3D \ac{MOC} on problems with significant axial variation.
 
-Talk about motivation: weak scaling with even numbers
+As mentioned previously, this model uses a separate cross-section library. Instead of simulating the all rods out configuration, which lacks control rods within the core, the single assembly model is explicitly simulated in OpenMC to form cross-section estimates. This allows reasonable estimates of control rod material cross-sections.
+
+
+\newpage
+\vfill
+\begin{highlightsbox}[frametitle=Highlights]
+	\begin{itemize}
+		\item The BEAVRS benchmark represents a traditional \ac{PWR} reactor encompassing all relevant radial and axial detail
+		\item The BEAVRS model is simulated within a radially square bounding box, leading to large corner reflector regions
+		\item A 70 group cross-section library is formed through direct simulation of the BEAVRS benchmark in Monte Carlo using the OpenMC \texttt{mgxs} package with a combination of CASMO-4 and in-scatter transport corrections
+		\item Cutouts of the BEAVRS model allow for physics and computational behavior to be tested with much lower computational cost
+		\item A rodded single assembly model is created to test the effect of large axial variation, for which a separate cross-section library is generated in order to accurately capture control rod properties
+		
+	\end{itemize}
+\end{highlightsbox}
+\vfill
+

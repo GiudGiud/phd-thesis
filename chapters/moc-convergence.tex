@@ -109,10 +109,10 @@ However, with the transport correction, it is possible to have negative within-g
 
 Note that Eq.~\ref{eq:damped-transport} is a mathematically valid rewriting of Eq.~\ref{eq:si-transport} for \textit{any matrix} $D$ where $I+D$ is invertible. 
 \begin{equation}
-	\boldsymbol{\phi} = (I+D)^{-1} J \left(\frac{1}{k} F + S + D\right) \boldsymbol{\phi}
+	\boldsymbol{\phi} = (I+D)^{-1} \left[J \left(\frac{1}{k} F + S \right) + D \right]\boldsymbol{\phi}
 	\label{eq:damped-transport}
 \end{equation}
-Next, the same source iteration scheme is applied where the left hand side is updated with the right hand side constant. Since $I+D$ needs to be easily invertible for this new scheme to be efficient, $D$ is chosen to be diagonal. The convergence discussion then follows the same discussion as before except the new iteration matrix  now has the form $\tilde{A} = (I+D)^{-1} J \left(\frac{1}{k_{\textit{crit}}} F + S + D\right)$  with the matrix $\tilde{A}$ is described by
+Next, the same source iteration scheme is applied where the left hand side is updated with the right hand side constant. Since $I+D$ needs to be easily invertible for this new scheme to be efficient, $D$ is chosen to be diagonal. The convergence discussion then follows the same discussion as before except the new iteration matrix  now has the form $\tilde{A} = (I+D)^{-1} \left[ J \left(\frac{1}{k_{\textit{crit}}} F + S \right) + D \right]$  with the matrix $\tilde{A}$ is described by
 \begin{equation}
 	\tilde{A}_{(i,g), (j, g')} = \frac{1}{1 + D_{(i,g), (i,g)}}\left[P_{ij}^g \left(\frac{\chi_{j,g} \nu\Sigma_{f,j,g'} / k_{\textit{crit}} + \Sigma_{s,j}^{g' \rightarrow g}}{\Sigma_{\textit{tr}, j, g}}\right) + D_{(i,g), (j, g')}\right]
 	\label{eq:a-tilde}
@@ -125,7 +125,9 @@ where the rows and columns are again indexed by region, energy group pairs. The 
 	\end{array}\right.
 	\label{eq:d-matrix}
 \end{equation}
-where the damping coefficient $\rho$ is a positive value chosen by the user. For $\rho = 1$, the diagonal update ensures that there are no negative diagonal elements in the iteration matrix. If $A$ is symmetric, this approach can be proven to ensure convergence for $\rho=1$. A detailed analysis of this is shown in Appendix~\ref{app:convergence}. However, the matrix $A$ is rarely symmetric for common reactor physics problems. Still, this method could have utility even for non-symmetric $A$.
+where the damping coefficient $\rho$ is a positive value chosen by the user. For $\rho = 1$, the diagonal update ensures that there are no negative diagonal elements in the iteration matrix. 
+
+%If $A$ is symmetric, this approach can be proven to ensure convergence for $\rho=1$. A detailed proof is given in Appendix~\ref{app:convergence}. However, the matrix $A$ is rarely symmetric for common reactor physics problems. Still, this method could have utility even for non-symmetric $A$.
 
 The diagonal stabilization scheme has the effect of shifting the iteration matrix eigenvalues to be more positive. The intuition for this shift is due to the Gershgorin Disk Theorem where eigenvalues exist in disks around diagonal elements. Since the diagonal elements are positively increased and all matrix elements are contracted, the Gershgorin Disks are likewise shifted positively with their radii contracted. While this improves stability, it also tightens the positive-eigenvalue modes, causing larger dominance ratios in the iteration matrix, and slower convergence. Therefore, $\rho$ should be chosen to be small while still ensuring convergence. 
 
@@ -236,7 +238,7 @@ Now the full core 3D BEAVRS model is simulated, as detailed in Section~\ref{sec:
 \begin{figure}[ht!]
 	\centering
 	\includegraphics[width=0.65\linewidth]{figures/convergence/full-core-3D.png}
-	\caption{Convergence behavior the full core \ac{BEAVRS} benchmark with and without Diagonal Stabilization ($\rho = 1/4$).}
+	\caption{Convergence behavior of OpenMOC on the full core \ac{BEAVRS} benchmark with and without Diagonal Stabilization ($\rho = 1/4$).}
 	\label{fig:fc-3D}
 \end{figure}
 
@@ -244,12 +246,14 @@ These results show that for the 3D full core \ac{PWR} problem, a stabilization t
 
 \subsubsection{Explicit 3D Model with Linear Source}
 
-The preceding tests have all been conducted using a flat source approximation. However, the goal of this thesis is to solve full core \ac{PWR} problems with a linear source approximation. While the theory of the diagonal stabilization was developed for flat source, it can also be applied to simulations with a linear source approximation. The results using a linear source approximation are presented in Figure~\ref{fig:fc-3D-ls} for the full core 3D BEAVRS benchmark, showing similar results to those with a flat source approximation.
+The preceding tests have all been conducted using a flat source approximation. However, the goal of this thesis is to solve full core \ac{PWR} problems with a linear source approximation. While the theory of the diagonal stabilization was developed for flat source, it can also be applied to simulations with a linear source approximation. In the OpenMOC implementation, the same damping of each flat source flux is applied to the associated linear source moments. The results using a linear source approximation are presented in Figure~\ref{fig:fc-3D-ls} for the full core 3D BEAVRS benchmark, showing similar results to those with a flat source approximation.
 
-TODO
-
-%FIXME 
-
+\begin{figure}[ht!]
+	\centering
+	\includegraphics[width=0.65\linewidth]{figures/convergence/full-core-3D-ls.png}
+	\caption{Convergence behavior of OpenMOC's linear source solver on the full core \ac{BEAVRS} benchmark with and without Diagonal Stabilization ($\rho = 1/4$).}
+	\label{fig:fc-3D-ls}
+\end{figure}
 
 \section{Conclusion}
 \label{sec:convergence-conclusion}

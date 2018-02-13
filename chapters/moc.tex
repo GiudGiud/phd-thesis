@@ -31,7 +31,7 @@ In this new form, the gradient reduces to a simple derivative by the distance $s
 	\frac{d\psi_g(\mathbf{r_0} + s\mathbf{\Omega},\mathbf{\Omega})}{ds} \, + \, \Sigma_{t}^{g}(\mathbf{r_0} + s\mathbf{\Omega})\psi(\mathbf{r_0} + s\mathbf{\Omega},\mathbf{\Omega}) = q_g(\mathbf{r_0} + s\mathbf{\Omega})
 	\label{eqn:moc-transform}
 \end{dmath}
-Considering a region $i$ with constant total cross-section $\Sigma_{t}^{i,g}$, the angular flux a distance $\ell$ from the origin can be calculated using Eq.~\ref{eqn:moc-source-int}. The interested reader can find a simple derivation in Appendix~\ref{deriv:moc-source-int}.
+Considering a region $i$ with constant total cross-section $\Sigma_{t}^{i,g}$, the angular flux a distance $\ell$ from the origin can be calculated using Eq.~\ref{eqn:moc-source-int}.
 \begin{dmath}
 	\psi_g(\mathbf{r_0} + \ell \mathbf{\Omega},\mathbf{\Omega}) = \psi_g(\mathbf{r_0},\mathbf{\Omega}) e^{-\Sigma_{t}^{i,g} \ell} + \int\displaylimits_{0}^{\ell} ds \, e^{-\Sigma_{t}^{i,g} (\ell-s)}q_g(\mathbf{r_0} + s\mathbf{\Omega})
 	\label{eqn:moc-source-int}
@@ -63,7 +63,7 @@ Realistically, the source distribution is not known before solving the neutron t
 	\label{fig:pin-discretization}
 \end{figure}
 
-One common low order approximation for the neutron source is the flat source approximation. This approximation assumes the neutron source for a given energy group $q_g(\mathbf{r})$ is constant over each source region. A linear source approximation will be introduced later in Section~\ref{sec:linear-source}, allowing for a coarser discretization of the geometry. However, the flat source approximation is first presented in this description of \ac{MOC} as it is less mathematically cumbersome than the linear source approximation while arriving at a very similar form and solution method as the linear source version. The flat source approximation is also the most frequently used approximation in standard \ac{MOC} solvers~\cite{kochunas, FIXME}. Under this approximation the angular flux relationship given in Eq.~\ref{eqn:moc-source-int} reduces to
+One common low order approximation for the neutron source is the flat source approximation. This approximation assumes the neutron source for a given energy group $q_g(\mathbf{r})$ is constant over each source region. A linear source approximation will be introduced later in Chapter~\ref{chap:linear-source}, allowing for a coarser discretization of the geometry. However, the flat source approximation is first presented in this description of \ac{MOC} as it is less mathematically cumbersome than the linear source approximation while arriving at a very similar form and solution method as the linear source version. The flat source approximation is also the most frequently used approximation in standard \ac{MOC} solvers~\cite{dragon_3d_moc, kochunas, apollo3_vv, cactus_3d, liu_mrt, mockingbird, rhodes2006casmo}. Under this approximation the angular flux relationship given in Eq.~\ref{eqn:moc-source-int} reduces to
 \begin{dmath}
 	\psi_g(\mathbf{r_0} + \ell \mathbf{\Omega},\mathbf{\Omega}) = \psi_g(\mathbf{r_0},\mathbf{\Omega}) e^{-\Sigma_{t}^{i,g} \ell} + \int\displaylimits_{0}^{\ell} ds \, q^0_{i,g} e^{-\Sigma_{t}^{i,g} (\ell-s)}
 \end{dmath}
@@ -178,7 +178,7 @@ With each track now representing a portion of the spatial and angular domain, Eq
 	\overline{\phi_{i,g}} = \frac{1}{V_i} \sum_{(t,\varsigma) \in V_i} w_{t} \int_{0}^{\ell_{t,\varsigma}} ds \, \psi^{t,\varsigma}_g(s)
 	\label{eqn:average-flux-disc}
 \end{dmath}
-Combining Eq.~\ref{eqn:average-flux-disc} with Eq.~\ref{eqn:angular-flux-var-disc}, the scalar flux can be calculated using the relationship in Eq.~\ref{eqn:average-flux}. A proof is given in Appendix~\ref{deriv:avg-flux} for the interested reader.
+Combining Eq.~\ref{eqn:average-flux-disc} with Eq.~\ref{eqn:angular-flux-var-disc}, the scalar flux can be calculated using the relationship in Eq.~\ref{eqn:average-flux}.
 \begin{dmath}
 	\overline{\phi_{i,g}} = \frac{q^0_{i,g}}{\Sigma_{t}^{i,g}} + \frac{1}{\Sigma_{t}^{i,g} V_i} \sum_{(t,\varsigma) \in V_i} w_{t} \Delta \psi_g^{t,\varsigma}
 	\label{eqn:average-flux}

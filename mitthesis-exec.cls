@@ -477,7 +477,7 @@ by \\
 \@author \\[\baselineskip]}
 \par
 \def\baselinestretch{1}\@normalsize
-It is my pleasure to invite you to the Doctoral Thesis Defense of William Boyd on Friday, November 4$^\text{th}$ at 10:00 A.M. in 24-213.
+It is my pleasure to invite you to the Doctoral Thesis Defense of Geoffrey Gunow on Thursday, March 1$^\text{st}$ at 11:00 A.M. in 24-213.
 %Submitted to the \@department \\
 %on \@thesisdate, in partial fulfillment of the \\
 %requirements for the \@degreeword\ of \\

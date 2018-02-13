@@ -131,9 +131,9 @@
 \department{Department of Nuclear Science and Engineering}
 \degree{Doctor of Philosophy in Computational Nuclear Engineering}
 
-\degreemonth{February}
+\degreemonth{June}
 \degreeyear{2018}
-\thesisdate{November 4, 2017}
+\thesisdate{March 1, 2018}
 
 %\supervisor{Benoit Forget}{Associate Professor of Nuclear Science and Engineering}
 %\reader{Kord S. Smith}{KEPCO Professor of the Practice of Nuclear Science and Engineering}
@@ -156,560 +156,338 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection*{Background and Motivation}
 
-The development and deployment of nuclear reactor core physics simulations is governed by tradeoffs between accuracy and speed. High-fidelity simulations are accurate and flexible but require significant computational resources, while the approximations made by low-fidelity methods reduce the number of variables which greatly improves the time-to-solution. As a result, it is common to employ a mix of high- and low-fidelity tools for reactor analysis -- for example, high-fidelity tools are frequently used to inform and benchmark low-fidelity models for use within a narrow envelope of design parameters. This thesis develops a new approach within the same vein by employing continuous energy Monte Carlo (MC) neutron transport simulations to generate accurate multi-group cross sections (MGXS) for computationally efficient whole-core deterministic transport methods. These methods replace engineering judgment with machine learning which processes ``noisy'' tally data computed by an unconverged whole-core MC simulation.
+Traditional simulation tools in modern reactor analysis are typically based on solvers which incorporate nodal diffusion methods. While these solvers have been sufficiently accurate for simulating currently operating nuclear reactors, advanced reactor designs pose significant challenges for nodal methods. Specifically, nodal diffusion solvers often assume smooth axial variation of scalar flux distributions within reactor cores. However, advanced reactor designs, such as the Westinghouse AP1000 Pressurized Water Reactor (PWR), incorporate significant axial detail including partially inserted control rods, axial enrichment zoning, and partial length burnable poisons. All of these features lead to axial profiles which are not smooth enough for modern nodal methods to be sufficiently accurate.
 
-%Unlike the today's multi-level approaches for MGXS generation, the methods developed in this work remove the need for engineering judgment and instead infer MGXS from ``noisy'' MC tally data computed by a single unconverged whole-core MC simulation.
+% Traditional -> only methods used in production
+ 
+Alternatively, solvers based on neutron transport fundamentals can be implemented which do not rely on the assumptions and approximations present in nodal diffusion methods. While these solvers lead to a dramatic increased in computational requirements for reasonable solutions, recent advances in computational power for both engineering clusters and large scale supercomputers have enabled the computation of extremely large scale reactor simulations.
 
-%\textbf{This thesis is motivated by the desire to obtain Monte Carlo-quality solutions with computationally efficient deterministic neutron transport methods.}
+%MOC has often been used for 2D lattice physics calculations on single assemblies. In traditional simulation of nuclear reactors, a lattice physics calculation for each unique assembly is conducted in isolation on each single assembly throughout the .  on single assemblies which are then coupled with a nodal diffusion simulator to achieve 3D solutions.  Rather than following this traditional approach, this thesis concentrates on the direct simulation 
 
-This thesis investigates the use of Monte Carlo methods to generate MGXS, such as the U-235 fission MGXS illustrated in Fig.~\ref{fig:u235-sigf}, for reactor core analysis. Monte Carlo presents a natural approach to replace engineering prescriptions to approximate the flux with a stochastic realization of the exact flux. The advantage of a MC-based approach is that all of the relevant physics modeled in MC may be directly embedded into MGXS. This improvement in accuracy comes at the computational expense of converging group constant tallies to acceptably low uncertainties. MC methods have increasingly been used to generate few group constants for coarse mesh diffusion, most notably by the Serpent MC code~\cite{serpent2013manual}. However, there exist few rigorous and comprehensive analyses of MGXS generation for heterogeneous fine-mesh deterministic transport methods~\cite{redmond1997multigroup,cai2014condensation,nelson2014improved}. \textbf{This thesis develops and evaluates MC-based methods to generate MGXS for fine-mesh deterministic neutron transport codes.}
+One method which is based on neutron transport fundamentals is the Method of Characteristics (MOC), which discretizes the neutron transport equation using many characteristic paths or directions which traverse the geometry. This leads to a system of equations which is usually solved with the \textit{source iteration} process in which successive iterations estimate the neutron source in each region, leading to new estimates of scalar fluxes. Since the convergence of source iteration is typically quite slow, Coarse Mesh Finite Difference (CMFD) acceleration is often used to converge in a reasonable number of iterations.
 
-\begin{figure}[h!]
-\centering
-\includegraphics[width=0.65\linewidth]{figures/intro/u235-ce-mg-xs}
-\caption[U-235 continuous energy and multi-group fission cross section]{U-235 continuous energy and 16-group fission cross section.}
-\label{fig:u235-sigf}
-\end{figure}
+MOC has seen widespread use for 2D lattice physics analysis of single assembly models in which the axial direction is assumed to be infinite. The full 3D detail is then formed by coupling with a nodal diffusion solver. Instead of following this tradition simulation scheme, this thesis concentrates on the direct 3D MOC simulation of reactor physics problems, incorporating all 3D geometric detail. Previously, others have attempted to simulate reactor physics problems using 3D MOC but have been limited to small models due to computational constraints of the particular 3D MOC implementations~\cite{kochunas}.
 
-In addition, MC-based MGXS generation methods to date have retained the multi-level geometric framework illustrated in Fig.~\ref{fig:multi-level-flow-chart} to tabulate MGXS for individual reactor components -- such as infinite fuel pins and/or assemblies -- for subsequent use in whole-core multi-group calculations. The multi-level approach is inspired by legacy MGXS generation techniques which apply high-fidelity models of the energy self-shielding physics to low-fidelity geometric models of unique core components. The complexity of the energy treatment is then reduced at each level as larger and more complex geometric models are considered. \textbf{This thesis replaces the multi-level framework in place of a whole-core MC calculation which simultaneously accounts for all energy and spatial effects with a single simulation of the complete heterogeneous geometry.}
-
-\begin{figure}[h!]
-\centering
-\includegraphics[width=0.9\linewidth]{figures/intro/multi-step-flow-chart}
-\caption[Multi-level approach to reactor analysis]{Current multi-level framework for reactor analysis.}
-\label{fig:multi-level-flow-chart}
-\end{figure}
-
-In theory, whole-core MC calculations can be used to tally MGXS in each spatial zone (\textit{e.g.}, 100 axial depletion zones within each of 50,000+ fuel pins in a PWR core) to account for the spatial variation of the flux. However, such simulations have not been employed for practical reasons -- in particular, the computational expense of performing such calculations has been prohibitive for MC codes until recent years. Furthermore, roughly the same number of particle histories would be required to converge the MGXS tallies in each spatial zone as would be required for a direct whole-core calculation by MC. \textbf{Therefore, a new method is required to accelerate the convergence of the MGXS tallies in each fine-mesh region in order for MC to be practical for reactor agnostic fine-mesh MGXS generation.}
-
-This thesis proposes both engineering-based clustering and statistical clustering methods to accelerate the convergence of whole-core MC calculations for MGXS generation. This novel approach relies on the fact that many distinct spatial zones across a reactor core experience similar if not identical spatial and energy self-shielding effects, and therefore have similar if not identical MGXS. The stochastic nature of MC simulations will contribute statistical ``noise'' to the tally estimates for the MGXS. As a result, the MGXS estimates for similarly self-shielded spatial zones form clusters which converge as more particle histories are simulated. \textbf{The goal of this thesis is to develop and apply machine learning algorithms to identify MGXS clusters from ``noisy'' Monte Carlo tally data. This methodology aims to generate MGXS for deterministic neutron transport codes in a reactor agnostic and computationally efficient manner.}
-
-%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection*{Objectives}
 
-The subject matter of this thesis is organized along two main themes:
+This thesis concentrates on developing an efficient 3D MOC solver which can solve large reactor physics problems. The behavior of 3D MOC and the sensitivity of its solution accuracy to input parameters, such as mesh refinement, is studied on a variety of realistic reactor physics problems. However, \textbf{the primary goal of this thesis is to directly use 3D MOC to accurately simulate the BEAVRS benchmark}, which represents a full core PWR.
 
-\begin{itemize}
-\item \textbf{\textit{Approximation Error}} -- Quantify and diagnose approximation error in MGXS generated from MC methods for simple heterogeneous benchmark problems.
-\item \textbf{\textit{Statistical Clustering}} -- Develop statistical clustering methods to accelerate the convergence of MGXS on heterogeneous MC tally meshes.
-\end{itemize}
-
-The first theme of this thesis rigorously assesses the efficacy of MGXS generation with MC for fine-mesh transport calculations. Some of the approximations made by MC-based MGXS generation are quantified, including an in-depth analysis of systematic bias resulting from constant-in-angle total MGXS. The second theme develops a new methodology called \textit{inferential multi-group cross sections} (\textit{i}MGXS) to simultaneously capture local and global spatial self-shielding effects in MGXS for whole-core calculations. The \textit{i}MGXS scheme applies statistical clustering methods to accelerate the convergence of MGXS tallied on fine, heterogeneous spatial meshes in Monte Carlo. The \textit{i}MGXS scheme is evaluated for six heterogeneous PWR benchmarks to quantify its accuracy and convergence relative to alternative schemes for MC-based MGXS generation.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section*{Software Infrastructure: A Simulation Triad}
-
-This thesis investigates Monte Carlo as a means to generate multi-group cross sections for fine-mesh transport codes. This work required the development of a ``simulation triad'' encompassing three primary codes as illustrated in Fig.~\ref{fig:simulation-triad}. First, the OpenMC Monte Carlo code~\cite{romano2013openmc} was utilized to generate multi-group cross sections. Second, the MGXS were used by the OpenMOC code~\cite{boyd2014openmoc} for deterministic multi-group transport calculations. Finally, the OpenCG library~\cite{boyd2015opencg} enabled the processing and transfer of tally data on combinatorial geometry (CG) meshes between OpenMC and OpenMOC. The following sections summarize the author's contributions to each component code in the simulation triad to support the objectives of this thesis.
-
-\begin{figure}[h!]
-  \centering
-  \includegraphics[width=0.95\linewidth]{figures/workflow/triad/simulation-triad}
-\caption[A simulation triad of OpenMC, OpenMOC and OpenCG]{A simulation triad consisting of the OpenMC, OpenMOC and OpenCG codes ``glued'' together with Python formed the foundation for this thesis research.}
-\label{fig:simulation-triad}
-\end{figure}
+\section*{Implementation}
 
 %%%%%%%%%%%%%%%%%%%%
-\subsection*{OpenMC}
+\subsection*{Software Design}
 
-The OpenMC code is a continuous energy Monte Carlo neutron transport code~\cite{romano2013openmc} with support for general constructive solid geometry models. This thesis designed and implemented a fully-featured OpenMC Python API to enable the processing of large tally datasets to generate MGXS. In addition, a distributed cell tally algorithm~\cite{lax2014distribcell} was implemented in OpenMC to compute MGXS across repeated fuel pin cells in reactor core geometries. Finally, an option for isotropic in lab scattering was implemented and used to generate MGXS. The isotropic scattering feature enabled ``apples-to-apples'' comparisons between the reference eigenvalues and reaction rates produced by OpenMC and those computed from isotropic multi-group calculations with OpenMOC. 
+OpenMOC is an open source neutron transport solver which was originally designed for only 2D MOC calculations. Like many MOC solvers, OpenMOC solves the MOC equations using source iteration with CMFD acceleration. In this thesis, OpenMOC is extended to include a 3D MOC solver which maintaining the 2D MOC capabilities. In addition, the user input for 2D and 3D simulations was designed to be very similar, allowing a user to switch between either mode rather easily on the same model. Accomplishing this presented significant difficulties in the OpenMOC code design. Therefore, the underlying code structure was significantly altered to become more flexible and modular while maintaining efficient memory layout, minimizing memory allocations, and optimizing cache efficiency. 
 
-%In total, the author contributed over 20,000 lines of Python and 2,000 lines of Fortran code to the open source release version of OpenMC to support this work.
+The new modular structure allows for greater reuse of code, leading to more robust code which minimizes the potential for bugs. In addition, the modular structure allows for more robust comparison of the internal algorithms. For instance, all MOC codes require a ray tracing algorithm. In OpenMOC, a variety of ray tracing schemes are implemented. With the incorporation of the modular design, simulations using different ray tracing algorithms can be easily compared with all other code remaining unchanged, removing variables from trials and leading to increased confidence in the results. 
 
 %%%%%%%%%%%%%%%%%%%%%
-\subsection*{OpenMOC}
+\subsection*{Track Laydown}
 
-The OpenMOC code is a multi-group neutron transport code implementing the deterministic Method of Characteristics (MOC)~\cite{boyd2014openmoc}. The OpenMOC code is capable of performing 2D MOC transport calculations for LWR core configurations. The \texttt{openmoc.materialize} Python module was implemented to automate the loading MGXS data into OpenMOC \texttt{Material} objects. The module is designed to support the large MGXS libraries generated by OpenMC. In addition, a new module was implemented  to interface with the OpenCG region differentiation algorithm, which constructed ``clustered geometries'' for OpenMOC. Finally, a scheme to compute SuPerHomog\'{e}n\'{e}isation (SPH) factors to ensure reaction rate consistency with OpenMC was implemented in OpenMOC. 
+In MOC algorithms, tracks are laid across the geometry, each representing a particular direction. The MOC equations are then applied along each track. One of the often overlooked aspects of MOC implementations is the method chosen to lay down tracks across the geometry. In order to accommodate periodic and reflective boundary conditions, tracks are often laid down such that they form cycles over the geometry. This allows for direct treatment of boundary conditions. MOC ray parameters are adjusted so that tracks link at boundaries. Figure~\ref{fig:sample-tracks} depicts a coarse cyclic 3D track laydown.
 
-%In total, the author contributed over 15,000 lines of C++ and nearly 20,000 lines of Python code to the open source release version of OpenMOC to support this work.
+\begin{figure}[h!]
+	\centering
+	\includegraphics[width=0.5\linewidth]{figures/laydown/sample-tracks_b.png}
+	\caption{Illustration of a coarse 3D cyclic track laydown}
+	\label{fig:sample-tracks}
+\end{figure}
+
+There are a variety of ways cyclic tracking can be enforced by adjusting MOC ray parameters. Depending on the track laydown algorithm, the parameter adjustment can be significant, often inserting far more tracks than necessary. Inefficient track laydown algorithms can lead to an order of magnitude increase in the number of tracks required for realistic PWR problems~\cite{shaner-laydown}. Since the computational cost of MOC scales directly with the number of tracks, an order of magnitude increase in the number of tracks translates directly into an order of magnitude increase in the run time. OpenMOC implements track laydown using Modular Ray Tracing (MRT), which has quite flexible constraints with a minimal number of additional track insertions~\cite{liu_mrt}.
+
 
 %%%%%%%%%%%%%%%%%%%%
-\subsection*{OpenCG}
+\subsection*{On-the-fly Ray Tracing}
 
-A new combinatorial geometry (CG) Python library called OpenCG~\cite{boyd2015opencg} was developed to construct complicated reactor geometries for OpenMOC. Two novel algorithms known as Local Neighbor Symmetry (LNS) and region differentiation were developed in OpenCG to support this thesis. The LNS algorithm analyzes a combinatorial geometry to identify neighbor cells, or pairs of cells which are adjacent to one another. The LNS algorithm is analogous to the geometric templates used in lattice physics codes such as CASMO~\cite{edenius1995casmo} to identify fuel pins which have similar resonance self-shielding Dancoff factors. The region differentiation algorithm was developed to efficiently construct geometries which represent the assignment of MGXS to arbitrary ``clusters'' of fuel pins. The differentiated geometries are exported to OpenMOC for deterministic neutron transport calculations. 
+After tracks are laid across the geometry, each track is discretized by mesh boundaries into \textit{segments} using a ray tracing algorithm. MOC equations are applied directly to segments. The algorithm used to retrieve track ray tracing information can have a significant impact on computational performance. Traditional MOC implementations conduct ray tracing upfront, store the associated ray tracing data, and reference it during the solver. While this approach is straightforward, its memory and compute requirements for 3D MOC can be prohibitive, even for small problems, due to the vast number of segments present in 3D MOC simulations~\cite{physor2016otf}. Reducing the memory footprint is important for many reasons including improved cache efficiency and reducing bulk memory requirements.
 
-%The author contributed over 10,000 lines of Python code in OpenCG to support this work.
+In this thesis, an alternative approach is presented that greatly reduces the segment storage and generation requirements by taking advantage of the extruded geometry structure common to many reactor physics problems. This alternative approach saves no 3D segment data, rather treating the ray tracing problem as a coupled 2D and 1D system whereby 2D radial ray tracing information is combined with 1D axial information to compute the 3D intersections~\cite{physor2016otf}.
+
+Two on-the-fly ray tracing approaches are introduced in this thesis. One approach ray traces each 3D track individually. Another ray traces an entire grouping of tracks stacked in the axial direction together. This group of tracks is referred to as a $z$-stack. Both approaches offer significant memory reduction with minimal or no computational overhead.
+
+%%%%%%%%%%%%%%%%%%%%
+\subsection*{Linear Source Approximation}
+
+A flat source approximation is typically used in MOC implementations whereby the total source in each mesh cell is approximated by a constant. While this approximation is convenient and used by many in practice~\cite{kochunas, dragon_3d_moc, apollo3_vv, cactus_3d, liu_mrt, mockingbird}, a linear approximation can potentially reduce the computational requirements of simulating a fully converged reactor physics problem. While the linear source approximation increases the computational cost for a fixed discretization, the higher order source can capture source gradients, allowing for a much coarser mesh discretization while maintaining solution accuracy~\cite{ferrer2012linear}. In this thesis, the track-based linear source approximation introduced by Ferrer~\cite{ferrer2015linear} for 2D MOC is extended to 3D MOC and implemented in OpenMOC.
+
+To evaluate on-node performance, the Single Domain Single Assembly (SDSA) test problem is created which is a nearly cubic cutout of the BEAVRS reactor. Specifically, the test problem represents a single assembly radially that has been extruded 20 cm in height with reflective boundaries placed on the top and bottom. It is meshed with the discretization expected to accurately simulate the BEAVRS benchmark. The size of the cutout was chosen to be the largest cutout to reasonably fit on one node of the Argonne BlueGene/Q supercomputer.
+
+Singe-thread performance is often useful for determining the efficiency of an MOC implementation. One useful performance metric is the integration time refers to the time required to compute the angular flux variation over a segment and tally its contribution to the local scalar flux for a single energy group. Since the number of segments increases with the size of the problem, integration time is less problem-dependent than other performance metrics such as run-time. Single thread computational results of both on-the-fly ray tracing schemes are presented in Table~\ref{tab:rt-single-thread} for the SDSA test problem with fixed mesh.
+
+\begin{table}[ht]
+	\centering
+	\caption{Single thread performance of OpenMOC using one node of the Falcon supercomputer}
+	\medskip
+	\begin{tabular}{l|l|l}
+		\hline
+		Ray Tracing Scheme & Source Approximation & Integration Time (ns) \\
+		\hline
+		By Track  & Flat & 12.2 +/- 0.01 \\
+		By $z$-Stack & Flat & 10.8 +/- 0.01 \\
+		\hline
+		By Track  & Linear & 31.41 +/- 0.08 \\
+		By $z$-Stack & Linear & 29.87 +/- 0.03 \\
+		\hline
+	\end{tabular}
+	\label{tab:rt-single-thread}
+\end{table}
+
+Both ray tracing methods are able to achieve $\approx 10$ ns per integration with the flat source approximation. The linear source approximation adds a $\approx 2 $ -- $3 \times$ overhead. However, the higher order source approximation allows the mesh to be significantly coarsened while maintaining solution accuracy. For both flat and linear source solvers, on-the-fly ray tracing by $z$-stack slightly outperforms on-the-fly ray tracing by individual 3D track. 
+
+It is important to parallelize algorithms for any large application. OpenMOC uses OpenMP shared memory parallelism~\cite{openmp} on each node. The scaling results of the linear source solver using ray tracing by $z$-stack are shown in Figure~\ref{fig:rt-parallel-ls-cetus} using the Cetus partition of the Argonne BlueGene/Q supercomputer to solve the SDSA test problem. This machine has 16 CPU cores per node and hyper-threads allow for improved resource utilization with up to 64 threads. It is important to note that beyond 16 threads, ideal speedup is not expected as threads must share the computation resources of the 16 cores. At 16 threads, the speedup is 90.9\% of ideal.
+
+\begin{figure}[ht!]
+	\centering
+	\includegraphics[width=0.75\linewidth]{figures/results/performance/ls-parallel-scaling-stacks-cetus.png}
+	\caption{Strong scaling performance of the linear source solver on the SDSA test problem using the Cetus partition of the Argonne BlueGene/Q supercomputer with on-the-fly ray tracing by $z$-stacks.}
+	\label{fig:rt-parallel-ls-cetus}
+\end{figure}
 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%\section*{Angular-Dependent MGXS and SPH Factors}
-%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%\subsection*{Flux Separability Approximation}
-%
-%\begin{dmath}
-%\label{eqn:sigt-flux-separable}
-%\Sigma_{t,g}(\mathbf{r}) = \frac{\int\displaylimits_{E_{g}}^{E_{g-1}} \Sigma_{t}(\mathbf{r},E)\psi(\mathbf{r},\mathbf{\Omega},\mathrm{d}E)}{\psi_{g}(\mathbf{r},\mathbf{\Omega})} \approx \frac{\int\displaylimits_{E_{g}}^{E_{g-1}} \Sigma_{t}(\mathbf{r},E)\phi(\mathbf{r},E)}{\phi_{g}(\mathbf{r})}
-%\end{dmath}
-%
-%\clearpage
-%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%\subsection*{Energy-Dependent Flux Errors}
-%
-%\begin{figure}[h!]
-%\centering
-%\includegraphics[width=\linewidth]{figures/sph/pin-cell/rel-err-inner-outer}
-%\caption[Flux relative error by energy group with SPH]{The energy-dependent relative error of the 70-group OpenMOC scalar flux with respect to the OpenMC flux in a fuel pin for the innermost, outermost and all FSRs.}
-%\label{fig:rel-err-energy}
-%\end{figure}
-%
-%\clearpage
+\newpage
+%%%%%%%%%%%%%%%%%%%%
+\subsection*{Domain Decomposition}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%\subsection*{Angular-Dependent MGXS}
-%
-%\begin{figure}[h]
-%\begin{subfigure}{.5\textwidth}
-%  \centering
-%  \includegraphics[width=\linewidth]{figures/sph/batman-1}
-%  \caption{}
-%  \label{fig:batman-plots-a}
-%\end{subfigure}
-%\begin{subfigure}{.5\textwidth}
-%  \centering
-%  \includegraphics[width=\linewidth]{figures/sph/batman-2}
-%  \caption{}
-%  \label{fig:batman-plots-b}
-%\end{subfigure}
-%\caption[Angular-dependent capture MGXS]{Angular-dependent capture MGXS for the 6.67 eV resonance group as a function of azimuthal angle for two different FSRs. The radial axis is given in units of barns and the azimuthal axis in units of degrees. \textit{Image courtesy of N. Gibson~\cite{gibson2016thesis}.}}
-%\label{fig:batman-plots}
-%\end{figure}
-%
-%\clearpage
-%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%\subsection*{SuPerHomog\'{e}n\'{e}isation Factors}
-%
-%-SPH factors were first proposed by H\'{e}bert~\cite{hebert1993consistent} to preserve reaction rates during energy condensation and spatial homogenization \\
-%-SPH factor algorithm requires knowledge of a reference source that is used in a multi-group fixed source solver to derive multiplicative factors that adjust the total MGXS to force neutron balance \\
-%
-%\begin{dmath}
-%\label{eqn:sph-transport-eqn-iterate}
-%\mathbf{\Omega} \cdot \nabla \psi_{g}^{(n)}(\mathbf{r},\mathbf{\Omega}) + \mu_{k,g}^{(n-1)}\Sigma_{t,k,g}\psi_{g}^{(n)}(\mathbf{r},\mathbf{\Omega}) = Q_{k,g}(\mathbf{\Omega})
-%\end{dmath}
-%
-%\begin{dmath}
-%\label{eqn:sph-update-sigt}
-%\Sigma_{t,k,g}^{(n)} = \mu_{k,g}^{(n-1)}\Sigma_{t,k,g}^{(0)}
-%\end{dmath}
-%
-%\begin{algorithm}[h]
-%\caption{SPH Factor Algorithm}
-%\label{alg:sph}
-%\begin{algorithmic}[1]
-%%  \State Initialize MGXS from MC tallies
-%%  \State Compute neutron source from MC flux and MGXS
-%  \State Initialize SPH factors to unity
-%  \While{SPH factors are not converged}
-%    \State Update MGXS with SPH factors \Comment{Eqn.~\ref{eqn:sph-update-sigt}}
-%    \State Solve fixed source transport problem \Comment{Eqn.~\ref{eqn:sph-transport-eqn-iterate}}
-%    \State Compute new SPH factors
-%  \EndWhile
-%  \State Compute final MGXS with SPH factors \Comment{Eqn.~\ref{eqn:sph-update-sigt}}
-%\end{algorithmic}
-%\end{algorithm}
-%
-%\begin{table}[h!]
-%  \centering
-%  \caption[Eigenvalues with and without SPH factors for a fuel pin]{The impact of SPH factors on the eigenvalue bias $\Delta\rho$ with varying energy group structures for a fuel pin.}  
-%  \label{table:sph-keff}
-%  \vspace{6pt}
-%  \begin{tabular}{c S[table-format=6.1] S[table-format=6.1]}
-%  \toprule
-%  & \multicolumn{2}{c}{{\bf $\boldsymbol{\Delta\rho}$ [pcm]}} \\
-%  \cline{2-3}
-%  \multirow{-2}{*}{{\bf \# Groups}} &
-%  \multicolumn{1}{c}{{\bf Without SPH}} &
-%  \multicolumn{1}{c}{{\bf With SPH}} \\
-%  \midrule
-%1 & 66 & -14 \\
-%2 & 34 & -6\\
-%4 & -57 & 1 \\
-%8 & -102 & 2 \\
-%16 & -111 & 4 \\
-%25 & -182 & -1 \\
-%40 & -202 & 2 \\
-%70 & -211 & -3 \\
-%  \bottomrule
-%\end{tabular}
-%\end{table}
-%
-%\clearpage
+Solvers need to be able to scale to many computational nodes in order to solve large reactor physics problems, such as the BEAVRS benchmark. While shared memory parallelism is feasible for on-node scaling, it is infeasible for inter-node scaling due to significant latency when transferring information between nodes. Therefore, OpenMOC adopts a hybrid parallelism model in which on-node scaling is handled with OpenMP shared memory parallelism and inter-node scaling is handled with spatial domain decomposition using MPI~\cite{mpi}.
+
+OpenMOC implements spatial domain decomposition by partitioning the geometry using a uniform grid into many geometrical sub-domains. Each sub-domain represents an encapsulated MOC problem, only relying on other sub-domains for angular fluxes and a few global variables such as normalization and the eigenvalue. To communicate angular flux information, the same modular track laydown is used on each sub-domain in which tracks naturally link at boundaries. By having a modular track laydown~\cite{liu_mrt}, each sub-domain can easily calculated connecting track indexes with periodic track indexes.
+
+Numerous scaling studies were conducted to ensure efficient parallel scaling of the domain decomposition implementation to many nodes. One such study replicated the SDSA test problem in a cubic 3D lattice. Weak scaling tests were conducted on the Cetus partition of the Argonne BlueGene/Q supercomputer with each node assigned one of the lattice cells (equivalent to one SDSA geometry). Therefore problem size on each node kept constant as the $N \times N \times N$ lattice is expanded. The results are presented in Figure~\ref{fig:dd-ws-3D}, showing greater than 90\% parallel efficiency for all configurations. The largest case involves a $12 \times 12 \times 12$ lattice consuming 1728 nodes (27,648 cores), resulting in an efficiency of 92\%.
+	
+\begin{figure}[h!]
+	\centering
+	\includegraphics[width=0.75\linewidth]{figures/DD/dd-ws-3D.png}
+	\caption[]{Weak scaling inter-node parallel efficiency of the domain decomposition implementation of the linear source solver on a replicated 3D lattice of the SDSA test problem.}
+	\label{fig:dd-ws-3D}
+\end{figure}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section*{Tallying Pin-Wise MGXS with Monte Carlo}
+\section*{Convergence of Source Iteration}
 
-%This thesis develops new methodologs for MGXS generation which employ a single Monte Carlo calculation is used to model the complete heterogeneous geometry in a single step. The advantage of these approaches is that they use the ``true'' MC flux to collapse the flux. However, it they achieve this increase in accuracy  at added expense of generating large tally datasets. This thesis develops a method 
-%
-%In theory, multi-group cross sections are to vary continuously in space. Howver, most deterministic methods used to solve the multi-group transport equation make the simplifying assumption that material properties are constant across each spatial mesh cell. \textit{Spatial homogenization} is used to compute flux-weighted volume-averaged cross sections within each spatial mesh cell. 
-%
-%This thesis develops the inferential MGXS spatial homogenization scheme in which a single Monte Carlo calculation is used to model the complete heterogeneous geometry to generate MGXS. 
-%
-%In particular, \textit{i}MGXS captures spatial self-shielding effects from core heterogeneities which induce clustering of the MGXS in different fuel pin types. The motivation for MGXS clustering and a brief description of the scheme is presented in the following sections.
+The OpenMOC solver described in this thesis relies on source iteration used in conjunction with CMFD acceleration to solve the MOC equations. While convergence of source iteration is straightforward for physical cross-sections, the use of transport-corrected cross-sections can cause convergence issues. Transport correction is required to produce accurate solutions using OpenMOC due to an isotropic source assumption.
 
-%-each scheme models complete heterogeneous geometry in a single step
-%-uses the true ``MC'' flux to collapse the MGXS for fissile and non-fissile zones
-%-the schemes vary by how they treat the MGXS for the different fuel pins across a reactor geometry
-%
-%This thesis investigates the effect of spatial homogenization on the various fuel pins in LWR benchmarks.
-%
-%This thesis is based on the observation that \textbf{pins with similar neighboring heterogeneities have similar microscopic MGXS}. If pins with similar microscopic MGXS can be identified, the MGXS tallied in these pin instances may be \textit{spatially homogenized} to
-%
-% compute an estimate which is nearly as accurate as the \ac{MGXS} from degenerate homogenization, and nearly as converged as the \ac{MGXS} from null homogenization. 
-%
-%%-need to define spatial self-shielding
-%
-%Spatially-homogenized \ac{MGXS} preserve reaction rates in discrete spatial zones.
-%
-%This chapter investigates this hypothesis by analyzing the pin-wise \ac{MGXS} tallied with OpenMC to identify patterns -- namely, clustering -- for pins with similar neighbors. 
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection*{Clustering of Pin-Wise MGXS}
-
-Core heterogeneities such as control rod guide tubes, burnable poisons and reflectors induce clustering of pin-wise MGXS due to spatial self-shielding effects. An illustration of the clustering of U-238 radiative capture MGXS is given in Fig.~\ref{fig:capt-mean-std} for a single PWR fuel assembly with control rod guide tubes (CRGTs). The scatter plots illustrate the clustering of MGXS tallied for each of the 264 fuel pins in the assembly. The MGXS separate into four clusters due to the softening of the flux due to different levels of moderation from neighboring control rod guide tubes in increasing order for the following four groupings of fuel pins: (a) pins not adjacent to a CRGT, (b) pins corner adjacent to a CRGT, (c) pins facially adjacent to a CRGT and (d) pins facially and corner adjacent to separate CRGTs. The spatial homogenization schemes introduced here apply different models to approximate clustering of pin-wise MGXS.
-
-%The spatial homogenization schemes introduced here employ machine learning to infer the clustering of pin-wise MGXS from ``noisy'' MC tally data.
-
-\begin{figure}[h!]
-\centering
-\begin{subfigure}{0.45\textwidth}
-  \centering
-  \includegraphics[width=0.9\linewidth]{figures/unsupervised/features/assm-16/u238-capt/mean-std/geometry-2}
-  \caption{}
-  \label{fig:chap10-capt-mean-std-geom-2}
-\end{subfigure}%
-\begin{subfigure}{0.45\textwidth}
-  \centering
-  \includegraphics[width=0.9\linewidth]{figures/unsupervised/features/assm-16/u238-capt/mean-std/mgxs-2}
-  \caption{}
-  \label{fig:chap10-capt-mean-std-mgxs-2}
-\end{subfigure}
-\begin{subfigure}{0.45\textwidth}
-  \centering
-  \includegraphics[width=0.9\linewidth]{figures/unsupervised/features/assm-16/u238-capt/mean-std/geometry-3}
-  \caption{}
-  \label{fig:chap10-capt-mean-std-geom-3}
-\end{subfigure}%
-\begin{subfigure}{0.45\textwidth}
-  \centering
-  \includegraphics[width=0.9\linewidth]{figures/unsupervised/features/assm-16/u238-capt/mean-std/mgxs-3}
-  \caption{}
-  \label{fig:chap10-capt-mean-std-mgxs-3}
-\end{subfigure}
-\caption[Clustering of U-238 capture MGXS]{Scatter plots of the pin-wise U-238 capture MGXS means [barns] ($x$) and relative statistical uncertainties [\%] ($y$) in barns for a 1.6\% enriched fuel assembly.}
-\label{fig:capt-mean-std}
+This thesis introduces a novel strategy to overcome the convergence issues of source iteration using damping of the MOC scalar fluxes, termed diagonal stabilization. A robust description of the source of the cause of convergence issues with transport-corrected cross-sections is discussed in this thesis. Diagonal stabilization is tested on multiple reactor physics problems, including the full core BEAVRS model, showing it is necessary to achieve convergence using a reduced CMFD group structure. A comparison of the convergence behavior with and without diagonal stabilization is shown in Figure~\ref{fig:fc-3D-ls} for the BEAVRS full core model using the OpenMOC linear source solver with coarse MOC ray parameters, showing an inability to converge the problem without diagonal stabilization.
+	
+\begin{figure}[ht!]
+	\centering
+	\includegraphics[width=0.65\linewidth]{figures/convergence/full-core-3D-ls.png}
+	\caption{Convergence behavior of OpenMOC's linear source solver on the full core BEAVRS benchmark with and without Diagonal Stabilization.}
+	\label{fig:fc-3D-ls}
 \end{figure}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection*{Null, Degenerate and LNS Spatial Homogenization}
+It is important to note that this stabilization strategy has implications for all neutron transport solvers -- not just MOC solvers. Any solver which relies on source iteration has the potential to experience these same convergence issues when using transport-corrected cross-sections. Due to its wide-ranging applicability, this diagonal stabilization method is one of the most important contributions of this thesis to the reactor physics community. 
 
-This work developed several different spatial homogenization schemes to model spatial self-shielding effects in MGXS. Although all spatial zones may experience spatial self-shielding, this thesis only models the impact of spatial self-shielding on MGXS in fissile regions. Each scheme uses a single MC calculation of the complete heterogeneous geometry to collapse MGXS with the ``true'' flux. The null, LNS and degenerate schemes model spatial self-shielding for each fuel pin with increasing granularity and complexity.
-
-\textbf{\textit{Null spatial homogenization} is the simplest method and averages all spatial self-shielding effects across the entire geometry.} Null homogenization does not account for spatial self-shielding effects experienced by different fuel pins and is equivalent to averaging the data points in Fig.~\ref{fig:capt-mean-std} to compute a single MGXS to be used in all fuel pins. \textbf{\textit{Degenerate spatial homogenization} takes the opposite approach and assigns each fuel pin its own MGXS.} The degenerate scheme accounts for the different spatial self-shielding effects experienced by each instance of each fuel pin throughout a heterogeneous geometry, and is equivalent to modeling each of the data points in Fig.~\ref{fig:capt-mean-std} as its own unique cluster. Although degenerate homogenization is more accurate than null homogenization, it requires many more MC particle histories to converge the uncertainties on the MGXS tallied separately for each fuel pin.
-
-\textbf{\textit{LNS spatial homogenization} uses OpenCG's LNS algorithm to predict the clustering of pin-wise MGXS based on an analysis of the combinatorial geometry.} The LNS scheme is akin to \textit{geometric templates} employed by some lattice physics codes, such as CASMO~\cite{rhodes2006casmo}, to predict which groupings of pins are likely to experience similar spatial self-shielding effects and hence have similar MGXS. The LNS algorithm groups fuel pins together based on an analysis of each pin's neighbors. The MGXS are homogenized from ``noisy'' MC tally data across all pins within the same LNS grouping. LNS homogenization is an attempt to model MGXS clustering with fewer materials than degenerate homogenization in order accelerate the MC tally convergence rate by homogenizing MGXS across many pins. However, the LNS algorithm fails to predict spatial self-shielding effects in arbitrary core geometries, such as those that occur at assembly-assembly and assembly-reflector interfaces. These shortcomings motivate the need for an unsupervised approach to accurately and scalably predict MGXS clustering.
-
-% scales poorly for large geometries and
-
-%Pins with like neighboring pins, within assemblies with like neighboring assemblies, will receive the same LNS identifier.
-
-%LNS homogenization computes a single set of MGXS for the fuel pin in each set classified by the LNS algorithm using a MC track density-weighted averages of the reaction rates and flux tallies in each pin.
-
-%\begin{equation}
-%\label{eqn:imgxs-micro}
-%\hat{\sigma}_{x,i,m,g} = \frac{\displaystyle\sum\limits_{k=1}^{K}\mathbb{1}_{\mathbb{S}_{m}}(k) \langle \sigma_{x,i}, \psi \rangle_{k,g}^{t\ell}}{\displaystyle\sum\limits_{k=1}^{K}\mathbb{1}_{\mathbb{S}_{m}}(k) \langle \psi \rangle_{k,g}^{t\ell}}
-%\end{equation}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection*{\textit{i}MGXS Spatial Homogenization}
-
-\textbf{\textit{Inferential MGXS spatial homogenization} uses machine learning to infer MGXS clusters directly from ``noisy'' MC tally data.} The \textit{i}MGXS scheme can flexibly accommodate arbitrary core heterogeneities better than heuristic approaches like LNS which must be customized for particular core geometries. In addition, the \textit{i}MGXS scheme accelerates the convergence rate of MGXS tallied with MC with respect to the degenerate and LNS schemes since it homogenizes MC tallies across many more fuel pins.
-
-% rather than predict clustering from an analysis of the core geometry.
-
-The \textit{i}MGXS spatial homogenization scheme is a multi-stage data processing pipeline as illustrated in Fig.~\ref{fig:imgxs-flow-chart}. The \textit{feature extraction} stage of the pipeline builds features (\textit{i.e.}, random variables) derived from ``noisy'' MC tally data which provide information about MGXS clustering for each fuel pin. The \textit{feature selection} stage removes redundant and/or highly correlated features to minimize the number of features used to train a clustering model. The \textit{dimensionality reduction} stage projects samples in a lower-dimensional vector space with the same descriptive power as the original features to reduce training time and and improve clustering model performance. The \textit{predictor training} stage builds a series of clustering models for different parameters (\textit{e.g.}, varying numbers of clusters), each of which predicts clusters of fuel pins that are grouped together with the same MGXS. The $k$-means~\cite{macqueen1967kmeans, lloyd1982kmeans}, agglomerative~\cite{johnson1967hierarchical}, BIRCH~\cite{zhang1996birch} and Gaussian Mixture Model~\cite{mclachlan1988mixture} clustering algorithms were each employed within the \textit{i}MGXS scheme for this thesis. The \textit{model selection} stage evaluates heuristics to choose clustering model parameters, including the number of clusters. Various methods which score clustering models based upon their intra- and inter-cluster similarities, or penalize model complexity using regularization, were evaluated within the \textit{i}MGXS scheme.
-
-\begin{figure}[h!]
-\centering
-\includegraphics[width=0.88\linewidth]{figures/unsupervised/features/engineering/flow-chart}
-\vspace{2mm}
-\caption[\textit{i}MGXS flow chart]{The \textit{i}MGXS data processing pipeline.}
-\label{fig:imgxs-flow-chart}
-\end{figure}
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section*{Model Validation}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection*{Heterogeneous PWR Benchmarks}
-
-A series of six 2D heterogeneous benchmarks were derived from the Benchmark for Evaluation And Validation of Reactor Simulations (BEAVRS) Pressurized Water Reactor (PWR) model~\cite{horelik2013beavrs} to evaluate the \textit{i}MGXS scheme. BEAVRS is a highly-detailed PWR specification which was created to validate high-fidelity core analysis methods. One of the benchmarks was constructed as a 2$\times$2 ``mini core'' of 1.6\% and 3.1\% enriched fuel assemblies surrounded by a water reflector as depicted in Fig.~\ref{fig:reflector}. \textbf{The mini core was designed to quantify the impact of the moderation provided by the reflector, and the leakage of neutrons through the reflector, on spatially self-shielded MGXS.}
-
-The most complex benchmark was a 2D planar slice of the top right quadrant of the BEAVRS model as depicted in Fig.~\ref{fig:full-core}. The quarter core model is the all rods out configuration at the core axial mid-plane with a critical boron concentration, and includes assemblies with 1.6\%, 2.4\% and 3.1\% enriched fuel as depicted in Fig.~\ref{fig:full-core}, respectively. \textbf{The BEAVRS model was designed to quantify the effects of radial heterogeneities including the inter-assembly water gaps, stainless steel baffle surrounding the fuel assemblies, core barrel and neutron shield panels on spatially self-shielded MGXS.} 
-
-%\textbf{The benchmarks were designed with increasingly complex heterogeneous features -- and corresponding spatial self-shielding effects -- in order to understand their implications for accurate pin-wise MGXS generation.} In particular, the impact of fuel enrichment, control rod guide tubes (CRGTs), burnable poisons (BPs), inter-assembly currents, water reflectors, steel baffles and the core barrel and vessel is considered.
-
-%Five of the six benchmark models are based upon sub-components of the full core BEAVRS model, while the sixth benchmark is of the full BEAVRS core model. 
-
-%The space outside of the pressure vessel is filled with air with vacuum boundaries applied to the top and right with reflective booundaries on the bottom and left.
- 
-%The reflected mini core includes reflective boundaries on the top and left with vacuum boundaries on the bottom and right.
-
-%The mini core benchmark includes the effects of inter-assembly spatial heterogeneities on the spatially self-shielded MGXS of fuel pins of different enrichments placed adjacent to one another. 
-
-\begin{figure}[h!]
-\centering
-\begin{subfigure}{0.47\textwidth}
-  \centering
-  \includegraphics[width=0.93\linewidth]{figures/benchmarks/reflector}
-  \caption{}
-  \label{fig:reflector}
-\end{subfigure}%
-\begin{subfigure}{0.47\textwidth}
-  \centering
-  \includegraphics[width=0.93\linewidth]{figures/benchmarks/quarter-core}
-  \caption{}
-  \label{fig:full-core}
-\end{subfigure}
-\caption[PWR benchmarks]{The 2$\times$2 mini core with water reflector (a) and the quarter core BEAVRS (b) models used to evaluate the \textit{i}MGXS spatial homogenization scheme.}
-\label{fig:benchmarks}
-\end{figure}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection*{Validation Metrics}
-
-\textbf{Each benchmark was analyzed with OpenMC to generate 70-group MGXS for use in OpenMOC. In addition, a series of OpenMC simulations calculated reference eigenvalues and pin-wise fission and U-238 capture rates for each benchmark.} The eigenvalue (\textit{i.e.}, neutron multiplication factor) is a key integral quantity used to assess the reactivity of a reactor. The fission rates are directly related to the relative power density of each fuel pin which is important for fuel depletion and thermal hydraulic feedback. The U-238 capture rates result in the production of Pu-239 which contributes up to 40\% of the power produced from fission in PWRs at the end-of-life (EOL). Hence, the spatial distributions of the fission rates and U-238 capture rates must be correctly modeled for accurate high-fidelity depletion calculations. 
-
-\textbf{The differences in eigenvalue, fission rate and capture rates between OpenMC and OpenMOC were quantified for each benchmark and homogenization scheme.} The type of spatial homogenization strongly impacts the resultant accuracy of OpenMOC's U-238 capture rate predictions. The U-238 reaction rates display some of the largest spatial self-shielding effects -- varying by a factor of $\sim$20 between the center and outer rim of individual fuel pins -- and are especially sensitive to the spatial homogenization scheme used to generate MGXS for each pin. In contrast, the homogenization schemes have little impact on the OpenMOC fission rate predictions. As expected, the various schemes are inconsequential to the eigenvalue predictions, since each method uses the same MC flux to collapse the MGXS and preserve global reactivity. Hence, only the U-238 capture rate errors are presented and analyzed in the following section, while the eigenvalues and fission rates are reported for each benchmark in the thesis.
-
-% This underscores the importance of accounting for spatial heterogeneities -- such as the moderation from CRGTs and reflectors -- when generating MGXS to predict U-238 capture and Pu-239 production in LWRs.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section*{Results}
+\section*{Simulation Results}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection*{Clustered Geometries}
+\subsection*{Single Assembly Sensitivity Studies}
 
-The geometries produced with null, degenerate, LNS and \textit{i}MGXS spatial homogenization for the 2$\times$2 mini core benchmark are displayed in Fig.~\ref{fig:colorset-geometries}. Each uniquely colored material represents a unique set of MGXS. The null scheme uses a single MGXS for each fuel pin of a particular enrichment, while the degenerate scheme assigns a unique MGXS to each fuel pin. The LNS and \textit{i}MGXS schemes distinguish fuel pins based on neighboring heterogeneities, such as control rod guide tubes and burnable poisons. Unlike LNS, the \textit{i}MGXS scheme discriminates pins along assembly-assembly and reflector-assembly interfaces. \textbf{The ability of \textit{i}MGXS to separate out fuel pins along interfaces without geometric heuristics illustrates one key advantage of \textit{i}MGXS over the LNS scheme.}
+After the OpenMOC solver has been fully implemented, sensitivity to the MOC parameters can be tested. A variety of cutouts from the BEAVRS model are selected to test the sensitivity to MOC ray and mesh parameters. The tested models include a 2D extruded BEAVRS core in which a thin axial region is simulated with axially reflective boundary conditions and a single assembly with full axial detail. The single assembly is used for the majority of sensitivity tests, particularly for the sensitivities to 3D parameters. While radial MOC parameters (such as radial mesh and radial ray spacing) have been previously studied in great detail for 2D MOC solvers~\cite{rhodes2006casmo}, the 3D MOC parameters (axial ray spacing, polar angles, and axial source height) have not been thoroughly examined. 
 
-%As a result, the \textit{i}MGXS scheme is expected to outperform LNS spatial homogenization for arbitrary core geometries.
+An accuracy criteria of less than 1.0\% Root Mean Square (RMS) and 3.0\% maximum pellet-wise fission rate error is used to determine the appropriate parameters where each pellet-wise fission rate is defined by the fission rate within a 2.0 cm zone of a fuel rod. An eigenvalue bias of less than 20 pcm is also required. The resulting MOC parameters are shown in Table~\ref{tab:final-params}.
 
-\begin{figure}[h!]
-\centering
-\begin{subfigure}{0.47\textwidth}
-  \centering
-  \includegraphics[width=0.75\linewidth]{figures/benchmarks/2x2}
-  \caption{}
-  \label{fig:reflector}
-\end{subfigure}%
-\begin{subfigure}{0.47\textwidth}
-  \centering
-  \includegraphics[width=0.75\linewidth]{figures/quantification/homogenization/2x2-degenerate-materials}
-  \caption{}
-  \label{fig:reflector-degenerate}
-\end{subfigure}
-\begin{subfigure}{0.47\textwidth}
-  \centering
-  \includegraphics[width=0.75\linewidth]{figures/patterns/lns/reflector/materials}
-  \caption{}
-  \label{fig:reflector-lns}
-\end{subfigure}%
-\begin{subfigure}{0.47\textwidth}
-  \centering
-  \includegraphics[width=0.75\linewidth]{figures/unsupervised/geometries/with-features/8-clusters/combined/reflector}
-  \caption{}
-  \label{fig:reflector-8-clusters}
-\end{subfigure}
-\caption[Materials for the 2$\times$2 mini core]{The materials for the 2$\times$2 mini core with null (a), degenerate (b), LNS (c) and \textit{i}MGXS spatial homogenization with 8 clusters (d).}
-\label{fig:colorset-geometries}
+\begin{table}[ht]
+	\centering
+	\caption{MOC ray and mesh parameters determined to accurately and efficiently simulate PWR problems}
+	\medskip
+	\begin{tabular}{lc}
+		\hline
+		Radial Ray Spacing & 0.05 cm \\
+		Axial Ray Spacing & 0.75 cm \\
+		Number of Azimuthal Angles & 64 \\
+		Number of Polar Angles & 10 \\
+		\hline
+		Number of Fuel Sectors & 4 \\
+		Number of Guide Tube Sectors & 8 \\
+		Number of Moderator Sectors & 8 \\
+		Axial Source Height & 2.0 cm \\
+		Radial Reflector Mesh & $3\times 3$ cells per pin-cell mesh \\
+		\hline
+		CMFD Cell Height & 2.0 cm \\
+		Number of CMFD Energy Groups & 8 \\
+		\hline
+	\end{tabular}
+	\label{tab:final-params}
+\end{table}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection*{Full Core Results}
+
+
+Using the MOC parameters presented in Table~\ref{tab:final-params}, the BEAVRS benchmark is simulated using the linear source 3D MOC solver in OpenMOC. The resulting radially and axially integrated reaction rates are presented in Figure~\ref{fig:full-core-radial} and Figure~\ref{fig:full-core-axial}.
+
+\begin{figure}[ht!]
+	\centering
+	\includegraphics[width=0.65\linewidth]{figures/results/rr-plots/beavrs-3d-radial.png}
+	\caption{Radial fission rate distribution for the BEAVRS benchmark formed by OpenMOC with reaction rates axially integrated.}
+	\label{fig:full-core-radial}
 \end{figure}
 
-\begin{figure}[h!]
-\centering
-\includegraphics[width=\linewidth]{figures/unsupervised/geometries/with-features/8-clusters/combined/full-core-zoom}
-\caption[Materials for the BEAVRS]{The quarter core BEAVRS model with \textit{i}MGXS spatial homogenization.}
-\label{fig:full-core-8-clusters}
+\begin{figure}[ht!]
+	\centering
+	\includegraphics[width=0.65\linewidth]{figures/results/rr-plots/beavrs-3d-axial.png}
+	\caption{Axial fission rate distribution for the BEAVRS benchmark formed by OpenMOC with reaction rates radially integrated.}
+	\label{fig:full-core-axial}
 \end{figure}
 
-The BEAVRS geometry built by \textit{i}MGXS with 24 clusters is presented in Fig.~\ref{fig:full-core-8-clusters}. Three zones are highlighted to illustrate the distinct clustering patterns found for interior fuel assemblies, fuel assemblies along the top baffle/reflector interface, and fuel assemblies at the corner of geometry. The pins in the interior assemblies are clustered in a way which resembles the clustered geometries found for fuel assemblies in an infinite lattice. As noted for the mini core, the \textit{i}MGXS scheme discriminates pins along assembly-assembly and reflector-assembly interfaces. Furthermore, the pins in the corner assemblies cluster according to varying levels of moderation provided by the reflector in this region of the core. These results illustrate the ability of the \textit{i}MGXS scheme to categorize fuel pins into clusters based on subtle differences in spatial self-shielding effects.
 
-%%%%%%%%%%%%%%%%%%%%%%%%%
-%\subsection*{Eigenvalues}
-%
-%\begin{table}[ht!]
-%  \centering
-%  \caption[OpenMOC eigenvalue bias]{OpenMOC eigenvalue bias $\Delta\rho$ for \textit{i}MGXS spatial homogenization.}
-%  \small
-%  \label{table:eigenvalues}
-%  \vspace{6pt}
-%  \begin{tabular}{p{4cm} R{0.9cm} R{0.9cm} R{0.9cm} R{0.9cm} R{0.9cm} R{0.9cm}}
-%  \toprule
-%  & \multicolumn{6}{S[table-format=6.1]}{\textbf{\# Clusters}} \\
-%  \cline{2-7}
-%  \multirow{-2}{*}{\bf Benchmark} &
-%  \multicolumn{1}{c}{\textbf{1}} & 
-%  \multicolumn{1}{c}{\textbf{2}} & 
-%  \multicolumn{1}{c}{\textbf{4}} & 
-%  \multicolumn{1}{c}{\textbf{8}} & 
-%  \multicolumn{1}{c}{\textbf{16}} & 
-%  \multicolumn{1}{c}{\textbf{\# pins}} \\
-%  \midrule
-%Colorset w/ Reflector & -141 & -136 & -136 & -134 & -129 & -141 \\
-%  \midrule
-%BEAVRS Quarter Core & -122 & -119 & -120 & -119 & -119 & -116 \\
-%  \bottomrule
-%\end{tabular}
-%\end{table}
+The OpenMOC results are compared with an OpenMC Monte Carlo solution from which the cross-sections were derived. The Monte Carlo simulation used 400 batches (300 inactive, 100 active) with $2 \times 10^8$ particles per batch. A comparison of the OpenMOC and OpenMC solutions is presented in Table~\ref{tab:openmc-comparison} in which fission rates are calculated on a pellet-wise scale (2.0 cm axial height).
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection*{Pin-Wise U-238 Capture Rates}
+\begin{table}[ht]
+	\centering
+	\caption{Simulation accuracy of OpenMOC relative to an OpenMC reference solution}
+	\medskip
+	\begin{tabular}{l|l|c|c|c}
+		%\hline
+		&                               & Avg. Fission Rate & RMS Fission & Max Fission \\
+		& $k_{\textit{eff}}$ eigenvalue & Std. Dev.         & Rate Error & Rate Error \\
+		\hline
+		OpenMC  & 0.99927 +/- $1 \times 10^{-5}$  & 1.82\% & --     & -- \\
+		OpenMOC & 0.99677                         & --     & 2.14\% & 7.52\% \\
+		\hline
+	\end{tabular}
+	\label{tab:openmc-comparison}
+\end{table}
 
-The OpenMOC energy-integrated pin-wise U-238 capture rates were compared to the reference OpenMC capture rates for each homogenization scheme to compute the percent relative errors for each pin's capture rates. The spatial distributions of capture rate errors are plotted as heatmaps for the mini core benchmark in Fig.~\ref{fig:refl-capt-err} with null, degenerate, LNS and \textit{i}MGXS homogenization with BIRCH clustering of 2, 4 and 16 clusters.
+Notice that since Monte Carlo simulations introduce, each pellet-wise Monte Carlo fission rate has an associated standard deviation. The RMS pellet-wise fission rate error of OpenMOC is 2.14\% which is close to the average standard deviation in OpenMC. To determine the shape of the error distribution, fission rate errors are integrated in the axial and radial directions. These radial and axial distributions are shown in Figure~\ref{fig:openmc-comp-rad} and Figure~\ref{fig:openmc-comp-ax}, respectively.
 
-\begin{figure}[h!]
-\centering
-\includegraphics[width=0.83\linewidth]{figures/results/spatial/reflector/capt-err}
-\vspace{2mm}
-\caption[U-238 capture rate errors for the 2$\times$2 mini core]{U-238 capture rate percentage relative errors for the 2$\times$2 mini core with null, degenerate, LNS and \textit{i}MGXS spatial homogenization with 2, 8 and 16 clusters.}
-\label{fig:refl-capt-err}
+
+\begin{figure}[ht!]
+	\centering
+	\includegraphics[width=0.65\linewidth]{figures/results/full-core/radial_error_v_openmc.png}
+	\caption{Radial distribution of relative fission rate errors (\%) of OpenMOC compared with a reference OpenMC solution on the BEAVRS benchmark.}
+	\label{fig:openmc-comp-rad}
 \end{figure}
 
-The error is largest for the null homogenization scheme since it neglects to model MGXS clustering due to spatial self-shielding effects in each fuel pin. The error is smallest for the degenerate scheme since it exactly models the different spatial self-shielding effects for each fuel pin in the geometry. The LNS scheme largely ``smooths'' the error distribution for the interior pins, but exhibits large errors for the single outermost row of pins adjacent to the reflector, and to a lesser extent, the pins along the inter-assembly interfaces. This illustrates LNS' inability to distinguish fuel pins along interfaces between spatial zones. Unlike the LNS scheme, the \textit{i}MGXS scheme excels at discriminating pins along assembly-assembly and assembly-reflector interfaces into unique clusters such that little residual error is observed with 16 clusters.
-
-In addition, it is often useful to compare the reaction rates from two different OpenMOC simulations with null and \textit{i}MGXS homogenization. The percent relative deviation of the U-238 capture rate distributions between the null and \textit{i}MGXS schemes can be computed to visualize the impact of clusters on the U-238 capture rate predictions. Fig.~\ref{fig:refl-capt-rates-comp} present the percent relative deviations for the mini core benchmark with BIRCH clustering of 2, 4, 8 and 16 clusters. The figures illustrate the \textit{hierarchical} nature of MGXS clustering by discriminating fuel pins with different spatial self-shielding effects that occur in different spatial regimes. For example, the first 2 -- 4 clusters discriminate pins along the assembly-assembly and assembly-reflector interfaces. As more clusters are introduced, they are increasingly customized to model the more local spatial self-shielding effects affecting the pins within the interior of each assembly due to the presence of control rod guide tubes and burnable poisons.
-
-\begin{figure}[h!]
-\centering
-\includegraphics[width=0.63\linewidth]{figures/results/compare/reflector/compare-capt}
-\caption[U-238 capture rate comparison for the mini core]{A comparison of U-238 capture rate spatial distributions for \textit{i}MGXS with BIRCH clustering and null spatial homogenization schemes for the 2$\times$2 mini core.}
-\label{fig:refl-capt-rates-comp}
+\begin{figure}[ht!]
+	\centering
+	\includegraphics[width=0.65\linewidth]{figures/results/full-core/axial_error_v_openmc.png}
+	\caption{Axial distribution of relative fission rate errors (\%) of OpenMOC compared with a reference OpenMC solution on the BEAVRS benchmark.}
+	\label{fig:openmc-comp-ax}
 \end{figure}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection*{Pin-Wise Capture-to-Fission Ratios}
 
-As a corollary to the U-238 capture rates, the OpenMOC energy-integrated radiative capture-to-fission ratios were compared to the reference OpenMC capture-to-fission ratios for each homogenization scheme. The spatial distributions of the ratios are plotted as heatmaps for the quarter core BEAVRS model in Fig.~\ref{fig:refl-capt-err} with null and \textit{i}MGXS homogenization with BIRCH clustering of 40 clusters. 
+To ensure the gross fission rate distribution is accurately simulated, assembly-integrated fission rates are compared. Figure~\ref{fig:assembly-rr} shows these assembly rate errors and the associated OpenMC reference folded into a 1/8 core map. Similar to the radial distribution shown in Figure~\ref{fig:openmc-comp-rad}, the error seems to be a pure tilt across the core. This tilt is likely due to the particular transport correction applied to the cross-sections not being able to fully capture the effects of anisotropic scattering. It is possible that a better transport correction -- particularly in reflector regions -- would be able to eliminate this tilt.
 
-The error is highly structured for the null homogenization scheme since it neglects to account for spatial self-shielding effects of control rod guide tubes and burnable poisons on nearby fuel pins, and from the baffle/reflector on the fuel pins along the core periphery. In contrast, the \textit{i}MGXS scheme ``smooths'' the error distribution for the interior fuel pins. Furthermore, \textit{i}MGXS eliminates the most limiting errors for those fuel pins along the baffle/reflector interface. The residual structural error for the \textit{i}MGXS scheme is gradually removed as more clusters are introduced into the model to account for the varying spatial self-shielding effects throughout the core.
-
-\begin{figure}[h!]
-\centering
-\begin{subfigure}{0.9\textwidth}
-  \centering
-  \includegraphics[width=0.65\linewidth]{figures/results/capt-to-fiss/spatial/full-core/capt-to-fiss-err-null}
-  \caption{}
-  \label{fig:chap11-full-core-capt-err-null}
-\end{subfigure}
-\begin{subfigure}{0.9\textwidth}
-  \centering
-\includegraphics[width=0.65\linewidth]{figures/results/capt-to-fiss/spatial/full-core/capt-to-fiss-err-birch-40}
-  \caption{}
-  \label{fig:chap11-full-core-capt-err-birch-40}
-\end{subfigure}
-\caption[Capture-to-fission ratio errors for BEAVRS]{Capture-to-fission percent relative errors for the quarter core BEAVRS model with null homogenization (a) and \textit{i}MGXS homogenization with 20 clusters (b).}
-\label{fig:chap11-full-core-capt-err-b}
+\begin{figure}[ht!]
+	\centering
+	\includegraphics[width=\linewidth]{figures/results/full-core/folded-1-8-core-assembly-rr.png}
+	\caption{1/8 core folded assembly fission rate error of OpenMOC compared with the reference OpenMC solution for the BEAVRS benchmark.}
+	\label{fig:assembly-rr}
 \end{figure}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection*{Convergence Rates of MOC Solutions}
+\newpage
 
-This thesis also quantified the number of MC particle histories necessary to sufficiently converge MGXS for stable OpenMOC solutions with each spatial homogenization scheme. OpenMC simulations were used to generate MGXS for varying numbers of particle histories. The MGXS were computed from MC tally data stored as OpenMC \textit{statepoint files} for 100 different active batches (\textit{i.e.}, different numbers of particle histories). The OpenMC statepoints for the earliest batches contained MC tally data with the largest statistical uncertainties, while the tallies for the latter batches had smaller statistical uncertainties. The different statepoints enabled a thorough evaluation of the sensitivity of OpenMOC's solutions to the statistical uncertainties of the MGXS.
+The computational requirements of the full core solution in OpenMOC is presented in Table~\ref{tab:full-core-comp-req}. Note that while the number of core-hours required to converge the problem is high (717,465), the solution was computed on the Argonne BlueGene/Q supercomputer, which has extremely slow cores for energy efficiency reasons. The requirements on modern computing cores, such as those on the Falcon supercomputer, is estimated by comparing the integration time per core of the SDSA problem on the Falcon supercomputer (48.96 ns/core) to those on the Argonne BlueGene/Q supercomputer (175.36 ns/core) for one node using all available cores.
 
-The OpenMOC U-238 capture rates were compared to the reference OpenMC capture rates to compute the percent relative errors for each fuel pin for each of the OpenMC statepoints. The relative errors are presented in Fig.~\ref{fig:refl-capture-converge} for the mini core with null, degenerate, LNS and \textit{i}MGXS spatial homogenization with 16 BIRCH clusters. The statistical uncertainty (1-sigma) of the OpenMC estimate for the pin-wise U-238 capture rates is also highlighted in each figure to quantify how much faster a solution for a specified accuracy can be achieved with OpenMOC with MGXS generated by OpenMC.
+\begin{table}[ht]
+	\centering
+	\caption{Computational requirements of OpenMOC on the full core 3D BEAVRS benchmark using the Mira partition of the Argonne BlueGene/Q supercomputer}
+	\medskip
+	\begin{tabular}{l|l}
+		\hline
+		Runtime & 7.76 hours \\
+		Number of Transport Sweeps & 20 \\
+		Nodes & 5780 ($17 \times 17 \times 20$) \\
+		CPU Cores & 92480 \\
+		Integration Time per Core & 256.7 ns / core \\
+		Computational Cost & 717,465 core-hours \\
+		Estimated Computational Cost on Falcon & $\approx$ 200,314 core-hours \\
+		\hline
+	\end{tabular}
+	\label{tab:full-core-comp-req}
+\end{table}
 
-The OpenMC uncertainties approach zero while the OpenMOC errors approach a non-zero bias dependent on the approximation error related to OpenMOC's numerical discretization. The convergence of the \textit{i}MGXS scheme lies between that of the null and degenerate schemes, and requires more particle histories to converge as more clusters are identified. The converged \textit{i}MGXS errors increasingly approach the degenerate errors as more clusters are introduced. \textbf{The figures illustrate that \textit{i}MGXS achieves nearly the same accuracy as the degenerate scheme with a factor of at least ten fewer particle histories. Furthermore, the results indicate that OpenMOC's errors converge at least an order of magnitude faster than OpenMC's statistical uncertainties.}
- 
-\begin{figure}[h!]
-\centering
-\begin{subfigure}{\textwidth}
-  \centering
-  \includegraphics[width=0.9\linewidth]{figures/results/convergence/reflector/max-capt-err-evo-exec-summary}
-  \caption{}
-  \label{fig:refl-max-converge}
-\end{subfigure}
-\begin{subfigure}{\textwidth}
-  \centering
-  \includegraphics[width=0.9\linewidth]{figures/results/convergence/reflector/mean-capt-err-evo-exec-summary}
-  \caption{}
-  \label{fig:refl-mean-converge}
-\end{subfigure}
-\vspace{2mm}
-\caption[Fission rate covergence for the 2$\times$2 mini core]{Convergence of the max (a) and mean (b) absolute U-238 capture rate percent relative errors for the 2$\times$2 mini core.}
-\label{fig:refl-capture-converge}
-\end{figure}
+Further analysis of the computational profile is presented in Table~\ref{tab:full-core-comp-prof}. The results show the computational overhead of CMFD acceleration was insignificant. In addition, the time spent communicating boundary angular fluxes between domains was quite small. However, there was significant idle time between sweeps when nodes are waiting for others to finish their current iteration. This is an indication of load imbalance due to more work required in core regions than in reflector regions.
+
+\begin{table}[ht]
+	\centering
+	\caption{Computational profile of OpenMOC on the full core 3D BEAVRS benchmark using the Mira partition of the Argonne BlueGene/Q supercomputer}
+	\medskip
+	\begin{tabular}{lll|c|c}
+		\hline
+		& & & Computation & Fraction of \\
+		\multicolumn{3}{c|}{Solver Component} & Time (s) & Runtime\\
+		\hline
+		Total & & & $2.79 \times 10^4$ & 100\% \\
+		& Transport Sweeps & & $2.67 \times 10^4$ & 95.8\% \\
+		& & Angular Flux Communication & $7.05 \times 10^2$ & 2.5\% \\
+		& & Idle Time Between Sweeps & $7.74 \times 10^3$ & 27.7\% \\
+		& CMFD Solver & & $97.4$ & 0.3\% \\		
+		\hline
+	\end{tabular}
+	\label{tab:full-core-comp-prof}
+\end{table}
+
+\newpage
+
+            
+In order to verify that the chosen MOC parameters where sufficient in accurately converging the solution, simulations are conducted in which each 3D parameter is refined, with the results shown Table~\ref{tab:fc-param-sensitivity}. Ideally, all should be refined together, but the computational burden would be too great. Therefore, each parameter is refined separately. Due to memory constraints, ray parameters were only able to be refined by $\approx 1.5 \times$ but the axial mesh could be refined by a factor of 2. These results indicate that the solution nearly adheres to the required criteria of less than 1.0\% pellet-wise RMS fission rate error, less than 3.0\% maximum error, and less than 20 pcm bias. In order to strictly adhere to the criteria, the axial mesh would need to be slightly refined.
+
+\begin{table}[ht]
+	\centering
+	\caption{Differences observed from refining 3D MOC parameters for the BEAVRS benchmark relative to the first solution}
+	\medskip
+	\begin{tabular}{l|l|l|c|c|c}
+		\hline
+		Polar  & Axial Ray & Source & $k_{\textit{eff}}$  & RMS Fission & Max Fission \\
+		Angles & Spacing   & Height & Bias                & Rate Diff. & Rate Diff. \\
+		\hline
+		10 & 0.75 cm & 2.0 cm & --     & --     & --  \\
+		14 & 0.75 cm & 2.0 cm & 2 pcm  & 0.51\% & 1.92\%  \\
+		10 & 0.50 cm & 2.0 cm & 5 pcm  & 0.41\% & 1.76\%  \\
+		10 & 0.75 cm & 1.0 cm & 13 pcm & 0.28\% & 3.33\%  \\
+		\hline
+	\end{tabular}
+	\label{tab:fc-param-sensitivity}
+\end{table}
+
 
 \clearpage
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section*{Conclusions}
 
-This thesis had two primary goals: to quantify approximation error in MGXS and to develop new spatial homogenization methods to accelerate the convergence of MGXS on heterogeneous MC tally meshes. These goals were motivated by the desire to obtain Monte Carlo-quality solutions with computationally efficient deterministic neutron transport methods. The following summarizes the key accomplishments demonstrated by this thesis to meet this over-arching vision:
-
-%This was accomplished with a simulation framework that evaluated the MGXS generated by stochastic transport simulations with OpenMC for use in deterministic multi-group transport simulations with OpenMOC. The \textit{i}MGXS spatial homogenization scheme was developed to directly model all energy and spatial self-shielding effects to generate accurate MGXS with a single whole-core MC calculation. 
-
-%This thesis had two primary goals: to quantify approximation error in MGXS and to develop new spatial homogenization methods to accelerate the convergence of MGXS on heterogeneous MC tally meshes. This was accomplished with a simulation framework that evaluated the MGXS generated by stochastic transport simulations with OpenMC for use in deterministic multi-group transport simulations with OpenMOC. The \textit{i}MGXS spatial homogenization scheme was developed to directly model all energy and spatial self-shielding effects to generate accurate MGXS with a single whole-core MC calculation. 
+The main goal of this thesis was to develop a 3D MOC solver capable of accurately simulating the BEAVRS benchmark. This goals was motivated by the desire to develop methods which can explicitly handle axial as well as radial variation within PWR reactor cores. The following summarizes the key accomplishments demonstrated by this thesis to meet this challenge:
 
 \begin{itemize}
 
-\item \textbf{Design and implementation of software simulation infrastructure.} The simulation framework replaces the multi-level approach to directly model all energy and spatial self-shielding with a single whole-core OpenMC calculation of the complete heterogeneous geometry to generate MGXS for use in OpenMOC.
+\item \textbf{Re-design of the OpenMOC software infrastructure.} The original OpenMOC software infrastructure was relatively inflexible, designed for one particular implementation of a 2D MOC solver. The internal structure was altered to be modular and flexible, accommodating multiple ray tracing and solver schemes.
 
-\item \textbf{Systematic evaluation of bias between OpenMC and OpenMOC.} The approximations made to collapse MGXS in energy, space and angle were quantified for simple PWR benchmarks. The impact of the flux separability approximation was rigorously quantified, and a method based on SuPerHomog\'{e}n\'{e}isation factors was implemented to ensure reaction rate consistency between OpenMC and OpenMOC.
+\item \textbf{The implementation of an efficient 3D MOC solver.} A 3D MOC solver was implemented in OpenMOC which is capable of efficiently solving the MOC equations using an efficient track laydown, on-the-fly ray tracing, and spatial domain decomposition. In addition, an efficient linear source solver was added, allowing for accurate solutions with relatively coarse mesh.
 
-\item \textbf{Design and implementation of pin-wise spatial homogenization schemes.} The LNS scheme uses an engineering-based nearest of a reactor's geometric configuration to assign MGXS to each fuel pin. The \textit{i}MGXS scheme uses machine learning to detect MGXS clustering in ``noisy'' MC tally data, and assigns MGXS to fuel pins without any knowledge of a reactor's geometric configuration.
+\item \textbf{Theoretical and practical evaluation of source iteration convergence.} The convergence of transport codes using source iteration (such as MOC) with transport-corrected cross-sections has plagued researchers in the past. In this thesis, a robust theoretical framework is introduced to understand convergence characteristics. The diagonal stabilization scheme was presented which alleviates the convergence issues.
 
-%\item \textbf{Design and implementation of pin-wise spatial homogenization schemes.} The LNS scheme employs an engineering-based nearest neighbor analysis of the geometric configuration of a reactor core to assign MGXS to each fuel pin. The iMGXS scheme uses unsupervised machine learning methods to detect MGXS clustering in ``noisy'' MC tally data and infer the optimal assignment of MGXS to each fuel pin.
+\item \textbf{3D MOC parameter refinement studies.} Since previous 3D MOC solvers have not been capable of solving large PWR problems, parameter refinement studies have not been fully explored. In this thesis, the sensitivity of solution accuracy to each 3D MOC parameter is thoroughly explored.
 
+\item \textbf{Evaluation of computational requirements for solving full core PWR problems.} Since OpenMOC is the first solver capable of solving the BEAVRS benchmark with deterministic methods, it provides a useful indicator for the computational cost of solving such a large problem.
 
-
-\item \textbf{Quantified the predictive accuracy of the LNS and \textit{i}MGXS schemes.} Both schemes were shown to reduce pin-wise U-238 capture rate errors by a factor of four by adequately accounting for spatial self-shielding effects from core heterogeneities. The \textit{i}MGXS scheme performed better than LNS for fuel pins along assembly-assembly and assembly-reflector interfaces. 
-
-%The iMGXS scheme achieves the same accuracy as LNS with up to two orders of magnitude fewer MGXS clusters for the quarter core BEAVRS model.
-
-%The OpenMOC solutions were compared to reference solutions generated with OpenMC for six heterogeneous PWR benchmarks. Both schemes reduced errors for U-238 capture rates predicted by OpenMOC relative to a reference OpenMC solution by a factor four. The iMGXS scheme 
-
-\item \textbf{Quantified the MC histories needed to converge the MGXS for each scheme.} Both schemes were shown to require at least an order of magnitude fewer MC particle histories to converge MGXS for accurate deterministic calculations than a reference MC calculation. 
-
-%\item Designed and implemented software framework to generate MGXS with OpenMC for use in OpenMOC. The simulation framework replaces the multi-level approach to model self-shielding with a single whole-core OpenMC calculation of the complete heterogeneous geometry to generate MGXS for use in OpenMOC.
-
-%\item Designed inferential multi-group cross section methodology for pin-wise spatial homogenization of MGXS. The iMGXS data processing pipeline uses machine learning methods to detect MGXS clustering in ``noisy'' MC tally data and infer the optimal assignment of fuel pins to spatial homogenization zones.
 \end{itemize}
 
-%These goals were motivated by the desire to obtain Monte Carlo-quality solutions with computationally efficient deterministic neutron transport methods.
-
-%The \textit{i}MGXS scheme is a data processing pipeline which uses machine learning algorithms to infer the clustering of MGXS in fuel pins due to spatial self-shielding effects with limited supervision or engineering domain knowledge.
-
-%The \textit{i}MGXS scheme was demonstrated to identify spatial self-shielding effects from ``noisy'' MC tally data without any knowledge of a reactor's geometric configuration. The scheme was shown to reduce pin-wise U-238 capture rate errors by a factor of four by adequately accounting for spatial self-shielding effects from core heterogeneities including control rod guide tubes, burnable poisons, and reflectors with on the order of only ten MGXS clusters. Furthermore, the \textit{i}MGXS scheme was shown to be advantageous over geometric heuristic approaches such as LNS which must be highly customized for specific types of core geometries, and which fail to distinguish MGXS clusters for pins at assembly-assembly and assembly-reflector interfaces. Finally, the \textit{i}MGXS scheme was shown to require at least an order of magnitude fewer MC particle histories to converge MGXS for accurate deterministic calculations than a reference MC calculation. 
-
-%\textbf{The \textit{i}MGXS scheme enables deterministic reactor physics simulations to produce accurate results from MGXS generated by MC faster than would be possible with a direct calculation with MC.} This thesis demonstrated the promise for \textit{i}MGXS as a means to efficiently generate MGXS with reactor agnostic MC calculations of the complete heterogeneous geometry in a single step.
-
-\textbf{The \textit{i}MGXS scheme enables deterministic reactor physics simulations to produce accurate results from MGXS generated by MC faster than would be possible with a direct calculation with MC.} Furthermore, the \textit{i}MGXS scheme was shown to be advantageous over geometric heuristic approaches such as LNS which must be highly customized for specific types of core geometries. This thesis demonstrated the promise for \textit{i}MGXS as a means to efficiently generate MGXS with reactor agnostic MC calculations of the complete heterogeneous geometry in a single step.
+Past 3D deterministic solvers have not been capable of fully resolving full core PWR models to pellet-level precision. This thesis shows that these large scale simulations are now possible with careful consideration of implementation details critical to performance.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section*{Future Work}
 
-This thesis identified several issues which must be investigated in the future in order for \textit{i}MGXS to be useful in a production code setting. First, a systematic evaluation of the types of features, as well as algorithms for dimensionality reduction and clustering, which may be used in \textit{i}MGXS should be performed to better understand their impact on the resulting clustered geometry. A future study should also score each configuration of the \textit{i}MGXS data processing pipeline based on how many MC particle histories  each scheme requires to accurately identify MGXS clusters from ``noisy'' MC tally data. 
+This thesis was able to reasonably simulate the BEAVRS benchmark. However, there was a noticeable tilt across the core, likely due to the transport correction not properly accounting for anisotropic scattering. Therefore, this thesis illuminates the need for a better transport correction, particularly in reflector regions where the traditional in-scatter transport correction might not be sufficient. With an improved transport correction, the simulation results could be made more accurate with the same computational cost.
 
-Future work should also consider employing \textit{i}MGXS in calculations with thermal-hydraulic feedback and nuclide depletion where the moderator density, fuel temperature and burnup will be needed as features to predict MGXS clustering. In addition, new methods must be developed to compute transport-corrected MGXS with MC which appropriately account for anisotropic scattering, thereby eliminating the isotropic in lab scattering approximations used throughout this work. Finally, this thesis may serve as inspiration to employ machine learning algorithms to automate the time-consuming process of selecting reduced energy group structures and their optimal energy group boundaries for MGXS.
+Future work in OpenMOC should also concentrate on reducing computational cost. Using the current solver, only uniform mesh refinement was studied for the axial direction in this thesis. A finer mesh could be used near reflector regions with a coarser mesh in the central core to improve accuracy and decrease computational cost.
 
-%evaluate \textit{i}MGXS scheme:
-%-add anisotropic scattering to OpenMOC to enable solution of the ``correct'' problem
-%-systematic study of featues -- ones actually matter? \\
-%-systematic study to understand impact of dimensionality reduction \\
-%-systematic study to understand impact of clustering algorithms \\
-%-more research into model selection schemes -- none of them robustly works for my case studies! \\
-%-evaluate \textit{i}MGXS with clustering ``on-the-fly'' with noisy MC tally data \\
-%-can \textit{i}MGXS reduce the number of necessary energy groups?? \\
+Algorithmic aspects of the OpenMOC domain decomposition could be improved. For instance, the requirement of uniform spatial domain decomposition leads to load balancing inefficiencies, as observed on the BEAVRS benchmark. If domains could be merged, this issue might be alleviated. Additionally, OpenMOC currently requires double storage of boundary angular fluxes so that information is not overwritten during their exchange between nodes. However, it might be possible to only store the information once if a clever algorithm is implemented to prevent overwriting of information. Since the memory usage is dominated by boundary angular flux storage, this would reduce the overall memory requirements by nearly a factor of two.
 
-%reach goals:\\
-%-multi-physics applications: moderator density, fuel temperature, burnup, etc. as features \\
-%-machine learning to optimize energy group structures \\
+The source approximations could also be studied in greater detail. Currently, a single source approximation (either flat or linear) is used for all regions in the core during a single simulation. However, in the modular framework, it is possible to create a solver which mixes flat and linear source approximations. For instance, moderator regions could always be simulated with a linear source approximation where there is a significant gradient, but gap and clad regions could be simulated with a flat source approximation where the neutron source is quite small. Additionally, source approximations restricted to only the axial direction, such as linear or quadratic, could be implemented for regions where radial variation is not significant.
 
-%-speed up OpenMOC full core: \\
-%  -find a way use quarter assembly CMFD mesh \\
-%  -linear source to reduce number of spatial zones \\
-%  -vectorize transport solver over energy groups \\
+In addition to implementing different source approximations, it would be useful to store angular and spatial dependent cross-sections. Other authors have found a bias introduced by not accounting for the angular dependence of multi-group cross-sections~\cite{gibson-preprint}. Therefore, this should be treated in order to develop more accurate simulations capable of matching a fully converged continuous energy Monte Carlo solution. Also, spatial dependence of cross-sections would be useful for depletion analysis. In current methodologies, fuel is discretized into many regions in order to account for burnup gradients. If the variation could be captured with a spatially-dependent cross-section approximation, coarser mesh could allow for decreased computational cost of depletion studies.
 
+An important issue studied in this thesis was the convergence behavior of source iteration with transport-corrected cross-sections. However, the theoretical discussion of source iteration presented in this thesis relied on a flat source approximation without CMFD acceleration. The diagonal stabilization scheme was shown to also work for CMFD accelerated cases as well as the linear source solver, but a theoretical study would be useful, perhaps leading to an improved stabilization strategy.
+
+Other improvements should be made to OpenMOC to improve its usability. First, the domain decomposed CMFD solver should be extended to allow splitting of CMFD cells across domain boundaries. This would allow the domain decomposition strategy to be less rigid. The current treatment is not very flexible for the BEAVRS benchmark in which assemblies contain a $17 \times 17$ lattice of pins. Since pin-cell CMFD mesh is standard, this imposes limitations on how the assembly can be domain decomposed. Additionally, the CMFD solver should be extended to include other linear solvers. Currently, only a red-black SOR linear solver is available, which has a limited stability region. A more general linear solver, such as GMRES, would allow for a fall-back if the red-black SOR linear solver fails to converge. Lastly, the current coordinate data structure is not well designed. While it is only used for 2D ray tracing, which is not a significant computational cost, it could be greatly improved by changing from a linked-list representation to a vector representation.
+
+Finally, the development of 3D transport methods should focus on making high fidelity reactor simulations feasible. The results presented in this thesis used many-group cross-section libraries and solution of the BEAVRS benchmark required a large supercomputer. These many-group cross-section libraries were used to reduce the spatial variation of cross-sections such that they are only dependent on the material, not the spatial location. However, PWR simulations would be far more feasible if region-dependent several-group cross-sections were capable of accurately capturing neutron behavior. Therefore, future analysis should investigate several-group cross-section formations which maintain solution accuracy.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

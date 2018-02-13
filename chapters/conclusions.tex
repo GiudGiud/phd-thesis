@@ -5,13 +5,14 @@ FUTURE WORK:
 mixed source approximations
 angular / spatial dependent cross-sections
 load balancing across domains
-treatment of boundary angular fluxes
+treatment of boundary angular fluxes (any storage?, half storage?)
+extend understand of MOC source iteration convergence, ..., for linear source
+transport correction (adaptive?)
 
 OpenMOC specific:
 improved local coords
 split across CMFD cell boundaries
 CMFD linalg solver
-
 
 
 This research was motivated by a desire to obtain Monte Carlo (MC) quality solutions with computationally efficient deterministic neutron transport methods. This thesis approached this objective by employing continuous energy \ac{MC} neutron transport simulations to generate accurate  multi-group cross sections (MGXS) for fine-mesh deterministic transport codes. The new methods developed in this thesis were designed to accelerate the convergence of \ac{MGXS} tallied on full-core, fine-spatial meshes by leveraging the phenomenon of pin-wise \ac{MGXS} clustering. These methods reduce the computational burden of \ac{MC}-based \ac{MGXS} generation techniques, positioning it as a reactor agnostic alternative to today's deterministic methods which rely on engineering approximations.

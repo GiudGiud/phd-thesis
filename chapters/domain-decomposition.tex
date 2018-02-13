@@ -6,7 +6,7 @@ In the previous chapters, the on-node shared memory parallelism of OpenMOC was d
 \section{Geometrical Decomposition}
 \label{sec:geometrical-decomposition}
 
-There are a wide variety of options for decomposing a problem into sub-domains, each of which are assigned to a single \ac{MPI} process. In this thesis, geometrical domain decomposition is selected for both its simple interpretation and scalability. In geometrical domain decomposition, the geometry is partitioned into many geometrical sub-domains. Each \ac{MPI} process (usually one per node) is assigned one of the geometrical sub-domains and is responsible for simulating the neutron behavior over the region. A 2D depiction is given in Figure~\ref{fig:domain-partition}.
+There are a wide variety of options for decomposing a problem into sub-domains, each of which are assigned to a single \ac{MPI} process. In this thesis, spatial domain decomposition is selected for both its simple interpretation and scalability. In spatial domain decomposition, the geometry is partitioned into many geometrical sub-domains. Each \ac{MPI} process (usually one per node) is assigned one of the geometrical sub-domains and is responsible for simulating the neutron behavior over the region. A 2D depiction is given in Figure~\ref{fig:domain-partition}.
 
 \begin{figure}[h!]
 	\centering
