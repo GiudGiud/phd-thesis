@@ -128,9 +128,3 @@ Both CACTUS3D and CACTUSOT explicitly save tracking data for segments. Whereas C
 Since tracks are generated for each slice and are not guaranteed to align at slice interfaces, this creates an issue for determining the starting angular fluxes on slice interfaces. This is overcome by using track cross-sectional area and outward-directed angular fluxes to compute leakage rates out of the slices on each radial mesh cell on the interface boundary. Inward-directed angular fluxes are then computed by using tack cross-sectional areas and the computed leakage rates.
 
 CACTUSOT also implements features found in CACTUS including \ac{CMFD} acceleration restricted to Cartesian mesh, treatments for both transport-corrected P0 and anisotropic P1 scatter, and a diamond difference representation of the neutron source along track segments. Parallelism is introduced with \ac{MPI} in which work is decomposed by track direction.
-
-\subsection{TRRM}
-\label{sec:trrm}
-
-\subsection{Mockingbird}
-\label{sec:mockingbird}
