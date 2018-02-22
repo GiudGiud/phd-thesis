@@ -1,7 +1,7 @@
 \chapter{Conclusions}
 \label{chap:conclusions}
 
-The main goal of this research was to develop a 3D \ac{MOC} solver capable of accurately and efficiently simulating \ac{LWR} models for a fixed but reasonable choice of cross-sections. This goal was motivated by the desire to develop methods which can explicitly handle axial as well as radial heterogeneities within \ac{PWR} reactor cores. 
+The main goal of this research was to develop a 3D \ac{MOC} solver capable of accurately and efficiently simulating \ac{LWR} models for a fixed but reasonable choice of cross-sections. This goal was motivated by the desire to develop methods which can explicitly handle axial as well as radial heterogeneities within \ac{LWR} reactor cores. 
 
 The 3D \ac{MOC} implementation developed in this thesis was designed to be efficient through careful analysis of track laydown techniques, the implementation of on-the-fly axial ray tracing, the development of a 3D track-based linear source approximation, and the implementation of scalable spatial domain decomposition.
 
@@ -12,14 +12,14 @@ This chapter concludes the thesis by addressing how the 3D \ac{MOC} implementati
 \section{Summary of Work}
 \label{sec:work-summary}
 
-This thesis implements an efficient 3D \ac{MOC} solver, allowing for large scale reactor physics simulations to be feasible. In Section~\ref{sec:sub:3dmoc-imp}, the implementation details of the solver are summarized. When running these large scale simulations, convergence issues were observed. Section~\ref{sec:sub:diag-stab} summarizes approach taken to alleviate the convergence issues. In Section~\ref{sec:sub:sim-results}, the simulation results of the OpenMOC 3D \ac{MOC} solver are summarized.
+This thesis implements an efficient 3D \ac{MOC} solver, allowing for large scale reactor physics simulations to become feasible. In Section~\ref{sec:sub:3dmoc-imp}, the implementation details of the solver are summarized. When running these large scale simulations, convergence issues were observed. Section~\ref{sec:sub:diag-stab} summarizes approach taken to alleviate the convergence issues. In Section~\ref{sec:sub:sim-results}, the simulation results of the OpenMOC 3D \ac{MOC} solver are summarized.
 
 \subsection{3D MOC Implementation}
 \label{sec:sub:3dmoc-imp}
 
-Due to the large computational cost of full core reactor physics simulations, efficient algorithms must be implemented for the simulations to be feasible. Chapter~\ref{chap:track-laydown} discussed an efficient track laydown which allows the overall problem size to be reduced by reducing the number of unnecessary tracks. Chapter~\ref{chap:ray-tracing} discussed on-the-fly ray tracing which is crucial to reducing the memory footprint of 3D \ac{MOC} simulations. Since the number of segments in 3D \ac{MOC} problems can be vast, explicitly storing ray tracing information consumes an overwhelming amount of memory. Instead, this thesis forms 3D ray tracing information by explicitly saving 2D ray tracing information and using axial meshes to form the 3D segment lengths on-the-fly.
+Due to the large computational cost of full core reactor physics simulations, efficient algorithms must be implemented for these problems to become feasible. Chapter~\ref{chap:track-laydown} discussed an efficient track laydown which allows the overall problem size to be reduced by minimizing the number of unnecessary tracks. Chapter~\ref{chap:ray-tracing} discussed on-the-fly ray tracing which is crucial to reducing the memory footprint of 3D \ac{MOC} simulations. Since the number of segments in 3D \ac{MOC} problems can be vast, explicitly storing ray tracing information consumes an overwhelming amount of memory. Instead, this thesis forms 3D ray tracing information by explicitly saving 2D ray tracing information and using axial meshes to form the 3D segment lengths on-the-fly.
 
-This thesis also implemented a 3D track-based linear source approximation in Chapter~\ref{chap:linear-source}. This allows for a coarser mesh in the radial direction and a significantly coarser mesh in the axial direction. Shared memory parallelism was implemented in OpenMOC for on-node scaling. Additionally spatial domain decomposition is implemented in Chapter~\ref{chap:domain-decomposition} in order to scale to a large number of computational nodes. The implementation shows nearly ideal weak scaling to a large number of nodes. \ac{CMFD} acceleration, as described in Chapter~\ref{chap:cmfd}, was implemented in OpenMOC to reduce the number of iterations necessary for convergence. This \ac{CMFD} solver was also domain decomposed, causing the \ac{CMFD} solver to add trivial overhead to the overall runtime.
+This thesis also implemented a 3D track-based linear source approximation in Chapter~\ref{chap:linear-source}. This allows for a coarser mesh in the radial direction and a significantly coarser mesh in the axial direction. Shared memory parallelism was implemented in OpenMOC for on-node scaling. Additionally spatial domain decomposition is implemented in Chapter~\ref{chap:domain-decomposition} in order to scale to a large number of computational nodes. The implementation shows nearly ideal weak scaling to a large number of nodes. \ac{CMFD} acceleration, as described in Chapter~\ref{chap:cmfd}, was implemented in OpenMOC to reduce the number of iterations necessary for convergence. This \ac{CMFD} solver was also domain decomposed, such that its incorporation adds trivial overhead to the overall runtime per iteration.
 
 
 \subsection{Diagonal Stabilization}
@@ -27,14 +27,16 @@ This thesis also implemented a 3D track-based linear source approximation in Cha
 
 While the implementation details allow for efficient 3D \ac{MOC} simulations, convergence on full core problems would not be possible without the diagonal stabilization scheme introduced in Chapter~\ref{chap:moc-convergence} of this thesis. This is due to source iteration being potentially unstable when transport-corrected cross-sections are introduced. A theoretical discussion of convergence was presented in this thesis, leading to the diagonal stabilization scheme which damps the update of \ac{MOC} scalar fluxes.
 
-Presented results show that for reactor problems with large water reflector regions and a high number of energy groups, convergence of \ac{MOC} with reduced-group \ac{CMFD} acceleration is not possible without a stabilization scheme, such as diagonal stabilization. Full group \ac{CMFD}, in which the number of \ac{CMFD} groups match the number of \ac{MOC}, was always observed to converge. However, a reduced-group \ac{CMFD} acceleration scheme is often desired in order to reduce runtime requirements.
+Presented results show that for reactor problems with large water reflector regions and a high number of energy groups, convergence of \ac{MOC} with reduced-group \ac{CMFD} acceleration is not possible without a stabilization scheme, such as diagonal stabilization. Full group \ac{CMFD}, in which the number of \ac{CMFD} groups match the number of \ac{MOC} groups, was always observed to converge. However, a reduced-group \ac{CMFD} acceleration scheme is often desired in order to reduce runtime requirements.
 
 \subsection{Simulation Results}
 \label{sec:sub:sim-results}
 
 The OpenMOC 3D \ac{MOC} solver was used to simulate a variety of problems formed from the BEAVRS benchmark. Cut-outs of the benchmark were created to conduct parameter refinement studies. In addition, a rodded single assembly model was used to perform an additional set of parameter refinement studies, showing the slight increase in sensitivity to axial \ac{MOC} parameters when significant axial gradients exist.
 
-Using the parameters necessary to reach spatial and angular parameter convergence without inserted rods, the full core BEAVRS benchmark was simulated. The results showed reasonable agreement with a reference OpenMC Monte Carlo solution, though a slight tilt due to the transport correction was observed across the core. The full core was simulated with 717,465 core-hours on the Argonne BlueGene/Q supercomputer, showing that full core 3D \ac{MOC} simulations are now possible on modern supercomputers.
+Using the parameters necessary to reach spatial and angular parameter convergence without inserted rods, the full core BEAVRS benchmark was simulated. The results showed reasonable agreement with a reference OpenMC Monte Carlo solution, though a slight tilt due to the transport correction was observed across the core. The full core was simulated with 717,465 core-hours on the Argonne BlueGene/Q supercomputer.
+
+Past 3D deterministic solvers have not been capable of fully resolving full core \ac{LWR} models to pellet-level precision. This thesis shows that these large scale simulations are now possible with careful consideration of implementation details critical to performance. These simulations can provide useful insight into the neutron behavior of rector geometries with complex geometric detail, such as the Westinghouse AP 1000\texttrademark. With this insight, safety margins could possibly be lowered, leading to more efficient and economic operation of modern nuclear reactors.
 
 \clearpage
 \section{Contributions}
@@ -47,22 +49,20 @@ Using the parameters necessary to reach spatial and angular parameter convergenc
 	
 	\item \textbf{Theoretical and practical evaluation of source iteration convergence.} The convergence of transport codes using source iteration (such as MOC) with transport-corrected cross-sections has plagued researchers in the past. In this thesis, a robust theoretical framework is introduced to understand convergence characteristics. The diagonal stabilization scheme was presented which alleviates the convergence issues.
 	
-	\item \textbf{3D \ac{MOC} parameter refinement studies.} Since previous 3D \ac{MOC} solvers have not been capable of solving large \ac{PWR} problems, parameter refinement studies have not been fully explored. In this thesis, the sensitivity of solution accuracy to each 3D \ac{MOC} parameter is thoroughly explored.
+	\item \textbf{3D \ac{MOC} parameter refinement studies.} Since previous 3D \ac{MOC} solvers have not been capable of solving large \ac{LWR} problems, parameter refinement studies have not been fully explored. In this thesis, the sensitivity of solution accuracy to each 3D \ac{MOC} parameter is thoroughly explored.
 	
 	\item \textbf{Evaluation of computational requirements for solving full core \ac{PWR} problems.} Since OpenMOC is the first solver capable of solving the BEAVRS benchmark with deterministic methods, it provides a useful indicator for the computational cost of solving such a large problem.
 	
 \end{itemize}
 \end{emphbox}
 
-Past 3D deterministic solvers have not been capable of fully resolving full core \ac{PWR} models to pellet-level precision. This thesis shows that these large scale simulations are now possible with careful consideration of implementation details critical to performance. These simulations can provide useful insight into the neutron behavior of rector geometries with complex geometric detail, such as the Westinghouse AP 1000\texttrademark. With this insight, safety margins could possibly be lowered, leading to more efficient and economic operation of modern nuclear reactors.
 
-
-
+\newpage
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Future Work}
 \label{sec:future-work}
 
-This thesis was able to accomplish the full core simulation of a \ac{PWR} reactor for the first time using full core 3D deterministic neutron transport. However, it also illuminated areas for future work in creating accurate and efficient transport solvers.
+This thesis was able to accomplish the full core simulation of an \ac{LWR} reactor for the first time using full core 3D deterministic neutron transport. However, it also illuminated areas for future work in creating accurate and efficient transport solvers.
 
 \subsection{Accuracy Improvements of Full Core Simulations}
 
@@ -97,7 +97,7 @@ Algorithmic implementation aspects of the OpenMOC could also be improved, includ
 
 In addition to specific OpenMOC improvements, other 3D \ac{MOC} strategies could be introduced that have the potential for increased efficiency or accuracy using different spatial approximations.
 
-First, different source approximations could also be studied in greater detail. Currently, a single source approximation (either flat or linear) is used for all regions in the core during a single simulation. However, in the modular framework, it is possible to create a solver which mixes flat and linear source approximations. For instance, moderator regions could always be simulated with a linear source approximation where there is a significant gradient, but gap and clad regions could be simulated with a flat source approximation where the neutron source is quite small. Additionally, source approximations restricted to only the axial direction, such as linear or quadratic, could be implemented for regions where radial variation is not significant.
+First, different source approximations could also be studied in greater detail. Currently, a single source approximation (either flat or linear) is used for all regions in the core during a single simulation. However, within the modular framework, it is possible to create a solver which mixes flat and linear source approximations. For instance, moderator regions could always be simulated with a linear source approximation where there is a significant gradient, but gap and clad regions could be simulated with a flat source approximation where the neutron source is quite small. Additionally, source approximations restricted to only the axial direction, such as linear or quadratic, could be implemented for regions where radial variation is not significant.
 
 In addition to implementing different source approximations, it would be useful to store angular and spatial dependent cross-sections. Other authors have found a bias introduced by not accounting for the angular dependence of multi-group cross-sections~\cite{gibson-preprint}. Therefore, this should be treated in order to develop more accurate simulations capable of matching a fully converged continuous energy Monte Carlo solution. Also, spatial dependence of cross-sections would be useful for depletion analysis. In current methodologies, fuel is discretized into many regions in order to account for burnup gradients. If the variation could be captured with a spatially-dependent cross-section approximation, coarser mesh could allow for decreased computational cost of depletion studies.
 
@@ -108,4 +108,4 @@ An important issue studied in this thesis was the convergence behavior of source
 
 \subsection{Reducing the Computational Requirements of Full Core Simulations}
 	
-Finally, the development of 3D transport methods should focus on making high fidelity reactor simulations feasible. The results presented in this thesis used many-group cross-section libraries and solution of the BEAVRS benchmark required a large supercomputer. These many-group cross-section libraries were used to reduce the spatial variation of cross-sections such that they are only dependent on the material, not the spatial location. However, \ac{PWR} simulations would be far more feasible if region-dependent several-group cross-sections were capable of accurately capturing neutron behavior. Therefore, future analysis should investigate several-group cross-section formations which maintain solution accuracy.
+Finally, the development of 3D transport methods should focus on making high fidelity reactor simulations feasible. The results presented in this thesis used many-group cross-section libraries and solution of the BEAVRS benchmark required a large supercomputer. These many-group cross-section libraries were used to reduce the spatial variation of cross-sections such that they are only dependent on the material, not the spatial location. However, \ac{LWR} simulations would be far more feasible if region-dependent several-group cross-sections were capable of accurately capturing neutron behavior. Therefore, future analysis should investigate several-group cross-section formations which maintain solution accuracy.

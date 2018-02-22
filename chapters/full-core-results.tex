@@ -1,12 +1,12 @@
 \chapter{Full Core Results}
 \label{chap:full-core-results}
 
-The objective of this thesis is to efficiently simulate the BEAVRS benchmark fully converged in space and angle using 3D \ac{MOC}. In this chapter, the OpenMOC implementation described in previous chapters is used to directly simulate the full core BEAVRS benchmark. In Section~\ref{sec:openmc-compare}, the computed OpenMOC solution using 3D \ac{MOC} is compared with the reference OpenMC Monte Carlo solution. In Section~\ref{sec:fc-computational-performance}, the computational performance and profile of OpenMOC on the full core problem is analyzed. Additionally, the computational performance is compared with the flat source solver in Section~\ref{sec:fc-flat-source}. To ensure the chosen \ac{MOC} parameters are sufficient for spatial and angular convergence, a narrow parameter refinement study is conducted in Section~\ref{sec:fc-parameter-refinement}. The chapter concludes in Section~\ref{sec:fc-conclusion} by summarizing and highlighting important results.
+The objective of this thesis is to efficiently simulate the BEAVRS benchmark using 3D \ac{MOC} fully converged in space and angle. In this chapter, the OpenMOC implementation described in previous chapters is used to directly simulate the full core BEAVRS benchmark. In Section~\ref{sec:openmc-compare}, the computed OpenMOC solution using 3D \ac{MOC} is compared with the reference OpenMC Monte Carlo solution. In Section~\ref{sec:fc-computational-performance}, the computational performance and profile of OpenMOC on the full core problem is analyzed. Additionally, the computational performance is compared with the flat source solver in Section~\ref{sec:fc-flat-source}. To ensure the chosen \ac{MOC} parameters are sufficient for spatial and angular convergence, a narrow parameter refinement study is conducted in Section~\ref{sec:fc-parameter-refinement}. The chapter concludes in Section~\ref{sec:fc-conclusion} by summarizing and highlighting important results.
 
 \section{Comparison with OpenMC}
 \label{sec:openmc-compare}
 
-In Chapter~\ref{chap:moc-sensitivity}, parameter refinement studies were conducted for each \ac{MOC} parameter. Using the \ac{MOC} parameters found sufficient to accurately and efficiently resolve pellet-wise fission rates, as presented in Table~\ref{tab:final-params}, the BEAVRS benchmark is simulated on the Mira partition of the Argonne BlueGene/Q supercomputer using the linear source 3D \ac{MOC} solver in OpenMOC. The resulting radially and axially integrated reaction rates are presented in Figure~\ref{fig:full-core-radial} and Figure~\ref{fig:full-core-axial}.
+In Chapter~\ref{chap:moc-sensitivity}, parameter refinement studies were conducted for each \ac{MOC} parameter. Using the \ac{MOC} parameters sufficient to accurately and efficiently resolve pellet-wise fission rates, as presented in Table~\ref{tab:final-params}, the BEAVRS benchmark is simulated on the Mira partition of the Argonne BlueGene/Q supercomputer using the linear source 3D \ac{MOC} solver in OpenMOC. The resulting radially and axially integrated reaction rates are presented in Figure~\ref{fig:full-core-radial} and Figure~\ref{fig:full-core-axial}.
 
 \begin{figure}[ht!]
 	\centering
@@ -23,7 +23,7 @@ In Chapter~\ref{chap:moc-sensitivity}, parameter refinement studies were conduct
 \end{figure}
 
 \newpage
-The OpenMOC results are compared with an OpenMC Monte Carlo solution from which the cross-sections were derived. The Monte Carlo simulation used 400 batches (300 inactive, 100 active) with $2 \times 10^8$ particles per batch. A comparison of the OpenMOC and OpenMC solutions is presented in Table~\ref{tab:openmc-comparison} in which fission rates are calculated on a pellet-wise scale (2.0 cm axial height).
+The OpenMOC results are compared with the OpenMC Monte Carlo solution from which the multi-group cross-sections were derived. The Monte Carlo simulation used 400 batches (300 inactive, 100 active) with $2 \times 10^8$ particles per batch. A comparison of the OpenMOC and OpenMC solutions is presented in Table~\ref{tab:openmc-comparison} in which fission rates are calculated on a pellet-wise scale (2.0 cm axial height).
 
 \begin{table}[ht]
 	\centering
@@ -31,7 +31,7 @@ The OpenMOC results are compared with an OpenMC Monte Carlo solution from which 
 	\medskip
 	\begin{tabular}{l|l|c|c|c}
 		%\hline
-		&                               & Avg. Fission Rate & RMS Fission & Max Fission \\
+		&                               & Avg. Fission Rate & \ac{RMS} Fission & Max Fission \\
 		& $k_{\textit{eff}}$ eigenvalue & Std. Dev.         & Rate Error & Rate Error \\
 		\hline
 		OpenMC  & 0.99927 +/- $1 \times 10^{-5}$  & 1.82\% & --     & -- \\
@@ -41,7 +41,7 @@ The OpenMOC results are compared with an OpenMC Monte Carlo solution from which 
 	\label{tab:openmc-comparison}
 \end{table}
 
-Notice that since Monte Carlo simulations introduce statistical noise, each pellet-wise Monte Carlo fission rate has an associated standard deviation. The RMS pellet-wise fission rate error of OpenMOC is 2.14\% which is close to the average standard deviation in OpenMC tallies. The radial and axial error distributions are presented in Figure~\ref{fig:openmc-comp-rad} and Figure~\ref{fig:openmc-comp-ax}, respectively, showing a radial tilt across the core.
+Notice that since Monte Carlo simulations introduce statistical noise, each pellet-wise Monte Carlo fission rate has an associated standard deviation. The \ac{RMS} pellet-wise fission rate error of OpenMOC is 2.14\% which is close to the average standard deviation in OpenMC tallies. The radial and axial error distributions are presented in Figure~\ref{fig:openmc-comp-rad} and Figure~\ref{fig:openmc-comp-ax}, respectively, showing a radial tilt across the core.
 
 \begin{figure}[ht!]
 	\centering
@@ -58,7 +58,7 @@ Notice that since Monte Carlo simulations introduce statistical noise, each pell
 \end{figure}
 
 
-To ensure the gross fission rate distribution is simulated with reasonable accuracy, assembly-integrated fission rates are compared. Figure~\ref{fig:assembly-rr} shows these assembly rate errors and the associated OpenMC reference folded into a 1/8 map. Similar to the radial distribution shown in Figure~\ref{fig:openmc-comp-rad}, the error again appears as a pure tilt across the core. This tilt is due to the particular transport correction not being able to fully capture the effects of anisotropic scattering. It is possible that a better transport correction -- particularly in reflector regions -- would be able to eliminate this tilt. However, accurate cross-section formation is not the objective of this thesis.
+To ensure the gross fission rate distribution is simulated with reasonable accuracy, assembly-integrated fission rates are compared. Figure~\ref{fig:assembly-rr} shows these assembly rate errors and the associated OpenMC reference folded into a 1/8 map. Similar to the radial distribution shown in Figure~\ref{fig:openmc-comp-rad}, the error again appears as a pure tilt across the core. This tilt is due to the particular transport correction that is not able to fully capture the effects of anisotropic scattering. It is possible that a better transport correction -- particularly in reflector regions -- would be able to eliminate this tilt. However, accurate cross-section formation is not the objective of this thesis and other ongoing projects at MIT are seeking to improve the transport correction.
 
 \begin{figure}[ht!]
 	\centering
@@ -70,7 +70,7 @@ To ensure the gross fission rate distribution is simulated with reasonable accur
 \section{Computational Performance}
 \label{sec:fc-computational-performance}
 
-The computational requirements of the full core solution in OpenMOC is presented in Table~\ref{tab:full-core-comp-req}. Note that while the number of core-hours required to converge the problem is high (717,465), the solution was computed on the Argonne BlueGene/Q supercomputer, which has extremely slow cores for energy efficiency reasons. The requirements on modern computing cores, such as those on the Falcon supercomputer, is estimated by comparing the integration time per core of the SDSA problem on the Falcon supercomputer (48.96 ns/core) to those on the Argonne BlueGene/Q supercomputer (175.36 ns/core) for one node using all available cores. However, this case cannot be explicitly simulated due to the smaller size of the Falcon supercomputer.
+The computational requirements of the full core solution in OpenMOC is presented in Table~\ref{tab:full-core-comp-req}. Note that while the number of core-hours required to converge the problem is high (717,465), the solution was computed on the Argonne BlueGene/Q supercomputer, which has extremely slow cores for energy efficiency reasons. The requirements on modern computing cores, such as those on the Falcon supercomputer, is estimated by comparing the integration time per core of the SDSA problem tested in Chapter~\ref{chap:linear-source} on the Falcon supercomputer (48.96 ns/core) to those on the Argonne BlueGene/Q supercomputer (175.36 ns/core) for one node using all available cores. However, this case cannot be explicitly simulated due to the small aggregate memory of the Falcon supercomputer.
 
 \begin{table}[ht]
 	\centering
@@ -116,7 +116,7 @@ Further analysis of the computational profile is presented in Table~\ref{tab:ful
 \section{Comparison with Flat Source MOC}
 \label{sec:fc-flat-source}
 
-Using the same \ac{MOC} parameters, the BEAVRS core is simulated using the flat source approximation. It is important to note that this case is not expected to be converged in space and angle since the \ac{MOC} parameters were derived from linear source \ac{MOC} sensitivity studies. Instead, the purpose is to compare the computational performance of the flat and linear source solvers to understand the overhead of the linear source approximation as well as possible differences in convergence behavior. The results are presented in Table~\ref{tab:fc-comp-flat-linear}, which again shows a factor of two to three overhead for the linear source solver. Also, the flat source solution converges 3 iterations faster than the linear source equivalent. 
+Using the same \ac{MOC} parameters, the BEAVRS core is simulated using the flat source solver. It is important to note that this case is not expected to be spatially converged since the mesh discretization was derived from linear source \ac{MOC} sensitivity studies. Instead, the purpose is to compare the computational performance of the flat and linear source solvers to understand the overhead of the linear source approximation as well as possible differences in convergence behavior. The results are presented in Table~\ref{tab:fc-comp-flat-linear}, which again shows a factor of two to three overhead for the linear source solver. Also, the flat source solution converges 3 iterations faster than the linear source equivalent. 
 
 \begin{table}[ht]
 	\centering
@@ -141,7 +141,7 @@ Using the same \ac{MOC} parameters, the BEAVRS core is simulated using the flat 
 \section{Parameter Refinement}
 \label{sec:fc-parameter-refinement}
 
-In order to verify that the chosen \ac{MOC} parameters where sufficient in accurately converging the solution, simulations are conducted in which each 3D parameter is refined, with the results shown in Table~\ref{tab:fc-param-sensitivity}. Ideally, all parameters should be refined together, but the computational burden would be too large to run on Mira. Therefore, each parameter is refined separately. Due to memory constraints, ray parameters were only able to be refined by $\approx 1.5 \times$ but the axial mesh could be refined by a factor of 2. These results indicate that the solution nearly satisfies to the desired criteria of less than 1.0\% pellet-wise RMS fission rate error, less than 3.0\% maximum error, and less than 20 pcm bias with respect to finer parameter solutions. In order to strictly adhere to the criteria, the axial mesh would need to be slightly refined.
+In order to verify that the chosen \ac{MOC} parameters where sufficient in accurately converging the solution in space and angle, simulations are conducted in which each 3D parameter is refined, with the results shown in Table~\ref{tab:fc-param-sensitivity}. Ideally, all parameters should be refined together, but the computational burden would be too large to run on Mira. Therefore, each parameter is refined separately. Due to memory constraints, ray parameters were only able to be refined by $\approx 1.5 \times$ but the axial mesh could be refined by a factor of 2. These results indicate that the solution nearly satisfies to the desired criteria of less than 1.0\% pellet-wise \ac{RMS} fission rate error, less than 3.0\% maximum error, and less than 20 pcm bias with respect to finer parameter solutions. In order to strictly adhere to the criteria, the axial mesh would need to be slightly refined.
 
 \begin{table}[ht]
 	\centering
@@ -149,7 +149,7 @@ In order to verify that the chosen \ac{MOC} parameters where sufficient in accur
 	\medskip
 	\begin{tabular}{l|l|l|c|c|c}
 		\hline
-		Polar  & Axial Ray & Source & $k_{\textit{eff}}$  & RMS Fission & Max Fission \\
+		Polar  & Axial Ray & Source & $k_{\textit{eff}}$  & \ac{RMS} Fission & Max Fission \\
 		Angles & Spacing   & Height & Bias                & Rate Diff. & Rate Diff. \\
 		\hline
 		10 & 0.75 cm & 2.0 cm & --     & --     & --  \\

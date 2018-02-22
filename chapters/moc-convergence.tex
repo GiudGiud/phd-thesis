@@ -1,9 +1,9 @@
 \chapter{Convergence of MOC Source Iteration}
 \label{chap:moc-convergence}
 
-In the previous chapters, the implementation of methods in OpenMOC has been discussed in great detail. All of these methods rely on the \ac{MOC} form of the transport equation presented in Chapter~\ref{chap:moc}. More specifically, these methods rely on the source iteration form the \ac{MOC} equations, possibly used in conjunction with \ac{CMFD} acceleration discussed in Chapter~\ref{chap:cmfd}. In this chapter, the convergence of source iteration with and without \ac{CMFD} acceleration is addressed. While convergence is straightforward for physical cross-sections, the transport correction discussed in Section~\ref{sec:transport-correction} can cause convergence issues. 
+In the previous chapters, the implementation of methods in OpenMOC has been discussed in great detail. All of these methods rely on the \ac{MOC} form of the transport equation, presented in Chapter~\ref{chap:moc}. More specifically, these methods rely on source iteration, possibly used in conjunction with \ac{CMFD} acceleration discussed in Chapter~\ref{chap:cmfd}, to converge the solution. In this chapter, the convergence of source iteration with and without \ac{CMFD} acceleration is addressed. While convergence is straightforward for physical cross-sections, the transport correction discussed in Section~\ref{sec:transport-correction} can cause convergence issues. 
 
-In Section~\ref{sec:source-iteration-intro}, the multi-group transport problem is formalized in matrix form which forms the basis of discussing convergence of source iteration. Section~\ref{sec:equiv-cpm} relates multi-group transport forms to collision probabilities, allowing for an analytical description of iteration matrix elements. Section~\ref{sec:moc-iteration-schemes} discusses methods to solve the resulting system of equations, focusing on source iteration. Theoretical issues with source iteration are discussed for transport-corrected cross-sections. Then, in Section~\ref{sec:diagonal-stabilization} a solution is proposed, termed diagonal stabilization. Convergence issues of source iteration are demonstrated on realistic problems in Section~\ref{sec:convergence-results} and diagonal stabilization is shown to fix the convergence issues. Finally, Section~\ref{sec:convergence-conclusion} concludes the chapter by highlighting the important aspects of the convergence behavior.
+In Section~\ref{sec:source-iteration-intro}, the multi-group transport problem is formalized in matrix form which forms the basis of discussing convergence of source iteration. Section~\ref{sec:equiv-cpm} relates multi-group transport forms to collision probabilities, allowing for an analytical description of iteration matrix elements. Section~\ref{sec:moc-iteration-schemes} discusses methods to solve the resulting system of equations, focusing on source iteration. Theoretical issues with source iteration are discussed for transport-corrected cross-sections. Then, in Section~\ref{sec:diagonal-stabilization}, a solution is proposed, termed diagonal stabilization. Convergence issues of source iteration are demonstrated on realistic problems in Section~\ref{sec:convergence-results} and diagonal stabilization is shown to fix the convergence issues. Finally, Section~\ref{sec:convergence-conclusion} concludes the chapter by highlighting the important aspects of the convergence behavior.
 
 \section{Introduction}
 \label{sec:source-iteration-intro}
@@ -30,7 +30,7 @@ For physical cross-sections, the matrices $J$, $F$, and $S$ are all positive. Ho
 
 When using large numbers of energy groups, the within-group scattering cross-sections can become small, and the modified within-group scattering cross-section can become negative with transport correction. Tabuchi discovered negative within-group scattering cross-sections to be an issue when converging inner within-group scattering iterations of \ac{MOC}~\cite{ty-problem}. Specifically, it was identified that the inner iteration matrix could have a spectral radius greater than unity, causing the system not to converge. Tabuchi later proposed a stabilization technique for inner iterations~\cite{ty-solution}.
 
-In this chapter, the ideas presented by Tabuchi are expanded to explain the observed convergence behavior of source iteration without inner iterations. Convergence is analyzed with transport corrected cross-sections. Realistic full core cases are presented that observe the failed convergence behavior and a new stabilizing method is proposed that stabilizes source iteration.
+In this chapter, the ideas presented by Tabuchi are expanded to explain the observed convergence behavior of source iteration without inner iterations. Convergence is analyzed with transport-corrected cross-sections. Realistic full core cases are presented that observe the failed convergence behavior and a new stabilizing method is proposed that stabilizes source iteration.
 
 \section{Equivalence of Collision Probability Methods}
 \label{sec:equiv-cpm}
@@ -102,7 +102,7 @@ where matrix $A$ is defined in Eq.~\ref{eq:a-matrix} with $k = k_{\textit{crit}}
 
 Recall from Eq.~\ref{eq:a-matrix} that the iteration matrix $A$ is everywhere positive and real as long as the within-group scattering cross-section is positive. According to the Perron-Frobenius Theorem~\cite{perron-frobenius}, square matrices of all positive real entries have a unique largest real eigenvalue which is dominant and associated with an everywhere positive eigenvector. In addition, all other eigenvectors must have a negative component. Without transport correction, the iteration matrix $A$ is an all positive and real matrix, implying that the largest eigenvalue is 1.0 and is associated with the physical solution. Therefore, the process detailed in Eq.~\ref{eq:power-method-full-source} will converge to the physical solution.
 
-However, with the transport correction, it is possible to have negative within-group scattering causing this criteria not to hold. If this criteria does not hold, the system might still converge, but convergence cannot be guaranteed under the Perron-Frobenius Theorem. Therefore, the iteration scheme should be updated to ensure convergence. 
+However, with the transport correction, it is possible to have negative within-group scattering, causing this criteria not to hold. If this criteria does not hold, the system might still converge, but convergence cannot be guaranteed under the Perron-Frobenius Theorem. Therefore, the iteration scheme should be updated to ensure convergence. 
 
 \section{Stabilization of Source Iteration}
 \label{sec:diagonal-stabilization}
@@ -129,12 +129,18 @@ where the damping coefficient $\rho$ is a positive value chosen by the user. For
 
 %If $A$ is symmetric, this approach can be proven to ensure convergence for $\rho=1$. A detailed proof is given in Appendix~\ref{app:convergence}. However, the matrix $A$ is rarely symmetric for common reactor physics problems. Still, this method could have utility even for non-symmetric $A$.
 
-The diagonal stabilization scheme has the effect of shifting the iteration matrix eigenvalues to be more positive. The intuition for this shift is due to the Gershgorin Disk Theorem where eigenvalues exist in disks around diagonal elements. Since the diagonal elements are positively increased and all matrix elements are contracted, the Gershgorin Disks are likewise shifted positively with their radii contracted. While this improves stability, it also tightens the positive-eigenvalue modes, causing larger dominance ratios in the iteration matrix, and slower convergence. Therefore, $\rho$ should be chosen to be small while still ensuring convergence. 
+The diagonal stabilization scheme has the effect of shifting the iteration matrix eigenvalues to be more positive. The intuition for this shift is due to the Gershgorin Disk Theorem where eigenvalues exist in disks around diagonal elements. Since the diagonal elements are increased and all matrix elements are contracted, the Gershgorin Disks are likewise shifted positive with their radii contracted. While this improves stability, it also tightens the positive-eigenvalue modes, causing larger dominance ratios in the iteration matrix, and slower convergence. Therefore, $\rho$ should be chosen to be small while still ensuring convergence. 
+
+Tabuchi suggested a similar scheme for converging inner within-group scattering iterations of \ac{MOC} transport sweeps~\cite{ty-solution}. Though originally limited to \ac{MOC} transport sweeps with inner within-group scattering iterations, Tabuchi's scheme is equivalent to the diagonal stabilization scheme presented here for damping the scalar flux update except for the choice of diagonal matrix $\tilde{D}$ in place of $D$ with elements
+\begin{equation}
+\tilde{D}_{(i,g), (i,g)} = \max_j \left|\frac{\Sigma_{s,j}^{g \rightarrow g}}{\Sigma_{\textit{tr}, j, g}} \right|
+\end{equation}
+which is far larger than the equivalent formulation given in Eq.~\ref{eq:d-matrix}. Not only is the damping applied to all fluxes, not just those with negative within-group scattering, but it also takes the maximum ratio of within-group scattering to transport cross-section $\Sigma_{s,j}^{g \rightarrow g} / \Sigma_{\textit{tr}, j, g}$ across all material regions $j$, which may already be positive.
 
 \section{Convergence Results}
 \label{sec:convergence-results}
 
-In order to test the convergence behavior of the stabilization methods, the stabilization methods were implemented in OpenMOC. This section focuses on results for the realistic reactor physics test problems presented in Chapter~\ref{chap:beavrs}, all using the same cross-section set. Results in this chapter focus on the flat source 3D \ac{MOC} solver in OpenMOC for simplicity. All results use the \ac{MOC} parameters given in Table~\ref{tab:convergence-tests-params} unless otherwise specified. While finer \ac{MOC} parameters would be necessary to accurately resolve the solution, the convergence has not been observed to change substantially from refining \ac{MOC} parameters beyond these values.
+In order to test the convergence behavior of the stabilization methods, the stabilization methods were implemented in OpenMOC. This section focuses on results for the realistic reactor physics test problems presented in Chapter~\ref{chap:beavrs}, all using the same cross-section set. Results in this chapter mainly focus on the flat source 3D \ac{MOC} solver in OpenMOC for simplicity. All results use the \ac{MOC} parameters given in Table~\ref{tab:convergence-tests-params} unless otherwise specified. While finer \ac{MOC} parameters would be necessary to accurately resolve the solution, convergence has not been observed to change substantially from refining \ac{MOC} parameters beyond these values.
 
 \begin{table}[ht]
 	\centering
@@ -155,11 +161,11 @@ In order to test the convergence behavior of the stabilization methods, the stab
 	\label{tab:convergence-tests-params}
 \end{table}
 
-To analyze the convergence behavior, an error metric is needed. Usually, error is analyzed in terms of RMS error in the fission distribution over all fissile regions. During simulations, this can only be compared in terms of results from previous iterations. However, for these convergence studies, a reference solution is used which represents the final fission distribution of a tightly converged case. Therefore, error can reliably be assessed rather than the difference with previous iterations.
+To analyze the convergence behavior, an error metric is needed. Usually, error is analyzed in terms of \ac{RMS} error in the fission distribution over all fissile regions. During simulations, this can only be compared in terms of results from previous iterations. However, for these convergence studies, a reference solution is used which represents the final fission distribution of a tightly converged case. Therefore, error can reliably be assessed rather than the difference with previous iterations.
 
 Often \ac{CMFD} acceleration is necessary to achieve reasonable convergence on practical reactor physics problems. \ac{CMFD} acceleration, as detailed in Chapter~\ref{chap:cmfd}, is implemented in OpenMOC with damping on the current correction term~\cite{smith2002casmo}, often termed the \ac{CMFD} relaxation factor. When \ac{CMFD} acceleration is applied, the behavior is much more difficult to analyze since \ac{CMFD} is a non-linear process. Therefore, discussion of \ac{CMFD} results will focus on hypotheses to explain the observed results rather than rigorous analysis. Results are presented with and without \ac{CMFD} acceleration.
 
-In this chapter, the \ac{CMFD} mesh is always chosen to be a uniform mesh with cells of pin-cell pitch in the radial dimensions and 2.0 cm in the axial dimension. In addition, a relaxation factor of 0.7 is applied to the \ac{CMFD} acceleration scheme for computing corrected diffusion coefficients. Many \ac{CMFD} implementations choose to collapse to a fewer number of energy groups in order to improve the speed of the CMFD solver. While the \ac{CMFD} equations are computationally less expensive in collapsed few-group structures, it is possible that collapsing group structures could cause slower convergence by not fully resolving spectral effects. Results with a variety of \ac{CMFD} group structures are presented. While the \ac{MOC} calculation always uses a 70 group structure, \ac{CMFD} group structures are formed with $G_C$ \ac{CMFD} groups, with group ranges taken from the CASMO-4 Manual~\cite{edenius1995casmo}.
+In this chapter, the \ac{CMFD} mesh is always chosen to be uniform with cells of pin-cell pitch in the radial dimensions and 2.0 cm in the axial dimension. In addition, a relaxation factor of 0.7 is applied to the \ac{CMFD} acceleration scheme for computing corrected diffusion coefficients. Many \ac{CMFD} implementations choose to collapse to a fewer number of energy groups in order to improve the speed of the \ac{CMFD} solver. While the \ac{CMFD} equations are computationally less expensive in collapsed few-group structures, it is possible that collapsing group structures could cause slower convergence by not fully resolving spectral effects. Results with a variety of \ac{CMFD} group structures are presented. While the \ac{MOC} calculation always uses a 70 group structure, \ac{CMFD} group structures are formed with $G_C$ \ac{CMFD} groups, with group ranges taken from the CASMO-4 Manual~\cite{edenius1995casmo}, as presented in Appendix~\ref{app:energy-groups}.
 
 \subsection{Single Assembly with Axial Water Reflectors}
 \label{sec:sa-axial-ref}
@@ -168,7 +174,7 @@ The single assembly model detailed in Section~\ref{sec:beavrs-single-assembly} i
 
 \subsubsection{Source Iteration Convergence without CMFD Acceleration}
 
-The single assembly model is first analyzed using pure source iteration, without any \ac{CMFD} acceleration. In order to focus on the asymptotic convergence behavior, rather than the behavior far from convergence, the \ac{MOC} simulations start with a \textit{good guess} of the scalar flux distribution. Specifically, a converging simulation where the error drops below $3\times 10^{-5}$ on RMS fission rate error is chosen as the starting point.
+The single assembly model is first analyzed using pure source iteration, without any \ac{CMFD} acceleration. In order to focus on the asymptotic convergence behavior, rather than the behavior far from convergence, the \ac{MOC} simulations start with a \textit{good guess} of the scalar flux distribution. Specifically, a converging simulation where the error drops below $3\times 10^{-5}$ on \ac{RMS} fission rate error is chosen as the starting point.
 
 The convergence behavior is presented in Figure~\ref{fig:no-cmfd} in which the relative error is plotted as a function of iteration number for a variety of stabilizing schemes.
 \begin{figure}[ht!]
@@ -177,7 +183,7 @@ The convergence behavior is presented in Figure~\ref{fig:no-cmfd} in which the r
 	\caption{Convergence behavior of different stabilization schemes. TY Stabilization refers to the approach presented by Tabuchi whereas Diagonal Stabilization refers to the approach presented in this paper with damping coefficient $\rho$.}
 	\label{fig:no-cmfd}
 \end{figure}
-Notice that the case without stabilization diverges while all the stabilization cases converge except for the new diagonal stabilization scheme with damping factor $\rho = 1/128$. This is expected since as $\rho$ approaches zero as the stabilization method becomes equivalent to source iteration without stabilization. This clearly shows that this problem requires stabilization to converge with source iteration. In addition, the more conservative the stabilization scheme, the more convergence is slowed. The scheme proposed by Tabuchi slows convergence the most. The diagonal damping scheme hinders convergence significantly less, especially for $\rho < 1$. 
+Notice that the case without stabilization diverges while all the stabilization cases converge except for the new diagonal stabilization scheme with damping factor $\rho = 1/128$. This is expected since as $\rho$ approaches zero, the stabilization method becomes equivalent to source iteration without stabilization. This clearly shows that this problem requires stabilization to converge with source iteration. In addition, the more conservative the stabilization scheme, the more convergence is slowed. The scheme proposed by Tabuchi slows convergence the most. The diagonal damping scheme hinders convergence significantly less, especially for $\rho < 1$.
 
 \subsubsection{Convergence with CMFD Acceleration}
 
@@ -196,13 +202,14 @@ However, with a reduced \ac{CMFD} group structure, the flux distribution in ener
 
 \subsubsection{Convergence with CMFD Acceleration and Source Iteration Stabilization}
 
-To verify that the convergence issue can be remedied with \ac{MOC} source iteration stabilization, the same test is conducted but using diagonal stabilization with $\rho = 1/4$. For pure source iteration, this scheme was able to stabilize source iteration, as previously shown in Figure~\ref{fig:no-cmfd}. The results using this stabilization with \ac{CMFD} acceleration are shown in Figure~\ref{fig:sa-cmfd-stab}. As expected, the \ac{MOC} source iteration stabilization fixes the convergence issues for all \ac{CMFD} group structures, indicating that the convergence issue was caused by the underlying \ac{MOC} source iteration.
+To verify that the convergence issue can be remedied with \ac{MOC} source iteration stabilization, the same test is conducted but using diagonal stabilization with $\rho = 1/4$. For pure source iteration, this was sufficient for stabilization, as previously shown in Figure~\ref{fig:no-cmfd}. The results using this stabilization with \ac{CMFD} acceleration are shown in Figure~\ref{fig:sa-cmfd-stab}. 
 \begin{figure}[ht!]
 	\centering
 	\includegraphics[width=0.65\linewidth]{figures/convergence/sa_stab_cmfd.png}
 	\caption{Convergence behavior for a variety of \ac{CMFD} group structures with $G_C$ \ac{CMFD} groups and \textit{with} Diagonal \ac{MOC} source iteration stabilization ($\rho = 1/4$).}
 	\label{fig:sa-cmfd-stab}
 \end{figure}
+As expected, the \ac{MOC} source iteration stabilization fixes the convergence issues for all \ac{CMFD} group structures, indicating that the convergence issue was caused by the underlying \ac{MOC} source iteration.
 
 \subsection{Single Assembly without Axial Water Reflectors}
 \label{sec:sa-no-axial-ref}
@@ -218,7 +225,7 @@ Notice that the convergence issues are not present in this model. This indicates
 
 \subsection{Full Core Behavior}
 
-The previous results were focused on a single assembly with and without axial reflectors which proved the existence of source iteration instability. Since this issue seems to only appear at very low errors, the reader might judge this issue to be purely academic. However, for problems where deeper reflectors exist, such as a typical full core \ac{PWR} problem, this issue is exacerbated. To test this effect, full core models are simulated using the same cross-section set applied in the single assembly studies. The geometry outside the core is radially discretized into square regions of width $1/3$ of a pin-cell pitch width.
+The previous results were focused on a single assembly with and without axial reflectors which proved the existence of source iteration instability. Since this issue seems to only appear at very low errors, the reader might judge this issue to be purely academic. However, for problems where deeper reflectors exist, such as a typical full core \ac{LWR} problem, this issue is exacerbated. To test this effect, full core models are simulated using the same cross-section set applied in the single assembly studies. The geometry outside the core is radially discretized into square regions of width $1/3$ of a pin-cell pitch width.
 
 \subsubsection{2D Extruded Model}
 
@@ -246,7 +253,7 @@ These results show that for the 3D full core \ac{PWR} problem, a stabilization t
 
 \subsubsection{Explicit 3D Model with Linear Source}
 
-The preceding tests have all been conducted using a flat source approximation. However, the goal of this thesis is to solve full core \ac{PWR} problems with a linear source approximation. While the theory of the diagonal stabilization was developed for flat source, it can also be applied to simulations with a linear source approximation. In the OpenMOC implementation, the same damping of each flat source flux is applied to the associated linear source moments. The results using a linear source approximation are presented in Figure~\ref{fig:fc-3D-ls} for the full core 3D BEAVRS benchmark, showing similar results to those with a flat source approximation.
+The preceding tests have all been conducted using a flat source approximation. However, the goal of this thesis is to solve full core \ac{LWR} problems with a linear source approximation. While the theory of the diagonal stabilization was developed for flat source, it can also be applied to simulations with a linear source approximation. In the OpenMOC implementation, the same damping of each flat source flux is applied to the associated linear source moments. The results using a linear source approximation are presented in Figure~\ref{fig:fc-3D-ls} for the full core 3D BEAVRS benchmark, showing similar results to those with a flat source approximation.
 
 \begin{figure}[ht!]
 	\centering
@@ -258,7 +265,7 @@ The preceding tests have all been conducted using a flat source approximation. H
 \section{Conclusion}
 \label{sec:convergence-conclusion}
 
-In this chapter, a theoretical analysis of source iteration convergence was presented which showed the possibility for source iteration instabilities. The theory was broadened to include source iterations without inner iterations. A new diagonal stabilization technique was presented which is substantially less conservative than previously proposed techniques. Realistic reactor physics problems were presented that showed instability with the source iteration process. The diagonal stabilization technique was shown to successfully stabilize the source iteration process without having much impact on convergence rate.
+In this chapter, a theoretical analysis of source iteration convergence was presented which showed the possibility for source iteration instabilities. The theory was broadened to include source iterations without inner within-group scattering iterations. A new diagonal stabilization technique was presented which is substantially less conservative than previously proposed techniques. Realistic reactor physics problems were presented that showed instability with the source iteration process. The diagonal stabilization technique was shown to successfully stabilize the source iteration process without having much impact on convergence rate.
 
 Results were also presented for convergence with \ac{CMFD} acceleration which showed that \ac{CMFD} acceleration without group collapse was able to stabilize the source iteration process. For \ac{CMFD} acceleration with a collapsed group structure, the previously discussed stabilization techniques were necessary to ensure convergence. In the case of full core \ac{PWR} problems, a collapsed group structure is often attractive to reduce run time, necessitating a stabilization method in order to converge.
 
@@ -271,7 +278,7 @@ Results were also presented for convergence with \ac{CMFD} acceleration which sh
 		
 		\item For computational efficiency, source iteration is preferable to more conventional methods for solving eigenvalue problems
 		
-		\item Without transport correction, the Perror-Frobenius theorem guarantees convergence of source iteration
+		\item Without transport correction, the Perron-Frobenius theorem guarantees convergence of source iteration
 		
 		\item With transport correction, source iteration is not guaranteed to converge
 		

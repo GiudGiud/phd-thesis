@@ -434,6 +434,8 @@ reserved.\par\permission}}
 % department chairman, not thesis committee chairman
 \def\chairman#1#2{\gdef\@chairmanname{#1}\gdef\@chairmantitle{#2}}
 
+\def\csechairman#1#2{\gdef\@csechairmanname{#1}\gdef\@csechairmantitle{#2}}
+
 %% `upcase' documentclass option: \choosecase is defined either as a dummy or
 %% a macro to change the (expanded) argument to uppercase.
 \def\maketitle{\begin{titlepage}
@@ -462,6 +464,9 @@ at the
 \par
 \vfill
 \unvbox\@titlesupervisor
+\par
+\vfill
+\signature{Accepted by}{\@csechairmanname \\ \@csechairmantitle}
 \par
 \vfill
 \signature{Accepted by}{\@chairmanname \\ \@chairmantitle}

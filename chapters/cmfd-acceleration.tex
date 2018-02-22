@@ -216,7 +216,9 @@ This can be related to a regular eigenvalue problem by taking the inverse of $A$
 \begin{equation}
 	A^{-1} M \Phi_C = k \Phi_C.
 \end{equation}
-Any common eigenvalue solver can be used to solve this system. In this thesis, simple power iteration is employed. More details on practical implementation aspects of \ac{CMFD} in this thesis are given in Chapter~\ref{chap:cmfd-optimize}.
+Any common eigenvalue solver can be used to solve this system. In this thesis, simple power iteration is employed. 
+
+%FIXME More details on practical implementation aspects of \ac{CMFD} in this thesis are given in Chapter~\ref{chap:cmfd-optimize}.
 
 Once the \ac{CMFD} equations are solved, the solution is used to update \ac{MOC} fluxes, hence producing a new source on the next iteration. The updating of \ac{MOC} fluxes is the prolongation step of the \ac{CMFD} process. There are a variety of ways for which the \ac{CMFD} fluxes can be updated. One simple approach is just updating all \ac{MOC} fluxes in source region $i$ and \ac{MOC} group $g$ encompassed by \ac{CMFD} cell $j$ and \ac{CMFD} group $e$ by applying Eq.~\ref{eqn:cmfd_simple_prolongation}:
 \begin{equation}
