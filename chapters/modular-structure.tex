@@ -3,7 +3,7 @@
 
 The work in this thesis uses the OpenMOC~\cite{openmoc} neutron transport code, which was developed for 2D \ac{MOC} simulations, to implement the 3D \ac{MOC} solver. Due to its strict focus on 2D simulations, great work was required to extend OpenMOC to 3D \ac{MOC} calculations. This chapter explains the structure of OpenMOC and the changes that were necessary to increase code flexibility in order to accommodate 3D \ac{MOC} calculations. 
 
-This chapter begins with a general overview of OpenMOC in Section~\ref{sec:openmoc-overview}, with a focus on the Constructive Solid Geometry (CSG) representation of geometric detail. The interested reader can find a more complete description of the OpenMOC code in Boyd's thesis~\cite{boyd2014openmoc}. Next, the object oriented design is discussed in greater detail in Section~\ref{sec:object-oriented} with a focus on the changes to accommodate both 2D and 3D simulations. This discussion is continued in Section~\ref{sec:modular-structure}, where the new modular structure of OpenMOC is discussed as well as its importance in creating a robust simulation tool capable of supporting various algorithms. Section~\ref{sec:software-performance-considerations} discusses performance considerations in developing an efficient \ac{MOC} solver. In Section~\ref{sec:user-input} the standard Python user input is discussed as well as the new C++ alternative build which is attractive for \ac{HPC} applications where the availability of software required for the Python interface may be limited. Section~\ref{sec:version-control} concludes the chapter with a discussion of development practices and the open source license.
+This chapter begins with a general overview of OpenMOC in Section~\ref{sec:openmoc-overview}, with a focus on the Constructive Solid Geometry (CSG) representation of geometric detail. The interested reader can find a more complete description of the OpenMOC code in Boyd's thesis~\cite{boyd2014openmoc}. Next, the object oriented design is discussed in greater detail in Section~\ref{sec:object-oriented} with a focus on the changes to accommodate both 2D and 3D simulations. This discussion is continued in Section~\ref{sec:modular-structure}, where the new modular structure of OpenMOC is discussed as well as its importance in creating a robust simulation tool capable of supporting various algorithms. The computing systems used in this thesis are described in Section~\ref{sec:computing-systems}. Performance considerations are in developing an efficient \ac{MOC} solver are discussed in Section~\ref{sec:software-performance-considerations}. Section~\ref{sec:conv-criteria} discussed the convergence criteria used in this thesis. In Section~\ref{sec:user-input} the standard Python user input is discussed as well as the new C++ alternative build which is attractive for \ac{HPC} applications where the availability of software required for the Python interface may be limited. The chapter is concluded in Section~\ref{sec:version-control} with a discussion of development practices and the open source license.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{OpenMOC Overview}
@@ -138,6 +138,32 @@ void VolumeCalculator::execute() {
 
 For algorithms in which only operations need to be performed on tracks, a \texttt{NULL} kernel can be provided which alerts the segment iteration scheme to skip the ray tracing step. Numerous subclasses of \texttt{TraverseSegments} are present in OpenMOC since every algorithm which loops over segments or tracks is contained in a subclass of \texttt{TraverseSegments}. They all appear in the files \texttt{TrackTraversingAlgorithms.h} and \texttt{TrackTraversingAlgorithms.cpp}.
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Computing Systems}
+\label{sec:computing-systems}
+
+In this thesis, all computational results either use the Argonne BlueGene/Q supercomputer or the Falcon supercomputer at the Idaho National Laboratory. An overview of system parameters is shown in Table~\ref{tab:system-params}. Note that the BlueGene/Q architecture uses significantly slower cores. In addition, these cores have limited branch prediction capabilities, causing them to be much slower. The Argonne BlueGene/Q supercomputer contains two partitions of interest in this thesis: the Cetus partition and the Mira partition. The Cetus partition is intended for small simulations whereas the Mira partition is intended for large simulations.
+
+\begin{table}[ht]
+	\centering
+	\caption{Description of single node supercomputer architectures}
+	\medskip
+	\begin{tabular}{c|c|c}
+		\hline
+		& Argonne BlueGene/Q & Falcon\\
+		\hline
+		CPU Type & Single Socket & Dual Socket \\
+		CPU Name & BlueGene/Q & E5-2695 v4 \\
+		Architecture & PowerPC A2 & Broadwell\\
+		Cores per Node & 16 & 36\\
+		Hardware Threads per Node & 64 & 36\\
+		Speed (GHz) & 1.6 & 2.1\\
+		Node Memory (GB) & 16 & 128 \\
+		\hline
+	\end{tabular}
+	\label{tab:system-params}
+\end{table}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Performance Considerations}
 \label{sec:software-performance-considerations}
@@ -154,13 +180,13 @@ The optimal code design blends object oriented and modular design for code that 
 
 \subsection{Organizing Data Contiguously in Energy Groups}
 
-One critical consideration when designing performance-sensitive code is the memory layout. When CPU cores load information from memory, they load entire cache lines into local caches rather than just the desired variable. This allows the number of loads to be reduced if nearby memory is accessed. When desired memory is already within the cache of the CPU core, it is termed a \textit{cache hit}. If it is not, it is termed a \textit{cache miss}, requiring an extra load. Optimizing cache performance to maximize cache hits is critical when designing efficient software, as loads from main memory can be quite expensive. \textit{Locality} refers to how well memory is organized such that nearby or local memory is accessed frequently. 
+One critical consideration when designing performance-sensitive code is the memory layout. When CPU cores load information from memory, they load entire cache lines into local caches rather than just the desired variable. This allows the number of loads to be reduced if nearby memory is accessed. When desired memory is already within cache, it is termed a \textit{cache hit}. If it is not, it is termed a \textit{cache miss}, requiring an extra load. Optimizing cache performance to maximize cache hits is critical when designing efficient software, as loads from main memory can be quite expensive. \textit{Locality} refers to how well memory is organized such that nearby or local memory is accessed frequently. 
 
 To maximize locality in \ac{MOC} applications, the data should be structured to be contiguous in energy groups. Generally, the \ac{MOC} equations can be approached as being applied to segments over several energy groups. Since \ac{MOC} tracks traverse regions in different orderings, it is difficult to optimize the cache efficiency of data accessed by region. However, the data for each region can easily be structured and always traversed in the same ordering. Therefore, the maximal amount of work should be completed on each region before moving to the next. This implies that the energy groups should all be treated together and the data structures should be contiguous in energy groups to reflect this memory access pattern. 
 
 \subsection{Scratch Pads for Temporary Storage}
 
-There are several points throughout the \ac{MOC} algorithm where quantities need to be temporarily stored by region or by group. One example is calculating total reaction rates. To compute a total reaction rate in the reactor, the reaction rates from all regions and energy groups need to be calculated and summed. It is possible to add each contribution from a region and group to a tally for the total reaction rate immediately after calculation, but this can lead to significant roundoff error. Alternatively, if the summed values could be first stored in an array and then added in a pair-wise fashion, the roundoff error can be significantly reduced.
+There are several points throughout the \ac{MOC} algorithm where quantities need to be temporarily stored by region or by group. One example is calculating total reaction rates. To compute a total reaction rate in the reactor, the reaction rates from all regions and energy groups need to be calculated and summed. It is possible to add each contribution from a region and group to a tally for the total reaction rate immediately after calculation, but this can lead to significant roundoff error. Alternatively, if the summed values could be first stored in an array and then added in a pairwise fashion, the roundoff error can be significantly reduced~\cite{pairwise}.
 
 The number of summed quantities is $NG$ where $N$ is the number of source regions and $G$ is the number of energy groups. An array of $NG$ could be allocated, but this would require a significant amount of additional storage. Instead, two arrays are allocated -- one of size $G$ and another of size $N$. Reaction rates for all $G$ groups for an individual region are computed and then stored in a temporary array of size $G$. This array is then summed using a pairwise sum. The result is then stored in an array of size $N$. After this conducted for all $N$ regions, the array of size $N$ is then summed in a pairwise fashion.
 
@@ -174,7 +200,7 @@ Because of these considerations, care must be taken to ensure correctness in mul
 
 In terms of the \ac{MOC} algorithm, in which each thread is responsible for applying the \ac{MOC} equations to a group of segments, threads can be handling segments which access and modify data (such as the scalar flux) for the same region. A naive implementation would place a lock around the modification of the local scalar flux data for each energy group when the segment's contribution is computed. While this ensures correctness, it requires that each thread attempt to acquire a lock for each energy group, which can incur significant overhead cost.
 
-Instead, each thread tallies the contributions to each energy group in its local temporary storage array, as mentioned in the previous section. This allows for the thread to modify the array without any contention with other threads. After the contributions are computed and stored for every energy group, a lock is acquired for the region and the local thread contributions are summed to the global tally of scalar flux. This allows for only one lock to be acquired for each segment traversal. In addition, it allows for increased cache efficiency and vectorization. Lock operations require much communication between cache levels to ensure correctness and are not vectorizable. By decreasing the frequency to which locks are accessed, these issues can be minimized.
+Instead, each thread tallies the contributions to each energy group in its local temporary storage array, as mentioned in the previous section. This allows for the thread to modify the array without any contention with other threads. After the contributions are computed and stored for every energy group, a lock is acquired for the region and the local thread contributions are summed to the global tally of scalar flux. This allows for only one lock to be acquired for each segment traversal. In addition, it allows for increased cache efficiency and vectorization. Lock operations require communication between cache levels to ensure correctness and are not vectorizable. By decreasing the frequency to which locks are accessed, these issues can be minimized. This was thoroughly tested during the development of a prototype application named SimpleMOC~\ref{simplemoc}.
 
 \subsection{Computing Exponentials}
 
@@ -192,7 +218,51 @@ Some variables allow for either single or double precision, depending on specifi
 
 The \texttt{SF_PRECISION} type, dictating the precision of scalar flux data is defined separate from \texttt{FP_PRECISION} to independently treat the way scalar flux tallies are handled. On one hand, scalar flux data can be viewed as accumulators since many segments tally their contribution to the scalar flux in each region. However, the data footprint of scalar flux data can also be significant and impact the performance of the solver.
 
-For typical high performance computing problems, all the precision types are typically set to single precision in order to maximize performance. However, when very tight precision is desired, normally for debugging purposes, all precision types are set to double precision.
+For high performance computing problems, all the precision types are typically set to single precision in order to maximize performance. However, when very tight convergence is desired, normally for debugging purposes, all precision types are set to double precision. In this thesis, all timing results presented use single precision, but double precision is used for cases where convergence behavior is analyzed to tight convergence.
+
+To test the effect of floating point precision, simulations of the SDSA test problem introduced in Section~\ref{sec:sdsa} are conducted with the modular track laydown which will be introduced in Chapter~\ref{chap:track-laydown}, on-the-fly ray tracing by $z$-stack introduced in Chapter~\ref{chap:ray-tracing}, and the linear source solver introduced in Chapter~\ref{chap:linear-source}. The aim is to show performance differences from using single or double precision. Here, only one transport sweep iteration is conducted without \ac{CMFD} acceleration. The \ac{MOC} parameters used in the tests are those presented later in Table~\ref{tab:final-params} and the results are presented in Table~\ref{tab:precision-results}. In these tests, the reported precision refers to the precision of both \texttt{SF_PRECISION} and \texttt{FP_PRECISION}. The tests were conducted using all 36 cores on one node of the Falcon supercomputer. For each precision, three simulations were conducted with the runtime uncertainty reported as the maximum difference from the mean of the three tests.
+
+\begin{table}[ht]
+	\centering
+	\caption{Effect of floating point precision on performance of the SDSA test problem}
+	\medskip
+	\begin{tabular}{lcc}
+		\hline
+		 & Single Precision & Double Precision \\
+		 \hline
+		Total Memory (GB) & 12.49 & 12.81 \\
+		Boundary Angular Flux Storage (GB) & 12.15 & 12.15 \\
+		Scalar Flux Storage (GB) & 0.39 & 0.76\\
+		Scalar Flux Moments Storage (GB) & 0.78 & 1.52 \\
+		Runtime (sec) & 98 +/- 7 & 100 +/- 6 \\
+		\hline
+	\end{tabular}
+	\label{tab:precision-results}
+\end{table}
+
+Note that boundary angular fluxes are always stored in single precision. The single precision boundary angular flux storage accounts for 94.8\% of total memory when the \texttt{SF_PRECISION} and \texttt{FP_PRECISION} types set to double precision. When these types are set to single precision, boundary angular flux storage accounts for 97.3\% of total memory. Since boundary angular flux storage accounts for the vast majority of memory consumption, the memory footprint of OpenMOC would almost directly double if the boundary angular fluxes were stored in double precision.
+
+The effect of single or double precision for the \texttt{SF_PRECISION} and \texttt{FP_PRECISION} types on runtime is not obvious, as the difference is less than the reported uncertainties. The total memory footprint is only slightly reduced by using single precision. The effect of \ac{CMFD} precision on runtime is not tested in these studies, but the final results presented in this thesis will show the computational cost of the \ac{CMFD} solver to be insignificant for the targeted full core simulations with \ac{MOC} parameters chosen to sufficiently converge the solution is space and angle.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Convergence Criteria}
+\label{sec:conv-criteria}
+
+Since the \ac{MOC} equations are converged iteratively with source iteration, a convergence tolerance must be chosen for the simulation. In this thesis, convergence is determined by iterative change in the neutron production rate. Specifically, the neutron production rate $f_i$ in a source region $i$ can be computed with a sum of contributions from all $G$ energy groups as
+\begin{equation}
+f_i = \sum_{g=1}^G \nu \Sigma_f^{i,g} \overline{\phi_{i,g}}
+\end{equation}
+for the current estimate of scalar fluxes $\overline{\phi_{i,g}}$. The relative change in fission rate, termed \texttt{eps-MOC}, in iteration $n$ can be computed as
+\begin{equation}
+\texttt{esp-MOC} = \frac{1}{N_f} \sqrt{\sum_{i \in N_f} \left(\frac{f_i^n - f_i^{n-1}}{f_i^{n-1}}\right)^2}
+\end{equation}
+where $N_f$ is the number of regions with a nonzero neutron production rate and $f_i^n$ refers to the neutron production rate of region $i$ in iteration $n$. For all results in this thesis, convergence is determined when \texttt{esp-MOC} is reduced to $10^{-4}$ and the change in eigenvalue estimate from the previous iteration is less than 1 pcm. 
+
+When \ac{CMFD} acceleration is applied, there are also tolerances for the \ac{CMFD} solver. Recall from Chapter~\ref{chap:cmfd} that the \ac{CMFD} equations are solved with power iteration and during each iteration a linear system is solved with red-black SOR. Therefore, two \ac{CMFD} tolerances are required: the tolerance for power iteration and the tolerance for the linear solver.
+
+If a constant tolerance were set, significant computational time could be wasted when the system is far from convergence. In the context of \ac{CMFD} acceleration for \ac{MOC}, early \ac{MOC} source iterations will have significant error in the estimates of neutron sources. Therefore, the resulting \ac{CMFD} solution will also have significant error, even with strict convergence criteria. For this reason, the convergence criteria is always relative to either the current residual of the \ac{MOC} solution or the reduction in error from the starting guess. In every iteration, the starting guess is the previously converged solution, and therefore also implicitly tied to the \ac{MOC} residual.
+
+In this thesis, the tolerance on \ac{CMFD} power iteration is chosen to be an error reduction by a factor of 0.03. For the linear solve, an error reduction by a factor of 0.1 is required \textit{or} a neutron production residual of less than 0.01 \texttt{eps-MOC}. For both the power iteration and linear solve, a minimum of 25 iterations is enforced to safeguard against cancellation of error for poorly converged cases.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -205,7 +275,9 @@ If the Geometry was written in two dimensions without specifying $z$-planes, the
 
 To facilitate running on systems which do not have thorough Python support or have difficulty transferring MPI communicator objects between Python and C++ for domain decomposed simulations, an alternative C++ build was implemented in the \texttt{profile} directory. This build uses a standard C++ Makefile and sample C++ inputs are provided as well. This alternative build might also be advantageous for developers that would like quick turnaround between updates in the core OpenMOC code rather than having to re-install OpenMOC after each source code update. 
 
-The downside of using the C++ build is that a C++ input file is required, which can be quite inflexible compared with regular scripting languages such as Python. This difficulty mainly arises during geometry and material definitions. Therefore, new routines were created that save the geometry and material descriptions to a geometry binary file (usually with the *.geo extension). The file can then be easily loaded in either Python or C++ using the OpenMOC geometry reader. This allows the user to take advantage of both the flexibility of the Python build for inputs and the C++ build for universality and ease of installation. This process of creating geometry and material definitions in Python while running the simulations using the C++ build was used for the vast majority of the results presented in this Thesis.
+The downside of using the C++ build is that a C++ input file is required, which can be quite inflexible compared with regular scripting languages such as Python. This difficulty mainly arises during geometry and material definitions. Therefore, new routines were created in the \texttt{Geometry} class that save the geometry and material descriptions to a geometry binary file (usually with the *.geo extension). The file can then be easily loaded in either Python or C++ using the OpenMOC geometry reader. This allows the user to take advantage of both the flexibility of the Python build for inputs and the C++ build for universality and ease of installation. This process of creating geometry and material definitions in Python while running the simulations using the C++ build was used for the vast majority of the results presented in this Thesis.
+
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Version Control and Licensing}

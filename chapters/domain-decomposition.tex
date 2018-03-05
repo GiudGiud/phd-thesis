@@ -24,7 +24,7 @@ Each geometrical sub-domain can be approached as a somewhat independent reactor 
 	\label{fig:domain-track-linking}
 \end{figure}
 
-It is important to note that while the track laydown across each sub-domain is identical, the internal geometry of each sub-domain can be different. Therefore, ray tracing must be conducted on each sub-domain separately, using the techniques described in Chapter~\ref{chap:ray-tracing}. Each \ac{MPI} process separately forms a superposition of radial detail across its sub-domain. Since only the local sub-domain super position plane is used during ray tracing, the extra intersections formed from transforming piecewise axially extruded geometries to pure axially extruded geometries (discussed in Chapter~\ref{chap:ray-tracing}) can be reduced as the number of axial sub-domain partitions increases.
+It is important to note that while the track laydown across each sub-domain is identical, the internal geometry of each sub-domain can be different. Therefore, ray tracing must be conducted on each sub-domain separately, using the techniques described in Chapter~\ref{chap:ray-tracing}. Each \ac{MPI} process separately forms a superposition of radial detail across its sub-domain. Since only the local sub-domain super position plane is used during ray tracing, the extra intersections formed from transforming piece-wise axially extruded geometries to pure axially extruded geometries (discussed in Chapter~\ref{chap:ray-tracing}) can be reduced as the number of axial sub-domain partitions increases.
 
 \section{MPI Communication}
 \label{sec:mpi}
@@ -105,7 +105,8 @@ While the boundary angular flux communication accounts for the vast majority of 
 
 \subsection{Communication Algorithm}
 
-Since the bulk of the \ac{MOC} communication costs relate to the communication of boundary angular fluxes, the algorithm for transferring boundary angular flux information is described in great detail here. In order to simplify the algorithms for communicating angular flux data, a bulk synchronous communication scheme is chosen whereby all angular fluxes are communicated after the transport sweep, rather than during the transport sweep. 
+Since the bulk of the \ac{MOC} communication costs relate to the communication of boundary angular fluxes, the algorithm for transferring boundary angular flux information is described in great detail here. In order to simplify the algorithms for communicating angular flux data, a bulk synchronous communication scheme is chosen whereby all angular fluxes are communicated after the transport sweep, rather than during the transport sweep. This implies that angular fluxes at domain interfaces are lagged, which might slow convergence. This effect is studied later in Section~\ref{sec:domain-decomposition-convergence}, as part of the 
+\ac{MOC} convergence sensitivity studies presented in Chapter~\ref{chap:moc-sensitivity}.
 
 Before and after the communication step, there are \textit{synchronization barriers} which force all nodes to wait until all other nodes have reached the barrier before continuing. This ensures that data is not overwritten that is necessary for the transport sweeps. In addition, it allows for simple recording of the run-time spent in the \ac{MOC} communication stage.
 
@@ -113,11 +114,11 @@ Determining connecting tracks is important for communicating angular flux data. 
 
 By providing the neighboring node with the track index, the track direction, and the boundary angular flux data, the neighboring node can copy the angular flux data into its local boundary angular flux arrays. 
 
-The communication of angular fluxes between nodes can be accomplished by using the Buffered Synchronous algorithm with corner-adjacent neighbors in addition to face-adjacent neighbors since tracks can cross sub-domain corners. However, due to the structure of the \ac{MRT} track laydown, there are no tracks through $xy$ corners. Therefore, there is a maximum of 14 neighboring sub-domains. 
+The communication of angular fluxes between nodes can be accomplished by using the Buffered Synchronous algorithm with corner-adjacent neighbors in addition to face-adjacent neighbors since tracks can cross sub-domain corners. However, due to the structure of the \ac{MRT} track laydown, there are no tracks through $xy$ corners. Therefore, there is a maximum of 14 neighboring sub-domains. Nodes are assigned with an \texttt{MPI_Cart} object which groups neighbors together by locality.
 
 In order to use the Buffered Synchronous algorithm, buffers need to be setup that temporarily store the communication data. A naive approach would create buffers capable of storing all boundary angular flux data. While this would accurately communicate the data, it would significantly add to the on-node memory footprint of the algorithm and would also likely have slow communication due to the large size of data being sent at once.
 
-Instead, the Buffered Synchronous algorithm is applied iteratively in which smaller buffers are packed with some angular flux and connecting track data. After the Buffered Synchronous algorithm completes, new data is packed into the buffers and the process repeats until all boundary angular flux data has been successfully communicated with neighbor domains. Structuring the communication algorithm in this way allows for all communication channels to be filled frequently without significantly lower bandwidth usage per communication round, yielding improved performance. 
+Instead, the Buffered Synchronous algorithm is applied iteratively in which smaller buffers are packed with some angular flux and connecting track data. After the Buffered Synchronous algorithm completes, new data is packed into the buffers and the process repeats until all boundary angular flux data has been successfully communicated with neighbor domains. Structuring the communication algorithm in this way allows for all communication channels to be filled frequently with significantly lower bandwidth usage per communication round, yielding improved performance. The buffer size chosen in this thesis was large enough to fill the information of 1000 tracks. With 70 group data, this amounts to approximately 1 MB, which was found to be ideal during early prototype tests~\cite{simplemoc}.
 
 The algorithm is given in Algorithm~\ref{alg:moc-dd-transfer} which assumes that all tracks link with a neighbor sub-domain. This might not be true for geometry boundaries where there is no neighbor domain, but this can be overcome for notational convenience by assuming these tracks communicate with their own domain where their own domain is a neighboring domain. To simplify the presentation of the algorithm, tracks are assumed to be in only one direction, though abstraction to traversing tracks in both forward and reverse directions is simple.
 
@@ -181,7 +182,7 @@ The algorithm is given in Algorithm~\ref{alg:moc-dd-transfer} which assumes that
 
 Before discussing the domain decomposition implementation of \ac{CMFD}, the specific algorithm used to solve the \ac{CMFD} equations should be discussed. The \ac{CMFD} equations presented in Chapter~\ref{chap:cmfd} form a generalized eigenvalue problem in which the elements of the standard matrices can be easily formed. This allows the \ac{CMFD} system to be solved by more standard solvers than the \ac{MOC} equations.
 
-While many algorithms exist to solve generalized eigenvalue problems, the \ac{CMFD} implementation in OpenMOC focuses on the red-black SOR algorithm. A notable aspect of this algorithm is that all cells are assigned a color in a checkerboard pattern, as illustrated in Figure~\ref{fig:red-black}. 
+While many algorithms exist to solve generalized eigenvalue problems, the \ac{CMFD} implementation in OpenMOC focuses on power iteration with a red-black SOR algorithm to invert the linear system during every inner iteration. A notable aspect of the red-black SOR algorithm is that all cells are assigned a color in a checkerboard pattern, as illustrated in Figure~\ref{fig:red-black}. 
 
 \begin{figure}[h!]
 	\centering
@@ -212,11 +213,11 @@ A few global quantities need to be communicated. Similar to \ac{MOC}, these are 
 
 \subsection{Communication of Boundary Currents}
 
-At the beginning of the formation of the \ac{CMFD} eigenvalue solver during each transport sweep, some boundary values are communicated. Boundary diffusion coefficients and volumes can be handled easily using the Buffered Synchronous algorithm described in Alg.~\ref{alg:Buffered Synchronous}. Communicating surface currents is more difficult due to nuances from edge and corner cases. Specifically, the \ac{CMFD} solver treats currents as existing on CMFD cell faces, decisions need to be made when \ac{MOC} tracks intersect cell edges (here defined to be $xy$, $xz$, or $yz$ corners) or cell vertexes ($xyz$ corners). In handling these edges and vertexes, it is critically important that an \ac{MOC} track's full current end up in the CMFD cell that the track traverses.
+At the beginning of the formation of the \ac{CMFD} eigenvalue solver during each transport sweep, some boundary values are communicated. Boundary diffusion coefficients and volumes can be handled easily using the Buffered Synchronous algorithm described in Alg.~\ref{alg:Buffered Synchronous}. Communicating surface currents is more difficult due to nuances from edge and corner cases. Specifically, the \ac{CMFD} solver treats currents as existing on CMFD cell faces, decisions need to be made when \ac{MOC} tracks intersect cell edges (here defined to be $xy$, $xz$, or $yz$ corners) or cell vertexes ($xyz$ corners). In OpenMOC, any track within $10^{-12}$ cm of a corner is treated as a corner crossing. In handling these edges and vertexes, it is critically important that an \ac{MOC} track's full current arrive in the CMFD cell that the track traverses.
 
 \subsubsection{Handling Edge and Vertex Currents}
 
-Before discussing how OpenMOC treats the communication of \ac{CMFD} surface currents, the process for handling edge and vertex currents needs to be described. In OpenMOC, currents are directly tallied on cell faces, edges, and vertexes during transport sweeps. This means that each \ac{CMFD} cell has 26 tally surfaces (6 face surfaces, 12 edge surfaces, and 8 vertex surfaces) in 3D rather than just the 6 face surfaces used in the \ac{CMFD} calculation. In OpenMOC all currents are defined as leakage from a particular \ac{CMFD} cell. For instance the current shown in Figure~\ref{fig:tally-current} would be tallied as a current leaking from the positive $x$ surface of \ac{CMFD} cell $C$ rather than a current entering cell $D$ along the negative $x$ surface. Therefore, currents entering a cell are gathered from current tallies leaving neighboring cells across opposite surface directions.
+Before discussing how OpenMOC treats the communication of \ac{CMFD} surface currents, the process for handling edge and vertex currents needs to be described. A track is assumed to intersect a surface when it is within $10^{-12}$ cm of the surface. This leads to the possibility of intersecting cell edges and vertexes. In OpenMOC, currents are directly tallied on cell faces, edges, and vertexes during transport sweeps. This means that each \ac{CMFD} cell has 26 tally surfaces (6 face surfaces, 12 edge surfaces, and 8 vertex surfaces) in 3D rather than just the 6 face surfaces used in the \ac{CMFD} calculation. In OpenMOC all currents are defined as leakage from a particular \ac{CMFD} cell. For instance the current shown in Figure~\ref{fig:tally-current} would be tallied as a current leaking from the positive $x$ surface of \ac{CMFD} cell $C$ rather than a current entering cell $D$ along the negative $x$ surface. Therefore, currents entering a cell are gathered from current tallies leaving neighboring cells across opposite surface directions.
 
 
 \begin{figure}[h!]
@@ -280,7 +281,7 @@ Since vertex currents are split before communication, only the 18 face and edge 
 
 \subsection{Communication of Boundary Scalar Fluxes}
 
-The most important communication component of the \ac{CMFD} algorithm is the communication of boundary scalar fluxes. Since the number of boundary \ac{CMFD} scalar fluxes on a typical sub-domain are usually quite small in comparison with the \ac{MOC} boundary angular fluxes, the Buffered Synchronous algorithm can be applied directly to the red-black SOR scheme with face-adjacent neighbors. Since only half the boundary scalar fluxes are communicated in each red/black iteration, the communication buffers can be chosen to be half the size of the number of scalar fluxes on each boundary.
+The most important communication component of the \ac{CMFD} algorithm is the communication of domain boundary scalar fluxes. Since the number of boundary \ac{CMFD} scalar fluxes on a typical sub-domain are usually quite small in comparison with the \ac{MOC} boundary angular fluxes, the Buffered Synchronous algorithm can be applied directly to the red-black SOR scheme with face-adjacent neighbors. Since only half the boundary scalar fluxes are communicated in each red/black iteration, the communication buffers can be chosen to be half the size of the number of scalar fluxes on each boundary.
 
 Since the \ac{CMFD} cells are laid out in a uniform grid and each buffer location corresponds to at most two \ac{CMFD} cells, the mapping of cells to buffer locations is straightforward, eliminating the need to communicate indexes.
 
@@ -321,19 +322,8 @@ The \ac{MOC} ray spacing parameters for these strong scaling tests are given in 
 The strong scaling results are presented in Figure~\ref{fig:strong-scaling-single-assembly-ts} for both linear source and flat source solvers. For these results the uncertainties are not shown because they are so small in comparison with differences in run-time from scaling, causing them to not be noticeable.
 \begin{figure}[h!]
 	\centering
-	\begin{subfigure}{0.45\textwidth}
-		\centering
-		\includegraphics[width=\linewidth]{figures/DD/sa-scaling-fs-ts.png}
-		\caption{Flat}
-		\label{fig:dd-sa-fs}
-	\end{subfigure}
-	\begin{subfigure}{0.45\textwidth}
-		\centering
-		\includegraphics[width=\linewidth]{figures/DD/sa-scaling-ls-ts.png}
-		\caption{Linear}
-		\label{fig:dd-sa-ls}
-	\end{subfigure}
-	\caption[]{Strong scaling of axial domain decomposition for a single assembly model of the (a) flat and (b) linear source solver.}
+	\includegraphics[width=0.7\linewidth]{figures/DD/sa-scaling-fs-ls-ts.png}
+	\caption[]{Strong scaling of axial domain decomposition for a single assembly model with the flat and linear source solvers.}
 	\label{fig:strong-scaling-single-assembly-ts}
 \end{figure}
 
@@ -345,25 +335,14 @@ This implies that runtime should be normalized by the number of segments to capt
 
 \begin{figure}[h!]
 	\centering
-	\begin{subfigure}{0.45\textwidth}
-		\centering
-		\includegraphics[width=\linewidth]{figures/DD/sa-scaling-fs-ts-norm.png}
-		\caption{Flat}
-		\label{fig:dd-sa-fs-norm}
-	\end{subfigure}
-	\begin{subfigure}{0.45\textwidth}
-		\centering
-		\includegraphics[width=\linewidth]{figures/DD/sa-scaling-ls-ts-norm.png}
-		\caption{Linear}
-		\label{fig:dd-sa-ls-norm}
-	\end{subfigure}
+	\includegraphics[width=0.7\linewidth]{figures/DD/sa-scaling-fs-ls-ts-norm.png}
 	\caption[]{Strong scaling of axial domain decomposition for a single assembly model of the (a) flat and (b) linear source solver, normalized by the number of segments treated in the simulation.}
 	\label{fig:strong-scaling-single-assembly-normalized}
 \end{figure}
 
 After the normalization, the linear source results are no longer better than ideal. It is important to note that here a fixed 400 cm tall single assembly is domain decomposed axially all the way to 200 domains (each of 2 cm height), which is quite excessive. At 200 domains there is only one source region axially for each domain. The expected \ac{MOC} ray parameters to fully resolve the fission distribution produce approximately $27\times$ more rays than the coarse ray parameters simulated here, greatly increasing the on-node work and improving the domain decomposition performance. Using finer \ac{MOC} ray parameters on this benchmark, we would expect to only domain decompose to 20 domains axially. For a problem of this size with the ray parameters given in Table~\ref{tab:dd-ss-params}, any domain decomposition might be excessive. Still at 8 axial domains, the speedup of the linear source solver is 97\% of ideal. The efficiency then decreases to 87\% and 67\% at 20 and 200 axial domains, respectively.
 
-Since the desired \ac{MOC} parameters are significantly are significantly finer than those shown in these scaling studies, the performance should be tested using the desired parameters. Due to the one hour time limit on Cetus runs, this can only be tested using at least several domains. Therefore, the linear source solve is tested with a domain decomposition of 20 axial domains and with the the expected \ac{MOC} parameters to accurately converge the fission distribution, given in Table~\ref{tab:expected-moc-params}.
+Since the desired \ac{MOC} parameters are significantly finer than those shown in these scaling studies, the performance should be tested using the desired parameters. Due to the one hour time limit on Cetus runs, this can only be tested using at least several domains. Therefore, the linear source solve is tested with a domain decomposition of 20 axial domains and with the the expected \ac{MOC} parameters to accurately converge the fission distribution, given in Table~\ref{tab:expected-moc-params}.
 
 \begin{table}[ht]
 	\centering

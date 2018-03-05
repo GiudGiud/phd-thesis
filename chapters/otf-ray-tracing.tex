@@ -188,7 +188,7 @@ The 3D segments that are computed from the axial on-the-fly ray tracing can eith
 
 Another benefit of storing the segments in a buffer is the ability to group together similar operations. All segments for a selected track or $z$-stack are ray traced, yielding a buffer of segments. Afterwards, the \ac{MOC} equations are applied to all segments in the buffer. This allows for improved locality since the two tasks are separated and nearby data is used more frequently during each task.
 
-The cost of storing segments in buffers is the additional memory cost. The memory for the buffer is allocated as an array at the beginning of the solver. Since each thread handles different segments simultaneously, each tread needs its own buffer. The size of each buffer should be sufficient to store the computed segments. For ray tracing by track, this is equal to the maximum number of segments for a single track. For ray tracing by $z$-stack, it is equal to the maximum number of segments for an entire $z$-stack. The memory required for the maximum segments per track track is trivial in comparison with the total memory footprint of the solver since there are many tracks in the problem and buffers only need to be created for each thread. The memory cost of the buffers is higher when ray tracing by $z$-stack, but still very small in comparison with the overall memory footprint. However, the need to store information into buffers could lead to detrimental latency effects when loading the segment information.
+The cost of storing segments in buffers is the additional memory cost. The memory for the buffer is allocated as an array at the beginning of the solver. Since each thread handles different segments simultaneously, each tread needs its own buffer. The size of each buffer should be sufficient to store the computed segments. For ray tracing by track, this is equal to the maximum number of segments for a single track. For ray tracing by $z$-stack, it is equal to the maximum number of segments for an entire $z$-stack. The memory required for the maximum segments per track is trivial in comparison with the total memory footprint of the solver since there are many tracks in the problem and buffers only need to be created for each thread. The memory cost of the buffers is higher when ray tracing by $z$-stack, but still very small in comparison with the overall memory footprint. However, the need to store information into buffers could lead to detrimental latency effects when loading the segment information.
 
 \section{Results}
 \label{sec:rt-results}
@@ -233,7 +233,11 @@ The results presented here concentrate on the differences between ray tracing by
 
 \subsection{Single Thread Performance Comparison}
 
-First, the single thread performance of the flat source solver with the two on-the-fly ray tracing schemes is compared. Two metrics are considered -- the time to compute the single transport sweep and the integration time. The integration time refers to the time required to compute the angular flux variation over a segment and tally its contribution to the local scalar flux for a single energy group. It is calculated as $T / N_I$ where $T$ is the average time to compute one transport sweep and $N_I$ is the number of integrations, which can be computed as $N_I = 2 S G$ where $S$ is the number of segments and $G$ is the number of energy groups. The factor of two arises since each segment represents forward and backward directed angular fluxes. Normally, integration time is computed for a single-thread or on a per-core basis. The self-imposed target for efficiency in this thesis is to achieve near 10 ns integration time on the SDSA test problem. The single threaded results using one node of the Falcon supercomputer are presented in Table~\ref{tab:rt-single-thread}, showing ray tracing by $z$-stack to have slightly better single-threaded performance than ray tracing by individual track. Both schemes result in integration times near the 10 ns target.
+First, the single thread performance of the flat source solver with the two on-the-fly ray tracing schemes is compared. Two metrics are considered -- the time to compute the single transport sweep and the integration time. The integration time refers to the time required to compute the angular flux variation over a segment and tally its contribution to the local scalar flux for a single energy group. It is calculated as 
+\begin{equation*}
+\frac{T}{N_C N_I}
+\end{equation*}
+where $T$ is the average time to compute one transport sweep, $N_C$ is the number of CPU cores used, and $N_I$ is the number of integrations, which can be computed as $N_I = 2 S G$ where $S$ is the number of segments and $G$ is the number of energy groups. The factor of two arises since each segment represents forward and backward directed angular fluxes. The single threaded results using one node of the Falcon supercomputer are presented in Table~\ref{tab:rt-single-thread}, showing ray tracing by $z$-stack to have slightly better single-threaded performance than ray tracing by individual track. Both schemes result in integration times near 10 ns. In these trials, each test is run three times. The reported uncertainty indicates the maximum deviation from the average value.
 
 \begin{table}[ht]
 	\centering
@@ -258,19 +262,8 @@ To analyze parallel performance, the speedup metric is considered which for $n$ 
 
 \begin{figure}[h!]
 	\centering
-	\begin{subfigure}{0.48\textwidth}
-		\centering
-		\includegraphics[width=\linewidth]{figures/results/performance/fs-parallel-scaling-tracks.png}
-		\caption{By Tracks}
-		\label{fig:rt-parallel-fs-tracks}
-	\end{subfigure}
-	\begin{subfigure}{0.48\textwidth}
-		\centering
-		\includegraphics[width=\linewidth]{figures/results/performance/fs-parallel-scaling-stacks.png}
-		\caption{By $Z$-Stacks}
-		\label{fig:rt-parallel-fs-stacks}
-	\end{subfigure}
-	\caption[]{Strong scaling performance on the SDSA test problem using the Falcon supercomputer with on-the-fly ray tracing by (a) tracks and (b) $z$-stacks.}
+	\includegraphics[width=0.7\linewidth]{figures/results/performance/fs-scaling-comb-stacks-tracks.png}
+	\caption[]{Strong scaling performance on the SDSA test problem using the Falcon supercomputer with on-the-fly ray tracing by tracks and by $z$-stacks.}
 	\label{fig:rt-parallel-fs}
 \end{figure}
 
@@ -284,8 +277,8 @@ For practical purposes, performance using the full available resources is more i
 		\hline
 		Ray Tracing Scheme & Transport Sweep Time (s) & Integration Time (ns) \\
 		\hline
-		By Track & 49.9 +/- 3.9 & 0.66 +/- 0.05 \\
-		By $z$-Stack & 43.1 +/- 2.3 & 0.57 +/- 0.03 \\
+		By Track & 49.9 +/- 3.9 & 23.8 +/- 1.8 \\
+		By $z$-Stack & 43.1 +/- 2.3 & 20.5 +/- 1.1 \\
 		\hline
 	\end{tabular}
 	\label{tab:rt-full-thread}
@@ -322,8 +315,8 @@ First, the performance is tested using the full computational resources of a sin
 		\hline
 		Ray Tracing Scheme & Transport Sweep Time (s) & Integration Time (ns) \\
 		\hline
-		By Track & 13.83 +/- 0.06 & 4.77 +/- 0.02 \\
-		By $z$-Stack & 13.52 +/- 0.04 & 4.66 +/- 0.01 \\
+		By Track & 13.83 +/- 0.06 & 76.3 +/- 0.3 \\
+		By $z$-Stack & 13.52 +/- 0.04 & 74.6 +/- 0.2 \\
 		\hline
 	\end{tabular}
 	\label{tab:rt-full-thread-cetus}
@@ -350,6 +343,7 @@ It is also important to note the role of hyper-threads in scaling studies. Since
 
 In this chapter, the \ac{MOC} ray tracing problem was thoroughly discussed. Alternative approaches to ray tracing for 3D \ac{MOC} were presented whereby only 2D segments are stored and 3D segments are computed on-the-fly. Two approaches were analyzed: one in which each individual 3D track is ray traced and another where an entire $z$-stack of tracks is ray traced. Both approaches offer significant memory reduction with minimal or no computational overhead. Results comparing these two on-the-fly ray tracing algorithms show that the ray tracing by entire $z$-stacks of 3D tracks was most efficient. Parallel scaling of the algorithms was also studied, showing similar scaling between the two ray tracing algorithms. Parallel scaling was quite close to ideal linear scaling for the targeted Argonne BlueGene/Q architecture, even into the hyper-thread regime. This supports the expectation that OpenMOC should make efficient use of the BlueGene/Q computational resources for full core simulations.
 
+\newpage
 \vfill
 \begin{highlightsbox}[frametitle=Highlights]
 \begin{itemize}

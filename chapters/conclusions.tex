@@ -27,7 +27,7 @@ This thesis also implemented a 3D track-based linear source approximation in Cha
 
 While the implementation details allow for efficient 3D \ac{MOC} simulations, convergence on full core problems would not be possible without the diagonal stabilization scheme introduced in Chapter~\ref{chap:moc-convergence} of this thesis. This is due to source iteration being potentially unstable when transport-corrected cross-sections are introduced. A theoretical discussion of convergence was presented in this thesis, leading to the diagonal stabilization scheme which damps the update of \ac{MOC} scalar fluxes.
 
-Presented results show that for reactor problems with large water reflector regions and a high number of energy groups, convergence of \ac{MOC} with reduced-group \ac{CMFD} acceleration is not possible without a stabilization scheme, such as diagonal stabilization. Full group \ac{CMFD}, in which the number of \ac{CMFD} groups match the number of \ac{MOC} groups, was always observed to converge. However, a reduced-group \ac{CMFD} acceleration scheme is often desired in order to reduce runtime requirements.
+Presented results show that for reactor problems with large water reflector regions and a high number of energy groups, convergence of \ac{MOC} with reduced-group \ac{CMFD} acceleration is not possible without a stabilization scheme, such as diagonal stabilization. Full group \ac{CMFD}, in which the number of \ac{CMFD} groups match the number of \ac{MOC} groups, was always observed to converge. However, a reduced-group \ac{CMFD} acceleration scheme is often desired in order to reduce runtime and memory requirements.
 
 \subsection{Simulation Results}
 \label{sec:sub:sim-results}

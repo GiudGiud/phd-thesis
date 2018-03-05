@@ -103,13 +103,13 @@ It is important to remember that some error is expected from the absence of angu
 \section{The Transport Correction}
 \label{sec:transport-correction}
 
-Previously it was mentioned that the assumption of isotropic scattering introduces significant bias, but is remedied by a transport correction. In this section, the transport correction is derived and its implications are discussed. Many different transport corrections have been implemented, such as those described in the TRANSX~\cite{macfarlane1993transx} and NJOY~\cite{macfarlane2000njoy} manuals. The basis for these transport corrections was formulated by Bell, Hansen and Sandmeier in~\cite{bell1967transport}. However, this section largely follows Hebert's derivation~\cite{hebert2009applied}. 
+Previously it was mentioned that the assumption of isotropic scattering introduces significant bias, but is remedied by a transport correction. In this section, the transport correction is derived and its implications are discussed. Many different transport corrections have been implemented, such as those described in the TRANSX~\cite{macfarlane1993transx} and NJOY~\cite{macfarlane2000njoy} manuals. The basis for these transport corrections was formulated by Bell, Hansen and Sandmeier~\cite{bell1967transport}. However, this section largely follows Hebert's derivation~\cite{hebert2009applied}. 
 
 Recall from Eq.~\ref{eqn:xs-angular-dependence-removal} that the scattering term, without the isotropic assumption, follows the relationship
 \begin{equation*}
 \int\displaylimits_{0}^{\infty} dE' \, \int\displaylimits_{4\pi} \, d\mathbf{\Omega'} \Sigma_{s}(\mathbf{r}, \mathbf{\Omega'}\rightarrow \mathbf{\Omega},{E'\rightarrow E}) \psi(\mathbf{r}, \mathbf{\Omega'},E').
 \end{equation*}
-In the laboratory system, in which neutron behavior is modeled, scattering may be strongly anisotropic. However, in the center-of-momentum framework, scattering is nearly isotropic. This implies that the angular dependence relies on the magnitude of the deflection from scattering $\mathbf{\Omega} \cdot \mathbf{\Omega'}$, reducing this relationship to
+In the laboratory system, in which neutron behavior is modeled, scattering may be strongly anisotropic. However, in the center-of-momentum framework, scattering is nearly isotropic in the energy range of interest. This implies that the angular dependence relies on the magnitude of the deflection from scattering $\mathbf{\Omega} \cdot \mathbf{\Omega'}$, reducing this relationship to
 \begin{equation*}
 	\int\displaylimits_{0}^{\infty} dE' \, \int\displaylimits_{4\pi} \, d\mathbf{\Omega'} \Sigma_{s}(\mathbf{r}, \mathbf{\Omega} \cdot \mathbf{\Omega'},{E'\rightarrow E}) \psi(\mathbf{r}, \mathbf{\Omega'},E').
 \end{equation*}
@@ -183,14 +183,14 @@ However, similar to how the angular dependence of the total cross-section is ign
 This leads to a transport equation that appears very similar to the isotropic form derived in Chapter~\ref{chap:transport}, as shown in Eq.~\ref{eqn:tc-transport-cont-energy}
 \begin{equation}
 \begin{split}
-\mathbf{\Omega} \cdot \nabla \psi(\mathbf{r},\mathbf{\Omega},E) \, + & \, \tilde{\Sigma}_{t}(\mathbf{r},E)\psi(\mathbf{r},\mathbf{\Omega},E) = \\
+\mathbf{\Omega} \cdot \nabla \psi(\mathbf{r},\mathbf{\Omega},E) \, + & \, \Sigma_{\textit{tr}}(\mathbf{r},E)\psi(\mathbf{r},\mathbf{\Omega},E) = \\
 \frac{\chi(\mathbf{r},E)}{4\pi k} \int\displaylimits_{0}^{\infty} dE' \, & \nu(\mathbf{r},E') \Sigma_f(\mathbf{r}, E') \phi(\mathbf{r}, E') + \, \frac{1}{4 \pi}\int\displaylimits_{0}^{\infty} dE' \, \tilde{\Sigma}_{s}(\mathbf{r},{E'\rightarrow E}) \phi(\mathbf{r}, E')
 \end{split}
 \label{eqn:tc-transport-cont-energy}
 \end{equation}
-where the modified total cross section $\tilde{\Sigma}_{t}(\mathbf{r},E)$ and modified scattering kernel $\tilde{\Sigma}_{s}(\mathbf{r},{E'\rightarrow E})$ are defined in Eq.~\ref{eqn:tc-mod-tot-xs} and Eq.~\ref{eqn:tc-mod-scattering-xs}, respectively.
+where the modified total cross section $\Sigma_{\textit{tr}}(\mathbf{r},E)$ and modified scattering kernel $\tilde{\Sigma}_{s}(\mathbf{r},{E'\rightarrow E})$ are defined in Eq.~\ref{eqn:tc-mod-tot-xs} and Eq.~\ref{eqn:tc-mod-scattering-xs}, respectively.
 \begin{equation}
-	\tilde{\Sigma}_{t}(\mathbf{r},E) = \Sigma_{t}(\mathbf{r},E) - \Delta\Sigma_{tr}(\mathbf{r},E)
+	\Sigma_{\textit{tr}}(\mathbf{r},E) = \Sigma_{t}(\mathbf{r},E) - \Delta\Sigma_{tr}(\mathbf{r},E)
 	\label{eqn:tc-mod-tot-xs}
 \end{equation}
 \begin{equation}
@@ -201,12 +201,12 @@ The modified total cross-section is often referred to as the \textit{transport c
 
 Since this equation takes the same form as the equivalent isotropic scattering form derived in Chapter~\ref{chap:transport}, an equivalent multi-group form can also be derived in Eq.~\ref{eqn:tc-multi-group-transport}
 \begin{equation}
-\mathbf{\Omega} \cdot \nabla \psi_{g}(\mathbf{r},\mathbf{\Omega}) + \tilde{\Sigma}_t^{g}(\mathbf{r}) \psi_{g}(\mathbf{r},\mathbf{\Omega}) = \frac{1}{4 \pi} \left( \frac{\chi_{g}\left(\mathbf{r}\right)}{k} \sum_{g'=1}^{G} \nu_{g'}\left(\mathbf{r}\right) \Sigma_f^{g'}\left(\mathbf{r}\right) \phi_{g'}\left(\mathbf{r}\right) + \, \sum_{g'=1}^G \,  \tilde{\Sigma}_{s}^{g' \rightarrow g}\left(\mathbf{r}\right) \phi_{g'}(\mathbf{r}) \right)
+\mathbf{\Omega} \cdot \nabla \psi_{g}(\mathbf{r},\mathbf{\Omega}) + \Sigma_{\textit{tr}}(\mathbf{r}) \psi_{g}(\mathbf{r},\mathbf{\Omega}) = \frac{1}{4 \pi} \left( \frac{\chi_{g}\left(\mathbf{r}\right)}{k} \sum_{g'=1}^{G} \nu_{g'}\left(\mathbf{r}\right) \Sigma_f^{g'}\left(\mathbf{r}\right) \phi_{g'}\left(\mathbf{r}\right) + \, \sum_{g'=1}^G \,  \tilde{\Sigma}_{s}^{g' \rightarrow g}\left(\mathbf{r}\right) \phi_{g'}(\mathbf{r}) \right)
 \label{eqn:tc-multi-group-transport}
 \end{equation}
-where the multi-group transport cross section $\tilde{\Sigma}_t^{g}(\mathbf{r})$ and modified scattering kernel definitions are given in Eq.~\ref{eqn:mg-tc-mod-tot-xs} and Eq.~\ref{eqn:mg-tc-mod-scattering-xs}, respectively. Both are based on a multi-group transport correction term $\Delta\Sigma_{tr}^g(\mathbf{r})$ which is given in Eq.~\ref{eqn:mg-transport-correction}.
+where the multi-group transport cross section $\Sigma_{\textit{tr}}^{g}(\mathbf{r})$ and modified scattering kernel definitions are given in Eq.~\ref{eqn:mg-tc-mod-tot-xs} and Eq.~\ref{eqn:mg-tc-mod-scattering-xs}, respectively. Both are based on a multi-group transport correction term $\Delta\Sigma_{tr}^g(\mathbf{r})$ which is given in Eq.~\ref{eqn:mg-transport-correction}.
 \begin{equation}
-\tilde{\Sigma}_{t}^g(\mathbf{r}) = \Sigma_{t}^g(\mathbf{r}) - \Delta\Sigma_{tr}^g(\mathbf{r})
+\Sigma_{\textit{tr}}^g(\mathbf{r}) = \Sigma_{t}^g(\mathbf{r}) - \Delta\Sigma_{tr}^g(\mathbf{r})
 \label{eqn:mg-tc-mod-tot-xs}
 \end{equation}
 \begin{equation}
@@ -217,7 +217,7 @@ where the multi-group transport cross section $\tilde{\Sigma}_t^{g}(\mathbf{r})$
 \Delta\Sigma_{tr}^g(\mathbf{r}) = \frac{\int_{E_{g-1}}^{E_g} dE \, \int\displaylimits_{0}^{\infty} dE' \, \Sigma_{s,1}(\mathbf{r},{E'\rightarrow E})\phi(\mathbf{r},E')}{\int_{E_{g-1}}^{E_g} dE \, \phi(\mathbf{r},E)}
 \label{eqn:mg-transport-correction}
 \end{equation}
-In Eq.~\ref{eqn:mg-tc-mod-scattering-xs}, $\delta_{g', g}$ represents the Kronecker delta function. Its application to the transport correction term indicates that it is only applied to in-group scattering. The unmodified scattering kernel $\Sigma_{s}^{g' \rightarrow g}(\mathbf{r})$ represents the scattering kernel formed in Chapter~\ref{chap:transport} assuming isotropic scattering.  This definition is often termed the in-scatter approximation~\cite{yamamoto2008simplified}.
+In Eq.~\ref{eqn:mg-tc-mod-scattering-xs}, $\delta_{g', g}$ represents the Kronecker delta function. Its application to the transport correction term indicates that it is only applied to in-group scattering. The unmodified scattering kernel $\Sigma_{s}^{g' \rightarrow g}(\mathbf{r})$ represents the scattering kernel formed in Chapter~\ref{chap:transport} assuming isotropic scattering.  This definition is often termed the flux-limited approximation~\cite{yamamoto2008simplified}.
 
 In practice, the transport correction can easily be incorporated into codes that rely on isotropic scattering since it is equivalent to just modifying the underlying cross-section data. Therefore, from the perspective of designing a transport solver, the transport correction is just treated as a modification to the cross-section inputs.
 
@@ -227,7 +227,7 @@ In practice, the transport correction can easily be incorporated into codes that
 
 In this chapter, the mechanics and theory behind multi-group cross-section generation were discussed. The focus was placed on Monte Carlo generation of cross-sections for full core simulation. In this process, it is important to highlight that while continuous energy cross-sections only depend on material properties, multi-group cross-sections are region-dependent due to dependence on the flux spectrum within each region. This effect can be quite significant. However, at large number of energy groups, the cross-sections more closely resemble the continuous energy cross-sections and the spatial dependence is diminished. This thesis will concentrate on using a relatively large number of energy groups so that cross-sections can be treated as largely material dependent rather than having additional spatial dependence.
 
-This chapter also discussed the transport correction. The transport correction attempts to account for anisotropic scattering and enters the transport equation as a modification to the cross-sections. For most materials in common LWR geometries this effect is quite small since heavy nuclei elastically scatter neutrons nearly isotropically. However, the effect can be quite large for water due to being comprised of light-weight hydrogen nuclei. Therefore, the transport correction in LWR applications mainly corrects for scattering within the water moderator. The large transport correction can cause water within-group scattering to be come negative, which is unphysical, but necessary for accurate accounting of anisotropic scattering and therefore accurate calculation of the neutron flux.
+This chapter also discussed the transport correction. The transport correction attempts to account for anisotropic scattering and enters the transport equation as a modification to the cross-sections. For most materials in common LWR geometries this effect is quite small since heavy nuclei elastically scatter neutrons nearly isotropically. However, the effect can be quite large for water due to being comprised of light-weight hydrogen nuclei. Therefore, the transport correction in LWR applications mainly corrects for scattering within the water moderator. The large transport correction can cause water within-group scattering to become negative, which is unphysical, but necessary for accurate accounting of anisotropic scattering and therefore accurate calculation of the neutron flux.
 
 For the remainder of this thesis, the transport equation will be discussed assuming isotropic scattering, noting that the transport correction accounts for first order anisotropies and is mechanically just a change in the cross-sections which are input into transport solvers. When discussing input cross-sections it will be noted whether the cross-sections have been transport corrected or not.
 

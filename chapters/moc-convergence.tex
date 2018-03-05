@@ -19,16 +19,16 @@ In many efficient transport solvers, these matrices are not explicitly formed bu
 
 For instance, recall from Chapter~\ref{chap:moc} that OpenMOC forms components of these matrices on-the-fly. Components of the matrix $J$ are also never explicitly computed. Instead, the internal structure of $J$ is used to efficiently compute matrix-vector products with $J$. Other transport methods take similar approaches for computational efficiency.
 
-For physical cross-sections, the matrices $J$, $F$, and $S$ are all positive. However, when transport correction is introduced, as outlined in Chapter~\ref{chap:mgxs}, components of the scattering matrix can become negative. Specifically, recall that for a region $i$ and energy group $g$, the transport correction $\Delta \Sigma_{\textit{tr}, i, g}$ is applied to both the total cross-section $\Sigma_{t, i, g}$ and within-group scattering cross-section $\Sigma_{s, i}^{g \rightarrow g}$ resulting in a transport cross-section $\Sigma_{\textit{tr}, i, g}$ and transport-corrected within-group scattering cross-section $\tilde{\Sigma}_{s, i}^{g \rightarrow g}$ as
+For physical cross-sections, the matrices $J$, $F$, and $S$ are all positive. However, when transport correction is introduced, as outlined in Chapter~\ref{chap:mgxs}, components of the scattering matrix can become negative. Specifically, recall that for a region $i$ and energy group $g$, the transport correction $\Delta \Sigma_{\textit{tr}}^{i, g}$ is applied to both the total cross-section $\Sigma_{t}^{i, g}$ and within-group scattering cross-section $\Sigma_{s}^{i, g \rightarrow g}$ resulting in a transport cross-section $\Sigma_{\textit{tr}}^{i, g}$ and transport-corrected within-group scattering cross-section $\tilde{\Sigma}_{s, i}^{g \rightarrow g}$ as
 \begin{equation}
 \begin{split}
-\Sigma_{\textit{tr}, i, g} = \Sigma_{t, i, g} -  \Delta \Sigma_{\textit{tr}, i, g} \\
-\tilde{\Sigma}_{s, i}^{g \rightarrow g} = \Sigma_{s, i}^{g \rightarrow g} -  \Delta \Sigma_{\textit{tr}, i, g}
+\Sigma_{\textit{tr}}^{i,g} = \Sigma_{t}^{i,g} -  \Delta \Sigma_{\textit{tr}}^{i, g} \\
+\tilde{\Sigma}_{s}^{i,g \rightarrow g} = \Sigma_{s}^{i, g \rightarrow g} -  \Delta \Sigma_{\textit{tr}}^{i, g}
 \end{split}
 \label{eq:total-xs}
 \end{equation}
 
-When using large numbers of energy groups, the within-group scattering cross-sections can become small, and the modified within-group scattering cross-section can become negative with transport correction. Tabuchi discovered negative within-group scattering cross-sections to be an issue when converging inner within-group scattering iterations of \ac{MOC}~\cite{ty-problem}. Specifically, it was identified that the inner iteration matrix could have a spectral radius greater than unity, causing the system not to converge. Tabuchi later proposed a stabilization technique for inner iterations~\cite{ty-solution}.
+When using large numbers of energy groups, the within-group scattering cross-sections can become small, and the modified within-group scattering cross-section can become negative with transport correction. Tabuchi discovered negative within-group scattering cross-sections to be an issue when converging within-group scattering iterations of \ac{MOC}~\cite{ty-problem}. Specifically, it was identified that the inner iteration matrix could have a spectral radius greater than unity, causing the system not to converge. Tabuchi later proposed a stabilization technique for inner iterations~\cite{ty-solution}.
 
 In this chapter, the ideas presented by Tabuchi are expanded to explain the observed convergence behavior of source iteration without inner iterations. Convergence is analyzed with transport-corrected cross-sections. Realistic full core cases are presented that observe the failed convergence behavior and a new stabilizing method is proposed that stabilizes source iteration.
 
@@ -37,26 +37,26 @@ In this chapter, the ideas presented by Tabuchi are expanded to explain the obse
 
 Deterministic methods such as flat source \ac{MOC} or step characteristics are equivalent to the collision probability form, aside from discretization errors~\cite{ty-problem}. Although collision probabilities do not explicitly enter the transport method, the neutron balance equation takes the form in Eq.~\ref{eq:cpm-form}:
 \begin{equation}
-	\Sigma_{\textit{tr}, i, g} \phi_{i,g} V_i = \sum_j P_{ji, g} q_{j,g} V_j
+	\Sigma_{\textit{tr}}^{i, g} \phi_{i,g} V_i = \sum_j P_{ji, g} q_{j,g} V_j
 	\label{eq:cpm-form}
 \end{equation}
 where $P_{ji,g}$ represents the collision probability of a neutron of energy group $g$ from region $j$ to region $i$, $V_i$ represents the volume of region $i$, $q_{i,g}$ represents the neutron source and $\phi_{i,g}$ represents the average scalar flux in region $i$ and group $g$. In general, the neutron source can be computed by summing contributions from all $G$ energy groups as
 \begin{equation}
-	q_{i,g} = \sum_{g'=1}^G \left( \Sigma_{s,i}^{g'\rightarrow g} \phi_{i,g'} + \chi_{i,g} \nu \Sigma_{f,i,g'} \phi_{i,g'} \right)
+	q_{i,g} = \sum_{g'=1}^G \left( \Sigma_{s}^{i,g'\rightarrow g} \phi_{i,g'} + \chi_{i,g} \nu \Sigma_{f}^{i,g'} \phi_{i,g'} \right)
 \end{equation}
-where $\Sigma_{s,i}^{g'\rightarrow g}$ is the scattering cross-section in region $i$ from group $g'$ to group $g$, $\chi_{i,g}$ is the fission emission probability for group $g$ in region $i$, and $\nu \Sigma_{f,i,g'}$ is the fission production in region $i$ from group $g'$. Combining this definition with Eq.~\ref{eq:cpm-form}, as well as the reciprocity relationship, 
+where $\Sigma_{s}^{i, g'\rightarrow g}$ is the scattering cross-section in region $i$ from group $g'$ to group $g$, $\chi_{i,g}$ is the fission emission probability for group $g$ in region $i$, and $\nu \Sigma_{f}^{i,g'}$ is the fission production in region $i$ from group $g'$. Combining this definition with Eq.~\ref{eq:cpm-form}, as well as the reciprocity relationship, 
 \begin{equation}
-	P_{ij, g} \Sigma_{\textit{tr}, i, g} V_i = P_{ji, g} \Sigma_{\textit{tr}, j, g} V_j,
+	P_{ij, g} \Sigma_{\textit{tr}}^{i, g} V_i = P_{ji, g} \Sigma_{\textit{tr}}^{j, g} V_j,
 	\label{eq:reciprocity}
 \end{equation}
 neutron balance can be presented in the form of Eq.~\ref{eq:cpm-balance}.
 \begin{equation}
-	\phi_{i,g} = \sum_j \frac{P_{ij, g} \sum_{g'=1}^G \left( \Sigma_{s,j}^{g'\rightarrow g} \phi_{j,g'} + \chi_{j,g} \nu \Sigma_{f,j,g'} \phi_{j,g'} \right)}{\Sigma_{\textit{tr}, j, g}} 
+	\phi_{i,g} = \sum_j \frac{P_{ij, g} \sum_{g'=1}^G \left( \Sigma_{s}^{j, g'\rightarrow g} \phi_{j,g'} + \chi_{j,g} \nu \Sigma_{f}^{j,g'} \phi_{j,g'} \right)}{\Sigma_{\textit{tr}}^{j, g}} 
 	\label{eq:cpm-balance}
 \end{equation}
 Notice that this is in the form of Eq.~\ref{eq:si-transport}. Therefore, the matrix $A = J\left(\frac{1}{k}F + S\right)$, with rows and columns indexed by $(i, g)$  where $i$ is the region and $g$ is the energy group, can be expressed as
 \begin{equation}
-	A_{(i,g), (j, g')} = P_{ij}^g \left(\frac{\chi_{j,g} \nu\Sigma_{f,j,g'} / k + \Sigma_{s,j}^{g' \rightarrow g}}{\Sigma_{\textit{tr}, j, g}}\right).
+	A_{(i,g), (j, g')} = P_{ij}^g \left(\frac{\chi_{j,g} \nu\Sigma_{f}^{j,g'} / k + \Sigma_{s}^{j,g' \rightarrow g}}{\Sigma_{\textit{tr}}^{j, g}}\right).
 	\label{eq:a-matrix}
 \end{equation}
 Matrix $A$ is square and dense with length equal to the number of scalar fluxes. 
@@ -112,15 +112,19 @@ Note that Eq.~\ref{eq:damped-transport} is a mathematically valid rewriting of E
 	\boldsymbol{\phi} = (I+D)^{-1} \left[J \left(\frac{1}{k} F + S \right) + D \right]\boldsymbol{\phi}
 	\label{eq:damped-transport}
 \end{equation}
+FIXME
+\begin{equation}
+	\boldsymbol{\phi}_{n+1} = (I+D)^{-1} \left[J \left(\frac{1}{k_n} F + S \right) + D \right]\boldsymbol{\phi}_n
+\end{equation}
 Next, the same source iteration scheme is applied where the left hand side is updated with the right hand side constant. Since $I+D$ needs to be easily invertible for this new scheme to be efficient, $D$ is chosen to be diagonal. The convergence discussion then follows the same discussion as before except the new iteration matrix  now has the form $\tilde{A} = (I+D)^{-1} \left[ J \left(\frac{1}{k_{\textit{crit}}} F + S \right) + D \right]$  with the matrix $\tilde{A}$ is described by
 \begin{equation}
-	\tilde{A}_{(i,g), (j, g')} = \frac{1}{1 + D_{(i,g), (i,g)}}\left[P_{ij}^g \left(\frac{\chi_{j,g} \nu\Sigma_{f,j,g'} / k_{\textit{crit}} + \Sigma_{s,j}^{g' \rightarrow g}}{\Sigma_{\textit{tr}, j, g}}\right) + D_{(i,g), (j, g')}\right]
+	\tilde{A}_{(i,g), (j, g')} = \frac{1}{1 + D_{(i,g), (i,g)}}\left[P_{ij}^g \left(\frac{\chi_{j,g} \nu\Sigma_{f}^{j,g'} / k_{\textit{crit}} + \Sigma_{s}^{j,g' \rightarrow g}}{\Sigma_{\textit{tr}}^{j, g}}\right) + D_{(i,g), (j, g')}\right]
 	\label{eq:a-tilde}
 \end{equation}
 where the rows and columns are again indexed by region, energy group pairs. The diagonal elements of $D$ are chosen to be:
 \begin{equation}
 	D_{(i,g), (i,g)} = \left\{\begin{array}{lr}
-		\frac{-\rho \Sigma_{s,i}^{g \rightarrow g}}{\Sigma_{\textit{tr}, i, g}} , & \text{for } \Sigma_{s,i}^{g \rightarrow g} < 0\\
+		\frac{-\rho \Sigma_{s}^{i,g \rightarrow g}}{\Sigma_{\textit{tr}}^{i, g}} , & \text{for } \Sigma_{s}^{i, g \rightarrow g} < 0\\
 		0, & \text{otherwise}
 	\end{array}\right.
 	\label{eq:d-matrix}
@@ -133,9 +137,11 @@ The diagonal stabilization scheme has the effect of shifting the iteration matri
 
 Tabuchi suggested a similar scheme for converging inner within-group scattering iterations of \ac{MOC} transport sweeps~\cite{ty-solution}. Though originally limited to \ac{MOC} transport sweeps with inner within-group scattering iterations, Tabuchi's scheme is equivalent to the diagonal stabilization scheme presented here for damping the scalar flux update except for the choice of diagonal matrix $\tilde{D}$ in place of $D$ with elements
 \begin{equation}
-\tilde{D}_{(i,g), (i,g)} = \max_j \left|\frac{\Sigma_{s,j}^{g \rightarrow g}}{\Sigma_{\textit{tr}, j, g}} \right|
+\tilde{D}_{(i,g), (i,g)} = \max_j \left|\frac{\Sigma_{s}^{j, g \rightarrow g}}{\Sigma_{\textit{tr}}^{j, g}} \right|
 \end{equation}
-which is far larger than the equivalent formulation given in Eq.~\ref{eq:d-matrix}. Not only is the damping applied to all fluxes, not just those with negative within-group scattering, but it also takes the maximum ratio of within-group scattering to transport cross-section $\Sigma_{s,j}^{g \rightarrow g} / \Sigma_{\textit{tr}, j, g}$ across all material regions $j$, which may already be positive.
+which is far larger than the equivalent formulation given in Eq.~\ref{eq:d-matrix}. Not only is the damping applied to all fluxes, not just those with negative within-group scattering, but it also takes the maximum ratio of within-group scattering to transport cross-section $\Sigma_{s}^{j,g \rightarrow g} / \Sigma_{\textit{tr}}^{j, g}$ across all material regions $j$, which may already be positive.
+
+It is important to note that in the OpenMOC implementation, negative sources are set to zero in the first 20 iterations. In addition, negative fluxes are always set to zero. Whenever the correction is applied during an iteration, a warning message is displayed, alerting the user to the behavior. Negative sources and fluxes are an important indicator of convergence issues, as a solution corresponding with a negative eigenvalue will have negative components in its associated eigenvector. While setting negative sources and fluxes to zero helps the convergence behavior by more quickly eliminating non-physical behavior, it does not remedy the fundamental convergence issues introduced by negative cross-sections without the use of a stabilization technique such as diagonal stabilization.
 
 \section{Convergence Results}
 \label{sec:convergence-results}
@@ -170,7 +176,7 @@ In this chapter, the \ac{CMFD} mesh is always chosen to be uniform with cells of
 \subsection{Single Assembly with Axial Water Reflectors}
 \label{sec:sa-axial-ref}
 
-The single assembly model detailed in Section~\ref{sec:beavrs-single-assembly} is first analyzed. It is important to remember that this problem includes axial water reflectors. These large regions of water where the transport-correction is large could potentially have a strong impact on convergence.
+The single assembly model detailed in Section~\ref{sec:beavrs-single-assembly} is first analyzed. It is important to remember that this problem includes axial water reflectors. These large regions of water where the transport-correction is large could potentially have a strong impact on convergence. All single assembly results use a $1\times 1 \times 100$ domain decomposition.
 
 \subsubsection{Source Iteration Convergence without CMFD Acceleration}
 
@@ -194,11 +200,11 @@ The results with \ac{CMFD} applied and \textit{without} any \ac{MOC} source iter
 	\caption{Convergence behavior for a variety of \ac{CMFD} group structures with $G_C$ \ac{CMFD} groups and \textit{without} \ac{MOC} source iteration stabilization.}
 	\label{fig:sa-cmfd-no-stab}
 \end{figure}
-As expected, most of the convergence histories have trouble converging. This is likely due to the convergence issue observed with pure source iteration. However, the 70 group \ac{CMFD} scheme appears to be stable. It is important to remember that the \ac{CMFD} equations do not suffer from the issue of a negative dominant eigenvalue in the source iteration scheme since since they solve an alternate form of the original eigenvalue system with standard eigenvalue solver techniques. 
+As expected, most of the trials have trouble converging. This is likely due to the convergence issue observed with pure source iteration. However, the 70 group \ac{CMFD} scheme appears to be stable. It is important to remember that the \ac{CMFD} equations do not suffer from the issue of a negative dominant eigenvalue since they directly solve the original eigenvalue system with standard eigenvalue solver techniques. The \ac{CMFD} equations can even be written such that within-group scattering does not arise as a term does not appear if absorption cross-sections are used instead of total cross-sections.
 
 If 70 group \ac{CMFD} is driving the convergence process, then the instability in the underlying source iteration technique might be overcome by the \ac{CMFD} acceleration prolongation update in which \ac{MOC} scalar fluxes are updated with the \ac{CMFD} solution. One way of interpreting this behavior is to think of the convergence as being dominated by the \ac{CMFD} acceleration where \ac{MOC} transport sweeps are used purely to resolve local behavior, integrate reaction rates to form \ac{CMFD} cross-sections, and tally currents crossing \ac{CMFD} mesh surfaces. 
 
-However, with a reduced \ac{CMFD} group structure, the flux distribution in energy within a single \ac{CMFD} group \textit{must} be resolved by the \ac{MOC} source iteration process unless an effective energy interpolation can be formed during the \ac{CMFD} prolongation stage. Since the underlying \ac{MOC} source iteration process is unstable, any reliance on the process for convergence using a reduced group structure should lead to instability.
+However, with a reduced \ac{CMFD} group structure, the flux distribution in energy within a single \ac{CMFD} group \textit{must} be resolved by the \ac{MOC} source iteration process. Since the underlying \ac{MOC} source iteration process is unstable, any reliance on the process for convergence using a reduced group structure should lead to instability.
 
 \subsubsection{Convergence with CMFD Acceleration and Source Iteration Stabilization}
 
@@ -214,7 +220,7 @@ As expected, the \ac{MOC} source iteration stabilization fixes the convergence i
 \subsection{Single Assembly without Axial Water Reflectors}
 \label{sec:sa-no-axial-ref}
 
-Next, the truncated single assembly model is studied, as detailed in Section~\ref{sec:trunc-single-assembly}. This model is the same as the single assembly model but without the axial water reflectors. Without reflectors, this model is more similar to standard lattice physics models. The convergence behavior is analyzed \textit{without} source iteration stabilization. The results with \ac{CMFD} acceleration for a variety of \ac{CMFD} group structures are presented in Figure~\ref{fig:truncated-convergence}.
+Next, the truncated single assembly model is studied, as detailed in Section~\ref{sec:trunc-single-assembly}. This model is the same as the single assembly model but without the axial water reflectors, using a $1\times 1\times 90$ domain decomposition. Without reflectors, this model is more similar to standard lattice physics models. The convergence behavior is analyzed \textit{without} source iteration stabilization. The results with \ac{CMFD} acceleration for a variety of \ac{CMFD} group structures are presented in Figure~\ref{fig:truncated-convergence}.
 \begin{figure}[ht!]
 	\centering
 	\includegraphics[width=0.65\linewidth]{figures/convergence/sa_trunc_no_stab.png}
@@ -229,7 +235,7 @@ The previous results were focused on a single assembly with and without axial re
 
 \subsubsection{2D Extruded Model}
 
-Before simulating the explicit 3D model, the 2D extruded model detailed in Section~\ref{sec:beavrs-2D} is studied. This model lacks the axial water reflectors but still contains significant water reflectors in the radial direction. The results are shown in Figure~\ref{fig:fc-2D}. 
+Before simulating the explicit 3D model, the 2D extruded model detailed in Section~\ref{sec:beavrs-2D} is studied. This model lacks the axial water reflectors but still contains significant water reflectors in the radial direction. A $17 \times 17 \times 1$ domain decomposition is used. The results are shown in Figure~\ref{fig:fc-2D}. 
 \begin{figure}[ht!]
 	\centering
 	\includegraphics[width=0.65\linewidth]{figures/convergence/fc_2D.png}
@@ -240,7 +246,7 @@ The simulation is run with 8 group and 70 group \ac{CMFD} with Diagonal Stabiliz
 
 \subsubsection{Explicit 3D Model}
 
-Now the full core 3D BEAVRS model is simulated, as detailed in Section~\ref{sec:beavrs-3D}. Since the problem is large, the \ac{MOC} angular quadrature is significantly coarsened to 4 azimuthal angles and 2 polar angles in order to run a significant number of iterations on the Cetus partition of the Argonne BlueGene/Q supercomputer. These parameters are very coarse, but still exhibit the convergence issue. Since the run time with coarse angles can become dominated by the \ac{CMFD} solution time, it is infeasible to use 70 \ac{CMFD} groups. Therefore, results are presented only for a reduced 8 group \ac{CMFD} structure. The results are shown in Figure~\ref{fig:fc-3D} both with and without using the Diagonal Stabilization technique with $\rho = 1/4$. 
+Now the full core 3D BEAVRS model is simulated, as detailed in Section~\ref{sec:beavrs-3D}. Since the problem is large, the \ac{MOC} angular quadrature is significantly coarsened to 4 azimuthal angles and 2 polar angles in order to run a significant number of iterations on the Cetus partition of the Argonne BlueGene/Q supercomputer. These parameters are very coarse, but still exhibit the convergence issue. Since the run time with coarse angles can become dominated by the \ac{CMFD} solution time, it is infeasible to use 70 \ac{CMFD} groups. Therefore, results are presented only for a reduced 8 group \ac{CMFD} structure. A $17 \times 17 \times 5$ domain decomposition is used. The results are shown in Figure~\ref{fig:fc-3D} both with and without using the Diagonal Stabilization technique with $\rho = 1/4$. 
 
 \begin{figure}[ht!]
 	\centering
@@ -253,7 +259,7 @@ These results show that for the 3D full core \ac{PWR} problem, a stabilization t
 
 \subsubsection{Explicit 3D Model with Linear Source}
 
-The preceding tests have all been conducted using a flat source approximation. However, the goal of this thesis is to solve full core \ac{LWR} problems with a linear source approximation. While the theory of the diagonal stabilization was developed for flat source, it can also be applied to simulations with a linear source approximation. In the OpenMOC implementation, the same damping of each flat source flux is applied to the associated linear source moments. The results using a linear source approximation are presented in Figure~\ref{fig:fc-3D-ls} for the full core 3D BEAVRS benchmark, showing similar results to those with a flat source approximation.
+The preceding tests have all been conducted using a flat source approximation. However, the goal of this thesis is to solve full core \ac{LWR} problems with a linear source approximation. While the theory of the diagonal stabilization was developed for flat source, it can also be applied to simulations with a linear source approximation. In the OpenMOC implementation, the same damping of each flat source flux is applied to the associated linear source moments. Again, a $17 \times 17 \times 1$ domain decomposition is used. The results using a linear source approximation are presented in Figure~\ref{fig:fc-3D-ls} for the full core 3D BEAVRS benchmark, showing similar results to those with a flat source approximation.
 
 \begin{figure}[ht!]
 	\centering
@@ -274,17 +280,18 @@ Results were also presented for convergence with \ac{CMFD} acceleration which sh
 \begin{highlightsbox}[frametitle=Highlights]
 	\begin{itemize}
 		
-		\item The \ac{MOC} eigenvalue problem can be cast a generalized eigenvalue problem
-		
-		\item For computational efficiency, source iteration is preferable to more conventional methods for solving eigenvalue problems
+		\item The \ac{MOC} eigenvalue problem can be cast a generalized eigenvalue problem, typically solved with source iteration
 		
 		\item Without transport correction, the Perron-Frobenius theorem guarantees convergence of source iteration
 		
 		\item With transport correction, source iteration is not guaranteed to converge
 		
-		\item A stabilization scheme, termed diagonal stabilization, is introduced which stabilizes source iteration allowing for convergence
+		\item Convergence issues were observed for models with deep reflectors, but never observed when using full-group \ac{CMFD} acceleration
+		
+		\item A stabilization scheme, termed diagonal stabilization, is introduced which stabilizes source iteration convergence in all tested cases
 		
 		\item While diagonal stabilization was formed based on the flat source \ac{MOC} equations, it has also been shown to stabilize source iteration for a linear source approximation
+		
 		
 	\end{itemize}
 \end{highlightsbox}

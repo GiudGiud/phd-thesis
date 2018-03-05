@@ -24,14 +24,14 @@ which leads to a new form for the neutron balance equation in Eq.~\ref{eqn:sourc
 \end{dmath}
 Next, a coordinate transformation is performed, casting the position as a displacement from an origin $\mathbf{r_0}$ along the direction of travel $\mathbf{\Omega}$ as $\mathbf{r} = \mathbf{r_0} + s\mathbf{\Omega}$. Under this transformation, the new balance equation becomes:
 \begin{dmath}
-	\mathbf{\Omega} \cdot \nabla \psi_g(\mathbf{r_0} + s\mathbf{\Omega},\mathbf{\Omega}) \, + \, \Sigma_{t}^{i,g}(\mathbf{r_0} + s\mathbf{\Omega})\psi_g(\mathbf{r_0} + s\mathbf{\Omega},\mathbf{\Omega}) = q_g(\mathbf{r_0} + s\mathbf{\Omega})
+	\mathbf{\Omega} \cdot \nabla \psi_g(\mathbf{r_0} + s\mathbf{\Omega},\mathbf{\Omega}) \, + \, \Sigma_{t}^{g}(\mathbf{r_0} + s\mathbf{\Omega})\psi_g(\mathbf{r_0} + s\mathbf{\Omega},\mathbf{\Omega}) = q_g(\mathbf{r_0} + s\mathbf{\Omega})
 \end{dmath}
 In this new form, the gradient reduces to a simple derivative by the distance $s$ traveled from the origin $\mathbf{r_0}$ in Eq.~\ref{eqn:moc-transform}.
 \begin{dmath}
 	\frac{d\psi_g(\mathbf{r_0} + s\mathbf{\Omega},\mathbf{\Omega})}{ds} \, + \, \Sigma_{t}^{g}(\mathbf{r_0} + s\mathbf{\Omega})\psi(\mathbf{r_0} + s\mathbf{\Omega},\mathbf{\Omega}) = q_g(\mathbf{r_0} + s\mathbf{\Omega})
 	\label{eqn:moc-transform}
 \end{dmath}
-Considering a region $i$ with constant total cross-section $\Sigma_{t}^{i,g}$, the angular flux a distance $\ell$ from the origin can be calculated using Eq.~\ref{eqn:moc-source-int}.
+Considering a region $i$ with constant total cross-section $\Sigma_{t}^{i,g}$, the angular flux for a distance $\ell$ from the origin can be calculated using Eq.~\ref{eqn:moc-source-int}.
 \begin{dmath}
 	\psi_g(\mathbf{r_0} + \ell \mathbf{\Omega},\mathbf{\Omega}) = \psi_g(\mathbf{r_0},\mathbf{\Omega}) e^{-\Sigma_{t}^{i,g} \ell} + \int\displaylimits_{0}^{\ell} ds \, e^{-\Sigma_{t}^{i,g} (\ell-s)}q_g(\mathbf{r_0} + s\mathbf{\Omega})
 	\label{eqn:moc-source-int}
@@ -122,7 +122,7 @@ This form is relatively unuseful since the relationship presented in Eq.~\ref{eq
 	\label{fig:track-laydown}
 \end{figure}
 
-Across each track crossing a given constant cross-section source region, the variation of angular flux follows Eq.~\ref{eqn:angular-flux-var}. Therefore, each track is discretized into \textit{segments}, in which each segment is the portion of the track that crosses a particular source region. Across the entire length of each segment Eq.~\ref{eqn:angular-flux-var} applies. An illustration of the segmentation process for the simple pin-cell geometry is shown in Figure~\ref{fig:segmentation}. The presented track, with the geometry drawn along its direction of travel is discretized into segments by material region. For simplicity, this illustration does not discretize the geometry further than material boundaries. A real segmentation process would discretize segments over the domain shown in Figure~\ref{fig:pin-discretization-b}. This process would treat all tracks shown in the track laydown (eg. Figure~\ref{fig:track-laydown}) in a similar manner.
+Across each track crossing a given constant cross-section source region, the variation of angular flux follows Eq.~\ref{eqn:angular-flux-var}. Therefore, each track is discretized into \textit{segments}, in which each segment is the portion of the track that crosses a particular source region. Across the entire length of each segment, Eq.~\ref{eqn:angular-flux-var} applies. An illustration of the segmentation process for the simple pin-cell geometry is shown in Figure~\ref{fig:segmentation}. The presented track, with the geometry drawn along its direction of travel is discretized into segments by material region. For simplicity, this illustration does not discretize the geometry further than material boundaries. A real segmentation process would discretize segments over the domain shown in Figure~\ref{fig:pin-discretization-b}. This process would treat all tracks shown in the track laydown (eg. Figure~\ref{fig:track-laydown}) in a similar manner.
 
 \begin{figure}[h!]
 	\centering
@@ -131,7 +131,7 @@ Across each track crossing a given constant cross-section source region, the var
 	\label{fig:segmentation}
 \end{figure}
 
-All of these images showed track laydown and segmentation in just the radial plane, but the same methodology applies for dealing with full three dimensional geometries. Now that tracks have been segmented, a system of equations can be formed governing the variation of angular flux thorough each region as presented in Eq.~\ref{eqn:angular-flux-var}. However, this has a dependence on the incoming angular flux. For segments originating in the bulk of the geometry, continuity of angular flux is naturally enforced. The outgoing flux of the preceding segment in the track provides the incoming flux of the segment. Specifically, the position-dependent angular flux $\psi_{p,g}^{t,\varsigma}(\mathbf{r})$ in group $g$ along track $t$ and segment $\varsigma$ can be expressed as the angular flux of the preceding segment $\varsigma-1$ at the interface point $\mathbf{r_{\textbf{int}}}$ where the segments meet as
+All of these images showed track laydown and segmentation in just the radial plane, but the same methodology applies for dealing with full three dimensional geometries. Now that tracks have been segmented, a system of equations can be formed governing the variation of angular flux through each region as presented in Eq.~\ref{eqn:angular-flux-var}. However, this has a dependence on the incoming angular flux. For segments originating in the bulk of the geometry, continuity of angular flux is naturally enforced. The outgoing flux of the preceding segment in the track provides the incoming flux of the segment. Specifically, the position-dependent angular flux $\psi_{p,g}^{t,\varsigma}(\mathbf{r})$ in group $g$ along track $t$ and segment $\varsigma$ can be expressed as the angular flux of the preceding segment $\varsigma-1$ at the interface point $\mathbf{r_{\textbf{int}}}$ where the segments meet as
 \begin{dmath}
 	\psi_{p,g}^{t,\varsigma}(\mathbf{r_{\textbf{int}}}) = \psi_{p,g}^{t,\varsigma-1}(\mathbf{r_{\textbf{int}}}).
 \end{dmath}
@@ -148,7 +148,7 @@ Precise definitions are needed in order to discuss the relation of these tracks 
 \begin{dmath}
 	\psi_g^{t,1}(0) = 0
 \end{dmath}
-For boundary conditions (such as reflective, periodic, and rotational) that connect with another track, the function $C$ is defined which defines the linking track. For instance, the incoming angular flux of track $t$ would connect with the outgoing angular flux of track $C(t)$ as
+For boundary conditions (such as reflective, periodic, and rotational) that connect with another track, the function $C$ is defined which yields the linking track. For instance, the incoming angular flux of track $t$ would connect with the outgoing angular flux of track $C(t)$ as
 \begin{dmath}
 	\psi_g^{t,1}(0) = \psi_g^{C(t),S(C(t))}(\ell_{C(t),S(C(t))})
 	\label{eqn:linking-bc}
@@ -159,14 +159,14 @@ With the angular and spatial discretization from the track laydown, the angular 
 	\psi_g^{t,\varsigma}(s) = \psi^{t,\varsigma}_g(0) + \left( \frac{q^0_{i,g}}{\Sigma_{t}^{i,g}} - \psi_g^{t,\varsigma}(0) \right) F_1\left(\Sigma_{t}^{i,g} s \right)
 	\label{eqn:angular-flux-var-disc}
 \end{dmath}
-Still, these equations only determine the behavior of the neutron flux along a particular track. To determine the behavior of the neutron flux throughout the geometry, an infinite number of tracks would be required so that every point in the geometry lies along one of the tracks. Therefore, an approximation is invoked in which all points within the geometry are characterized by the nearest track. Therefore each track represents a volume formed by the product of its length and the perpendicular distances to tracks of the same direction. Those perpendicular lengths form the track cross-sectional area as illustrated in Figure~\ref{fig:track-cross-section}. This illustration just shows the radial view of the tracks. However, in three dimensions, axial distances also exist between tracks so that the track cross-sectional area does indeed represent an area rather than a distance.
+Still, these equations only determine the behavior of the neutron flux along a particular track. To determine the behavior of the neutron flux throughout the geometry, an infinite number of tracks would be required so that every point in the geometry lies along one of the tracks. Therefore, an approximation is invoked in which all points within the geometry are characterized by the nearest track. Therefore each track represents a volume formed by the product of its length and both the radial and axial perpendicular distances to tracks of the same direction. Those perpendicular lengths form the track cross-sectional area as illustrated in Figure~\ref{fig:track-cross-section}. This illustration just shows the radial view of the tracks. However, in three dimensions, axial distances also exist between tracks so that the track cross-sectional area does indeed represent an area rather than a distance.
 \begin{figure}[h!]
 	\centering
 	\includegraphics[width=0.6\linewidth]{figures/track-cross-sectional-area.PNG}
 	\caption[]{An illustration of the spatial volume represented by each track as the product of track length and track cross-sectional area $\delta A_t$. The volume represented by each track is shaded in blue.}
 	\label{fig:track-cross-section}
 \end{figure}
-With a fine track laydown where the distance between tracks becomes small, the approximation error of assuming points within the geometry are characterized by the nearest track also becomes small. 
+With a fine track laydown where the distance between tracks becomes small, the approximation error of characterizing the all points by their nearest track also becomes small. 
 
 However, the neutron transport equation has an angular dependence in addition to a spatial dependence. Therefore, fully resolving the angular dependence would require a track at every direction, again leading to an infinite number of tracks. Similar to the approximation invoked to cover the entire geometric space, the behavior of the neutron flux at each direction is characterized by the track with the most similar direction. This leads to each track $t$ having an angular weight $\alpha_t$ relating to the width of the angular space represented by the track. Therefore the overall weight of the track $w_t$ is calculated as the product of track cross-sectional area and angular weight as given in Eq.~\ref{eqn:weight-def}.
 \begin{equation}
@@ -210,7 +210,7 @@ must hold. However, for a coarse track laydown the volume might not be perfectly
 \begin{dmath}
 	V_i = \sum_{(t,\varsigma) \in V_i} w_{t} \ell_{t,\varsigma}
 \end{dmath}
-which forces the afore mentioned condition to hold. This can be simplified by noting that $\ell_{t,\varsigma}$ is not dependent on direction, allowing the volume to be calculated only using forward-directed tracks as
+which forces the aforementioned condition to hold. This can be simplified by noting that $\ell_{t,\varsigma}$ is not dependent on direction, allowing the volume to be calculated only using forward-directed tracks as
 \begin{equation}
 V_i = 2 \sum_{(t,\varsigma) \in V^F_i} w_{t} \ell_{t,\varsigma}.
 \end{equation}
@@ -218,9 +218,9 @@ V_i = 2 \sum_{(t,\varsigma) \in V^F_i} w_{t} \ell_{t,\varsigma}.
 \section{Solving the MOC System of Equations}
 \label{sec:moc-solve}
 
-In Section~\ref{sec:track-disceretization}, Eq.~\ref{eqn:angular-flux-var-disc} and Eq.~\ref{eqn:average-flux} provided ways to calculate the angular fluxes and scalar fluxes, respectively. The source can be computed from the scalar fluxes with Eq.~\ref{eqn:source-discr}. This forms a system of equations that can be solved to determine the neutron distribution inside a nuclear reactor core. Normally, the solution of the \ac{MOC} equations is presented in terms of a physics perspective, following neutrons along trajectories, and repeatedly solving for the neutron source. Physical intuition usually guides this discussion.
+In Section~\ref{sec:track-disceretization}, Eq.~\ref{eqn:angular-flux-var-disc} and Eq.~\ref{eqn:average-flux} provided ways to calculate the angular fluxes and scalar fluxes, respectively. The source can be computed from the scalar fluxes with Eq.~\ref{eqn:source-discr}. This forms a system of equations that can be solved to determine the neutron distribution inside a nuclear reactor core. 
 
-The discussion presented here will be more broad. Instead of solely focusing on physics, the problem will be cast as a set of matrix equations that could theoretically be solved with common linear algebra packages. However, this discussion will show that blindly solving the system of equations with a general linear algebra package is computationally infeasible since it loses sight of inherent structure the physics-based approach naturally captures.
+In this discussion, the problem will be cast as a set of matrix equations that could theoretically be solved with common linear algebra packages. However, this discussion will show that blindly solving the system of equations with a general linear algebra package is computationally infeasible since it loses sight of inherent structure the physics-based approach naturally captures.
 
 The system of equations to be solved is formed by Eq.~\ref{eqn:source-discr}, Eq.~\ref{eqn:angular-flux-var-disc}, and Eq.~\ref{eqn:average-flux}. Turning Eq.~\ref{eqn:source-discr} into matrix form, a fission matrix $F$ and a scattering matrix $S$ are defined such that
 \begin{equation}
@@ -272,7 +272,7 @@ T_{\left(t,\varsigma,g\right), \, \left(t, \varsigma-1, g\right)} = \frac{F_1\le
 \end{equation}
 Again, all non-specified quantities are zero.
 
-Lastly, Eq.~\ref{eqn:average-flux} describes how the scalar flux can is calculated in terms of both a weighted sum of angular fluxes and the neutron source. Specifically, an angular flux weighting matrix $W$ of size $M \times N$ is defined such that
+Lastly, Eq.~\ref{eqn:average-flux} describes how the scalar flux is calculated in terms of both a weighted sum of angular fluxes and the neutron source. Specifically, an angular flux weighting matrix $W$ of size $M \times N$ is defined such that
 \begin{equation}
 \boldsymbol{\phi} = D^{-1}\mathbf{q} + D^{-1} W \boldsymbol{\psi}.
 \label{eqn:matrix-flux-calc}

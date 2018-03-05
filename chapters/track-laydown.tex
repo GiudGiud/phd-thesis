@@ -73,7 +73,7 @@ In any \ac{MOC} implementation, angular quadratures are needed. An angular quadr
 
 For the azimuthal space, equal angle separation is chosen since it is expected that all azimuthal directions are equally important, as given in Eq.~\ref{eq:disc-azim-angles}. The angles need to be corrected to ensure track linking at reflective and periodic boundaries. Azimuthal weights $w_{\phi}^i$ for azimuthal index $i=1...{n_\phi/2}$ are then chosen as:
 \begin{equation}
-w_{\phi}^i = \frac{\phi_{i+1} - \phi_{i-1}}{4\pi}
+w_{\phi}^i = \frac{\phi_{i+1} - \phi_{i-1}}{2\pi}
 \end{equation}
 Virtual angles are introduced at the extremes for notational convenience. These angles, $\phi_{0}$ and $\phi_{n_\phi/2+1}$, are defined to be:
 \begin{equation}
@@ -161,7 +161,7 @@ Before discussing the conditions required to generate cyclic tracks in 3D, it is
 \end{figure}
 
 
-To generate 3D tracks, users input a desired track axial ray spacing $\tilde{\delta}_z$ and number of polar angles $n_{\theta}$ in $[0, \pi]$ in addition to the parameters required to generate 2D tracks. With this approach, desired polar angles are created according to the chosen polar quadrature set. In OpenMOC, it is assumed that quadrature sets are symmetric such that the desired polar angle $\tilde{\theta}_{j}$ with polar angle index $j$ follows
+To generate 3D tracks, users input a desired track axial ray spacing $\tilde{\delta}_z$ and number of polar angles $n_{\theta}$ in $[0, \pi]$, as well as the parameters required to generate 2D tracks. With this approach, desired polar angles are created according to the chosen polar quadrature set. In OpenMOC, it is assumed that quadrature sets are symmetric such that the desired polar angle $\tilde{\theta}_{j}$ with polar angle index $j$ follows
 \begin{equation}
 \tilde{\theta}_{j} = \pi - \tilde{\theta}_{n_{\theta} - j - 1} \qquad \forall \qquad j= \Big[0,\frac{n_{\theta}}{2}\Big),
 \end{equation} 
@@ -272,7 +272,7 @@ Using the 2D cycle length and number of track crossings on the $z$-axis and alon
 \theta_{i,j} = \tan^{-1} \bigg( \frac{L_P^i}{n_l^{i,j} \delta_z^{i,j}}\bigg)
 \label{eq:MRT-theta-correct}
 \end{equation}
-It is important to note that when polar angles are adjusted, the Gauss-Legendre quadrature set no longer is guaranteed to exactly integrate Legendre polynomials of order up to $2n-1$ with $n$ quadrature points. In fact, it is not guaranteed to exactly integrate any Legendre polynomials beyond the zeroth order. This could either be ignored, assuming that the quadrature can still integrate Legendre polynomials of order up to $2n-1$ with reasonable accuracy, or the weights can be re-computed to ensure that Legendre polynomials of order $n$ are exactly integrated. Both options are implemented in OpenMOC. The angular track weight $\alpha_t$ of track $t$ with azimuthal angle index $i$ and polar index $j$ using a Gauss Legendre quadrature can be computed as
+It is important to note that when polar angles are adjusted, the Gauss-Legendre quadrature set no longer is guaranteed to exactly integrate Legendre polynomials of order up to $2n-1$ with $n$ quadrature points. In fact, it is not guaranteed to exactly integrate any Legendre polynomials beyond the zeroth order. This could either be ignored, assuming that the quadrature can still integrate Legendre polynomials of order up to $2n-1$ with reasonable accuracy, or the weights can be re-computed to ensure that Legendre polynomials of order $n$ are exactly integrated. Both options are implemented in OpenMOC, but all the results presented in this thesis ignore the weight correction. The angular track weight $\alpha_t$ of track $t$ with azimuthal angle index $i$ and polar index $j$ using a Gauss Legendre quadrature can be computed as
 \begin{equation}
 \alpha_t = w_{\phi}^i w_{\textit{gl}}^j .
 \end{equation}

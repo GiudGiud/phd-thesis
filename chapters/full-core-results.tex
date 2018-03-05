@@ -1,7 +1,7 @@
 \chapter{Full Core Results}
 \label{chap:full-core-results}
 
-The objective of this thesis is to efficiently simulate the BEAVRS benchmark using 3D \ac{MOC} fully converged in space and angle. In this chapter, the OpenMOC implementation described in previous chapters is used to directly simulate the full core BEAVRS benchmark. In Section~\ref{sec:openmc-compare}, the computed OpenMOC solution using 3D \ac{MOC} is compared with the reference OpenMC Monte Carlo solution. In Section~\ref{sec:fc-computational-performance}, the computational performance and profile of OpenMOC on the full core problem is analyzed. Additionally, the computational performance is compared with the flat source solver in Section~\ref{sec:fc-flat-source}. To ensure the chosen \ac{MOC} parameters are sufficient for spatial and angular convergence, a narrow parameter refinement study is conducted in Section~\ref{sec:fc-parameter-refinement}. The chapter concludes in Section~\ref{sec:fc-conclusion} by summarizing and highlighting important results.
+The objective of this thesis is to efficiently simulate a full core \ac{LWR} using 3D \ac{MOC} fully converged in space and angle. In this chapter, the OpenMOC implementation described in previous chapters is used to directly simulate the full core BEAVRS benchmark. In Section~\ref{sec:openmc-compare}, the computed OpenMOC solution using 3D \ac{MOC} is compared with the reference OpenMC Monte Carlo solution. In Section~\ref{sec:fc-computational-performance}, the computational performance and profile of OpenMOC on the full core problem is analyzed. Additionally, the computational performance is compared with the flat source solver in Section~\ref{sec:fc-flat-source}. To ensure the chosen \ac{MOC} parameters are sufficient for spatial and angular convergence, a narrow parameter refinement study is conducted in Section~\ref{sec:fc-parameter-refinement}. The chapter concludes in Section~\ref{sec:fc-conclusion} by summarizing and highlighting important results.
 
 \section{Comparison with OpenMC}
 \label{sec:openmc-compare}
@@ -11,7 +11,7 @@ In Chapter~\ref{chap:moc-sensitivity}, parameter refinement studies were conduct
 \begin{figure}[ht!]
 	\centering
 	\includegraphics[width=0.8\linewidth]{figures/results/rr-plots/beavrs-3d-radial.png}
-	\caption{Radial fission rate distribution for the BEAVRS benchmark formed by OpenMOC with reaction rates axially integrated.}
+	\caption{Pin-wise radial fission rate distribution for the BEAVRS benchmark formed by OpenMOC with reaction rates axially integrated.}
 	\label{fig:full-core-radial}
 \end{figure}
 
@@ -52,8 +52,8 @@ Notice that since Monte Carlo simulations introduce statistical noise, each pell
 
 \begin{figure}[ht!]
 	\centering
-	\includegraphics[width=0.6\linewidth]{figures/results/full-core/axial_diff_v_openmc.png}
-	\caption{Axial distribution of normalized fission rate errors of OpenMOC compared with a reference OpenMC solution on the BEAVRS benchmark.}
+	\includegraphics[width=0.7\linewidth]{figures/results/full-core/twin_axial_error.png}
+	\caption{Axial error distribution of normalized fission rates of OpenMOC compared with a reference OpenMC solution on the BEAVRS benchmark.}
 	\label{fig:openmc-comp-ax}
 \end{figure}
 
@@ -70,7 +70,7 @@ To ensure the gross fission rate distribution is simulated with reasonable accur
 \section{Computational Performance}
 \label{sec:fc-computational-performance}
 
-The computational requirements of the full core solution in OpenMOC is presented in Table~\ref{tab:full-core-comp-req}. Note that while the number of core-hours required to converge the problem is high (717,465), the solution was computed on the Argonne BlueGene/Q supercomputer, which has extremely slow cores for energy efficiency reasons. The requirements on modern computing cores, such as those on the Falcon supercomputer, is estimated by comparing the integration time per core of the SDSA problem tested in Chapter~\ref{chap:linear-source} on the Falcon supercomputer (48.96 ns/core) to those on the Argonne BlueGene/Q supercomputer (175.36 ns/core) for one node using all available cores. However, this case cannot be explicitly simulated due to the small aggregate memory of the Falcon supercomputer.
+The computational requirements of the full core solution in OpenMOC is presented in Table~\ref{tab:full-core-comp-req}. Note that while the number of core-hours required to converge the problem is high (717,465), the solution was computed on the Argonne BlueGene/Q supercomputer, which has extremely slow cores for energy efficiency reasons. The requirements on modern computing cores, such as those on the Falcon supercomputer, is estimated by comparing the integration time of the SDSA problem tested in Chapter~\ref{chap:linear-source} on the Falcon supercomputer (48.96 ns/core) to those on the Argonne BlueGene/Q supercomputer (175.36 ns/core) for one node using all available cores. However, this case cannot be explicitly simulated due to the small aggregate memory of the Falcon supercomputer.
 
 \begin{table}[ht]
 	\centering
@@ -80,9 +80,11 @@ The computational requirements of the full core solution in OpenMOC is presented
 		\hline
 		Runtime & 7.76 hours \\
 		Number of Transport Sweeps & 20 \\
+		Number of Segments & $3.85 \times 10^8$ \\
+		Number of Source Regions & $3.44 \times 10^{12}$\\
 		Nodes & 5780 ($17 \times 17 \times 20$) \\
 		CPU Cores & 92480 \\
-		Integration Time per Core & 256.7 ns / core \\
+		Integration Time & 256.7 ns \\
 		Computational Cost & 717,465 core-hours \\
 		Estimated Computational Cost on Falcon & $\approx$ 200,314 core-hours \\
 		\hline
@@ -132,7 +134,7 @@ Using the same \ac{MOC} parameters, the BEAVRS core is simulated using the flat 
 		Run Time (hours) & 3.13 & 7.76 \\
 		Time per Iteration (minutes) & 11.0 & 23.3 \\
 		Core-hours & 289,488 & 717,465 \\
-		Integration Time per Core (ns) & 116.2 & 256.7 \\
+		Integration Time (ns) & 116.2 & 256.7 \\
 		\hline
 	\end{tabular}
 	\label{tab:fc-comp-flat-linear}
@@ -174,7 +176,7 @@ In this Chapter, full core simulation results were presented for the BEAVRS benc
   
   \item The vast majority of computation time was spent during on-node transport sweeps with very little time spent communicating boundary information
   
-  \item 27.7\% of computation time was spent waiting for other nodes to finish local work, indicating a load imbalance, likely due to less source regions in the radial reflector
+  \item 27.7\% of computation time was spent waiting for other nodes to finish local work, indicating a load imbalance, due to less source regions in the radial reflector
   
   \item A narrow parameter refinement study on the full core BEAVRS benchmark showed little sensitivity around the parameters expected for spatial and angular convergence
   

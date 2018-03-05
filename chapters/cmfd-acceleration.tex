@@ -1,13 +1,13 @@
 \chapter{CMFD Acceleration}
 \label{chap:cmfd}
 
-In the previous section, the poor convergence of source iteration to solve the \ac{MOC} equations was discussed. In this section, \ac{CMFD} acceleration is introduced which allows for better convergence. During \ac{CMFD} acceleration, a course mesh problem is solved that is consistent with the fine mesh \ac{MOC} problem. Since the course mesh problem can be solved quickly, it can be fully converged and used to update the \ac{MOC} solution allowing global behavior to be communicated in fewer iterations. This section discuss \ac{CMFD} as a multigrid method, shows how the \ac{CMFD} equations are derived from the fundamental multi-group transport equation, and then the process of applying \ac{CMFD} acceleration is discussed.
+In the previous section, the poor convergence of source iteration to solve the \ac{MOC} equations was discussed. In this section, \ac{CMFD} acceleration is introduced which allows for better convergence. During \ac{CMFD} acceleration, a coarse mesh problem is solved that is consistent with the fine mesh \ac{MOC} problem. Since the coarse mesh problem can be solved quickly, it can be fully converged and used to update the \ac{MOC} solution allowing global behavior to be communicated in fewer iterations. This section discuss \ac{CMFD} as a multigrid method, shows how the \ac{CMFD} equations are derived from the fundamental multi-group transport equation, and then the process of applying \ac{CMFD} acceleration is discussed.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Multigrid Methods}
 \label{sec:multigrid}
 
-Multigrid methods are popular in numerical analysis for solving differential equations. The fundamental idea is that global information can be transferred much quicker over a coarse mesh that a fine mesh. Using this principle multigrid methods alternate between solving the set of equations on a coarse mesh, where the problem size is reduced and information propagates much quicker, and a fine mesh where the discretization accurately captures the solution of the problem. It is vital that the coarse mesh solution be consistent with the fine mesh solution. In this context, consistency means that at convergence the coarse mesh and fine mesh solutions agree.
+Multigrid methods are popular in numerical analysis for solving differential equations. The fundamental idea is that global information can be transferred much quicker over a coarse mesh than a fine mesh. Using this principle multigrid methods alternate between solving the set of equations on a coarse mesh, where the problem size is reduced and information propagates much quicker, and a fine mesh where the discretization accurately captures the solution of the problem. It is vital that the coarse mesh solution be consistent with the fine mesh solution. In this context, consistency means that at convergence the coarse mesh and fine mesh solutions agree.
 
 Multigrid methods can be structured in many different ways but they generally involve two important stages: restriction and prolongation.
 \begin{itemize}
@@ -73,7 +73,7 @@ All of the variables given in this equation are present in the \ac{MOC} equation
 	\int\displaylimits_{S \in S_j} dS \, J_g\left(\mathbf{r}\right) \cdot \mathbf{n} + \sum_{i \in j} \Sigma_t^{i,g} \overline{\phi_{i,g}} V_i = \sum_{i \in j} \left( \frac{\chi_{i,g}}{k} \sum_{g'=1}^{G} \nu_{i, g'} \Sigma_f^{i,g'} \overline{\phi_{i,g'}} V_i + \sum_{g'=1}^G   \Sigma_{s}^{i, g' \rightarrow g}\overline{\phi_{i,g'}} V_i \right)
 	\label{eqn:cmfd_gauss_divergence}
 \end{equation}
-In order to make the \ac{CMFD} problem even less computationally intense, the group structure is coarsened. A group collapse is performed in which a given v group $e$ is the incorporation of one or more \ac{MOC} groups. To arrive at this relationship, the transport equation is summed over all \ac{MOC} groups $g$ within the \ac{CMFD} group $e$, shown in Eq.~\ref{eqn:cmfd_sum_groups}.
+In order to make the \ac{CMFD} problem even less computationally intense, the group structure is coarsened. A group collapse is performed in which a given \ac{CMFD} group $e$ is formed from the incorporation of one or more \ac{MOC} groups. To arrive at this relationship, the transport equation is summed over all \ac{MOC} groups $g$ within the \ac{CMFD} group $e$, shown in Eq.~\ref{eqn:cmfd_sum_groups}.
 \begin{equation}
 \begin{split}
 	\sum_{g \in e} \left( \int\displaylimits_{S \in S_j} dS \, J_g\left(\mathbf{r}\right) \cdot \mathbf{n} + \sum_{i \in j} \Sigma_t^{i,g} \overline{\phi_{i,g}} V_i \right) = & \\
@@ -216,9 +216,14 @@ This can be related to a regular eigenvalue problem by taking the inverse of $A$
 \begin{equation}
 	A^{-1} M \Phi_C = k \Phi_C.
 \end{equation}
-Any common eigenvalue solver can be used to solve this system. In this thesis, simple power iteration is employed. 
+Any common eigenvalue solver can be used to solve this system. In this thesis, simple power iteration is employed. This requires that every iteration solve a linear system. In this thesis, the linear system is solved with the red-black SOR algorithm. The power iteration algorithm and its application to the \ac{CMFD} equations is described later in Alg.~\ref{alg:moc-cmfd-eigenvalue-solve}.
 
-%FIXME More details on practical implementation aspects of \ac{CMFD} in this thesis are given in Chapter~\ref{chap:cmfd-optimize}.
+Often, a relaxation factor is applied to the corrected diffusion coefficients in order to ensure stability~\cite{smith2002casmo}. With the relaxation factor $\omega$, the computed corrected diffusion coefficients are damped in iteration $n+1$ by
+\begin{equation}
+\tilde{D}_{j,h,e}^{n+1} = \omega \tilde{D}_{j,h,e}^{n+1/2} + (1-\omega) \tilde{D}_{j,h,e}^{n}
+\label{eq:cmfd_damp_corr_dif_coef}
+\end{equation}
+where the half-iterations refer to the computed diffusion coefficient without damping, as given in Eq.~\ref{eqn:cmfd_corr_dif_coef}. The relaxation factor $\omega$ can be any real number in the interval [0,1] chosen by the user. A lower relaxation factor leads to greater stability, but also leads to slower convergence.
 
 Once the \ac{CMFD} equations are solved, the solution is used to update \ac{MOC} fluxes, hence producing a new source on the next iteration. The updating of \ac{MOC} fluxes is the prolongation step of the \ac{CMFD} process. There are a variety of ways for which the \ac{CMFD} fluxes can be updated. One simple approach is just updating all \ac{MOC} fluxes in source region $i$ and \ac{MOC} group $g$ encompassed by \ac{CMFD} cell $j$ and \ac{CMFD} group $e$ by applying Eq.~\ref{eqn:cmfd_simple_prolongation}:
 \begin{equation}
@@ -226,6 +231,28 @@ Once the \ac{CMFD} equations are solved, the solution is used to update \ac{MOC}
 \label{eqn:cmfd_simple_prolongation}
 \end{equation}
 where $\phi_{i,g}^{\text{new}}$ refers to the updated \ac{MOC} flux after prolongation, $\phi_{i,g}^{\text{old}}$ refers to the \ac{MOC} flux before prolongation, $\phi_{C, \, \text{old}}^{j,e'}$ refers to the \ac{CMFD} cell-averaged flux at the start of the \ac{CMFD} solution (calculated directly from the \ac{MOC} fluxes), and $\phi_{C, \, \text{new}}^{j,e'}$ refers to the \ac{CMFD} cell-averaged flux at convergence of the \ac{CMFD} solution. It is important to ensure that both new and old scalar fluxes are normalized in the same manner.
+
+While this prolongation approach works well when the \ac{CMFD} mesh is fine, the \ac{CMFD} acceleration could be aided by interpolating the \ac{CMFD} solution if the shape is known. For the axial direction, we expect smoothly varying flux shapes due to the simplistic geometric axial structure. Therefore, the flux shape in each cell is approximated as being quadratic. Both the before and after \ac{CMFD} flux shapes are fit with a quadratic interpolation using neighboring domains. Specifically, the axial flux distribution a \ac{CMFD} cell $j$ for energy group $e$ is represented as
+\begin{equation}
+\begin{split}
+\phi_C^{j,e}(z) \approx & \phi_C^{j-1,e}\left(\frac{\left(z-z^C_j \right)^2}{2} - \left(z-z^C_j \right) - \frac{1}{24} \right) + \phi_C^{j,e}\left(-\left(z-z^C_j \right)^2 + \frac{26}{24} \right) + \\ & \phi_C^{j+1,e}\left(\frac{\left(z-z^C_j \right)^2}{2} - \left(z-z^C_j \right) - \frac{1}{24} \right)
+\end{split}
+\end{equation}
+for axial height $z$ with the centroid of the \ac{CMFD} cell at height $z^C_{j}$ and \ac{CMFD} cells $j-1$ and $j+1$ representing the lower and upper neighboring axial cells, respectively. For boundary \ac{CMFD} cells on the domain, the expansion from the neighboring \ac{CMFD} cell is used. The quadratic expansions are then used to update \ac{MOC} fluxes as
+\begin{equation}
+\phi_{i,g}^{\text{new}} = \phi_{i,g}^{\text{old}} \, \frac{\phi_{C, \, \text{new}}^{j,e}(z^C_i)}{\phi_{C, \, \text{old}}^{j,e}(z^C_i)}
+\label{eq:axial-prolongation}
+\end{equation} 
+where $z^C_i$ is the centroid of \ac{MOC} source region $i$. If only two axial \ac{CMFD} cells are present on the domain, then a linear fit is used instead of a quadratic fit. If only one axial \ac{CMFD} cell is present on the domain, no fit is performed and \ac{MOC} fluxes are updated with the simple relationship shown in Eq.~\ref{eqn:cmfd_simple_prolongation}. A depiction of the axial fitting of \ac{CMFD} fluxes is shown in Figure~\ref{fig:axial-prolongation}.
+
+\begin{figure}[h!] 
+	\centering 
+	\includegraphics[width=\linewidth]{figures/axial-prolongation.png}
+	\caption[]{A depiction of the axial prolongation for updating \ac{MOC} fluxes with \ac{CMFD} acceleration. The green dashed line shows the expansion in the top two axial \ac{CMFD} cells and the orange dashed line shows the expansion used in the bottom two \ac{CMFD} cells. The black dashed line shows the composite of the expansions.}
+	\label{fig:axial-prolongation}
+\end{figure}
+
+\newpage
 
 Updating the \ac{MOC} fluxes with the \ac{CMFD} solution allows convergence to be greatly accelerated, quickly capturing the flux shape over the coarse mesh. In addition, the computational cost of fully converging the \ac{CMFD} solution is small in comparison with just one \ac{MOC} transport sweep. Therefore, using the process laid out at the beginning of this chapter in Figure~\ref{fig:multigrid-cmfd}, the \ac{CMFD} equations are formed and solved after every transport sweep. This process for solving the \ac{MOC} neutron transport eigenvalue problem with \ac{CMFD} acceleration is detailed in Alg.~\ref{alg:moc-cmfd-eigenvalue-solve}.
 

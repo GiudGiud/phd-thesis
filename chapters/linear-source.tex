@@ -3,7 +3,7 @@
 
 In Chapter~\ref{chap:moc}, the MOC equations were derived using a flat source approximation. While this approximation is convenient and used by many in practice~\cite{dragon_3d_moc, kochunas, apollo3_vv, cactus_3d, liu_mrt, mockingbird}, a linear approximation can potentially reduce the computational requirements of simulating a fully converged reactor physics problem. While the linear source approximation increases the computational cost for a fixed discretization, the higher order source can capture source gradients, allowing for a much coarser mesh discretization while maintaining solution accuracy~\cite{ferrer2012linear}. 
 
-This chapter largely follows the linear source derivation presented by Ferrer~\cite{ferrer2015linear} but with a more complete discussion of the subtleties in the derivation and implementation of the linear source approximation. In Section~\ref{sec:ls-derivation}, the linear source approximation is defined, and the resulting \ac{MOC} equations are derived. Section~\ref{sec:ls-algorithm} highlights the important equations and discusses the practical implementation of the equations in an \ac{MOC} solver. In Section~\ref{sec:ls-performance} the computational performance of the linear source implementation is discussed. Finally, Section~\ref{sec:ls-conclusion} concludes the chapter by discussing implications of the linear source approximation and highlighting important computational results.
+In this chapter, the track-based linear source approximation introduced by Ferrer~\cite{ferrer2015linear} for 2D \ac{MOC} is extended to 3D \ac{MOC}. A discussion of the subtleties in the derivation and implementation is presented. In Section~\ref{sec:ls-derivation}, the linear source approximation is defined, and the resulting \ac{MOC} equations are derived. Section~\ref{sec:ls-algorithm} highlights the important equations and discusses the practical implementation of the equations in an \ac{MOC} solver. In Section~\ref{sec:ls-performance} the computational performance of the linear source implementation is discussed. Finally, Section~\ref{sec:ls-conclusion} concludes the chapter by discussing implications of the linear source approximation and highlighting important computational results.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Derivation of the Linear Source Approximation}
@@ -18,7 +18,7 @@ Previously, the neutron source was taken to be constant which resulted in a simp
 q_g(\mathbf{r_0} + s\mathbf{\Omega}) = q^0_{t,\varsigma,g} + q^1_{t,\varsigma,g}(s-\ell_{t,\varsigma}/2)
 \label{eq:track-ls}
 \end{equation}
-where $\ell_{t,\varsigma}$ is the length of the track $t$ over the region $i$ and the track-dependent coefficients are $q^0_{t,\varsigma,g}$ and $q^1_{t,\varsigma,g}$ . It is important to note that in this definition the source components are dependent on the track. Later, the track description of the source will be transformed into one dependent on only the source region, not on the track. For a linear source defined by the spatial region, the source strength observed by each track varies since tracks enter the source regions at different positions and different angles. This motivates track-dependent source components. 
+where $\ell_{t,\varsigma}$ is the length of the track $t$ over the region $i$ and the track-dependent coefficients are $q^0_{t,\varsigma,g}$ and $q^1_{t,\varsigma,g}$ . It is important to note that in this definition the source components are dependent on the track. Later, the track description of the source will be transformed into one dependent on only the source region, not on the track. For a linear source defined by the spatial region, the source observed by each track varies since tracks enter the source regions at different positions and different angles. This motivates track-dependent source components. 
 
 By inserting the linear source definition into the balance equation, the angular flux follows the relationship
 \begin{equation}
@@ -103,11 +103,11 @@ where $\mathbf{r}^m_{t,\varsigma}$ is the midpoint of segment $\varsigma$ along 
 \begin{equation}
 q_{i,g}(x, y, z) = \overline{q}_{i,g} + q_{x,i,g} \left( x - x^C_i \right) + q_{y,i,g} \left( y - y^C_i \right) + q_{z,i,g} \left( z - z^C_i \right)
 \end{equation}
-where $x^C_i$, $y^C_i$, and $z^C_i$ represent the $x$, $y$, and $z$ coordinates of the region $i$ centroid, respectively. This can be written more compactly as
+where $x^C_i$, $y^C_i$, and $z^C_i$ represent the $x$, $y$, and $z$ coordinates of the region $i$ centroid, respectively. The centroid represents the midpoint of the cell, as observed by traversing segments. The source can be written more compactly as
 \begin{equation}
 q_{i,g}(x, y, z) = \overline{q}_{i,g} + \sum_{v \in (x,y,z)} q_{v,i,g} \left( v - v^C_i \right)
 \end{equation}
-where $v$ iterates over the spatial variables $x$, $y$, and $z$. Using this same notation, the track-based source components can be expressed as:
+where $v$ represents the spatial variables $x$, $y$, and $z$. Using this same notation, the track-based source components can be expressed as:
 \begin{equation}
 q^0_{t,\varsigma,g} = \overline{q}_{i,g} + \sum_{v \in (x,y,z)} q_{v,i,g} \left( v^m_{t,\varsigma} - v^C_i \right)
 \label{eq:q0-def}
@@ -202,7 +202,7 @@ The source moments can then be calculated similar to the flat source components,
 \begin{equation}
 Q_{v,i,g} = \frac{1}{4 \pi} \left( \frac{\chi_{i,g}}{k} \sum_{g'=1}^{G} \nu_{i,g'} \Sigma_f^{i,g'} \hat{\phi}_{v,i,g'} + \, \sum_{g'=1}^G \,  \Sigma_{s}^{i,g' \rightarrow g} \hat{\phi}_{v,i,g'} \right) \qquad \forall v \in (x,y,z)
 \end{equation}
-where $\hat{\phi}_{v,i,g}$ is the moment of the scalar flux in the $v$ direction. 
+where $\hat{\phi}_{v,i,g}$ is the moment of the scalar flux in the $v$ direction. These scalar fluxes can be computed in parallel over all regions using the computed scalar flux moments from the prior iteration.
 
 
 \subsection{Calculation of Scalar Flux Moments}
@@ -295,12 +295,12 @@ v^{\textbf{in}}_{t,\varsigma} = v^m_{t,\varsigma} - v^C_i - \frac{\Omega_{v,t} \
 Altogether, these equations can be combined and written compactly as
 \begin{equation}
 \begin{split}
-\hat{\phi}_{v,i,g} = \frac{1}{\Sigma_{t}^{i,g}} \sum_{p \in (x,y,z)} q_{p,i,g} C_{v,p}^{i,g} + & \\
+\hat{\phi}_{v,i,g} = \frac{1}{\Sigma_{t}^{i,g}} \Bigg( q_{x,i,g} C_{v,x}^{i,g} + & q_{y,i,g} C_{v,y}^{i,g} + q_{z,i,g} C_{v,z}^{i,g} \Bigg)+  \\
 \frac{1}{\Sigma_{t}^{i,g}} \sum_{(t,\varsigma) \in V_i} w_t & \left[\Omega_{v,t} \ell_{t,\varsigma} \psi^{t,\varsigma}_g(0) H(\Sigma_{t}^{i,g} \ell_{t,\varsigma}) + v^{\textbf{in}}_{t,\varsigma} \left(\psi^{t,\varsigma}_g(0) - \psi^{t,\varsigma}_g(\ell_{t,\varsigma}) \right)\right]
 \end{split}
 \label{eq:final-scalar-flux-moments}
 \end{equation}
-where
+where for $v, p \in (x,y,z) \times (x,y,z)$
 \begin{equation}
 C_{v,p}^{i,g} =  2 \sum_{(t,\varsigma) \in V^F_i} w_t \ell_{t,\varsigma}^2 \Omega_{v,t} \Omega_{p,t} G_2(\Sigma_{t}^{i,g} \ell_{t,\varsigma}) + \frac{1}{\Sigma_{t}^{i,g}} \sum_{(t,\varsigma) \in V^F_i} w_t \ell_{t,\varsigma} \left( p^m_{t,\varsigma} - p^C_i \right) \left(v^m_{t,\varsigma} - v^C_i\right).
 \label{eq:ls-C}
@@ -340,7 +340,7 @@ M_{i,v,v'} = \sum_{(t,\varsigma) \in V_i} w_t  \int_{0}^{\ell_{t,\varsigma}} ds 
 \end{equation*}
 Note that these terms $M_{i,v,v'}$ are independent of angular and scalar fluxes, and therefore $M_i^{-1}$ is also invariant over the iterative process. Therefore, the explicit computation and storage of $M_i^{-1}$ is performed for every region.
 
-Note that the computation of $M_i^{-1}$ should be handled with great care. For regions that are thin in a particular Cartesian direction (for instance the $x$ direction), the associated moments in that direction can also become very small. For instance, a region thin in the $x$ direction can have extremely small $M_{i,xx}$. This can cause the matrix to be poorly conditioned. In OpenMOC, this is handled by treating thin regions as having constant source in the thin direction. In the case of a thin $x$ direction, instead of handling the full $3 \times 3$ matrix, the system is simplified to a $2 \times 2$ matrix as
+Note that the computation of $M_i^{-1}$ should be handled with great care. For regions that are thin in a particular Cartesian direction (for instance the $x$ direction), the associated moments in that direction can also become very small. For instance, a region thin in the $x$ direction can have extremely small $M_{i,xx}$. This can cause the matrix to be poorly conditioned. In OpenMOC, this is handled by treating thin regions in which the single direction moments (such as $M_{i,xx}$) are small ($10^{-4} \textit{cm}^2$) as having constant source in the thin direction. In the case of a thin $x$ direction, instead of handling the full $3 \times 3$ matrix, the system is simplified to a $2 \times 2$ matrix as
 \begin{equation*}
 	M_i^{-1} = 
 	\begin{bmatrix}
@@ -359,7 +359,7 @@ Note that the computation of $M_i^{-1}$ should be handled with great care. For r
 			\end{bmatrix}^{-1}
 	\end{bmatrix}
 \end{equation*}
-which is solved to determine the $y$ and $z$ linear source components and the $x$ component of the linear source is assumed to be zero. Similar simplifications are handled for thin $y$ and think $z$ directions with the elimination of rows and columns involving the variable. If two directions are thin, then the source in both directions is treated as flat, with a simple $1\times1$ system evaluated to determine the source in the third direction. For example, for a region thin in both $x$ and $y$, the system reduces to
+which is solved to determine the $y$ and $z$ linear source components and the $x$ component of the linear source is assumed to be zero. Similar simplifications are handled for thin $y$ and thin $z$ directions with the elimination of rows and columns involving the variable. If two directions are thin, then the source in both directions is treated as flat, with a simple $1\times1$ system evaluated to determine the source in the third direction. For example, for a region thin in both $x$ and $y$, the system reduces to
 \begin{equation*}
 	M_i^{-1} = 
 	\begin{bmatrix}
@@ -374,7 +374,7 @@ In addition to region-dependent terms, the functions $F_1$, $F_2$, and $H$ often
 
 \subsection{Transport Sweeps}
 
-After pre-processing steps, the source iteration process begins in which transport sweeps are applied. First, an initial guess of the scalar flux distribution $\phi_{i,g}^{\mathbf{0}}$ and scalar flux moments $\hat{\phi}_{v,i,g}^{\mathbf{0}}$ for every region $i$, energy group $g$, and direction $v \in (x,y,z)$. In OpenMOC, the initial scalar flux distribution is chosen to be flat and the scalar flux moments are initially chosen to be zero everywhere. Then for iterations $\mathbf{n} = 1,2,...,\mathbf{N_{\textit{max}}}$ for a maximum number of iterations $\mathbf{N_{\textit{max}}}$, the source moments $Q_{v,i,g}^{\mathbf{n}}$ at iteration $\mathbf{n}$ can be computed using Eq.~\ref{eq:ls-source-moments} as:
+After pre-processing steps, the source iteration process begins in which transport sweeps are applied. First, an initial guess of the scalar flux distribution $\phi_{i,g}^{\mathbf{0}}$ and scalar flux moments $\hat{\phi}_{v,i,g}^{\mathbf{0}}$ for every region $i$, energy group $g$, and direction $v \in (x,y,z)$. In OpenMOC, the initial scalar flux distribution is chosen to be flat and the scalar flux moments are initially chosen to be zero everywhere. Then for iteration $\mathbf{n} = 1,2,...,\mathbf{N_{\textit{max}}}$ for a maximum number of iterations $\mathbf{N_{\textit{max}}}$, the source moments $Q_{v,i,g}^{\mathbf{n}}$ at iteration $\mathbf{n}$ can be computed using Eq.~\ref{eq:ls-source-moments} as:
 \begin{equation}
 Q_{v,i,g}^{\mathbf{n}} = \frac{1}{4 \pi} \left( \frac{\chi_{i,g}}{k} \sum_{g'=1}^{G} \nu_{i,g'} \Sigma_f^{i,g'} \hat{\phi}_{v,i,g'}^{\mathbf{n}-1} + \, \sum_{g'=1}^G \,  \Sigma_{s}^{i,g' \rightarrow g} \hat{\phi}_{v,i,g'}^{\mathbf{n}-1} \right) \qquad \forall v \in (x,y,z)
 \end{equation}
@@ -411,7 +411,7 @@ q^0_{t,\varsigma,g} = \overline{q}_{i,g}^{\mathbf{n}} + \sum_{v \in (x,y,z)} q_{
 \begin{equation}
 q^1_{t,\varsigma,g} = \sum_{v \in (x,y,z)} \Omega_{v,t} q_{v,i,g}^{\mathbf{n}}
 \end{equation}
-The boundary angular fluxes are treated the same in linear source \ac{MOC} as flat source \ac{MOC}. They are explicitly stored and the inward-directed angular fluxes are approximated by the previous iteration's estimate of the angular flux. It is important to remember that this approximation introduces no bias at convergence. A deeper discussion can be found in Section~\ref{sec:moc-solve}.
+The boundary angular fluxes are treated the same in linear source \ac{MOC} as flat source \ac{MOC}. They are explicitly stored and the inward-directed boundary angular fluxes are approximated by the associated angular fluxes from the prior iteration. It is important to remember that this is not an approximation convergence. A more complete discussion of this approach can be found in Section~\ref{sec:moc-solve}.
 
 The equations presented in this section form the basis of the track-based linear source \ac{MOC} implementation. After new estimates of average scalar fluxes and scalar flux moments are formed, the source iteration process repeats, calculating new sources using the scalar flux information. This repeats until convergence.
 
@@ -424,9 +424,9 @@ The linear source approximation introduces equations which are much more computa
 
 The first set of computational differences between flat and linear source \ac{MOC} is the structuring of data in memory and the order it is accessed. In flat source \ac{MOC}, the data should be laid out contiguous in energy groups. While it is still important for energy groups to be close in memory for linear source solvers, multiple quantities are tallied and used for each energy group due to the addition of moments in each Cartesian direction. Therefore, scalar flux moments and source moments are laid out contiguous in Cartesian direction ($x$, $y$, and $z$). Specifically, the arrays of scalar flux moments and source moments are indexed by $i\times 3G + 3\times g + d$ where $i$ is the region ID, $g$ is the energy group, and $d$ represents the $x$, $y$, and $z$ directions.
 
-Similar to the flat source implementation, temporary buffers are used to tally contributions to average scalar fluxes for each segment and the local contributions are tallied to the global tally at the end of the segment computation. This is expanded to apply the same practice to scalar flux moments in order to reduce contention.
+Similar to the flat source implementation, temporary buffers are used to tally contributions to average scalar fluxes for each segment and the local contributions are tallied to the global tally at the end of the segment computation. This is expanded to apply the same practice to scalar flux moments in order to reduce memory contention.
 
-In addition, the since the amount of computational work is increased and parts of the work access different areas of memory, the algorithm is split into tight loops over specific operations. Specifically, the algorithm presented in Alg.~\ref{alg:ls-kernel} is used for each segment traversal during transport sweeps. Note that the temporary buffers $B_k$ for $1 \leq k \leq 7$ are allocated at the beginning of the simulation for each thread in order to reduce the number of allocations and reduce thread contention.
+In addition, since the amount of computational work is increased and parts of the code access different locations in memory, the algorithm is split into tight loops over specific operations. Specifically, the algorithm presented in Alg.~\ref{alg:ls-kernel} is used for each segment traversal during transport sweeps. Note that the temporary buffers $B_k$ for $1 \leq k \leq 7$ are allocated at the beginning of the simulation for each thread in order to reduce the number of allocations and reduce thread contention.
 
 \begin{algorithm*}[!h]
 	\caption{Kernel for applying \ac{MOC} linear source equations on a segment}
@@ -500,7 +500,11 @@ In addition, the since the amount of computational work is increased and parts o
 
 A computational bottleneck of \ac{MOC} solvers is often the computation of exponential terms. These are terms that can be computationally cumbersome to explicitly compute and only depend on the optical path length. For flat source \ac{MOC}, there has been work to show that it is more efficient to calculate exponential terms by interpolating a table than explicitly calculating exponentials using the intrinsic exponential function~\cite{boyd2014openmoc}. 
 
-In OpenMOC, table interpolation is implemented using a quadratic expansion around the interpolation points. This increases the amount of information that needs to be saved for each interpolation point from one value to three. However, the number of interpolation points required to accurately compute exponential terms is greatly reduced. Interpolation tables have been setup to compute the exponential term $F_1$, rather than a pure exponential, in order to reduce the number of required operations. In order to limit the table size, a search is conducted for the maximum optical path length for a segment in the problem. Once found, the interpolation points are chosen to range from zero to the maximum optical path length. For simplicity, the points are chosen to be equally spaced.
+In OpenMOC, table interpolation is implemented using a quadratic expansion around the interpolation points. For instance, when interpolating any exponential term $E$ for a given optical thickness $\tau$, a quadratic Taylor expansion is constructed from the closest interpolation point $\tilde{\tau}$ that is less than $\tau$ as
+\begin{equation}
+E(\tau) \approx E\left(\tilde{\tau}\right) + \frac{dE}{d\tau}\left(\tilde{\tau}\right) \left(\tau - \tilde{\tau}\right) +  \frac{1}{2}\frac{d^2E}{d\tau^2}\left(\tilde{\tau}\right) \left(\tau - \tilde{\tau}\right)^2
+\end{equation}
+The three expansion terms ($E\left(\tilde{\tau}\right)$, $\frac{dE}{d\tau}\left(\tilde{\tau}\right)$, and $\frac{1}{2}\frac{d^2E}{d\tau^2}\left(\tilde{\tau}\right)$) are computed and stored for every interpolation point upfront. This increases the amount of information that needs to be saved for each interpolation point from one value to three. However, the number of interpolation points required to accurately compute exponential terms can be reduced. Interpolation tables have been setup to compute the exponential term $F_1$, rather than a pure exponential, in order to reduce the number of required operations. In order to limit the table size, a search is conducted for the maximum optical path length for a segment in the problem. Once found, the interpolation points are chosen to range from zero to the maximum optical path length. For simplicity, the points are chosen to be equally spaced.
 
 One important consideration with \ac{MOC} implementations is the behavior in optically thin regions. For instance, consider the flat source equation
 \begin{equation*}
@@ -512,7 +516,7 @@ in which the total cross-section $\Sigma_{t}^{i,g}$ becomes zero. The fundamenta
 \end{equation}
 and instead of building a table of $F_1$ which is interpolated, the table is built for the term $F_1(\tau) / \tau$ where $\tau$ is the optical path length $\Sigma_{t}^{i,g} \ell_{t,\varsigma}$. When calculating this term for low optical thickness during table formation, a quadratic expansion around zero is used rather than the direct computation of $F_1(\tau) / \tau$. Note that the limit of $F_1(\tau) / \tau$ at zero is 1.0. Similarly, the exponential terms that arise in linear source (such as $F_2$) are also computed in a similar fashion ($F_2(\tau) / \tau$) with a quadratic expansion for low optical thickness.
 
-While this approach has been used by many, others have implemented specialized exponential functions which can more efficiently calculate exponentials~\cite{colin-exp}. These specialized exponential functions allow for variable precision, which is useful for the \ac{MOC} application where reduced precision on exponential terms can still maintain solution accuracy. 
+While the interpolation approach has been used by many, others have implemented specialized exponential functions which can more efficiently calculate exponentials~\cite{colin-exp}. These specialized exponential functions allow for variable precision, which is useful for the \ac{MOC} application where reduced precision on exponential terms can still maintain solution accuracy. 
 
 In comparison with table interpolation, the specialized exponential functions trade a decrease in loads for an increase in \acp{FLOP}. In recent years, the computational capabilities of computing \acp{FLOP} have increased while the performance of loading from memory has plateaued~\cite{Patterson_1997}. Therefore, this trade-off can be beneficial.
 
@@ -583,19 +587,8 @@ Similar to the results with the flat source solver, ray tracing by $z$-stack see
 
 \begin{figure}[h!]
 	\centering
-	\begin{subfigure}{0.48\textwidth}
-		\centering
-		\includegraphics[width=\linewidth]{figures/results/performance/ls-parallel-scaling-tracks.png}
-		\caption{By Tracks}
-		\label{fig:rt-parallel-ls-tracks}
-	\end{subfigure}
-	\begin{subfigure}{0.48\textwidth}
-		\centering
-		\includegraphics[width=\linewidth]{figures/results/performance/ls-parallel-scaling-stacks.png}
-		\caption{By $Z$-Stacks}
-		\label{fig:rt-parallel-ls-stacks}
-	\end{subfigure}
-	\caption[]{Strong scaling performance on the SDSA test problem using the Falcon supercomputer with on-the-fly ray tracing by (a) tracks and (b) $z$-stacks, both using the linear source \ac{MOC} solver.}
+	\includegraphics[width=0.7\linewidth]{figures/results/performance/ls-scaling-comb-stacks-tracks.png}
+	\caption[]{Strong scaling performance on the SDSA test problem using the Falcon supercomputer with on-the-fly ray tracing by tracks and by $z$-stacks, both using the linear source \ac{MOC} solver.}
 	\label{fig:rt-parallel-ls}
 \end{figure}
 
@@ -609,8 +602,8 @@ As mentioned in the flat source ray tracing comparison,  performance using the f
 		\hline
 		Ray Tracing Scheme & Transport Sweep Time (s) & Integration Time (ns) \\
 		\hline
-		By Track & 103.3 +/- 3.4 & 1.33 +/- 0.06 \\
-		By $z$-Stack & 101.2 +/- 4.4 & 1.36 +/- 0.05 \\
+		By Track & 103.3 +/- 3.4 & 49.0 +/- 1.8 \\
+		By $z$-Stack & 101.2 +/- 4.4 & 47.9 +/- 2.2 \\
 		\hline
 	\end{tabular}
 	\label{tab:rt-full-thread-ls}
@@ -618,7 +611,7 @@ As mentioned in the flat source ray tracing comparison,  performance using the f
 
 \subsubsection{Performance on Cetus}
 
-Lastly, performance tests of the ray tracing methods are conducted on the Cetus partition of the Argonne BlueGene/Q supercomputer, the targeted computer architecture for this thesis. Again, the same coarse ray parameters used in the flat source tests, and presented in Table~\ref{tab:rt-cetus-params}, are used for the linear source tests. Recall that while the BlueGene/Q architecture only has 16 CPU cores per node, the hyper-threads allow for improved resource utilization with up to 64 threads. The results are shown in Table~\ref{tab:rt-full-thread-cetus-ls}
+Lastly, performance tests of the ray tracing methods are conducted on the Cetus partition of the Argonne BlueGene/Q supercomputer, the targeted computer architecture for this thesis. Again, the same coarse ray parameters used in the flat source tests, and presented in Table~\ref{tab:rt-cetus-params}, are used for the linear source tests. Recall that while the BlueGene/Q architecture only has 16 CPU cores per node, the hyper-threads allow for improved resource utilization with up to 64 threads. The results are shown in Table~\ref{tab:rt-full-thread-cetus-ls}.
 
 \begin{table}[ht]
 	\centering
@@ -628,8 +621,8 @@ Lastly, performance tests of the ray tracing methods are conducted on the Cetus 
 		\hline
 		Ray Tracing Scheme & Transport Sweep Time (s) & Integration Time (ns) \\
 		\hline
-		By Track & 31.88 +/- 0.52 & 11.00 +/- 0.18 \\
-		By $z$-Stack & 31.68 +/- 0.26 & 10.93 +/- 0.09 \\
+		By Track & 31.88 +/- 0.52 & 176.0 +/- 2.9 \\
+		By $z$-Stack & 31.68 +/- 0.26 & 174.9 +/- 1.4 \\
 		\hline
 	\end{tabular}
 	\label{tab:rt-full-thread-cetus-ls}
@@ -646,14 +639,13 @@ These results again confirm that on-the-fly ray tracing by $z$-stack performs sl
 
 When 16 threads are used, in which the number of threads equals in the number of cores, the speedup is 90.9\% of idea. When all 64 available hyper-threads are utilized, the average speedup is 37.8, showing that latency is a major contributor to overall run-time and hyper-threads help alleviate these bottlenecks.
 
+\newpage
 \section{Conclusion}
 \label{sec:ls-conclusion}
 
 In this thesis, the track-based linear source approximation was derived and its implementation was described. In this scheme, linear sources are defined in the perspective of each track segment and then related to region-based linear sources which can be formed from scalar fluxes and scalar flux moments. Important numerical stability considerations include the treatment of $3 \times 3$ matrix inversion for thin regions during track-based linear source formation from region-based linear sources as well as the treatment of exponential terms for optically thin segments. Important performance considerations were discussed including the memory layout, the computation of exponential terms using interpolation tables, and the choice of ray tracing algorithms. Again, on-the-fly ray tracing by $z$-stack was proven to be computationally advantageous to other implemented ray tracing schemes
 
 Performance results on small but realistic test problems show that the linear source implementation adds a  $\approx 2$ -- $3\times$ computational overhead compared with the flat source \ac{MOC} implementation. However, the linear source approximation allows for gradients to be better represented, and thus a coarser mesh while retaining solution accuracy. Others have shown this trade-off to be beneficial in 2D~\ac{MOC} implementations on common reactor physics problems~\cite{ferrer2015linear}. In 3D, the linear source solver should be even more advantageous due to smooth gradients in the axial direction for common \ac{PWR} problems. Therefore, the 3D linear source solver is chosen for simulation results presented in this thesis.
-
-\clearpage
 
 \vfill
 \begin{highlightsbox}[frametitle=Highlights]
@@ -666,7 +658,7 @@ Performance results on small but realistic test problems show that the linear so
 
 \item Exponential terms are computed with a quadratic table interpolation with special treatment of optically thin regions to avoid numerical issues
 
-\item The linear source solver adds a $\approx 2$ -- $3\times$ computational overhead but allows for a much coarser mesh while maintaining solution accuracy
+\item The linear source solver adds a $\approx 2$ -- $3\times$ computational overhead
 
 \end{itemize}
 \end{highlightsbox}
