@@ -1,5 +1,9 @@
 \begin{appendices}
 
+\input{chapters/matrix-moc}
+
+\input{chapters/cmfd-appendix}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Energy Group Structures}
 \label{app:energy-groups}
@@ -99,8 +103,8 @@ The energy group structures are from the CASMO-4 lattice physics code~\cite{eden
 		{\bf Lower Bound [MeV]} &
 		{\bf Upper Bound [MeV]} \\
 		\midrule
-		11 & 0.0000E+00 & 6.2500E-07 \\
-		10 & 5.8000E-08 & 8.5000E-07 \\
+		11 & 0.0000E+00 & 5.8000E-08 \\
+		10 & 5.8000E-08 & 1.4000E-07 \\
 		9 & 1.4000E-07 & 2.8000E-07 \\
 		8 & 2.8000E-07 & 6.2500E-07 \\
 		7 & 6.2500E-07 & 4.0000E-06 \\
@@ -345,5 +349,207 @@ i_{\textit{in}} = \Bigg\lceil\frac{z_{\textit{min}} - \min\left({z_0(s_{\textit{
 \begin{equation}
 i_{\textit{out}} = \Bigg\lceil\frac{z_{\textit{max}} - \max\left({z_0(s_{\textit{start}}), z_0(s_{\textit{end}}})\right) }{\delta z}\Bigg\rceil
 \end{equation}
+
+\input{chapters/beavrs-model}
+
+\chapter{Cross-section Generation}
+\label{app:cross-section-gen}
+
+In this thesis, the same 70 group cross-section library is used for all results involving the BEAVRS benchmark or cutouts of the BEAVRS benchmark, except for rod insertion studies in which a separate 70 group cross-section library was formed in order to have accurate control rod material cross-sections. All cross-section libraries and group structures use the CASMO-4 energy group boundaries~\cite{edenius1995casmo}, as given in Appendix~\ref{app:energy-groups}. In this appendix, the process used to form cross-sections is thoroughly discussed.
+
+This appendix is split into four sections. First, the basics of multi-group cross-section generation are discussed in Section~\ref{sec:xs-generation}. Then the subtleties of angular dependence of total cross-sections and the formation of transport-corrected cross-sections are discussed in Section~\ref{sec:mgxs-angular-dependence} and Section~\ref{app:transport-correction}, respectively. Finally, the process to generate cross-sections using OpenMC is discussed in Section~\ref{sec:openmc-xs}
+
+
+\section{Cross-section Generation}
+\label{sec:xs-generation}
+
+The multi-group transport equation yields solutions equivalent to those from the continuous energy transport equation if cross-sections are appropriately defined. This is obtained for a given energy group $g$ by integrating the continuous energy transport equation over the associated energy range of $[E_{g}, E_{g-1}]$. The resulting multi-group cross-section definitions are:
+\begin{eqnarray}
+\Sigma_{t}^g(\mathbf{r},\mathbf{\Omega}) = \frac{\int_{E_{g}}^{E_{g-1}} dE \, \Sigma_{t}(\mathbf{r},E)\psi(\mathbf{r},\mathbf{\Omega},E)}{\int_{E_{g}}^{E_{g-1}} dE \, \psi(\mathbf{r},\mathbf{\Omega},E)} 
+\label{eqn:multi-group-xs-definitions-first}\\
+\nu \Sigma_f^g\left(\mathbf{r}\right) = \frac{\int\displaylimits_{E_{g'}}^{E_{g'-1}} dE \, \nu(\mathbf{r},E) \Sigma_f(\mathbf{r}, E) \phi(\mathbf{r}, E)}{\int\displaylimits_{E_{g'}}^{E_{g'-1}} dE \, \phi(\mathbf{r}, E)} \\
+\chi_g\left(\mathbf{r}\right) = \frac{\int\displaylimits_{E_{g'}}^{E_{g'-1}} dE \, \chi(\mathbf{r},E) \sum_{g'=1}^G \nu \Sigma_f^{g'}(\mathbf{r}) \phi_{g'}(\mathbf{r})}{\sum_{g=1}^G \nu \Sigma_f^{g}(\mathbf{r}) \phi_{g}(\mathbf{r})}
+\end{eqnarray}
+\begin{equation}
+\begin{split}
+\Sigma_{s}^{g' \rightarrow g}\left(\mathbf{r}\right) = \frac{\int_{E_{g}}^{E_{g-1}} dE \, \int\displaylimits_{E_{g'}}^{E_{g'-1}} dE' \,  \Sigma_{s}(\mathbf{r},{E'\rightarrow E}) \phi(\mathbf{r}, E') }{\int_{E_{g}}^{E_{g-1}} dE \, \phi(\mathbf{r},E)}
+\end{split}
+\label{eqn:multi-group-xs-definitions-last}
+\end{equation}
+While seemingly straightforward, these equations require knowledge of the neutron fluxes, which are the goal of transport simulations. Therefore, approximations need to be made for the fluxes. One way to implicitly do this is through Monte Carlo simulations in which reaction rates are tallied. These tallied reaction rates can be used in conjunction with a tallied scalar flux estimate to produce multi-group cross-sections.
+
+\section{Angular Dependence of Total Cross-Sections}
+\label{sec:mgxs-angular-dependence}
+
+From the definition of the multi-group total cross section $\Sigma_{t}^g$ in Eq.~\ref{eqn:multi-group-xs-definitions-first} as 
+\begin{equation}
+\nonumber
+\Sigma_{t}^g(\mathbf{r},\mathbf{\Omega}) = \frac{\int_{E_{g}}^{E_{g-1}} dE \, \Sigma_{t}(\mathbf{r},E)\psi(\mathbf{r},\mathbf{\Omega},E)}{\int_{E_{g}}^{E_{g-1}} dE \, \psi(\mathbf{r},\mathbf{\Omega},E)} ,
+\end{equation}
+it is clear that the multi-group total cross-section should be angular dependent even though we assume the continuous energy total cross-section is angular independent. This is because the total cross-section multiplies the angular flux rather than the scalar flux. In turn, this causes its collapsed multi-group form to be angular dependent since both the numerator and denominator of the expression in Eq.~\ref{eqn:multi-group-xs-definitions-first} are angular dependent. This would be true of any cross-section that multiplies the angular flux, but with the isotropic scattering approximation, there are no other terms that multiply cross-sections by the angular flux.
+
+This angular dependence is often neglected, but can introduce a bias~\cite{gibson-preprint}. With the angular dependence ignored, the relationship can be integrated over all directions leading to the form in Eq.~\ref{eqn:tot-mgxs-sf}.
+\begin{equation}
+\Sigma_{t}^g(\mathbf{r}) = \frac{\int_{E_{g}}^{E_{g-1}} dE \, \Sigma_{t}(\mathbf{r},E)\phi(\mathbf{r},E)}{\int_{E_{g}}^{E_{g-1}} dE \, \phi(\mathbf{r},E)} 
+\label{eqn:tot-mgxs-sf}
+\end{equation}
+The work in this thesis also relies on the approximation of angular independent multi-group total cross-sections. With this approximation, the new multi-group transport equation can be formed, as given in Eq.~\ref{eqn:multi-group-transport-2} whose solution is the subject of this thesis. 
+\begin{equation}
+\mathbf{\Omega} \cdot \nabla \psi_{g}(\mathbf{r},\mathbf{\Omega}) + \Sigma_t^{g}(\mathbf{r}) \psi_{g}(\mathbf{r},\mathbf{\Omega}) = \frac{1}{4 \pi} \left( \frac{\chi_{g}\left(\mathbf{r}\right)}{k} \sum_{g'=1}^{G} \nu_{g'}\left(\mathbf{r}\right) \Sigma_f^{g'}\left(\mathbf{r}\right) \phi_{g'}\left(\mathbf{r}\right) + \, \sum_{g'=1}^G \,  \Sigma_{s}^{g' \rightarrow g}\left(\mathbf{r}\right) \phi_{g'}(\mathbf{r}) \right)
+\label{eqn:multi-group-transport-2}
+\end{equation}
+It is important to remember that some error is expected from the absence of angular dependent total cross-sections so that the multi-group transport solution does not strictly match the corresponding continuous energy transport solution, such as that computed by Monte Carlo methods.
+
+\section{The Transport Correction}
+\label{app:transport-correction}
+
+Previously it was mentioned that the assumption of isotropic scattering introduces significant bias, but is remedied by a transport correction. In this section, the transport correction is derived and its implications are discussed. Many different transport corrections have been implemented, such as those described in the TRANSX~\cite{macfarlane1993transx} and NJOY~\cite{macfarlane2000njoy} manuals. The basis for these transport corrections was formulated by Bell, Hansen and Sandmeier~\cite{bell1967transport}. However, this section largely follows Hebert's derivation~\cite{hebert2009applied}. 
+
+The scattering term, without the isotropic assumption, follows the relationship
+\begin{equation}
+	\int\displaylimits_{0}^{\infty} dE' \, \int\displaylimits_{4\pi} \, d\mathbf{\Omega'} \Sigma_{s}(\mathbf{r}, \mathbf{\Omega'}\rightarrow \mathbf{\Omega},{E'\rightarrow E}) \psi(\mathbf{r}, \mathbf{\Omega'},E').
+	\label{eqn:xs-angular-dependence-removal}
+\end{equation}
+In the laboratory system, in which neutron behavior is modeled, scattering may be strongly anisotropic. However, in the center-of-momentum framework, scattering is nearly isotropic in the energy range of interest. This implies that the angular dependence relies on the magnitude of the deflection from scattering $\mathbf{\Omega} \cdot \mathbf{\Omega'}$, reducing this relationship to
+\begin{equation*}
+	\int\displaylimits_{0}^{\infty} dE' \, \int\displaylimits_{4\pi} \, d\mathbf{\Omega'} \Sigma_{s}(\mathbf{r}, \mathbf{\Omega} \cdot \mathbf{\Omega'},{E'\rightarrow E}) \psi(\mathbf{r}, \mathbf{\Omega'},E').
+\end{equation*}
+The scattering kernel can be expressed as an expansion of Legendre polynomials $P_\ell$ with angular-independent coefficients $\Sigma_{s,\ell}\left(\mathbf{r}, E'\rightarrow E \right)$ as shown in Eq.~\ref{eqn:scattering-expansion} where $\mu = \mathbf{\Omega} \cdot \mathbf{\Omega'}$.
+\begin{equation}
+\Sigma_{s}(\mathbf{r}, \mu,{E'\rightarrow E}) = \sum_{\ell=0}^\infty \frac{2 \ell + 1}{2} \Sigma_{s,\ell}\left(\mathbf{r}, E'\rightarrow E \right) P_\ell(\mu)
+\label{eqn:scattering-expansion}
+\end{equation}
+The coefficients can be determined by taking advantage of the orthogonality of Legendre polynomials, leading to the relationship in Eq.~\ref{eqn:scattering-expansion-coefficients}.
+\begin{equation}
+\Sigma_{s,\ell}\left(\mathbf{r}, E'\rightarrow E \right) = \int_{-1}^{1} d\mu \, \Sigma_{s}(\mathbf{r}, \mu, {E'\rightarrow E}) P_\ell(\mu)
+\label{eqn:scattering-expansion-coefficients}
+\end{equation}
+The scattering kernel can be approximated by a finite number $L$ of Legendre polynomials with modified coefficients $\tilde{\Sigma}_{s,\ell}\left(\mathbf{r}, E'\rightarrow E \right)$ and a transport correction term $\Delta \Sigma_{\textit{tr}}\left(\mathbf{r}, E'\rightarrow E \right)$ in Eq.~\ref{eqn:scattering-expansion-approx}.
+\begin{equation}
+\Sigma_{s}(\mathbf{r}, \mu, {E'\rightarrow E}) \approx \sum_{\ell=0}^L \frac{2 \ell + 1}{2} \tilde{\Sigma}_{s,\ell}\left(\mathbf{r}, E'\rightarrow E \right) P_\ell(\mu) + \Delta \Sigma_{\textit{tr}}\left(\mathbf{r}, E'\rightarrow E \right) \delta\left(\mu - 1\right)
+\label{eqn:scattering-expansion-approx}
+\end{equation}
+Here $\delta$ represents the Dirac delta function, whose application to the transport correction makes the term forward peaked in the direction of travel to capture higher order anisotropies. Taking advantage of the relationship in Eq.~\ref{eqn:scattering-expansion-coefficients} and the approximation of the scattering kernel in Eq.~\ref{eqn:scattering-expansion-approx}, the true Legendre polynomial scattering coefficients can be related to the modified coefficients in Eq.~\ref{eqn:scattering-expansion-coefficients-approx}
+\begin{equation}
+\begin{split}
+\Sigma_{s,\ell}\left(\mathbf{r}, E'\rightarrow E \right) \approx \int_{-1}^{1} d\mu \, \sum_{\ell'=0}^L \frac{2 \ell' + 1}{2} \tilde{\Sigma}_{s,\ell'}\left(\mathbf{r}, E'\rightarrow E \right) P_{\ell'}(\mu) P_\ell(\mu) \\ + \int_{-1}^{1} d\mu \, \Delta \Sigma_{\textit{tr}}\left(\mathbf{r}, E'\rightarrow E \right) \delta\left(\mu - 1\right) P_\ell(\mu)
+\label{eqn:scattering-expansion-coefficients-approx}
+\end{split}
+\end{equation}
+For $0 \leq \ell \leq L$, Eq.~\ref{eqn:scattering-expansion-coefficients-approx} can be simplified using the orthogonality of Legendre polynomials and the property $P_\ell(1) = 1$. This leads to the simplified relationship in Eq.~\ref{eqn:tc-simplified-coefficients}.
+\begin{equation}
+\Sigma_{s,\ell}\left(\mathbf{r}, E'\rightarrow E \right) \approx  \tilde{\Sigma}_{s,\ell}\left(\mathbf{r}, E'\rightarrow E \right) + \Delta \Sigma_{\textit{tr}}\left(\mathbf{r}, E'\rightarrow E \right)
+\label{eqn:tc-simplified-coefficients}
+\end{equation}
+In order to capture the next order scattering after $L$, the transport correction term is set to capture scattering of order $L+1$ as shown in Eq.~\ref{eqn:tc-scattering-order}.
+\begin{equation}
+\Delta \Sigma_{\textit{tr}}\left(\mathbf{r}, E'\rightarrow E \right) = \Sigma_{s,L+1}\left(\mathbf{r}, E'\rightarrow E \right)
+\label{eqn:tc-scattering-order}
+\end{equation}
+For isotropic in lab scattering with $L=0$, the scattering kernel takes the form of Eq.~\ref{eqn:tc-scattering-kernel}, following the form of Eq.~\ref{eqn:scattering-expansion-approx}, where the transport correction term compensates for first order scattering in the direction of travel.
+\begin{equation}
+\begin{split}
+\Sigma_{s}(\mathbf{r},\mathbf{\Omega'} \rightarrow \mathbf{\Omega},E'\rightarrow E) \approx & \frac{1}{4\pi}\left[\Sigma_{s,0}(\mathbf{r},{E'\rightarrow E}) - \Sigma_{s,1}(\mathbf{r},{E'\rightarrow E})\right] \\ & + \, \Sigma_{s,1}(\mathbf{r},{E'\rightarrow E})\delta(\mathbf{\Omega'} \cdot \mathbf{\Omega}-1)
+\end{split}
+\label{eqn:tc-scattering-kernel}
+\end{equation}
+Inserting this definition of the scattering kernel into Eq.~\ref{eqn:xs-angular-dependence-removal}, the continuous energy and angle transport equation becomes:
+\begin{equation}
+\begin{split}
+\mathbf{\Omega} \cdot \nabla \psi(\mathbf{r},\mathbf{\Omega},E) \, + & \, \Sigma_{t}(\mathbf{r},E)\psi(\mathbf{r},\mathbf{\Omega},E) = \\
+& \phantom{+} \, \frac{\chi(\mathbf{r},E)}{4\pi k} \int\displaylimits_{0}^{\infty} dE' \, \nu(\mathbf{r},E') \Sigma_f(\mathbf{r}, E') \phi(\mathbf{r}, E')\\
+& + \, \int\displaylimits_{0}^{\infty} dE' \, \int\displaylimits_{4\pi} \, d\mathbf{\Omega'} \Bigg( \frac{1}{4 \pi} \left[\Sigma_{s,0}(\mathbf{r},{E'\rightarrow E}) - \Sigma_{s,1}(\mathbf{r},{E'\rightarrow E}) \right]\\
+& \phantom{\frac{1}{4 \pi}\int\displaylimits_{0}^{\infty} dE' \, \int\displaylimits_{4\pi}\, d\mathbf{\Omega'}} + \, \Sigma_{s,1}(\mathbf{r},{E'\rightarrow E})\delta(\mathbf{\Omega'} \cdot \mathbf{\Omega}-1)\Bigg) \psi(\mathbf{r}, \mathbf{\Omega'},E')
+\end{split}
+\end{equation}
+Taking advantage of the Dirac delta function in the transport correction term as well as the angular independence of the other scattering terms, this relationship can be simplified, as shown in Eq.~\ref{eqn:transport-tc-energy-dependent}.
+\begin{equation}
+\begin{split}
+\mathbf{\Omega} \cdot \nabla \psi(\mathbf{r},\mathbf{\Omega},E) \, + & \, \Sigma_{t}(\mathbf{r},E)\psi(\mathbf{r},\mathbf{\Omega},E) - \, \int\displaylimits_{0}^{\infty} dE' \, \Sigma_{s,1}(\mathbf{r},{E'\rightarrow E}) \psi(\mathbf{r},\mathbf{\Omega}, E') = \\
+& \phantom{+} \, \frac{\chi(\mathbf{r},E)}{4\pi k} \int\displaylimits_{0}^{\infty} dE' \, \nu(\mathbf{r},E') \Sigma_f(\mathbf{r}, E') \phi(\mathbf{r}, E')\\
+& + \, \frac{1}{4 \pi}\int\displaylimits_{0}^{\infty} dE' \, \left( \Sigma_{s,0}(\mathbf{r},{E'\rightarrow E}) - \Sigma_{s,1}(\mathbf{r},{E'\rightarrow E}) \right) \phi(\mathbf{r}, E')
+\end{split}
+\label{eqn:transport-tc-energy-dependent}
+\end{equation}
+A transport correction independent of outgoing neutron energy is defined in Eq.~\ref{eqn:energy-indep-tc}. Similar to how the multi-group total cross-section is angle dependent, but the continuous energy total cross-section is independent of angle, the transport correction also becomes angular dependent.
+\begin{dmath}
+	\Delta\Sigma_{tr}(\mathbf{r}, \mathbf{\Omega}, E) = \frac{\int\displaylimits_{0}^{\infty} dE' \, \Sigma_{s,1}(\mathbf{r},{E'\rightarrow E})\psi(\mathbf{r},\mathbf{\Omega},E')}{\psi(\mathbf{r},\mathbf{\Omega},E)}
+	\label{eqn:energy-indep-tc}
+\end{dmath}
+However, similar to how the angular dependence of the total cross-section is ignored, the angular dependence of the transport correction is also ignored. In this thesis the same approximation is invoked. Although this approximation could be significant, the use of a first order correction for the transport correction already introduces some bias. Taking the transport correction to be angular independent, the transport correction is defined in terms of scalar fluxes in Eq.~\ref{eqn:transport-correction}.
+\begin{dmath}
+	\Delta\Sigma_{tr}(\mathbf{r}, E) = \frac{\int\displaylimits_{0}^{\infty} dE' \, \Sigma_{s,1}(\mathbf{r},{E'\rightarrow E})\phi(\mathbf{r},E')}{\phi(\mathbf{r},E)}
+	\label{eqn:transport-correction}
+\end{dmath}
+This leads to the transport equation shown in Eq.~\ref{eqn:tc-transport-cont-energy}
+\begin{equation}
+\begin{split}
+\mathbf{\Omega} \cdot \nabla \psi(\mathbf{r},\mathbf{\Omega},E) \, + & \, \Sigma_{\textit{tr}}(\mathbf{r},E)\psi(\mathbf{r},\mathbf{\Omega},E) = \\
+\frac{\chi(\mathbf{r},E)}{4\pi k} \int\displaylimits_{0}^{\infty} dE' \, & \nu(\mathbf{r},E') \Sigma_f(\mathbf{r}, E') \phi(\mathbf{r}, E') + \, \frac{1}{4 \pi}\int\displaylimits_{0}^{\infty} dE' \, \tilde{\Sigma}_{s}(\mathbf{r},{E'\rightarrow E}) \phi(\mathbf{r}, E')
+\end{split}
+\label{eqn:tc-transport-cont-energy}
+\end{equation}
+where the modified total cross section $\Sigma_{\textit{tr}}(\mathbf{r},E)$ and modified scattering kernel $\tilde{\Sigma}_{s}(\mathbf{r},{E'\rightarrow E})$ are defined in Eq.~\ref{eqn:tc-mod-tot-xs} and Eq.~\ref{eqn:tc-mod-scattering-xs}, respectively.
+\begin{equation}
+\Sigma_{\textit{tr}}(\mathbf{r},E) = \Sigma_{t}(\mathbf{r},E) - \Delta\Sigma_{tr}(\mathbf{r},E)
+\label{eqn:tc-mod-tot-xs}
+\end{equation}
+\begin{equation}
+\tilde{\Sigma}_{s}(\mathbf{r},{E'\rightarrow E}) = \Sigma_{s,0}(\mathbf{r},{E'\rightarrow E}) - \Delta\Sigma_{tr}(\mathbf{r},E)\delta(E'-E)
+\label{eqn:tc-mod-scattering-xs}
+\end{equation}
+The modified total cross-section is often referred to as the \textit{transport cross-section}. Note that the Dirac delta function enters the expression in Eq.~\ref{eqn:tc-mod-scattering-xs} since the transport correction term is now independent of the outgoing neutron energy, but it enters the scattering kernel which is dependent on outgoing neutron energy.
+
+An equivalent multi-group form can also be derived in Eq.~\ref{eqn:tc-multi-group-transport}
+\begin{equation}
+\mathbf{\Omega} \cdot \nabla \psi_{g}(\mathbf{r},\mathbf{\Omega}) + \Sigma_{\textit{tr}}(\mathbf{r}) \psi_{g}(\mathbf{r},\mathbf{\Omega}) = \frac{1}{4 \pi} \left( \frac{\chi_{g}\left(\mathbf{r}\right)}{k} \sum_{g'=1}^{G} \nu_{g'}\left(\mathbf{r}\right) \Sigma_f^{g'}\left(\mathbf{r}\right) \phi_{g'}\left(\mathbf{r}\right) + \, \sum_{g'=1}^G \,  \tilde{\Sigma}_{s}^{g' \rightarrow g}\left(\mathbf{r}\right) \phi_{g'}(\mathbf{r}) \right)
+\label{eqn:tc-multi-group-transport}
+\end{equation}
+where the multi-group transport cross section $\Sigma_{\textit{tr}}^{g}(\mathbf{r})$ and modified scattering kernel definitions are given in Eq.~\ref{eqn:mg-tc-mod-tot-xs} and Eq.~\ref{eqn:mg-tc-mod-scattering-xs}, respectively. Both are based on a multi-group transport correction term $\Delta\Sigma_{tr}^g(\mathbf{r})$ which is given in Eq.~\ref{eqn:mg-transport-correction}.
+\begin{equation}
+\Sigma_{\textit{tr}}^g(\mathbf{r}) = \Sigma_{t}^g(\mathbf{r}) - \Delta\Sigma_{tr}^g(\mathbf{r})
+\label{eqn:mg-tc-mod-tot-xs}
+\end{equation}
+\begin{equation}
+\tilde{\Sigma}_{s}^{g' \rightarrow g}(\mathbf{r}) = \Sigma_{s}^{g' \rightarrow g}(\mathbf{r}) - \Delta\Sigma_{tr}^g(\mathbf{r})\delta_{g',g}
+\label{eqn:mg-tc-mod-scattering-xs}
+\end{equation}
+\begin{equation}
+\Delta\Sigma_{tr}^g(\mathbf{r}) = \frac{\int_{E_{g}}^{E_{g-1}} dE \, \int\displaylimits_{0}^{\infty} dE' \, \Sigma_{s,1}(\mathbf{r},{E'\rightarrow E})\phi(\mathbf{r},E')}{\int_{E_{g}}^{E_{g-1}} dE \, \phi(\mathbf{r},E)}
+\label{eqn:mg-transport-correction}
+\end{equation}
+In Eq.~\ref{eqn:mg-tc-mod-scattering-xs}, $\delta_{g', g}$ represents the Kronecker delta function. Its application to the transport correction term indicates that it is only applied to in-group scattering. The unmodified scattering kernel $\Sigma_{s}^{g' \rightarrow g}(\mathbf{r})$ represents the scattering kernel assuming isotropic scattering.  This definition is often termed the flux-limited approximation~\cite{yamamoto2008simplified}.
+
+In practice, the transport correction can easily be incorporated into codes that rely on isotropic scattering since it is equivalent to just modifying the underlying cross-section data. Therefore, from the perspective of designing a transport solver, the transport correction is just treated as a modification to the cross-section inputs.
+
+
+\section{Monte Carlo Cross-section Generation with OpenMC}
+\label{sec:openmc-xs}
+
+Using direct Monte Carlo simulation of the BEAVRS benchmark with the OpenMC code, reaction rate tallies are generated for each unique material. These allow for the computation of multi-group cross-sections with the methodology discussed in Section~\ref{sec:xs-generation} using the \texttt{mgxs} package implemented by Boyd~\cite{boyd2017thesis}. The Monte Carlo simulation used the JEFF-3.2 cross-section data at a temperature of 566.483K. 400 batches (300 inactive, 100 active) were simulated with $2 \times 10^8$ particles per batch to tally the 70 group cross-section library. 
+
+The flux-limited transport correction described in Section~\ref{app:transport-correction} is applied to the cross-sections using anisotropic scattering rate tallies. Note that using these tallies to form the transport correction introduces approximation since the true tallies should involve angular fluxes rather than scalar fluxes. Since the anisotropic scattering rate tallies could vary significantly between core and reflector regions, the water is split into two materials for which cross-sections are independently formed: core water and outer reflector water. In addition, a third water material is also formed near the support plate / nozzle as the isotopic composition differs due to boron concentration. Instrument tubes are also scattered through the core, causing the problem to not be quadrant symmetric. Plots of the unique materials for which cross-sections are generated can be found in Appendix~\ref{app:beavrs}.
+
+The computed cross-sections were compared with CASMO-4 cross-sections and significant differences were found in the transport cross-section for water. In preliminary tests, the CASMO-4 multi-group cross-sections for core water were also able to much more accurately simulate the radial fission distribution. Therefore, instead of solely using the OpenMC \texttt{mgxs} cross-sections for core water which had an inaccurate transport correction, or solely using CASMO-4 cross-sections which are generated for more general problems, a new cross-section set was formed specifically for core water. Since CASMO-4 is a lattice physics code, it is designed to have accurate estimates of core water cross-sections. Therefore, the transport correction from CASMO-4 is used to modify the cross-sections formed by the OpenMC \texttt{mgxs} package. Specifically, the transport cross-section $\Sigma_{tr}^g$ for group $g$ is formed by computing
+\begin{equation}
+\Sigma_{tr}^g = \Sigma_{a}^g + \eta \left( \Sigma_{t}^g - \Sigma_{a}^g \right)
+\end{equation}
+where $\Sigma_{a}^g$ and $\Sigma_{t}^g$ are the associated absorption and total cross-sections formed by \texttt{mgxs}, respectively. The factor $\eta$ is computed by
+\begin{equation}
+\eta = \frac{\Sigma_{tr}^{g, \textbf{CASMO}} - \Sigma_{a}^{g, \textbf{CASMO}}}{\Sigma_{t}^{g, \textbf{CASMO}} - \Sigma_{a}^{g, \textbf{CASMO}}}
+\label{eq:eta}
+\end{equation}
+where the \textbf{CASMO} superscript denotes CASMO-4 cross-sections. It is important to note that this is only done for core water. All other materials use the cross-sections formed directly from the \texttt{mgxs} package in OpenMC. A comparison of $\eta$ computed by OpenMC and by CASMO-4 for water is shown in Figure~\ref{fig:eta}.
+
+\begin{figure}[h!]
+	\centering
+	\includegraphics[width=0.7\linewidth]{figures/beavrs-visual/eta.png}
+	\caption{A comparison of the $\eta$ factor defined in Eq.~\ref{eq:eta} for cross-sections generated with OpenMC and the CASMO-4 cross-sections for water in 70 energy groups.}
+	\label{fig:eta}
+\end{figure} 
+
+In this appendix, the mechanics and theory behind multi-group cross-section generation were discussed. The focus was placed on Monte Carlo generation of cross-sections for full core simulation. In this process, it is important to highlight that while continuous energy cross-sections only depend on material properties, multi-group cross-sections are region-dependent due to dependence on the flux spectrum within each region. This effect can be quite significant. However, at large number of energy groups, the cross-sections more closely resemble the continuous energy cross-sections and the spatial dependence is diminished. This thesis concentrates on using a relatively large number of energy groups so that cross-sections can be treated as largely material dependent rather than having additional spatial dependence.
+
+
 
 \end{appendices}

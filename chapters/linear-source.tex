@@ -652,9 +652,11 @@ Performance results on small but realistic test problems show that the linear so
 \begin{itemize}
 \item A track-based linear source approximation has been introduced to OpenMOC in which linear sources are stored for each region based on moments
 
-\item Forming track-based linear sources from region-based linear sources involves a $3 \times 3$ matrix inversion, which can be explicitly computed and stored at the beginning of the simulation
+%\item Forming track-based linear sources from region-based linear sources involves a $3 \times 3$ matrix inversion, which can be explicitly computed and stored at the beginning of the simulation
 
-\item When inverting the $3\times 3$ matrix, thin regions need to be specially treated to avoid numerical issues
+%\item When inverting the $3\times 3$ matrix, thin regions need to be specially treated to avoid numerical issues
+
+\item With a linear source approximation, thin regions need to be specially treated to avoid numerical issues
 
 \item Exponential terms are computed with a quadratic table interpolation with special treatment of optically thin regions to avoid numerical issues
 

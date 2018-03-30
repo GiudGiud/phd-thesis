@@ -1,18 +1,20 @@
 \chapter{Track Laydown}
 \label{chap:track-laydown}
 
-One of the often overlooked aspects of \ac{MOC} implementations is the method chosen to lay down tracks across the geometry. In Chapter~\ref{chap:moc} the basic strategy of laying down tracks and then applying the \ac{MOC} equations over the tracks was discussed. In this chapter, the strategies for laying down tracks are discussed in great detail. First, this chapter discusses 2D track laydown in Section~\ref{sec:laydown-2D} which is relatively straightforward. Section~\ref{sec:angular-quadrature} discusses how angular quadratures are formed and the impact of track linking requirements. Then, Section~\ref{sec:laydown-3D} describes how a 2D track laydown can be used to form a 3D track laydown. Section~\ref{sec:openmoc-laydown} details features of the OpenMOC track generation implementation. The chapter concludes in Section~\ref{sec:tg-conclusion} by highlighting important aspects of 3D track generation. This chapter closely follows the track laydown analysis of Shaner, et al~\cite{shaner-laydown}.
+In Chapter~\ref{chap:moc} the concept of laying down tracks in the \ac{MOC} method was briefly introduced. In this chapter, the strategies for laying down tracks are discussed in great detail. First, this chapter discusses the relatively straightforward 2D track laydown. Then, the 2D track laydown is used to form a 3D track laydown. This chapter highlights the importance of 3D track laydown decisions on the overall computational cost of \ac{MOC}, closely following the track laydown analysis of Shaner, et al~\cite{shaner-laydown}.
+
+%First, this chapter discusses the relatively straightforward 2D track laydown in Section~\ref{sec:laydown-2D}. Section~\ref{sec:angular-quadrature} discusses how angular quadratures are formed and the impact of track linking requirements. Then, Section~\ref{sec:laydown-3D} describes how a 2D track laydown can be used to form a 3D track laydown. Section~\ref{sec:openmoc-laydown} details features of the OpenMOC track generation implementation. The chapter concludes in Section~\ref{sec:tg-conclusion} by highlighting important aspects of 3D track generation. This chapter closely follows the track laydown analysis of Shaner, et al~\cite{shaner-laydown}.
 
 \section{2D Track Generation}
 \label{sec:laydown-2D}
 
 As presented in Chapter~\ref{chap:moc}, \ac{MOC} lays tracks across the geometry over which the \ac{MOC} equations are applied. While one dimensional, each track represents a particular three dimensional volume and angular subspace. The first step in setting up the \ac{MOC} problem is creating tracks that span the spatial and angular space of the problem.
 
-When creating the tracks, it is important to consider the boundary conditions as these determine whether the outgoing angular flux needs to be passed as the incoming flux to another track. For flexibility, OpenMOC focuses on generating tracks that are cyclic and can therefore be used for reflective, periodic, or vacuum boundary conditions. While analysis of full-core problems typically involves only vacuum boundaries, it is helpful to have the option for reflective boundaries to compare the results of small-core benchmarks, such as the C5G7 benchmark~\cite{c5g7}, to other codes. 
+When creating the tracks, it is important to consider the boundary conditions as these determine whether the outgoing angular flux needs to be passed as the incoming flux to another track. While analysis of full-core problems typically involves only vacuum boundaries, it is helpful to have the option for reflective boundaries to compare the results of small-core benchmarks, such as the C5G7 benchmark~\cite{c5g7}, to other codes. For flexibility, OpenMOC focuses on generating tracks that are cyclic and can therefore be used for reflective, periodic, or vacuum boundary conditions.
 
 In this discussion, it is important to make clear the distinction between tracks and segments (sometimes also referred to as intersections). Tracks are defined to span an entire geometry or geometry sub-domain and pass through region boundaries. On the other hand, segments do not cross region or material boundaries.
 
-Tracks for a 2D \ac{MOC} problem are typically laid down using the cyclic tracking approach. Users input a desired radial ray spacing $\tilde{\delta}_\phi$ and number of azimuthal angles $n_{\phi}$ in $[0, 2 \pi]$. With this approach, desired azimuthal angles are created to evenly subdivide the angular space such that the $i^{\text{th}}$ desired azimuthal angle $\tilde{\phi}_i \in [0, \frac{\pi}{2}]$ is paired with a complementary azimuthal angle $\tilde{\phi}_{\frac{n_{\phi}}{2} - i - 1}$ as described in Eq.~\ref{eq:disc-azim-angles} and Eq.~\ref{eq:disc-azim-angles-comp}.
+Tracks for a 2D \ac{MOC} problem are typically laid down using the cyclic tracking approach and a product quadrature. Users input a desired radial ray spacing $\tilde{\delta}_\phi$ and number of azimuthal angles $n_{\phi}$ in $[0, 2 \pi]$. With this approach, desired azimuthal angles are created to evenly subdivide the angular space such that the $i^{\text{th}}$ desired azimuthal angle $\tilde{\phi}_i \in [0, \frac{\pi}{2}]$ is paired with a complementary azimuthal angle $\tilde{\phi}_{\frac{n_{\phi}}{2} - i - 1}$ as described in Eq.~\ref{eq:disc-azim-angles} and Eq.~\ref{eq:disc-azim-angles-comp}.
 \begin{equation}
 \tilde{\phi}_i = \frac{2 \pi}{n_\phi} \left(\frac{1}{2} + i\right) \qquad \forall \qquad i = \Big[0,\frac{n_{\phi}}{2}\Big)
 \label{eq:disc-azim-angles}
@@ -93,9 +95,9 @@ where $P_m(x)$ is the Legendre polynomial of order $m$. The quadrature points $x
 \begin{equation}
 w_{\textit{gl}}^j = \frac{2(1-x_j^2)}{(n+1)^2\left[P_{n+1}(x_j)\right]^2}
 \end{equation}
-Since the polar angle $\theta \in [0, \pi]$ and $\cos{\theta} \in [-1, 1]$, this quadrature rule can be used by the taking polar angles to be $\cos^{-1} x_j$.  
+Since the polar angle $\theta$ is bounded by $[0, \pi]$, and therefore $\cos\theta$ is bounded by $[-1, 1]$, this quadrature rule can be used by the taking polar angles to be $\cos^{-1} x_j$.  
 
-Another useful quadrature for 2D \ac{MOC}, and the most widely used in production \ac{MOC} codes, is the TY polar quadrature~\cite{ty-quadrature}. This quadrature set notes the relation of \ac{MOC} to collision probability methods, allowing an analytic form for \ac{MOC} scalar fluxes in terms of collision probabilities. These collision probabilities can then be cast in terms of \ac{MOC} equations along a strip associated with a 2D track to show that the polar quadrature is optimal when it minimizes the error of approximating Bickley functions. With this insight, the TY quadrature is computationally formed by minimizing the error to Bickley functions, which can be numerically evaluated. In practice, most simulation tools hard-code the published polar angle quadrature points and associated polar weights. While the TY quadrature has been quite successful in 2D simulations, it cannot be easily extended to 3D \ac{MOC} since it relies on an analytic form for the neutron transport over a 2D strip. Therefore, the Gauss-Legendre quadrature is typically used in 3D \ac{MOC} simulations. 
+Another useful quadrature for 2D \ac{MOC}, and the most widely used in production \ac{MOC} codes, is the TY polar quadrature~\cite{ty-quadrature}. This quadrature set notes the relation of \ac{MOC} to collision probability methods, allowing an analytic form for \ac{MOC} scalar fluxes in terms of collision probabilities. These collision probabilities can then be cast in terms of \ac{MOC} equations along a strip associated with a 2D track to show that the polar quadrature is optimal when it minimizes the error of approximating Bickley functions. With this insight, the TY quadrature is computationally formed by minimizing the error to Bickley functions, which can be numerically evaluated. In practice, most simulation tools hard-code the published polar angle quadrature points and associated polar weights. While the TY quadrature has been quite successful in 2D simulations, it relies on an analytic form for the neutron transport over a 2D strip. Therefore, the Gauss-Legendre quadrature is typically used in 3D \ac{MOC} simulations. 
 
 Together, the azimuthal and polar quadrature combine to form a product quadrature. An example of a quadrature for 3D MOC is shown in Figure~\ref{fig:quad-unit-sphere} where the product quadrature is plotted on a octant of the unit sphere using the Gauss-Legendre polar quadrature.
 
@@ -127,23 +129,23 @@ Together, the azimuthal and polar quadrature combine to form a product quadratur
 \section{3D Track Generation}
 \label{sec:laydown-3D}
 
-Once the 2D tracks are laid down, 3D tracks can be formed from the 2D tracks. In generating 3D tracks, it is assumed that 3D tracks are laid down as $z$-stacked groups of tracks that project down onto the 2D track layout. A sparse 2D and associated 3D track laydown for a cubic geometry is illustrated in Fig~\ref{fig:sample-tracks}.
+Once the 2D tracks are laid down, 3D tracks can be formed from the 2D tracks. In generating 3D tracks, it is assumed that 3D tracks are laid down as $z$-stacked groups of tracks that project down onto the 2D track layout. A sparse 2D and associated 3D track laydown for a simple pin-cell is illustrated in Fig~\ref{fig:sample-tracks}.
 
 \begin{figure}[h!]
 	\centering
 	\begin{subfigure}{0.25\textwidth}
 		\centering
-		\includegraphics[width=\linewidth]{figures/laydown/sample-tracks_a.png}
+		\includegraphics[width=\linewidth]{figures/laydown/defense-sample-tracks_a.png}
 		\caption{}
 		\label{fig:sample-tracks-a}
 	\end{subfigure}
 	\begin{subfigure}{0.35\textwidth}
 		\centering
-		\includegraphics[width=\linewidth]{figures/laydown/sample-tracks_b.png}
+		\includegraphics[width=\linewidth]{figures/laydown/defense-sample-tracks_b.png}
 		\caption{}
 		\label{fig:sample-tracks-b}
 	\end{subfigure}
-	\caption[]{Illustration of (a) 2D and (b) 3D  tracks for a cubic geometry.}
+	\caption[]{Illustration of (a) 2D and (b) 3D  tracks for a simple pin-cell.}
 	\label{fig:sample-tracks}
 \end{figure}
 
@@ -186,7 +188,7 @@ Tracks are laid down such that they intersect with a complementary track at the 
 		\caption{}
 		\label{fig:projected-tracks-b}
 	\end{subfigure}
-	\caption[]{Illustration of (a) an arbitrary 2D track cycle $T_{R,k}^{i}$ and (b) a set of 3D tracks projected along the 2D track cycle.}
+	\caption[]{Illustration of (a) an arbitrary 2D track cycle $T_{R,k}^{i}$ and (b) a set of 3D tracks projected along the 2D track cycle. The geometry height is $\Delta z$, the track $z$-spacing is $\delta_z^{i,j}$, and the perpendicular axial distance between tracks is $\delta_{\theta}^{i,j}$.}
 	\label{fig:projected-tracks}
 \end{figure}
 
@@ -272,7 +274,7 @@ Using the 2D cycle length and number of track crossings on the $z$-axis and alon
 \theta_{i,j} = \tan^{-1} \bigg( \frac{L_P^i}{n_l^{i,j} \delta_z^{i,j}}\bigg)
 \label{eq:MRT-theta-correct}
 \end{equation}
-It is important to note that when polar angles are adjusted, the Gauss-Legendre quadrature set no longer is guaranteed to exactly integrate Legendre polynomials of order up to $2n-1$ with $n$ quadrature points. In fact, it is not guaranteed to exactly integrate any Legendre polynomials beyond the zeroth order. This could either be ignored, assuming that the quadrature can still integrate Legendre polynomials of order up to $2n-1$ with reasonable accuracy, or the weights can be re-computed to ensure that Legendre polynomials of order $n$ are exactly integrated. Both options are implemented in OpenMOC, but all the results presented in this thesis ignore the weight correction. The angular track weight $\alpha_t$ of track $t$ with azimuthal angle index $i$ and polar index $j$ using a Gauss Legendre quadrature can be computed as
+It is important to note that when polar angles are adjusted, the Gauss-Legendre quadrature set no longer is guaranteed to exactly integrate Legendre polynomials of order up to $2n-1$ with $n$ quadrature points. In fact, it is not guaranteed to exactly integrate any Legendre polynomials beyond the zeroth order. This could either be ignored, assuming that the quadrature can still integrate the polar angle space with reasonable accuracy, or the weights can be re-computed to ensure that Legendre polynomials of order $n$ are exactly integrated. Both options are implemented in OpenMOC, but all the results presented in this thesis ignore the weight correction for simplicity. The angular track weight $\alpha_t$ of track $t$ with azimuthal angle index $i$ and polar index $j$ using a Gauss Legendre quadrature can be computed as
 \begin{equation}
 \alpha_t = w_{\phi}^i w_{\textit{gl}}^j .
 \end{equation}
@@ -357,7 +359,7 @@ Since the length of all 2D tracks is an integer number of lengths of the first t
 	\end{algorithmic}
 \end{algorithm*}
 
-It is important to note that the track generation procedure described in Alg. \ref{alg:MRT} favors correcting the axial ray spacing over correcting the polar angle. Alternative algorithms could easily be designed to favor correcting the polar angle over the axial ray spacing, but it is expected that correcting the axial ray spacing is a more conservative procedure and this is in line with previous work on \ac{MRT}~\cite{kochunas}. 
+It is important to note that the track generation procedure described in Alg. \ref{alg:MRT} favors correcting the axial ray spacing over correcting the polar angle. Alternative algorithms could easily be designed to favor correcting the polar angle over the axial ray spacing, but it is expected that correcting the axial ray spacing results in less induced error and this is in line with previous work on \ac{MRT}~\cite{kochunas}. 
 
 When the periodic cycle length is small relative to the desired axial ray spacing, the correction to the axial ray spacing can be very large. This has significant implications for the \ac{s-MRT} method where the periodic cycle length is always on the order of the radial ray spacing. Shaner showed that for realistic 3D \ac{MOC} problems where the axial ray spacing can be quite coarser than the radial ray spacing, \ac{s-MRT} introduces far more tracks than necessary~\cite{shaner-laydown}. This was shown to increase the number of tracks generated by at least an order of magnitude for common full-core PWR problems. Since the computational cost of \ac{MOC} scales directly with the number of tracks, an order of magnitude increase in the number of tracks translates directly into an order of magnitude increase in the run time.
 
@@ -366,25 +368,25 @@ When the periodic cycle length is small relative to the desired axial ray spacin
 
 Due to the great flexibility of modular ray tracing methods and the run-time concerns of \ac{s-MRT}, \ac{MRT} was chosen as the track generation technique for OpenMOC. In earlier development stages, multiple track generation options existed, but since \ac{MRT} outperformed all options in both flexibility and efficiency, the other options were eliminated.
 
-In addition to implementing \ac{MRT} for 3D Track Generation, OpenMOC generates tracks on-the-fly rather than pre-computing and saving all track data. With the large number of tracks involved in a 3D calculation, the storage of 3D track information can be expensive. Therefore, 3D tracks are computed on-the-fly provided the track indexes. The track indexes used to identify a track are: the azimuthal angle index, the $xy$ track number, the polar angle index, and the axial track number. As a pre-processing step, auxiliary information is saved, such as the actual ray spacings, the actual polar angles, the 2D track information, and the number of tracks in a cycle. Since retrieving track data is simple given this auxiliary information, track retrieval adds trivial computational cost to the simulation.
+In addition to implementing \ac{MRT} for 3D Track Generation, OpenMOC generates tracks on-the-fly rather than pre-computing and saving all track data. With the large number of tracks involved in a 3D calculation, the storage of 3D track information can be expensive. Therefore, 3D tracks are computed on-the-fly with track indexes. The track indexes used to identify a track are: the azimuthal angle index, the $xy$ track number, the polar angle index, and the axial track number. As a pre-processing step, auxiliary information is saved, such as the actual ray spacings, the actual polar angles, the 2D track information, and the number of tracks in a cycle. Since retrieving track data is simple given this auxiliary information, track retrieval adds trivial computational cost to the simulation.
 
 \section{Conclusion}
 \label{sec:tg-conclusion}
 
-Efficiently laying down tracks is important to any \ac{MOC} solver. In this chapter, the methodology for laying down 3D tracks to guarantee cyclic relationships at boundaries was discussed in detail. The \ac{MRT} track laydown scheme was chosen for its flexibility. Under this scheme, tracks can link at domain boundaries through periodic conditions. More importantly, corrected ray parameters do not deviate significantly from desired ray parameters. This is especially important for typical 3D reactor physics problems in which the radial plane contains much more complexity than the axial direction, allowing for a potentially coarser ray spacing in the axial direction than radial direction which \ac{MRT} can easily accommodate. Other track laydown schemes, such as \ac{s-MRT}, have great difficulties in accommodating these conditions. 
+Efficiently laying down tracks is important to any \ac{MOC} solver. In this chapter, the methodology for laying down 3D tracks to guarantee cyclic relationships at boundaries was discussed in detail. The \ac{MRT} track laydown scheme was chosen for its flexibility. Under this scheme, tracks can link at domain boundaries through periodic conditions. More importantly, corrected ray parameters do not deviate significantly from desired ray parameters. This is especially important for typical 3D reactor physics problems in which the radial plane contains much more complexity than the axial direction, allowing for a potentially coarser ray spacing in the axial direction than radial direction which \ac{MRT} can easily accommodate. Other track laydown schemes, such as \ac{s-MRT}, have great difficulties in accommodating these conditions, leading to significantly more tracks being generated than needed, and therefore directly leading to a higher computational cost. 
 
 
-\newpage
-\vfill
-\begin{highlightsbox}[frametitle=Highlights]
-\begin{itemize}
-  \item Extra constraints need to be imposed on track generation to support handling periodic or reflective boundary conditions, which allow tracks to link at boundaries, causing track ray spacing and angles to be modified from desired values.
-  \item In the OpenMOC implementation for track generation, 3D tracks are generated from a 2D track laydown in which each 2D track contains the radial projection of many axially-stacked 3D tracks.
-  \item To successfully link tracks at boundaries cyclic track wrapping is required
-  \item The \ac{MRT} method for track generation satisfies the cyclic track wrapping requirement by dividing the geometry into sub-domains over which both periodic and reflective track linking is imposed
-  \item \ac{MRT} satisfies the track linking requirements without large perturbations to desired axial ray spacing or polar angles.
-  \item Simplified forms of \ac{MRT} can cause large perturbations from desired axial ray spacing, which causes a significantly larger number of tracks to be generated than needed, directly leading to a higher computation cost.
-  \item OpenMOC implements \ac{MRT} without simplification for track generation in order to avoid generating extra tracks and for its ease of imposing periodic and reflective track linking on sub-domains.
-\end{itemize}
-\end{highlightsbox}
-\vfill
+%\newpage
+%\vfill
+%\begin{highlightsbox}[frametitle=Highlights]
+%\begin{itemize}
+%  \item Extra constraints need to be imposed on track generation to support handling periodic or reflective boundary conditions, which allow tracks to link at boundaries, causing track ray spacing and angles to be modified from desired values.
+%  \item In the OpenMOC implementation for track generation, 3D tracks are generated from a 2D track laydown in which each 2D track contains the radial projection of many axially-stacked 3D tracks.
+%  \item To successfully link tracks at boundaries cyclic track wrapping is required
+%  \item The \ac{MRT} method for track generation satisfies the cyclic track wrapping requirement by dividing the geometry into sub-domains over which both periodic and reflective track linking is imposed
+%  \item \ac{MRT} satisfies the track linking requirements without large perturbations to desired axial ray spacing or polar angles.
+%  \item Simplified forms of \ac{MRT} can cause large perturbations from desired axial ray spacing, which causes a significantly larger number of tracks to be generated than needed, directly leading to a higher computation cost.
+%  \item OpenMOC implements \ac{MRT} without simplification for track generation in order to avoid generating extra tracks and for its ease of imposing periodic and reflective track linking on sub-domains.
+%\end{itemize}
+%\end{highlightsbox}
+%\vfill

@@ -1,12 +1,12 @@
 \chapter{Full Core Results}
 \label{chap:full-core-results}
 
-The objective of this thesis is to efficiently simulate a full core \ac{LWR} using 3D \ac{MOC} fully converged in space and angle. In this chapter, the OpenMOC implementation described in previous chapters is used to directly simulate the full core BEAVRS benchmark. In Section~\ref{sec:openmc-compare}, the computed OpenMOC solution using 3D \ac{MOC} is compared with the reference OpenMC Monte Carlo solution. In Section~\ref{sec:fc-computational-performance}, the computational performance and profile of OpenMOC on the full core problem is analyzed. Additionally, the computational performance is compared with the flat source solver in Section~\ref{sec:fc-flat-source}. To ensure the chosen \ac{MOC} parameters are sufficient for spatial and angular convergence, a narrow parameter refinement study is conducted in Section~\ref{sec:fc-parameter-refinement}. The chapter concludes in Section~\ref{sec:fc-conclusion} by summarizing and highlighting important results.
+The objective of this thesis is to efficiently simulate a full core \ac{LWR} using 3D \ac{MOC}, converged in space and angle. In this chapter, the OpenMOC implementation described in previous chapters is used to directly simulate the full core BEAVRS benchmark. In past presentations, the 3D \ac{MOC} solver implemented in this thesis has been verified on a variety of simpler, conventional reactor physics models~\cite{physor2016shaner, physor2016otf}. The BEAVRS benchmark represents a far more computationally demanding challenge, especially with a 70 group cross-section library. The computed OpenMOC solution using 3D \ac{MOC} is compared with the reference OpenMC Monte Carlo solution. Then, the computational performance and profile of OpenMOC on the full core problem is analyzed. To ensure the chosen \ac{MOC} parameters are sufficient for spatial and angular convergence, a parameter refinement study is also conducted. The chapter concludes by summarizing and highlighting important results.
 
 \section{Comparison with OpenMC}
 \label{sec:openmc-compare}
 
-In Chapter~\ref{chap:moc-sensitivity}, parameter refinement studies were conducted for each \ac{MOC} parameter. Using the \ac{MOC} parameters sufficient to accurately and efficiently resolve pellet-wise fission rates, as presented in Table~\ref{tab:final-params}, the BEAVRS benchmark is simulated on the Mira partition of the Argonne BlueGene/Q supercomputer using the linear source 3D \ac{MOC} solver in OpenMOC. The resulting radially and axially integrated reaction rates are presented in Figure~\ref{fig:full-core-radial} and Figure~\ref{fig:full-core-axial}.
+In Chapter~\ref{chap:moc-sensitivity}, parameter refinement studies were conducted for each \ac{MOC} parameter. Using the \ac{MOC} parameters sufficient to accurately and efficiently resolve pellet-wise fission rates, as presented in Table~\ref{tab:final-params} with the mesh shown in Figure~\ref{fig:moc-mesh-combined}, the BEAVRS benchmark is simulated on the Mira partition of the Argonne BlueGene/Q supercomputer using the linear source 3D \ac{MOC} solver in OpenMOC. The resulting radially and axially integrated reaction rates are presented in Figure~\ref{fig:full-core-radial} and Figure~\ref{fig:full-core-axial}.
 
 \begin{figure}[ht!]
 	\centering
@@ -41,11 +41,11 @@ The OpenMOC results are compared with the OpenMC Monte Carlo solution from which
 	\label{tab:openmc-comparison}
 \end{table}
 
-Notice that since Monte Carlo simulations introduce statistical noise, each pellet-wise Monte Carlo fission rate has an associated standard deviation. The \ac{RMS} pellet-wise fission rate error of OpenMOC is 2.14\% which is close to the average standard deviation in OpenMC tallies. The radial and axial error distributions are presented in Figure~\ref{fig:openmc-comp-rad} and Figure~\ref{fig:openmc-comp-ax}, respectively, showing a radial tilt across the core.
+Notice that since Monte Carlo simulations introduce statistical noise, each pellet-wise Monte Carlo fission rate has an associated standard deviation. The \ac{RMS} pellet-wise fission rate error of OpenMOC is 2.14\% which is close to the average standard deviation in OpenMC tallies. The error in $k_{\textit{eff}}$ comes from ignoring the angular dependence of total cross-sections, leading to incorrect accounting of spatial self-shielding, particularly in U-238~\cite{gibson-preprint, guillaume}. The radial and axial error distributions are presented in Figure~\ref{fig:openmc-comp-rad} and Figure~\ref{fig:openmc-comp-ax}, respectively, showing a radial tilt from the center to the core periphery.
 
 \begin{figure}[ht!]
 	\centering
-	\includegraphics[width=0.6\linewidth]{figures/results/full-core/radial_diff_v_openmc.png}
+	\includegraphics[width=0.8\linewidth]{figures/results/full-core/radial_diff_v_openmc.png}
 	\caption{Radial distribution of normalized fission rate errors of OpenMOC compared with a reference OpenMC solution on the BEAVRS benchmark.}
 	\label{fig:openmc-comp-rad}
 \end{figure}
@@ -57,12 +57,12 @@ Notice that since Monte Carlo simulations introduce statistical noise, each pell
 	\label{fig:openmc-comp-ax}
 \end{figure}
 
-
-To ensure the gross fission rate distribution is simulated with reasonable accuracy, assembly-integrated fission rates are compared. Figure~\ref{fig:assembly-rr} shows these assembly rate errors and the associated OpenMC reference folded into a 1/8 map. Similar to the radial distribution shown in Figure~\ref{fig:openmc-comp-rad}, the error again appears as a pure tilt across the core. This tilt is due to the particular transport correction that is not able to fully capture the effects of anisotropic scattering. It is possible that a better transport correction -- particularly in reflector regions -- would be able to eliminate this tilt. However, accurate cross-section formation is not the objective of this thesis and other ongoing projects at MIT are seeking to improve the transport correction.
+%To ensure the gross fission rate distribution is simulated with reasonable accuracy, assembly-integrated fission rates are compared. 
+Figure~\ref{fig:assembly-rr} shows these assembly rate errors and the associated OpenMC reference folded into a 1/8 map. Similar to the radial distribution shown in Figure~\ref{fig:openmc-comp-rad}, the error again appears as a pure tilt. This tilt is due to the particular transport correction that is not able to fully capture the effects of anisotropic scattering. It is possible that a better transport correction -- particularly in reflector regions -- would be able to eliminate this tilt. However, accurate cross-section formation is not the objective of this thesis, and other ongoing projects at MIT are seeking to improve the transport correction across the core~\cite{johnny,guillaume}. The low number of inactive iterations (300) used in the Monte Carlo simulation could also be a significant contributor to the observed differences.
 
 \begin{figure}[ht!]
 	\centering
-	\includegraphics[width=\linewidth]{figures/results/full-core/folded-1-8-core-assembly-rr.png}
+	\includegraphics[width=\linewidth]{figures/results/full-core/folded-1-8-core-assembly-rr-new.png}
 	\caption{1/8 core folded assembly fission rate error of OpenMOC compared with the reference OpenMC solution for the BEAVRS benchmark.}
 	\label{fig:assembly-rr}
 \end{figure}
@@ -70,7 +70,7 @@ To ensure the gross fission rate distribution is simulated with reasonable accur
 \section{Computational Performance}
 \label{sec:fc-computational-performance}
 
-The computational requirements of the full core solution in OpenMOC is presented in Table~\ref{tab:full-core-comp-req}. Note that while the number of core-hours required to converge the problem is high (717,465), the solution was computed on the Argonne BlueGene/Q supercomputer, which has extremely slow cores for energy efficiency reasons. The requirements on modern computing cores, such as those on the Falcon supercomputer, is estimated by comparing the integration time of the SDSA problem tested in Chapter~\ref{chap:linear-source} on the Falcon supercomputer (48.96 ns/core) to those on the Argonne BlueGene/Q supercomputer (175.36 ns/core) for one node using all available cores. However, this case cannot be explicitly simulated due to the small aggregate memory of the Falcon supercomputer.
+The computational requirements of the full core solution in OpenMOC is presented in Table~\ref{tab:full-core-comp-req}. Note that while the number of core-hours required to converge the problem is high (717,465), the solution was computed on the Argonne BlueGene/Q supercomputer, which has extremely slow cores for energy efficiency reasons. The requirements on modern computing cores, such as those on the Falcon supercomputer, is estimated by comparing the integration time of the SDSA problem tested in Chapter~\ref{chap:ray-tracing} on the Falcon supercomputer (47.9 ns) to those on the Argonne BlueGene/Q supercomputer (174.9 ns) for one node and all available cores. However, this case cannot be explicitly simulated due to the small aggregate memory of the Falcon supercomputer.
 
 \begin{table}[ht]
 	\centering
@@ -80,8 +80,8 @@ The computational requirements of the full core solution in OpenMOC is presented
 		\hline
 		Runtime & 7.76 hours \\
 		Number of Transport Sweeps & 20 \\
-		Number of Segments & $3.85 \times 10^8$ \\
-		Number of Source Regions & $3.44 \times 10^{12}$\\
+		Number of Segments & $3.44 \times 10^{12}$ \\
+		Number of Source Regions & $3.85 \times 10^8$\\
 		Nodes & 5780 ($17 \times 17 \times 20$) \\
 		CPU Cores & 92480 \\
 		Integration Time & 256.7 ns \\
@@ -92,7 +92,7 @@ The computational requirements of the full core solution in OpenMOC is presented
 	\label{tab:full-core-comp-req}
 \end{table}
 
-Further analysis of the computational profile is presented in Table~\ref{tab:full-core-comp-prof}. The results show the computational overhead of CMFD acceleration was insignificant. In addition, the time spent communicating boundary angular fluxes between domains was quite small. However, there was significant idle time between sweeps when nodes are waiting for others to finish their current iteration. This is an indication of load imbalance due to more work being required in core regions than in reflector regions.
+Further analysis of the computational profile is presented in Table~\ref{tab:full-core-comp-prof}. The results show the computational overhead of CMFD acceleration was insignificant. In addition, the time spent communicating boundary angular fluxes between domains was quite small. However, there was significant idle time between sweeps when nodes are waiting for others to finish their current iteration. This imbalance is due to more work being required in core domains than in reflector domains.
 
 \begin{table}[ht]
 	\centering
@@ -143,7 +143,9 @@ Using the same \ac{MOC} parameters, the BEAVRS core is simulated using the flat 
 \section{Parameter Refinement}
 \label{sec:fc-parameter-refinement}
 
-In order to verify that the chosen \ac{MOC} parameters where sufficient in accurately converging the solution in space and angle, simulations are conducted in which each 3D parameter is refined, with the results shown in Table~\ref{tab:fc-param-sensitivity}. Ideally, all parameters should be refined together, but the computational burden would be too large to run on Mira. Therefore, each parameter is refined separately. Due to memory constraints, ray parameters were only able to be refined by $\approx 1.5 \times$ but the axial mesh could be refined by a factor of 2. These results indicate that the solution nearly satisfies to the desired criteria of less than 1.0\% pellet-wise \ac{RMS} fission rate error, less than 3.0\% maximum error, and less than 20 pcm bias with respect to finer parameter solutions. In order to strictly adhere to the criteria, the axial mesh would need to be slightly refined.
+In order to verify that the chosen \ac{MOC} parameters were sufficiently converged in space and angle, simulations are conducted in which each 3D parameter is refined, with the results shown in Table~\ref{tab:fc-param-sensitivity}. Ideally, all parameters should be refined together, but the computational burden would be too large to run on Mira with the allocation used in this study. Therefore, each parameter is refined separately. Due to memory constraints per domain, ray parameters were only able to be refined by $\approx 1.5 \times$ but the axial mesh could be refined by a factor of 2. 
+
+%These results indicate that the solution nearly satisfies to the desired criteria of less than 1.0\% pellet-wise \ac{RMS} fission rate difference, less than 3.0\% maximum difference, and less than 20 pcm bias with respect to finer parameter solutions. In order to strictly adhere to the criteria, the axial mesh would need to be slightly refined.
 
 \begin{table}[ht]
 	\centering
@@ -155,32 +157,30 @@ In order to verify that the chosen \ac{MOC} parameters where sufficient in accur
 		Angles & Spacing   & Height & Bias                & Rate Diff. & Rate Diff. \\
 		\hline
 		10 & 0.75 cm & 2.0 cm & --     & --     & --  \\
-		14 & 0.75 cm & 2.0 cm & 2 pcm  & 0.51\% & 1.92\%  \\
-		10 & 0.50 cm & 2.0 cm & 5 pcm  & 0.41\% & 1.76\%  \\
-		10 & 0.75 cm & 1.0 cm & 13 pcm & 0.28\% & 3.33\%  \\
+		14 & 0.75 cm & 2.0 cm & 2 pcm  & 0.010 (0.51\%) & 0.074 (1.92\%)  \\
+		10 & 0.50 cm & 2.0 cm & 5 pcm  & 0.008 (0.41\%) & 0.044 (1.76\%) \\
+		10 & 0.75 cm & 1.0 cm & 13 pcm & 0.001 (0.28\%) & 0.055 (3.33\%)  \\
 		\hline
 	\end{tabular}
 	\label{tab:fc-param-sensitivity}
 \end{table}
 
-\section{Conclusion}
+\section{Conclusions}
 \label{sec:fc-conclusion}
 
-In this Chapter, full core simulation results were presented for the BEAVRS benchmark. The results show reasonable agreement with the OpenMC Monte Carlo solution, though a radial tilt does exist over the core, indicating the need for a better transport correction. Parameter refinement studies were conducted on the full core, showing some sensitivity to axial mesh. However, all parameter refinements nearly met the desired sensitivity criteria. The full core solution required 717,465 core-hours on the Argonne BlueGene/Q supercomputer with slow CPU cores. For more modern CPU cores, it is estimated that only $\approx$ 200,314 core-hours would be required, showing that full core 3D \ac{MOC} simulations are now feasible on modern supercomputers.
+In this Chapter, full core simulation results were presented for the BEAVRS benchmark. The results show reasonable agreement with the OpenMC Monte Carlo solution, though a radial tilt does exist, indicating either the need for a better transport correction or a better converged reference solution. Parameter refinement studies were conducted on the full core, showing some sensitivity to axial mesh. However, all parameter refinements nearly met the desired sensitivity criteria. The full core solution required 717,465 core-hours on the Argonne BlueGene/Q supercomputer with slow CPU cores. For Falcon CPU cores, representative of modern computer CPUs, it is estimated that only $\approx$ 200,000 core-hours would be required, and full core 3D \ac{MOC} simulations are now feasible on modern supercomputers.
 
 
-\vfill
-\begin{highlightsbox}[frametitle=Highlights]
-\begin{itemize}
-  \item Full core simulation of the BEAVRS benchmark in OpenMOC had a pellet-wise fission rate error of 2.14\% relative to the OpenMC reference solution, which is close to the average standard deviation in OpenMC tallies
+%\vfill
+%\begin{highlightsbox}[frametitle=Highlights]
+%\begin{itemize}
+%  \item Full core simulation of the BEAVRS benchmark in OpenMOC had a pellet-wise fission rate error of 2.14\% relative to the OpenMC reference solution, which is close to the average standard deviation in OpenMC tallies
   
-  \item The vast majority of computation time was spent during on-node transport sweeps with very little time spent communicating boundary information
+%  \item The vast majority of computation time was spent during on-node transport sweeps with very little time spent communicating boundary information
   
-  \item 27.7\% of computation time was spent waiting for other nodes to finish local work, indicating a load imbalance, due to less source regions in the radial reflector
+%  \item 27.7\% of computation time was spent waiting for other nodes to finish local work, indicating a load imbalance, due to fewer source regions in the radial reflector
   
-  \item A narrow parameter refinement study on the full core BEAVRS benchmark showed little sensitivity around the parameters expected for spatial and angular convergence
-  
-  \item The full core solution required 717,465 core-hours on the Argonne BlueGene/Q supercomputer, equivalent to $\approx$ 200,314 core-hours on modern CPU cores
-\end{itemize}
-\end{highlightsbox}
-\vfill
+%  \item The full core solution required 717,465 core-hours on the Argonne BlueGene/Q supercomputer, equivalent to $\approx$ 200,000 core-hours on modern CPU cores
+%\end{itemize}
+%\end{highlightsbox}
+%\vfill
