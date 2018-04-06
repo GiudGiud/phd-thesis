@@ -1,0 +1,167 @@
+\chapter{Matrix Representation of MOC}
+\label{app:matrix-moc}
+
+This appendix focuses on how to solve the \ac{MOC} system of equations, focusing on the flat source approximation, as the equations are far simpler. However, a linear source approximation would lead to a similar discussion. In Chapter~\ref{chap:moc}, Eq.~\ref{eqn:angular-flux-var} and Eq.~\ref{eqn:average-flux} provided ways to calculate the angular fluxes and scalar fluxes, respectively. The source can be computed from the scalar fluxes with Eq.~\ref{eqn:source-discr}. This forms a system of equations that can be solved to determine the neutron distribution inside a nuclear reactor core. 
+
+In this discussion, the problem will be cast as a set of matrix equations that could theoretically be solved with common linear algebra packages. However, this discussion will show that blindly solving the system of equations with a general linear algebra package is computationally infeasible since it loses sight of inherent structure the physics-based approach naturally captures.
+
+The system of equations to be solved is formed by Eq.~\ref{eqn:source-discr}, Eq.~\ref{eqn:angular-flux-var}, and Eq.~\ref{eqn:average-flux}. Turning Eq.~\ref{eqn:source-discr} into matrix form, a fission matrix $F$ and a scattering matrix $S$ are defined such that
+\begin{equation}
+\mathbf{q} = \frac{1}{k} F \boldsymbol{\phi} + S \boldsymbol{\phi}
+\label{eqn:matrix-source-calc}
+\end{equation}
+where $\mathbf{q}$ is a vector of size $M$ containing all neutron sources and $\boldsymbol{\phi}$ is a vector of size $M$ containing all scalar fluxes. Since there must be a neutron source and scalar flux for every source region and every energy group, $M = L G$ where $L$ is the number of source regions and $G$ is the number of groups. The scalar fluxes $\boldsymbol{\phi}$ as well as the sources $\mathbf{q}$ are ordered such that they are contiguous in group with the index calculated as $i G + g$. In the context of this discussion, elements relating to region quantities are indexed by source region $i$ and group $g$, yielding the following definitions for the fission matrix $F$ and scattering matrix $S$ as
+\begin{eqnarray}
+F_{\left(i, g\right), \, \left(i, g'\right)} = \frac{1}{4\pi} \chi_{i,g} \nu \Sigma_f^{i,g'}
+\label{eqn:fission-matrix}
+\end{eqnarray}
+and
+\begin{eqnarray}
+S_{\left(i, g\right), \, \left(i, g'\right)} = \frac{1}{4\pi} \Sigma_s^{i,g' \rightarrow g}
+\label{eqn:scattering-matrix}
+\end{eqnarray}
+where all other unspecified matrix elements are zero. Both of these matrices are of size $M \times M$ and sparse since there are no inter-regional terms.
+
+The relationship in Eq.~\ref{eqn:angular-flux-var} can be rearranged to form the relationship in Eq.~\ref{eqn:re-angular-flux-var-disc}. This form is much easier to work with in the translation to matrix definitions.
+\begin{equation}
+\psi^{t,\varsigma}_g(0) \left(\frac{F_1\left(\Sigma_{t}^{i,g} s \right) - 1}{F_1\left(\Sigma_{t}^{i,g} s \right)}\right) + \psi_g^{t,\varsigma}(s) \left(\frac{1}{F_1\left(\Sigma_{t}^{i,g} s \right)}\right) = \frac{q^0_{i,g}}{\Sigma_{t}^{i,g}}
+\label{eqn:re-angular-flux-var-disc}
+\end{equation}
+This relationship can be turned into matrix form by defining an angular flux vector $\boldsymbol{\psi}$ that contains all outgoing angular fluxes. This is represented in Eq.~\ref{eqn:matrix-attn} by an angular flux transport matrix $T$ defining relationships between angular fluxes, a source selection matrix $H$ which selects the source of the region being traversed, and a diagonal matrix $U$ containing the total cross-sections which scale the source appropriately to match the relationship in Eq.~\ref{eqn:re-angular-flux-var-disc}.
+\begin{equation}
+T \boldsymbol{\psi} = H U^{-1} \mathbf{q}
+\label{eqn:matrix-attn}
+\end{equation}
+The number of angular fluxes is $N = \beta L G$ where $\beta$ is the average number of track crossings per source region. Since there must be a significant number of track crossings per region for convergence we expect $N >> M$. $T$ is size $N \times N$ as it defines relationships between angular fluxes, the size of $H$ is $N \times M$ since for each angular flux pair it must pick out the appropriate source region, and the size of $U$ is $M \times M$ since it relates only to the source regions. The elements relating to angular flux quantities are indexed by track $t$, segment $\varsigma$, and group $g$. For notational convenience, a function $R$ is created which maps a track $t$ and segment number $\varsigma$ to the traversed region $R(t,\varsigma)$. The source selection matrix $H$ can therefore be defined as
+\begin{equation}
+H_{\left(t,\varsigma,g\right), \, \left(R(t,\varsigma), g\right)} = 1.
+\label{eqn:source-selection-matrix}
+\end{equation}
+This matrix therefore, has only one non-zero value per row, indicating which region is being traversed, relating track-based quantities such as angular fluxes to region based quantities such as the scalar fluxes. Its transpose similarly relates the regions to the tracks traversing the region. The matrix $H^T H$ is a $M \times M$ diagonal matrix with each diagonal element representing the number of tracks that traverse the region multiplied by the number of groups. Since it is diagonal, it is easily invertible, which will be important in the later discussion.
+The diagonal matrix $U$ containing the total cross-sections is defined by
+\begin{equation}
+U_{\left(i, g\right), \, \left(i, g\right)} = \Sigma_t^{i,g}.
+\label{eqn:total-xs-matrix}
+\end{equation}
+The angular flux transport matrix $T$ is defined by
+\begin{equation}
+T_{\left(t,\varsigma,g\right), \, \left(t, \varsigma, g\right)} = \frac{1}{F_1\left(\Sigma_{t}^{R(t,\varsigma),g} \ell_{t,\varsigma}\right)}
+\label{eqn:angular-flux-transport-matrix-1}
+\end{equation}
+and
+\begin{equation}
+T_{\left(t,\varsigma,g\right), \, \left(t, \varsigma-1, g\right)} = \frac{F_1\left(\Sigma_{t}^{R(t,\varsigma),g} \ell_{t,\varsigma}\right) - 1}{F_1\left(\Sigma_{t}^{R(t,\varsigma),g} \ell_{t,\varsigma}\right)}.
+\label{eqn:angular-flux-transport-matrix-2}
+\end{equation}
+Again, all non-specified quantities are zero.
+
+Lastly, Eq.~\ref{eqn:average-flux} describes how the scalar flux is calculated in terms of both a weighted sum of angular fluxes and the neutron source. Specifically, an angular flux weighting matrix $W$ of size $M \times N$ is defined such that
+\begin{equation}
+\boldsymbol{\phi} = U^{-1}\mathbf{q} + U^{-1} W \boldsymbol{\psi}.
+\label{eqn:matrix-flux-calc}
+\end{equation}
+In order to expose its structure, $W$ is expressed as a multiplication of matrices
+\begin{equation}
+W = V^{-1} H^T \tilde{W}
+\end{equation}
+where the volume matrix $V$ is a $M \times M$ diagonal matrix containing region volumes as
+\begin{equation}
+V_{\left(i, g\right), \, \left(i, g\right)} = V_i
+\end{equation}
+and $\tilde{W}$ is an $N \times N$ matrix defined by
+\begin{equation}
+\tilde{W}_{\left(t,\varsigma,g\right), \, \left(t, \varsigma, g\right)} = -w_{t}
+\end{equation}
+and
+\begin{equation}
+\tilde{W}_{\left(t,\varsigma,g\right), \, \left(t, \varsigma-1, g\right)} = w_{t}
+\end{equation}
+with all other elements being zero. Now that all matrix elements have been defined, the transport equation can be written as a matrix eigenvalue problem. Combining Eq.~\ref{eqn:matrix-source-calc} and Eq.~\ref{eqn:matrix-flux-calc} yields
+\begin{equation}
+\boldsymbol{\phi} = U^{-1} \left(\frac{1}{k} F + S \right) \boldsymbol{\phi} + U^{-1} W \boldsymbol{\psi}
+\end{equation}
+which combined with Eq.~\ref{eqn:matrix-attn} yields
+\begin{equation}
+\boldsymbol{\phi} = U^{-1}\left( I + W T^{-1} H U^{-1}\right) \left(\frac{1}{k} F + S \right) \boldsymbol{\phi}
+\label{eqn:moc-matrix-form}
+\end{equation}
+where $I$ is the identity matrix of dimension $M \times M$. This relationship can be further simplified by defining a matrix $J$ such that
+\begin{equation}
+J = U^{-1}\left( I + W T^{-1} H U^{-1}\right)
+\end{equation}
+leading to the expression
+\begin{equation}
+\boldsymbol{\phi} = J \left(\frac{1}{k} F + S \right) \boldsymbol{\phi}
+\label{eq:app-transport-simplified}
+\end{equation}
+This results in the generalized eigenvalue equation given in Eq.~\ref{eqn:gen-eig}
+\begin{equation}
+A \boldsymbol{\phi} = k B \boldsymbol{\phi}
+\label{eqn:gen-eig}
+\end{equation}
+where
+\begin{equation}
+A = JF
+\end{equation}
+and
+\begin{equation}
+B = I - JS.
+\end{equation}
+This can of course be turned into a regular eigenvalue problem by explicitly taking the inverse as
+\begin{equation}
+B^{-1}A \boldsymbol{\phi} = k \boldsymbol{\phi}.
+\label{eqn:eig}
+\end{equation}
+At this point, the matrix $B^{-1}A$ could be explicitly calculated and then input into any standard eigenvalue solver. However, taking matrix inverses is very computationally intense, especially due to the internal structure of $A$ and $B$. Specifically, since $J$ involves the inverse of $T$, even the explicit computation of its elements is infeasible. Therefore, doing this would be very unwise. Even if a generalized eigenvalue solver is available capable of solving equations of the form given in Eq.~\ref{eqn:gen-eig}, the problem would still rely on computing explicit components of $J$. Even though the steady-state neutron transport equation is an eigenvalue problem defined in terms of the angular fluxes, they only enter the equation implicitly with the inversion of $T$. 
+
+%Moreover, the reaction rates of interest are defined in terms of the scalar fluxes. From angular fluxes, it is simple to calculate the scalar fluxes. This structure is an indication that explicitly solving for the full vector of angular fluxes is unnecessary.
+
+Therefore, instead of using a common eigenvalue solution technique, a variation of fixed point iteration termed \textit{source iteration} is chosen to solve the system. In this procedure, the relationship in Eq.~\ref{eqn:moc-matrix-form} is used with the right hand side of the equation lagged as
+\begin{equation}
+\boldsymbol{\phi}_{n+1} = U^{-1}\left( I + W T^{-1} H U^{-1}\right) \left(\frac{1}{k_n} F + S \right) \boldsymbol{\phi}_n
+\end{equation}
+where the subscript $n$ indicates iteration number. Mechanically, the process iterates over estimations of the neutron source, calculating the corresponding fluxes. First, an initial flux distribution is guessed along with a value for the eigenvalue $k$. At the start of each iteration, the source distribution $\mathbf{q}$ is calculated using Eq.~\ref{eqn:matrix-source-calc} from the current guess of scalar fluxes $\boldsymbol{\phi}$ and eigenvalue $k$. Then, during the \textit{transport sweep}, new angular fluxes are computed as
+\begin{equation}
+\boldsymbol{\psi} = T^{-1} H U^{-1} \mathbf{q}.
+\end{equation}
+First, the computation of $HU^{-1}\mathbf{q}$ is trivial since $H$ is just the source selection matrix and $U$ is diagonal. Physically, this just relates to selecting the source region being traversed and calculating the source divided by the total cross-section.
+
+Due to the simple structure of $T$, solving its \textit{implicit} inversion is rather simple for a matrix of its size. $T$ has just one element on the diagonal and one off-diagonal element per row. However, since the size of $T$ is so large, any operation involving the matrix is still expensive. Note that the angular fluxes are only related to their associated connecting angular flux. For some boundary conditions (e.g. reflective), the connecting angular flux might be from another track. This could cause the inversion to be more difficult. If all boundaries have this characteristic, all the angular fluxes within a cycle of connecting tracks would be dependent on each other.
+
+To alleviate this issue, the angular fluxes at boundaries are approximated by the calculated angular flux at the boundary from the previous iteration. Specifically, the relationship in Eq.~\ref{eqn:angular_flux_boundary} relating connecting angular fluxes at the start of a track is approximated by
+\begin{dmath}
+	\psi_g^{t,1}(0) = \widetilde{\psi}_g^{C(t),S(C(t))}(\ell_{C(t),S(C(t))})
+\end{dmath}
+where $\widetilde{\psi}$ represents the calculated angular fluxes from the previous iteration so that $\widetilde{\psi}_g^{C(t),S(C(t))}$ is the angular flux of the connecting track from the previous iteration. This transformation allows the inversion of $T$ to be calculated using an altered matrix $\tilde{T}$ which lacks dependency between different tracks, then adding the contribution of the previous iteration angular fluxes, if applicable. The structure of $\tilde{T}$ is block-diagonal and within each block the matrix is upper triangular. Physically this means that all tracks can be calculated independently of each other during an iteration. For each track, the angular fluxes can be solved sequentially by segment. This is where the \textit{transport sweep} owes its name as the algorithm simply sweeps over segments. Since each row has at most two elements, very little calculation is required for each angular flux. 
+
+During this process, it is noted that only the boundary angular fluxes along with the neutron source are needed to determine all angular fluxes. Therefore, non-boundary angular fluxes are computed on-the-fly. Furthermore, the elements of $T$ are re-computed on-the-fly. Once an angular flux is computed, its contribution to the scalar fluxes is tallied before it is discarded, since the computation of the scalar fluxes $\boldsymbol{\phi}$ relies on a weighted sum of the full angular flux vector $\boldsymbol{\psi}$.
+
+After the transport sweep, the source is added to the scalar flux tally, consistent with Eq.~\ref{eqn:matrix-flux-calc}, to produce a new estimate of the scalar fluxes $\boldsymbol{\phi}$. To form a new estimate of $k$, note that
+\begin{equation}
+T \boldsymbol{\psi} = \frac{1}{k} H U^{-1} F \boldsymbol{\phi} + H U^{-1} S \boldsymbol{\phi}
+\end{equation}
+which then is re-arranged and multiplied with a vector of ones $\mathbb{1}_M$ of length $M$ as
+\begin{equation}
+\mathbb{1}_M^T U H_{\text{left}}^{-1} T \boldsymbol{\psi}  = \frac{1}{k} \mathbb{1}_M^T  F \boldsymbol{\phi} + \mathbb{1}_M^T  S \boldsymbol{\phi}.
+\end{equation}
+Since $H$ is rectangular, it cannot be simply inverted. But since it is of full rank, $H^T H$ can be inverted. From the previous discussion of $H$, recall that $H^T H$ is diagonal so its inversion is simple. Therefore the left inverse $H_{\text{left}}^{-1}$ of matrix $H$ is defined to be
+\begin{equation}
+H_{\text{left}}^{-1} = \left(H^T H\right)^{-1} H^T.
+\end{equation}
+This allows the eigenvalue $k$ to be computed as
+\begin{equation}
+k = \frac{\mathbb{1}_M^T F \boldsymbol{\phi}}{\mathbb{1}_M^T  U H_{\text{left}}^{-1} T \boldsymbol{\psi} - \mathbb{1}_M^T S \boldsymbol{\phi}}.
+\end{equation}
+Combining Eq.~\ref{eqn:matrix-attn} and Eq.~\ref{eqn:matrix-flux-calc}, note that
+\begin{equation}
+U H_{\text{left}}^{-1} T \boldsymbol{\psi} = U \boldsymbol{\phi} - W \boldsymbol{\psi}
+\end{equation}
+and therefore
+\begin{equation}
+k = \frac{\mathbb{1}_M^T F \boldsymbol{\phi}}{\mathbb{1}_M^T \left(U - S \right) \boldsymbol{\phi} - \mathbb{1}_M^T W \boldsymbol{\psi}}.
+\end{equation}
+where $\mathbb{1}_M^T F \boldsymbol{\phi}$ refers to the fission rate, $\mathbb{1}_M^T \left(U - S \right) \boldsymbol{\phi}$ refers to the absorption rate, and $-\mathbb{1}_M^T W \boldsymbol{\psi}$ refers to the leakage rate. Physically, this shows that $k$ is simply a ratio of neutron production to neutron loss terms.
+
+Notice that each source iteration relies on simply taking the inverse of the transport matrix $T$ rather than the full $B$ matrix, which includes the scattering matrix, as would normally be taken during an eigenvalue solver, e.g. power iteration. While this choice does ease the computational burden of each iteration, it also requires many more iterations to converge to the correct solution as each iteration does little work in resolving the angular fluxes as the scattering matrix is not included in the inversion. 
+
+Physically, this relates to not treating the scattering source as directly coupled to the total neutron source. Therefore, un-accelerated \ac{MOC} is inherently plagued by slow convergence. In OpenMOC, \ac{CMFD} acceleration is used to resolve the issue of slow convergence for source iteration, as described in Appendix~\ref{app:cmfd-acceleration}. This allows for the computational burden of each iteration to be eased without giving up anything in terms of convergence rate by iteration.
