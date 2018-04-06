@@ -26,7 +26,7 @@ Each geometrical sub-domain can be approached as a somewhat independent reactor 
 	\label{fig:domain-track-linking}
 \end{figure}
 
-It is important to note that while the track laydown across each sub-domain is identical, the internal geometry of each sub-domain can be different. Therefore, ray tracing must be conducted on each sub-domain separately, using the techniques described in Chapter~\ref{chap:ray-tracing}. Each \ac{MPI} process separately forms a superposition of radial detail across its sub-domain. Since only the local sub-domain super position plane is used during ray tracing, the extra intersections formed from transforming piece-wise axially extruded geometries to pure axially extruded geometries (discussed in Chapter~\ref{chap:ray-tracing}) can be reduced as the number of axial sub-domain partitions increases.
+It is important to note that while the track laydown across each sub-domain is identical, the internal geometry of each sub-domain can be different. Therefore, ray tracing must be conducted on each sub-domain separately, using the techniques described in Chapter~\ref{chap:ray-tracing}. Each sub-domain forms a separate superposition of radial detail. Since only the local sub-domain superposition plane is used during ray tracing, the extra intersections formed from transforming piece-wise axially extruded geometries to pure axially extruded geometries (discussed in Chapter~\ref{chap:ray-tracing}) can be reduced as the number of axial sub-domain partitions increases.
 
 \section{MPI Communication}
 \label{sec:mpi}

@@ -1,7 +1,7 @@
 \chapter{MOC Parameter Sensitivity Studies}
 \label{chap:moc-sensitivity}
 
-In this chapter, sensitivity to both spatial mesh refinement and \ac{MOC} ray refinement is studied in detail. Radial sensitivities, which have been studied extensively in 2D \ac{MOC} are first discussed. Then, the axial sensitivities are studied. Both radial and axial sensitivities include mesh refinement as well as ray refinement studies with the OpenMOC linear source solver on BEAVRS geometries. These studies all involve models without control rod insertions. The axial sensitivity studies are then repeated for the case of a single assembly with a partially inserted control rod. In addition, the sensitivity of convergence to \ac{CMFD} parameters and domain decomposition is also studied. This chapter concludes by presenting the chosen parameters to accurately and efficiently conduct \ac{PWR} simulations with 3D \ac{MOC}. The uninterested reader can skip to the conclusion of this chapter where the chosen parameters are presented.
+In this chapter, sensitivities to both spatial mesh refinement and \ac{MOC} ray refinement are studied in detail. Radial sensitivities, which have been studied extensively in 2D \ac{MOC} are first discussed. Then, the axial sensitivities are studied. Both radial and axial sensitivities include mesh refinement as well as ray refinement studies with the OpenMOC linear source solver on BEAVRS geometries. These studies all involve models without control rod insertions. The axial sensitivity studies are then repeated for the case of a single assembly with a partially inserted control rod. In addition, the sensitivity of convergence to \ac{CMFD} parameters and domain decomposition is also studied. This chapter concludes by presenting the chosen parameters to accurately and efficiently conduct \ac{PWR} simulations with 3D \ac{MOC}. The uninterested reader can skip to the conclusion of this chapter where the chosen parameters are presented.
 
 %In Section~\ref{sec:axial-sensitivity-rodded}, the axial sensitivity study is repeated for the case of a single assembly with a partially inserted control rod. In Section~\ref{sec:flat-linear-comparison}, a comparison of flat and linear source solvers is presented for fixed \ac{MOC} ray and mesh refinement. Section~\ref{sec:cmfd-convergence-params} then focuses on the sensitivity of acceleration to \ac{CMFD} parameters. Whereas other sections focus on solution accuracy, the analysis in Section~\ref{sec:cmfd-convergence-params} studies the effect on convergence rate. In Section~\ref{sec:domain-decomposition-convergence}, the sensitivity of convergence to domain decomposition is analyzed. Lastly, Section~\ref{sec:sensitivity-conclusion} concludes the section by presenting the chosen parameters to accurately and efficiently conduct \ac{PWR} simulations with 3D \ac{MOC}. The uninterested reader can skip to the conclusion of this chapter where the chosen parameters are presented.
 
@@ -199,7 +199,7 @@ A depiction of the mesh refinement of a cutout encompassing both core and reflec
 	\label{fig:moc-mesh-combined}
 \end{figure}
 
-\newpage
+
 \subsection{Radial Ray Refinement}
 
 Next, the \ac{MOC} radial ray parameters are investigated. The single assembly model is used in these tests, as described in Appendix~\ref{app:beavrs-single-assembly}. This model has full axial height and includes grid spacers and axial water reflectors. For the radial discretization, the previous studies are used to inform the selected parameters, as given in Table~\ref{tab:rad-ray-ref-params}. The number of azimuthal angles in $[0, 2\pi]$ and radial ray spacing required for accurate simulations are then tested using these assumed parameters. The radial mesh in the upper and lower water reflectors follows the same discretization present within the core. The radial profile of the fission rate distribution is very similar to the short assembly model, shown in Figure~\ref{fig:short-assembly-radial}.
@@ -223,7 +223,7 @@ Next, the \ac{MOC} radial ray parameters are investigated. The single assembly m
 
 \subsubsection{Radial Ray Spacing Sensitivity}
 
-First, the radial ray spacing is tested. In these tests, the number of azimuthal angles is chosen to be 32. This is a factor of 2 away from the expected parameter, but still reasonably fine so it is assumed the radial ray spacing sensitivity is not significantly altered. The results of the sensitivity study are presented in Figures~\ref{fig:radial-rs-pcm} and \ref{fig:radial-rs-fr} for eigenvalue and fission rate, respectively. All errors and biases are reported relative to the case with 0.0125 cm radial ray spacing. These results show the expected radial ray spacing of 0.05 cm is sufficient to achieve less than 1\% maximum pellet-wise fission rate error and less than 5 pcm bias.
+First, the radial ray spacing is tested. In these tests, the number of azimuthal angles is chosen to be 32. This is a factor of 2 away from the expected parameter, but still reasonably fine so it is assumed the radial ray spacing sensitivity is not significantly altered. The results of the sensitivity study are presented in Figures~\ref{fig:radial-rs-pcm} and \ref{fig:radial-rs-fr} for eigenvalue and fission rate, respectively. All errors and biases are reported relative to the case with 0.0125 cm radial ray spacing. These results show the expected radial ray spacing of 0.05 cm is sufficient to achieve less than 0.1\% maximum pellet-wise fission rate error and less than 5 pcm bias.
 
 \begin{figure}[h!]
 	\centering
@@ -233,7 +233,7 @@ First, the radial ray spacing is tested. In these tests, the number of azimuthal
 \end{figure}
 \begin{figure}[h!]
 	\centering
-	\includegraphics[width=0.7\linewidth]{figures/results/sensitivity/rad_spacing_fr.png}
+	\includegraphics[width=0.7\linewidth]{figures/results/sensitivity/rad_spacing_fr_new.png}
 	\caption[]{The relative pellet-wise fission rate error decreasing as radial ray spacing is refined.}
 	\label{fig:radial-rs-fr}
 \end{figure}
@@ -251,12 +251,12 @@ The number of azimuthal angles is the last radial parameter to be tested. For th
 \end{figure}
 \begin{figure}[h!]
 	\centering
-	\includegraphics[width=0.7\linewidth]{figures/results/sensitivity/new_az_angles_fr.png}
+	\includegraphics[width=0.7\linewidth]{figures/results/sensitivity/az_angles_fr_new.png}
 	\caption[]{The relative pellet-wise fission rate error decreasing as the number of azimuthal angles is increased.}
 	\label{fig:az-angles-fr}
 \end{figure}
 
-Here there seems to be significant sensitivity to the number of azimuthal angles. At the expected 64 azimuthal angles in $[0, 2\pi]$, there is a 48.3 pcm bias. However, the error in pellet-wise reaction rates is significantly less with the 64 azimuthal angle case producing less than 0.4\% \ac{RMS} error and less than 1.5\% maximum error. Therefore, the expected 64 azimuthal angles are assumed to be sufficient for accurately resolving the fission rate distribution. 
+Here there seems to be significant sensitivity to the number of azimuthal angles. At the expected 64 azimuthal angles in $[0, 2\pi]$, there is a 48.3 pcm bias. However, the error in pellet-wise reaction rates is significantly less with the 64 azimuthal angle case producing less than 0.1\% \ac{RMS} error and less than 0.5\% maximum error. Therefore, the expected 64 azimuthal angles are assumed to be sufficient for accurately resolving the fission rate distribution. 
 
 \section{Axial Sensitivity}
 \label{sec:axial-sensitivity}

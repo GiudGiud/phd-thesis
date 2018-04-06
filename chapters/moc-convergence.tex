@@ -1,7 +1,7 @@
 \chapter{Convergence of MOC Source Iteration}
 \label{chap:moc-convergence}
 
-In the previous chapters, the implementation of methods in OpenMOC has been discussed in great detail. All of these methods rely on the \ac{MOC} form of the transport equation, presented in Chapter~\ref{chap:moc}. More specifically, these methods rely on source iteration to converge the solution. The \ac{MOC} equations are addressed from a general linear algebra perspective illuminating the deficiencies of source iteration, whose stability is addressed. While convergence is straightforward for physical cross-sections, transport correction can cause convergence issues. A stabilization technique is proposed, termed diagonal stabilization, which can alleviate the convergence issues.
+In the previous chapters, the implementation of methods in OpenMOC has been discussed in great detail. All of these methods rely on the \ac{MOC} form of the transport equation, presented in Chapter~\ref{chap:moc}. More specifically, these methods rely on source iteration to converge the solution. In this chapter, the \ac{MOC} equations are addressed from a general linear algebra perspective illuminating the deficiencies of source iteration, whose stability is addressed. While convergence is straightforward for physical cross-sections, transport correction can cause convergence issues. A stabilization technique is proposed, termed diagonal stabilization, which can alleviate the convergence issues.
 
 \section{Source Iteration Stability}
 \label{sec:source-iteration}
@@ -209,7 +209,7 @@ Notice that the case without stabilization diverges while all the stabilization 
 \subsection{Convergence Results with CMFD Acceleration}
 \label{sec:cmfd-stab}
 
-In Section~\ref{sec:source-iteration}, the convergence of source iteration and its stability properties were discussed. When \ac{CMFD} acceleration is applied, as detailed in Section~\ref{app:cmfd-acceleration}, the behavior is much more difficult to analyze since \ac{CMFD} is a non-linear process. Therefore, discussion of \ac{CMFD} results will focus on hypotheses to explain the observed results rather than rigorous analysis. 
+In Section~\ref{sec:source-iteration}, the convergence of source iteration and its stability properties were discussed. When \ac{CMFD} acceleration is applied, as detailed in Appendix~\ref{app:cmfd-acceleration}, the behavior is much more difficult to analyze since \ac{CMFD} is a non-linear process. Therefore, discussion of \ac{CMFD} results will focus on hypotheses to explain the observed results rather than rigorous analysis. 
 
 In this section, the \ac{CMFD} mesh is always chosen to be uniform with cells of pin-cell pitch in the radial dimensions and 2.0 cm in the axial dimension. In addition, a relaxation factor of 0.7 is applied to the \ac{CMFD} acceleration scheme for computing corrected diffusion coefficients. Many \ac{CMFD} implementations choose to collapse to a fewer number of energy groups in order to improve the speed of the \ac{CMFD} solver. While the \ac{CMFD} equations are computationally less expensive in collapsed few-group structures, it is possible that collapsing group structures could cause slower convergence by not fully resolving spectral effects. Results with a variety of \ac{CMFD} group structures are presented. While the \ac{MOC} calculation always uses a 70 group structure, \ac{CMFD} group structures are formed with $G_C$ \ac{CMFD} groups, with group ranges taken from the CASMO-4 Manual~\cite{edenius1995casmo}, as presented in Appendix~\ref{app:energy-groups}.
 
@@ -221,7 +221,7 @@ All of the stability results presented in this section use the parameters in Sec
 The single assembly model previously analyzed for pure source iteration in Section~\ref{sec:si-convergence} is first analyzed with \ac{CMFD} acceleration using the same parameters. It is important to remember that this problem includes axial water reflectors. These large regions of water where the transport-correction is large could potentially have a strong impact on convergence. The results with \ac{CMFD} applied and \textit{without} any \ac{MOC} source iteration stabilization are shown in Figure~\ref{fig:sa-cmfd-no-stab} for a variety of \ac{CMFD} group structures with the error once again relative to a tightly converged reference.
 \begin{figure}[ht!]
 	\centering
-	\includegraphics[width=0.65\linewidth]{figures/convergence/sa_no_stab_cmfd.png}
+	\includegraphics[width=0.71\linewidth]{figures/convergence/sa_no_stab_cmfd.png}
 	\caption{Convergence behavior for a variety of \ac{CMFD} group structures with $G_C$ \ac{CMFD} groups and \textit{without} \ac{MOC} source iteration stabilization.}
 	\label{fig:sa-cmfd-no-stab}
 \end{figure}
@@ -236,7 +236,7 @@ However, with a reduced \ac{CMFD} group structure, the flux distribution in ener
 To verify that the convergence issue can be remedied with \ac{MOC} source iteration stabilization, the same single assembly test is conducted but using diagonal stabilization with $\rho = 1/4$. For pure source iteration, this was sufficient for stabilization, as previously shown in Figure~\ref{fig:no-cmfd}. The results using this stabilization with \ac{CMFD} acceleration are shown in Figure~\ref{fig:sa-cmfd-stab}. 
 \begin{figure}[ht!]
 	\centering
-	\includegraphics[width=0.65\linewidth]{figures/convergence/sa_stab_cmfd.png}
+	\includegraphics[width=0.71\linewidth]{figures/convergence/sa_stab_cmfd.png}
 	\caption{Convergence behavior for a variety of \ac{CMFD} group structures with $G_C$ \ac{CMFD} groups and \textit{with} Diagonal \ac{MOC} source iteration stabilization ($\rho = 1/4$).}
 	\label{fig:sa-cmfd-stab}
 \end{figure}
@@ -248,7 +248,7 @@ As expected, the \ac{MOC} source iteration stabilization fixes the convergence i
 Next, the truncated single assembly model is studied, as detailed in Appendix~\ref{app:trunc-single-assembly}. This model is the same as the single assembly model but without the axial water reflectors, using a $1\times 1\times 90$ domain decomposition. Without reflectors, this model is more similar to lattice physics models. The convergence behavior is analyzed \textit{without} source iteration stabilization. The results with \ac{CMFD} acceleration for a variety of \ac{CMFD} group structures are presented in Figure~\ref{fig:truncated-convergence}.
 \begin{figure}[ht!]
 	\centering
-	\includegraphics[width=0.65\linewidth]{figures/convergence/sa_trunc_no_stab.png}
+	\includegraphics[width=0.71\linewidth]{figures/convergence/sa_trunc_no_stab.png}
 	\caption{Convergence behavior for the single assembly \textit{without} axial reflectors with a variety of \ac{CMFD} group structures with $G_C$ \ac{CMFD} groups and \textit{without} \ac{MOC} source iteration stabilization.}
 	\label{fig:truncated-convergence}
 \end{figure}
@@ -263,7 +263,7 @@ The previous results were focused on a single assembly with and without axial re
 Before simulating the explicit 3D model, the 2D extruded model detailed in Appendix~\ref{app:beavrs-2D} is studied. This model lacks the axial water reflectors but still contains significant water reflectors in the radial direction. A $17 \times 17 \times 1$ domain decomposition is used. The results are shown in Figure~\ref{fig:fc-2D}. 
 \begin{figure}[ht!]
 	\centering
-	\includegraphics[width=0.65\linewidth]{figures/convergence/fc_2D.png}
+	\includegraphics[width=0.71\linewidth]{figures/convergence/fc_2D.png}
 	\caption{Convergence behavior of \ac{CMFD} group structures with $G_C$ \ac{CMFD} groups and Diagonal \ac{MOC} source iteration stabilization with stabilization coefficient $\rho$.}
 	\label{fig:fc-2D}
 \end{figure}
@@ -275,7 +275,7 @@ Now the full core 3D BEAVRS model is simulated, as detailed in Appendix~\ref{app
 
 \begin{figure}[ht!]
 	\centering
-	\includegraphics[width=0.65\linewidth]{figures/convergence/full-core-3D.png}
+	\includegraphics[width=0.71\linewidth]{figures/convergence/full-core-3D.png}
 	\caption{Convergence behavior of OpenMOC on the full core \ac{BEAVRS} benchmark with and without Diagonal Stabilization ($\rho = 1/4$).}
 	\label{fig:fc-3D}
 \end{figure}
@@ -288,11 +288,12 @@ The preceding tests have all been conducted using a flat source approximation. H
 
 \begin{figure}[ht!]
 	\centering
-	\includegraphics[width=0.65\linewidth]{figures/convergence/full-core-3D-ls.png}
+	\includegraphics[width=0.71\linewidth]{figures/convergence/full-core-3D-ls.png}
 	\caption{Convergence behavior of OpenMOC's linear source solver on the full core \ac{BEAVRS} benchmark with and without Diagonal Stabilization ($\rho = 1/4$).}
 	\label{fig:fc-3D-ls}
 \end{figure}
 
+\newpage
 \section{Conclusion}
 \label{sec:convergence-conclusion}
 

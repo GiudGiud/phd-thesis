@@ -236,7 +236,7 @@ The results presented here concentrate on the differences between ray tracing by
 
 \subsection{Single Thread Performance Comparison}
 
-First, the single thread performance of the flat source solver with the two on-the-fly ray tracing schemes is compared. The single threaded results using one node of the Falcon supercomputer are presented in Table~\ref{tab:rt-single-thread}, showing ray tracing by $z$-stack to have slightly better single-threaded performance than ray tracing by individual track. Both schemes result in integration times near 10 ns for the flat source approximation. The linear source approximation adds a factor of $2\times$--$3\times$ the runtime for the fixed mesh, but recall that linear source allows for a coarser mesh to be used. In these trials, each test is run three times. The reported uncertainty indicates the maximum deviation from the average value.
+First, the single thread performance of the two on-the-fly ray tracing schemes is compared. Results using one node of the Falcon supercomputer are presented in Table~\ref{tab:rt-single-thread}, showing ray tracing by $z$-stack to have slightly better single-threaded performance than ray tracing by individual track. Both schemes result in integration times near 10 ns for the flat source approximation. The linear source approximation adds a factor of $2\times$--$3\times$ the runtime for the fixed mesh, but recall that linear source allows for a coarser mesh to be used. In these trials, each test is run three times. The reported uncertainty indicates the maximum deviation from the average value.
 
 \begin{table}[ht]
 	\centering
@@ -338,9 +338,10 @@ First, the performance is tested using the full computational resources of a sin
 	\label{tab:rt-full-thread-cetus}
 \end{table}
 
-From these results, it seems that yet again the on-the-fly ray tracing by $z$-stack performs slightly better than on-the-fly ray tracing by individual 3D track. It is important to note the slowdown in integration time from Falcon to Cetus, even on a per-core basis, highlighting the extent to which the cores on Cetus are slower than the cores on Falcon. 
+From these results, it seems that yet again the on-the-fly ray tracing by $z$-stack performs slightly better than on-the-fly ray tracing by individual 3D track. It is important to note the slowdown in integration time from Falcon to Cetus, highlighting the extent to which the cores on Cetus are slower than the cores on Falcon. 
 
-Since the scaling studies on Falcon showed scaling to be quite similar between ray tracing methods, only the scaling using on-the-fly ray tracing by $z$-stack is analyzed on Cetus. Results are shown for both flat and linear sources.
+Since the scaling studies on Falcon showed scaling to be quite similar between ray tracing methods, only the scaling using on-the-fly ray tracing by $z$-stack is analyzed on Cetus. 
+%Results are shown for both flat and linear sources.
 
 It is also important to note the role of hyper-threads in scaling studies. Since hyper-threads share computational resources with other hyper-threads on the same core, ideal scaling is only tangible when the number of threads is less than the number of cores. In this case, the number of cores is 16 and the parallel speedup of the algorithm is 91.9\% of ideal for flat sources and 90.9\% for linear sources when one thread is used per core, which is significantly better than the scaling observed on Falcon. At 64 threads, where all available hyper-threads are utilized, the average speedup is 42.15 for flat sources and 37.8 for linear sources. This shows that the algorithm benefits greatly from the addition of hyper-threads, showing that there latency is a major contributor to the overall run-time. The full scaling results are plotted in Figure~\ref{fig:rt-parallel-cetus}.
 
