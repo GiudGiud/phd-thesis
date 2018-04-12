@@ -3,8 +3,8 @@
 
 In the previous chapters, the implementation of methods in OpenMOC has been discussed in great detail. All of these methods rely on the \ac{MOC} form of the transport equation, presented in Chapter~\ref{chap:moc}. More specifically, these methods rely on source iteration to converge the solution. In this chapter, the \ac{MOC} equations are addressed from a general linear algebra perspective illuminating the deficiencies of source iteration, whose stability is addressed. While convergence is straightforward for physical cross-sections, transport correction can cause convergence issues. A stabilization technique is proposed, termed diagonal stabilization, which can alleviate the convergence issues.
 
-\section{Source Iteration Stability}
-\label{sec:source-iteration}
+\section{Introduction}
+\label{sec:si-intro}
 
 The \ac{MOC} system of equations leads to a linear system of the form
 \begin{equation}
@@ -24,9 +24,9 @@ For physical cross-sections, the matrices $J$, $F$, and $S$ are all positive. Ho
 
 When using large numbers of energy groups, the within-group scattering cross-sections can become small, and the modified within-group scattering cross-section can become negative with transport correction. Tabuchi discovered negative within-group scattering cross-sections to be an issue when converging within-group scattering iterations of \ac{MOC}~\cite{ty-problem}. The study used an iteration scheme in which the spatial distribution is converged for each estimate of the neutron source. The iterations to converge the spatial distribution are termed \textit{inner iterations}. It was identified that the iteration matrix for inner iterations could have a spectral radius greater than unity, causing the system not to converge. Tabuchi later proposed a stabilization technique for inner iterations~\cite{ty-solution}.
 
-In this section, the ideas presented by Tabuchi are expanded to explain the observed convergence behavior of source iteration without inner iterations. Convergence is analyzed with transport-corrected cross-sections. Realistic full core cases are presented that fail to converge and a new stabilizing method is proposed to stabilize source iteration.
+%In this section, the ideas presented by Tabuchi are expanded to explain the observed convergence behavior of source iteration without inner iterations. Convergence is analyzed with transport-corrected cross-sections. Realistic full core cases are presented that fail to converge and a new stabilizing method is proposed to stabilize source iteration.
 
-\subsection{MOC Equivalence with Collision Probability Methods}
+\section{MOC Equivalence with Collision Probability Methods}
 \label{sec:equiv-cpm}
 
 Deterministic methods such as flat source \ac{MOC} are equivalent to the collision probability form, aside from discretization errors~\cite{ty-problem}. Although collision probabilities do not explicitly enter the \ac{MOC} equations, the neutron balance equation takes the form in Eq.~\ref{eq:cpm-form}:
@@ -55,10 +55,10 @@ Notice that this is in the form of Eq.~\ref{eq:transport-simplified}. Therefore,
 \end{equation}
 Matrix $A$ is square and dense with length equal to the number of scalar fluxes. 
 
-\subsection{Iteration Schemes}
+\section{Iteration Schemes}
 \label{sec:moc-iteration-schemes}
 
-\subsubsection{Power Method}
+\subsection{Power Method}
 
 The power method is one common method to solve an eigenvalue problem, such as the form given in Eq.~\ref{eq:transport-simplified}, which yields the dominant eigenvector corresponding to the steady-state flux distribution. To invoke the power method, Eq.~\ref{eq:transport-simplified} can be re-arranged to the form in Eq.~\ref{eq:eigenvalue} where $I$ represents the identity matrix.
 \begin{equation}
@@ -75,7 +75,7 @@ With the power method scheme, repeated multiplication by $Z$ yields the dominant
 \end{equation}
 Since explicitly taking the matrix inverse of $I-JS$ is unwise, an iterative scheme is necessary to solve the linear system. In many transport methods, such as \ac{MOC}, computing each element of $J$ can be just as expensive as computing a matrix-vector product. In addition, each matrix-vector product with matrix $J$ is usually quite expensive (often termed \textit{transport sweeps}). Therefore, few methods are available to efficiently solve the linear system in practice. 
 
-\subsubsection{Source Iteration}
+\subsection{Source Iteration}
 
 An alternative way to solve the transport equation is to directly apply the transport sweep to the full neutron source. Note that the neutron source $\mathbf{q}$ can be computed as 
 \begin{equation*}
@@ -96,7 +96,7 @@ Recall from Eq.~\ref{eq:a-matrix} that the iteration matrix $A$ is everywhere po
 
 However, with the transport correction, it is possible to have negative within-group scattering, causing this condition not to hold. Therefore, the system might still converge, but convergence cannot be guaranteed under the Perron-Frobenius Theorem. Therefore, the iteration scheme should be updated to ensure convergence. 
 
-\subsection{Stabilization of Source Iteration}
+\section{Stabilization of Source Iteration}
 \label{sec:diagonal-stabilization}
 
 Note that Eq.~\ref{eq:damped-transport} is a mathematically valid rewriting of Eq.~\ref{eq:transport-simplified} for \textit{any matrix} $D$ where $I+D$ is invertible. 
@@ -154,7 +154,7 @@ It is important to note that in the OpenMOC implementation, negative sources are
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Convergence Criteria}
+\section{Convergence Criteria}
 \label{sec:conv-criteria}
 
 Since the \ac{MOC} equations are converged iteratively with source iteration, a convergence tolerance must be chosen for the simulation. In this thesis, convergence is determined by iterative change in the neutron production rate. Specifically, the neutron production rate $f_i$ in a source region $i$ can be computed with a sum of contributions from all $G$ energy groups as
@@ -168,7 +168,7 @@ for the current estimate of scalar fluxes $\overline{\phi_{i,g}}$. The relative 
 \end{equation}
 where $N_f$ is the number of regions with a nonzero neutron production rate and $f_i^n$ refers to the neutron production rate of region $i$ in iteration $n$. For all results in this thesis, convergence is determined when \texttt{esp-MOC} is reduced to $10^{-4}$ and the change in eigenvalue estimate from the previous iteration is less than 1 pcm. 
 
-\subsection{Convergence of Source Iteration}
+\section{Convergence of Source Iteration}
 \label{sec:si-convergence}
 
 In order to test the convergence behavior of the stabilization methods, the stabilization methods were implemented in OpenMOC. The single assembly test problem described in Appendix~\ref{app:beavrs-single-assembly} is used to test convergence behavior. Results in this section focus on the flat source 3D \ac{MOC} solver in OpenMOC for simplicity, using the \ac{MOC} parameters given in Table~\ref{tab:convergence-tests-params}. While finer \ac{MOC} parameters would be necessary to accurately resolve the solution, convergence has not been observed to change substantially from refining \ac{MOC} parameters.
@@ -206,10 +206,10 @@ The convergence behavior is presented in Figure~\ref{fig:no-cmfd} in which the r
 \end{figure}
 Notice that the case without stabilization diverges while all the stabilization cases converge except for the new diagonal stabilization scheme with damping factor $\rho = 1/128$. This is expected since as $\rho$ approaches zero, the stabilization method becomes equivalent to source iteration without stabilization. This clearly shows that this problem requires stabilization to converge with source iteration. In addition, the more conservative the stabilization scheme, the more convergence is slowed. The scheme proposed by Tabuchi slows convergence the most. The diagonal damping scheme hinders convergence significantly less, especially for $\rho < 1$.
 
-\subsection{Convergence Results with CMFD Acceleration}
+\section{Convergence Results with CMFD Acceleration}
 \label{sec:cmfd-stab}
 
-In Section~\ref{sec:source-iteration}, the convergence of source iteration and its stability properties were discussed. When \ac{CMFD} acceleration is applied, as detailed in Appendix~\ref{app:cmfd-acceleration}, the behavior is much more difficult to analyze since \ac{CMFD} is a non-linear process. Therefore, discussion of \ac{CMFD} results will focus on hypotheses to explain the observed results rather than rigorous analysis. 
+In Section~\ref{sec:si-convergence}, the convergence of source iteration and its stability properties were discussed. When \ac{CMFD} acceleration is applied, as detailed in Appendix~\ref{app:cmfd-acceleration}, the behavior is much more difficult to analyze since \ac{CMFD} is a non-linear process. Therefore, discussion of \ac{CMFD} results will focus on hypotheses to explain the observed results rather than rigorous analysis. 
 
 In this section, the \ac{CMFD} mesh is always chosen to be uniform with cells of pin-cell pitch in the radial dimensions and 2.0 cm in the axial dimension. In addition, a relaxation factor of 0.7 is applied to the \ac{CMFD} acceleration scheme for computing corrected diffusion coefficients. Many \ac{CMFD} implementations choose to collapse to a fewer number of energy groups in order to improve the speed of the \ac{CMFD} solver. While the \ac{CMFD} equations are computationally less expensive in collapsed few-group structures, it is possible that collapsing group structures could cause slower convergence by not fully resolving spectral effects. Results with a variety of \ac{CMFD} group structures are presented. While the \ac{MOC} calculation always uses a 70 group structure, \ac{CMFD} group structures are formed with $G_C$ \ac{CMFD} groups, with group ranges taken from the CASMO-4 Manual~\cite{edenius1995casmo}, as presented in Appendix~\ref{app:energy-groups}.
 

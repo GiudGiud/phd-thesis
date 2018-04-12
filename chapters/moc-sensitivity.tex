@@ -94,7 +94,11 @@ Since both fuel pins and guide tubes exist in fuel assemblies, there are three m
 
 %For fuel rods and guide tubes, these rings divide the regions by creating concentric \texttt{ZCylinder} surfaces inside the rod such that the volume of all regions are equal. For moderator regions, \texttt{ZCylinder} objects are created outside the rod in concentric circles such that the distance between the surfaces is equal. Since there is no bounding outer \texttt{ZCylinder}, a virtual bounding \texttt{ZCylinder} is created with volume equal to that of the pin-cell.
 
-First, ring divisions are studied. The sensitivity studies of ring divisions are shown in Table~\ref{tab:ring-sensitivity}. All fission rate errors are for a pin-wise mesh. For all cases, the expected radial mesh parameters are used unless otherwise specified. For each zone, a separate parameter refinement is conducted using 1, 2, and 3 rings. The 3 ring case is always chosen as the reference. For the other radial mesh parameters, expected parameters are used (1 ring in all regions with 4 sectors in fuel and 8 sectors in the moderator and guide tube).
+First, ring divisions are studied. The sensitivity studies of ring divisions are shown in Table~\ref{tab:ring-sensitivity}. All fission rate errors are for a pin-wise mesh. Relative error in this thesis is always computed as
+\begin{equation}
+\textit{relative error} = \frac{\textit{trial} - \textit{reference}}{\textit{reference}}.
+\end{equation}
+For all cases, the expected radial mesh parameters are used unless otherwise specified. For each zone, a separate parameter refinement is conducted using 1, 2, and 3 rings. The 3 ring case is always chosen as the reference. For the other radial mesh parameters, expected parameters are used (1 ring in all regions with 4 sectors in fuel and 8 sectors in the moderator and guide tube).
 
 \begin{table}[ht]
 	\centering
@@ -143,6 +147,7 @@ Similar to the approach taken for discretizing by rings, all mesh parameters are
 
 These results show the moderator region is again the most sensitive. After 8 sectors in the moderator and 4 in fuel and guide tubes, very little sensitivity is observed. This would imply that requiring 8 sectors in the guide tubes may be excessive, but guide tubes are relatively sparse throughout the core so the increased discretization has little impact on computational requirements. Therefore, in order to be conservative, 8 sectors remains the choice for guide tube discretization.
 
+\newpage
 \subsection{Reflector Radial Mesh Refinement}
 
 Ring and sector discretizations form a well-defined mesh refinement within the core. However, for full core problems, the radial water reflector also needs to be discretized. To simplify the sensitivity study, a uniform global mesh is overlaid across the reflector regions. In addition, the discretization is chosen to align with \ac{CMFD} cell boundaries. In OpenMOC, \ac{CMFD} cell boundaries naturally create mesh discretizations as cells are split at the mesh boundaries. Since a pin-cell width uniform \ac{CMFD} mesh is chosen for acceleration of BEAVRS problems, the reflector is naturally discretized into pin-cell-sized regions. The radial mesh refinement then takes the form of a uniform mesh discretization within a pin-cell-sized region in which a square mesh refinement is chosen. Since each assembly contains a lattice of $17\times 17$ cells and an assembly width is $\approx 21.5$ cm (when including inter-assembly gap), the radial reflector mesh refinement takes the form of an $N \times N$ discretization of each 1.264 cm $\times$ 1.264 cm region within the reflector.
@@ -199,7 +204,7 @@ A depiction of the mesh refinement of a cutout encompassing both core and reflec
 	\label{fig:moc-mesh-combined}
 \end{figure}
 
-
+\newpage
 \subsection{Radial Ray Refinement}
 
 Next, the \ac{MOC} radial ray parameters are investigated. The single assembly model is used in these tests, as described in Appendix~\ref{app:beavrs-single-assembly}. This model has full axial height and includes grid spacers and axial water reflectors. For the radial discretization, the previous studies are used to inform the selected parameters, as given in Table~\ref{tab:rad-ray-ref-params}. The number of azimuthal angles in $[0, 2\pi]$ and radial ray spacing required for accurate simulations are then tested using these assumed parameters. The radial mesh in the upper and lower water reflectors follows the same discretization present within the core. The radial profile of the fission rate distribution is very similar to the short assembly model, shown in Figure~\ref{fig:short-assembly-radial}.
@@ -366,11 +371,11 @@ In the previous section, the axial \ac{MOC} parameters were studied for a single
 	\label{fig:single-assembly-rodded-axial}
 \end{figure}
 
-The presence of significant gradients mean finer axial parameters may be required. Therefore, the axial sensitivity study is repeated for the rodded single assembly test problem. Again, the radial parameters described in Table~\ref{tab:axial-test-radial-params} are selected.
+The presence of significant gradients mean finer axial parameters may be required. Therefore, the axial sensitivity study is repeated for the rodded single assembly test problem. Again, the radial parameters described in Table~\ref{tab:axial-test-radial-params} are selected. Since the fission distribution drops significantly past the control rod tip, fission rate error comparisons in this section only consider the region below the axial height of 250 cm.
 
 \subsection{Axial Source Height Sensitivity}
 
-First, the axial source height is again analyzed using 10 polar angles and an axial ray spacing of 0.09375 cm. The reference again has 0.25 cm axial source height. The results are presented in Figures~\ref{fig:polar-angles-pcm} and \ref{fig:polar-angles-fr} for eigenvalue and fission rate, respectively. Now, a significantly finer axial source discretization is required, with a source height of 0.5 cm necessary to achieve the accuracy criteria.
+First, the axial source height is again analyzed using 10 polar angles and an axial ray spacing of 0.09375 cm. The reference again has 0.25 cm axial source height. The results are presented in Figures~\ref{fig:polar-angles-pcm} and \ref{fig:polar-angles-fr} for eigenvalue and fission rate, respectively. Now, a finer axial source discretization is required, with a source height of 1.0 cm necessary to achieve the accuracy criteria.
 
 \begin{figure}[h!]
 	\centering
@@ -380,14 +385,14 @@ First, the axial source height is again analyzed using 10 polar angles and an ax
 \end{figure}
 \begin{figure}[h!]
 	\centering
-	\includegraphics[width=0.7\linewidth]{figures/results/sensitivity/rodded_source_height_fr.png}
+	\includegraphics[width=0.7\linewidth]{figures/results/sensitivity/rodded_source_height_fr_new.png}
 	\caption[]{The relative pellet-wise fission rate error decreasing as axial source height is refined.}
 	\label{fig:rodded-axial-sh-fr}
 \end{figure}
 
 \subsection{Axial Ray Spacing Sensitivity}
 
-Next, the axial ray spacing is analyzed using 10 polar angles and a source height of 0.5 cm. The reference is chosen to be 0.023 cm (3/128 cm). Since the source height has been decreased from 2.0 cm to 0.5 cm, the coarsest source height of those tested in Section~\ref{sec:axial-ray-spacing-sensitivity} that still traverses every axial source region is 0.375 cm (3/8 cm). Again, the axial ray spacing is halved each time the ray spacing is refined. The results are presented in Figures~\ref{fig:rodded-axial-rs-pcm} and \ref{fig:rodded-axial-rs-fr} for eigenvalue and fission rate, respectively. An axial ray spacing of 0.1875 cm (3/16 cm) is necessary to achieve the accuracy criteria and 0.09375 cm (3/32 cm) is necessary to achieve less than 1\% maximum fission rate error.
+Next, the axial ray spacing is analyzed using 10 polar angles and a source height of 0.5 cm. The reference is chosen to have 0.023 cm (3/128 cm) axial ray spacing. Since the source height has been decreased from 2.0 cm to 0.5 cm in comparison with the tests in Section~\ref{sec:axial-ray-spacing-sensitivity}, the coarsest axial ray spacing present in the previous tests that still traverses every axial source region is 0.375 cm (3/8 cm). Again, the axial ray spacing is halved each time the ray spacing is refined. The results are presented in Figures~\ref{fig:rodded-axial-rs-pcm} and \ref{fig:rodded-axial-rs-fr} for eigenvalue and fission rate, respectively. An axial ray spacing of 0.375 cm (3/16 cm) is sufficient to achieve less than 1\% maximum fission rate error.
 
 \begin{figure}[h!]
 	\centering
@@ -397,14 +402,14 @@ Next, the axial ray spacing is analyzed using 10 polar angles and a source heigh
 \end{figure}
 \begin{figure}[h!]
 	\centering
-	\includegraphics[width=0.7\linewidth]{figures/results/sensitivity/rodded_z_spacing_fr.png}
+	\includegraphics[width=0.7\linewidth]{figures/results/sensitivity/rodded_z_spacing_fr_new.png}
 	\caption[]{The relative pellet-wise fission rate error decreasing as axial ray spacing is refined.}
 	\label{fig:rodded-axial-rs-fr}
 \end{figure}
 
 \subsection{Polar Angle Sensitivity}
 
-Lastly, the polar angle sensitivity is conducted with the same parameters as the case without rod insertions in Section~\ref{sec:polar-angle-sensitivity}: 0.25 cm axial ray spacing and 2.0 cm axial source height. Again, the reference is 32 polar angles. While the axial source height is coarser than necessary to accurately converge the problem, it is assumed that the sensitivity is similar with the necessary parameter. The results are presented in Figures~\ref{fig:rodded-axial-rs-pcm} and \ref{fig:rodded-axial-rs-fr} for eigenvalue and fission rate, respectively, showing very little difference from the case without rod insertions. Again, 6 polar angles are sufficient to meet the criteria but 10 polar angles are selected due to 2D~\ac{MOC} considerations.
+Lastly, the polar angle sensitivity is conducted with the same parameters as the case without rod insertions in Section~\ref{sec:polar-angle-sensitivity}: 0.25 cm axial ray spacing and 2.0 cm axial source height. Again, the reference is 32 polar angles. While the axial source height is coarser than necessary to accurately converge the problem, it is assumed that the sensitivity is similar with the necessary parameter. The results are presented in Figures~\ref{fig:rodded-axial-rs-pcm} and \ref{fig:rodded-axial-rs-fr} for eigenvalue and fission rate, respectively, showing very little difference from the case without rod insertions. Again, 6 polar angles are sufficient to meet the criteria but 10 polar angles are selected due to the 2D~\ac{MOC} considerations outlined in Section~\ref{sec:polar-angle-sensitivity}.
 
 \begin{figure}[h!]
 	\centering
@@ -414,7 +419,7 @@ Lastly, the polar angle sensitivity is conducted with the same parameters as the
 \end{figure}
 \begin{figure}[h!]
 	\centering
-	\includegraphics[width=0.7\linewidth]{figures/results/sensitivity/rodded_polar_angles_fr.png}
+	\includegraphics[width=0.7\linewidth]{figures/results/sensitivity/rodded_polar_angles_fr_new.png}
 	\caption[]{The relative pellet-wise fission rate error decreasing as the number of polar angles is increased.}
 	\label{fig:rodded-polar-angles-fr}
 \end{figure}
