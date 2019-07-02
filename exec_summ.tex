@@ -38,8 +38,8 @@
 
 \usepackage[breaklinks=true]{hyperref}
 \hypersetup{colorlinks=true, linkcolor=black, citecolor=black, urlcolor=black,
-  pdftitle={Full Core 3D Neutron Transport Simulation Using the Method of Characteristics with Linear Sources},
-  pdfauthor={Geoffrey Alexander Gunow}
+  pdftitle={PhD_Thesis_Giudicelli},
+  pdfauthor={Guillaume Louis Giudicelli}
 }
 \pagestyle{plain}
 
@@ -123,17 +123,17 @@
 
 \include{frontmatter/exec_cover}
 
-\title{EXECUTIVE SUMMARY \\~\\ Full Core 3D Neutron Transport Simulation Using the Method of Characteristics with Linear Sources}
+\title{EXECUTIVE SUMMARY \\~\\ Rather fast pretty accurate neutron transport simulations using the Method of Characteristics}
 
-\author{Geoffrey A. Gunow}
-\prevdegrees{B.S.E., University of Michigan (2012) \\
-	M.S., Massachusetts Institute of Technology (2015)}
+\author{Guillaume Louis Giudicelli}
+\prevdegrees{Ingenieur diplome de l'Ecole Polytechnique (2015) \\
+	M.S., Massachusetts Institute of Technology (2016)}
 \department{Department of Nuclear Science and Engineering}
 \degree{Doctor of Philosophy in Computational Nuclear Engineering}
 
-\degreemonth{June}
-\degreeyear{2018}
-\thesisdate{March 1, 2018}
+\degreemonth{February}
+\degreeyear{2020}
+\thesisdate{October 3, 2019}
 
 %\supervisor{Benoit Forget}{Associate Professor of Nuclear Science and Engineering}
 %\reader{Kord S. Smith}{KEPCO Professor of the Practice of Nuclear Science and Engineering}
@@ -217,24 +217,6 @@ OpenMOC is an open source neutron transport solver originally designed for 2D MO
 
 In MOC algorithms, tracks are laid across the geometry, each representing a particular neutron direction. The MOC equations are then solved along each track. One of the often overlooked aspects of MOC implementations is the method chosen to lay down tracks. In order to accommodate periodic and reflective boundary conditions, tracks are often laid down such that they form cycles over the geometry which allows for direct treatment of boundary conditions. MOC ray parameters are adjusted so that tracks link at boundaries. Figure~\ref{fig:sample-tracks} depicts coarse 2D and 3D cyclic track laydowns.
 
-\begin{figure}[h!]
-	\centering
-	\begin{subfigure}[b]{0.25\textwidth}
-		\centering
-		\includegraphics[width=\linewidth]{figures/laydown/kord_tracks_2D.png}
-		\caption{}
-		\label{fig:sample-tracks-a}
-	\end{subfigure}
-	\begin{subfigure}[b]{0.35\textwidth}
-		\centering
-		\includegraphics[width=\linewidth]{figures/laydown/kord_tracks_3D.png}
-		\caption{}
-		\label{fig:sample-tracks-b}
-	\end{subfigure}
-	\caption[]{Illustration of (a) 2D and (b) 3D cyclic tracks for a pin-cell geometry.}
-	\label{fig:sample-tracks}
-\end{figure}
-
 
 There are a variety of ways cyclic tracking can be enforced by adjusting MOC ray parameters. Depending on the track laydown algorithm, the parameter adjustment can be significant, often inserting far more tracks than necessary. Inefficient track laydown algorithms can lead to an order of magnitude increase in the number of tracks required for realistic PWR problems~\cite{shaner-laydown}. Since the computational cost of MOC scales directly with the number of tracks, an order of magnitude increase in the number of tracks translates directly into an order of magnitude increase in the run time. \textbf{This thesis implements track laydown using Modular Ray Tracing (MRT), which has quite flexible constraints with a minimal number of additional track insertions}~\cite{liu_mrt}.
 
@@ -247,14 +229,6 @@ After tracks are laid across the geometry, each track is subdivided into segment
 In this thesis, \textbf{an alternative approach is presented that greatly reduces the segment storage by taking advantage of the extruded geometry structure common to many reactor physics problems}. This approach saves no 3D segment data, but instead stores 2D radial ray tracing information and combines this information with 1D axial meshes to compute 3D intersections on-the-fly~\cite{physor2016otf}.
 
 Two on-the-fly ray tracing approaches are introduced in this thesis. One approach ray traces each 3D track individually. Another ray traces an entire grouping of tracks together which have the same direction with polar angle $\theta$, stacked in the axial direction and separated by constant spacing $\delta z$. The group of tracks, referred to as a $z$-stack, allows for analytic calculation of the first and last track indexes within the stack that intersect each region. This ray tracing process is depicted in Figure~\ref{fig::stack_tracing}. Both ray tracing approaches offer significant memory reduction with minimal computational overhead.
-
-\begin{figure}[ht!]
-	\centering
-	\includegraphics[width=0.75\linewidth]{figures/ph2016/stack_tracing.png}
-	\caption{Illustration of the on-the-fly axial ray tracing process for an entire $z$-stack where the lowest track intersects the $z$-axis at $z_0(0)$. In Source Region (SR) A, multiple tracks traverse the entire 2D segment length. In SR B, no tracks traverse the entire 2D segment length.}
-	\label{fig::stack_tracing}
-\end{figure}
-
 
 \newpage
 %%%%%%%%%%%%%%%%%%%%
@@ -291,13 +265,6 @@ Both ray tracing methods are able to achieve $\approx 10$ ns integration time wi
 
 OpenMOC uses OpenMP shared memory parallelism~\cite{openmp} on each node. The scaling results of the linear source solver with ray tracing by $z$-stack are shown in Figure~\ref{fig:rt-parallel-ls-cetus} using the Cetus partition of the Argonne BlueGene/Q supercomputer to solve the SDSA test problem. This machine has 16 cores per node and hyper-threads allow for improved resource utilization with up to 64 threads. It is important to note that beyond 16 threads, ideal speedup is not expected as threads must share the computation resources of the 16 cores. At 16 threads, the achieved speedup is 90.9\% of ideal.
 
-\begin{figure}[ht!]
-	\centering
-	\includegraphics[width=0.75\linewidth]{figures/results/performance/ls-parallel-scaling-stacks-cetus.png}
-	\caption{Strong scaling performance of the linear source solver on the SDSA test problem using the Cetus partition of the Argonne BlueGene/Q supercomputer with on-the-fly ray tracing by $z$-stacks.}
-	\label{fig:rt-parallel-ls-cetus}
-\end{figure}
-
 
 %%%%%%%%%%%%%%%%%%%%
 \subsection*{Domain Decomposition}
@@ -309,13 +276,6 @@ Scalable spatial domain decomposition was implemented in OpenMOC by partitioning
 In addition to communicating MOC information, the same spatial domain decomposition is also applied to the CMFD acceleration. The CMFD equations are iteratively solved using a red/black SOR scheme in which ghost cell scalar fluxes are communicated on each iteration.
 
 Numerous scaling studies were conducted to ensure efficient parallel scaling of the domain decomposition implementation to many nodes. One such study replicated the SDSA test problem in a cubic 3D lattice. Weak scaling tests, in which problem size per node is kept constant, were conducted on the Cetus partition of the Argonne BlueGene/Q supercomputer with each node assigned one of the lattice cells (equivalent to one SDSA geometry). The results are presented in Figure~\ref{fig:dd-ws-3D-eff}, showing greater than 90\% parallel efficiency for all configurations. The largest case involves a $12 \times 12 \times 12$ lattice consuming 1728 nodes (27,648 cores), resulting in an efficiency of 92\%.
-	
-\begin{figure}[h!]
-	\centering
-	\includegraphics[width=0.75\linewidth]{figures/DD/dd-ws-3D-eff.png}
-	\caption[]{Weak scaling of the domain decomposition implementation of the linear source solver on a replicated 3D lattice of the SDSA test problem.}
-	\label{fig:dd-ws-3D-eff}
-\end{figure}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section*{Convergence of Source Iteration}
@@ -330,13 +290,6 @@ The OpenMOC solver described in this thesis relies on source iteration used in c
 where iteration $\mathbf{n}+1/2$ refers to the computed solution without damping. The damping coefficient $\beta$ is chosen based on the ratio of within-group scattering to transport cross-section for each region and energy group.
 
 Diagonal stabilization is tested on multiple reactor physics problems, including the full core BEAVRS model with in-scatter transport correction, showing that it is necessary to achieve convergence using a reduced CMFD group structure. A comparison of the convergence behavior with and without diagonal stabilization is shown in Figure~\ref{fig:fc-3D-ls} for the BEAVRS full core model using the OpenMOC linear source solver with coarse MOC ray parameters, showing an inability to converge the problem without diagonal stabilization.
-	
-\begin{figure}[ht!]
-	\centering
-	\includegraphics[width=0.65\linewidth]{figures/convergence/full-core-3D-ls.png}
-	\caption{Convergence behavior of OpenMOC's linear source solver on the full core BEAVRS benchmark with and without Diagonal Stabilization.}
-	\label{fig:fc-3D-ls}
-\end{figure}
 
 It is important to note that this stabilization strategy has implications for all neutron transport solvers -- not just MOC solvers. Any solver which relies on source iteration has the potential to experience these same convergence issues when using transport-corrected cross-sections. Due to its wide-ranging applicability, this diagonal stabilization method is one of the most important contributions of this thesis to the reactor physics community. 
 
@@ -348,25 +301,6 @@ It is important to note that this stabilization strategy has implications for al
 \subsection*{Single Assembly Sensitivity Studies}
 
 After the OpenMOC solver was fully implemented, sensitivity to the MOC parameters was tested. All results in this thesis use a 70 group cross-section library formed from OpenMC Monte Carlo simulations of the BEAVRS benchmark using the \texttt{mgxs} package~\cite{boyd2017thesis}. \text{In-scatter} transport correction was applied to all cross-sections. A variety of cutouts from the BEAVRS model were selected to test the sensitivity to MOC ray and mesh parameters. The models include a 2D extruded BEAVRS core in which a thin axial region is simulated with axially reflective boundary conditions and a single assembly with full axial detail. The single assembly is used for the majority of sensitivity tests, particularly for the sensitivities to 3D parameters. Converged radial and axial fission distributions are presented in Figure~\ref{fig:single-assembly-dist} for the single assembly model.
-
-
-\begin{figure}[h!]
-	\centering
-	\begin{subfigure}[b]{0.45\textwidth}
-		\centering
-		\includegraphics[width=\linewidth]{figures/results/rr-plots/single-assembly-radial.png}
-		\caption{}
-		\label{fig:single-assembly-radial}
-	\end{subfigure}
-	\begin{subfigure}[b]{0.45\textwidth}
-		\centering
-		\includegraphics[width=\linewidth]{figures/results/rr-plots/single-assembly-axial.png}
-		\caption{}
-		\label{fig:single-assembly-axial}
-	\end{subfigure}
-	\caption[]{The radial (a) and axial (b) fission rate distribution of the single assembly model.}
-	\label{fig:single-assembly-dist}
-\end{figure}
 
 While radial MOC parameters have been previously studied in great detail for 2D MOC solvers~\cite{rhodes2006casmo}, the 3D MOC parameters have not been thoroughly examined. Parameter convergence is determined by comparing computed results with a fine parameter reference solution. An accuracy criteria of less than 1.0\% Root Mean Square (RMS) and 3.0\% maximum pellet-wise fission rate error is used to determine the appropriate parameters where each pellet-wise fission rate is defined by the fission rate within a 2.0 cm zone of a fuel rod. An eigenvalue bias of less than 20 pcm is also required. The resulting MOC parameters are shown in Table~\ref{tab:final-params}. A depiction of the required radial mesh chosen for a single assembly is presented in Figure~\ref{fig:assembly-mesh}.
 
@@ -393,13 +327,6 @@ While radial MOC parameters have been previously studied in great detail for 2D 
 	\end{tabular}
 	\label{tab:final-params}
 \end{table}
-		
-\begin{figure}[ht!]
-	\centering
-	\includegraphics[width=0.7\linewidth]{figures/moc_mesh.PNG}
-	\caption{Radial mesh discretization of a single assembly}
-	\label{fig:assembly-mesh}
-\end{figure}
 
 \newpage
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -407,20 +334,6 @@ While radial MOC parameters have been previously studied in great detail for 2D 
 
 
 Using the MOC parameters presented in Table~\ref{tab:final-params}, the BEAVRS benchmark is simulated on the Mira partition of the Argonne BlueGene/Q supercomputer using the linear source 3D MOC solver in OpenMOC. The resulting radially and axially integrated reaction rates are presented in Figure~\ref{fig:full-core-radial} and Figure~\ref{fig:full-core-axial}.
-
-\begin{figure}[ht!]
-	\centering
-	\includegraphics[width=0.65\linewidth]{figures/results/rr-plots/beavrs-3d-radial.png}
-	\caption{Radial fission rate distribution for the BEAVRS benchmark formed by OpenMOC with reaction rates axially integrated.}
-	\label{fig:full-core-radial}
-\end{figure}
-
-\begin{figure}[ht!]
-	\centering
-	\includegraphics[width=0.65\linewidth]{figures/results/rr-plots/beavrs-3d-axial.png}
-	\caption{Axial fission rate distribution for the BEAVRS benchmark formed by OpenMOC with reaction rates radially integrated.}
-	\label{fig:full-core-axial}
-\end{figure}
 
 \newpage
 The OpenMOC results are compared with an OpenMC Monte Carlo solution from which the cross-sections were derived. The Monte Carlo simulation used 400 batches (300 inactive, 100 active) with $2 \times 10^8$ particles per batch. A comparison of the OpenMOC and OpenMC solutions is presented in Table~\ref{tab:openmc-comparison} in which fission rates are calculated on a pellet-wise scale (2.0 cm axial height).
@@ -444,30 +357,7 @@ The OpenMOC results are compared with an OpenMC Monte Carlo solution from which 
 
 Notice that since Monte Carlo simulations introduce statistical noise, each pellet-wise Monte Carlo fission rate has an associated standard deviation. The RMS pellet-wise fission rate error of OpenMOC is 2.14\% which is close to the average standard deviation of OpenMC tallies. The radial and axial error distributions are presented in Figure~\ref{fig:openmc-comp-rad} and Figure~\ref{fig:openmc-comp-ax}, respectively, showing a radial tilt across the core.
 
-
-\begin{figure}[ht!]
-	\centering
-	\includegraphics[width=0.8\linewidth]{figures/results/full-core/radial_diff_v_openmc.png}
-	\caption{Radial distribution of normalized fission rate errors of OpenMOC compared with a reference OpenMC solution on the BEAVRS benchmark.}
-	\label{fig:openmc-comp-rad}
-\end{figure}
-
-\begin{figure}[ht!]
-	\centering
-	\includegraphics[width=0.8\linewidth]{figures/results/full-core/axial_diff_v_openmc.png}
-	\caption{Axial distribution of normalized fission rate errors of OpenMOC compared with a reference OpenMC solution on the BEAVRS benchmark.}
-	\label{fig:openmc-comp-ax}
-\end{figure}
-
-
 To ensure the gross fission rate distribution is simulated with reasonable accuracy, assembly-integrated fission rates are compared. Figure~\ref{fig:assembly-rr} shows these assembly rate errors and the associated OpenMC reference folded into a 1/8 map. Similar to the radial distribution shown in Figure~\ref{fig:openmc-comp-rad}, the error again appears as a pure tilt across the core. This tilt is due to the particular transport correction that is not able to fully capture the effects of anisotropic scattering. It is possible that a better transport correction -- particularly in reflector regions -- would be able to eliminate this tilt. However, accurate cross-section formation is not the objective of this thesis and other ongoing projects at MIT are seeking to improve the transport correction.
-
-\begin{figure}[ht!]
-	\centering
-	\includegraphics[width=\linewidth]{figures/results/full-core/folded-1-8-core-assembly-rr.png}
-	\caption{1/8 core folded assembly fission rate error of OpenMOC compared with the reference OpenMC solution for the BEAVRS benchmark.}
-	\label{fig:assembly-rr}
-\end{figure}
 
 The computational requirements of the full core solution in OpenMOC is presented in Table~\ref{tab:full-core-comp-req}. Note that while the number of core-hours required to converge the problem is high (717,465), the solution was computed on the Argonne BlueGene/Q supercomputer, which has extremely slow cores for energy efficiency reasons. The requirements on modern computing cores, such as those on the Falcon supercomputer, is estimated by comparing the integration time per core of the SDSA problem on the Falcon supercomputer (48.96 ns/core) to those on the Argonne BlueGene/Q supercomputer (175.36 ns/core) for one node using all available cores. However, this case cannot be explicitly simulated on Falcon due to the small aggregate memory of the Falcon supercomputer.
 
